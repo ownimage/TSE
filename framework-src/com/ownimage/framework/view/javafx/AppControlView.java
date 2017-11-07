@@ -25,6 +25,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -121,8 +122,6 @@ public class AppControlView extends Application implements IAppControlView {
 
 	@Override
 	public void redraw() {
-
-		// mAppControl = new Perception();
 		MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
 
 		IView content = mAppControl.getContent();
@@ -155,6 +154,10 @@ public class AppControlView extends Application implements IAppControlView {
 		mPrimaryStage.setScene(mScene);
 		mPrimaryStage.show();
 
+	}
+
+	public void setApplicationIcon(final Image pApplicationIcon) {
+		mPrimaryStage.getIcons().add(pApplicationIcon);
 	}
 
 	public void showDialog(final FileControl pFileControl) {

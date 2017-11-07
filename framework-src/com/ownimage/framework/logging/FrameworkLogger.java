@@ -115,43 +115,42 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 		return mDialogHandler.getLog();
 	}
 
-	public synchronized void init(final String pPropertiesFilename, final String pLogFilename) throws Exception {
-		if (mDialogHandler == null) {
+	public synchronized void init(final String pPropertiesFilename, final String pLogFilename) {
+		try {
+			if (mDialogHandler == null) {
+				mDialogHandler = new StringBufferHandler();
+				mDialogHandler.setFormatter(new PerceptionFormatter());
 
-			mDialogHandler = new StringBufferHandler();
-			mDialogHandler.setFormatter(new PerceptionFormatter());
+				mConsoleHandler = new ConsoleHandler();
+				mConsoleHandler.setFormatter(new PerceptionFormatter());
 
-			mConsoleHandler = new ConsoleHandler();
-			mConsoleHandler.setFormatter(new PerceptionFormatter());
+				mLogFileHandler = new FileHandler(pLogFilename);
+				mLogFileHandler.setFormatter(new PerceptionFormatter());
 
-			mLogFileHandler = new FileHandler(pLogFilename);
-			mLogFileHandler.setFormatter(new PerceptionFormatter());
+				mDialogLevel.addControlChangeListener(mFrameworkLogger);
+				mLogFileLevel.addControlChangeListener(mFrameworkLogger);
+				mConsoleLevel.addControlChangeListener(mFrameworkLogger);
 
-			mDialogLevel.addControlChangeListener(mFrameworkLogger);
-			mLogFileLevel.addControlChangeListener(mFrameworkLogger);
-			mConsoleLevel.addControlChangeListener(mFrameworkLogger);
+				final Logger logger = Logger.getLogger("");
 
-			final Logger logger = Logger.getLogger("");
+				final Handler[] handlers = logger.getHandlers();
+				for (final Handler handler : handlers) {
+					logger.removeHandler(handler);
+				}
 
-			final Handler[] handlers = logger.getHandlers();
-			for (final Handler handler : handlers) {
-				logger.removeHandler(handler);
-			}
+				logger.addHandler(mDialogHandler);
+				logger.addHandler(mConsoleHandler);
+				logger.addHandler(mLogFileHandler);
 
-			logger.addHandler(mDialogHandler);
-			logger.addHandler(mConsoleHandler);
-			logger.addHandler(mLogFileHandler);
+				setLevel(Level.INFO);
 
-			setLevel(Level.INFO);
-
-			try {
 				java.util.Properties logProperties = new java.util.Properties();
 				logProperties.load(new FileInputStream(pPropertiesFilename));
 				read(logProperties, "");
-			} catch (Throwable pEx) {
-				System.err.println(pEx.getMessage() + " at FrameworkLogger.init(String, String).");
-			}
 
+			}
+		} catch (Throwable pEx) {
+			System.err.println(pEx.getMessage() + " at FrameworkLogger.init(String, String).");
 		}
 	}
 
