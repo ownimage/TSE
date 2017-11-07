@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="framework-src"/>
+	<classpathentry kind="src" path="perception-src"/>
+	<classpathentry kind="src" path="imageOrganizer-src"/>
+	<classpathentry including="Jama/**/*.java" kind="src" path="src-Jama"/>
+	<classpathentry kind="src" path="test-framework-src"/>
+	<classpathentry kind="src" path="test-perception"/>
+	<classpathentry kind="src" path="test-JavaFX-src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry exported="true" kind="lib" path="lib/aparapi.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/vecmath.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

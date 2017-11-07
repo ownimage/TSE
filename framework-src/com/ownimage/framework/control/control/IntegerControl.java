@@ -1,0 +1,84 @@
+/**
+ * This code is part of the Perception programme.
+ * All code copyright (c) 2012-2015 ownimage.com, Keith Hart
+ */
+package com.ownimage.framework.control.control;
+
+import java.util.logging.Logger;
+
+import com.ownimage.framework.control.container.IContainer;
+import com.ownimage.framework.control.type.IntegerMetaType;
+import com.ownimage.framework.control.type.IntegerType;
+import com.ownimage.framework.util.Version;
+import com.ownimage.framework.view.IView;
+import com.ownimage.framework.view.factory.ViewFactory;
+
+public class IntegerControl extends ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView> {
+
+	public class IntegerProperty {
+		public int getValue() {
+			return IntegerControl.this.getValue();
+		}
+	}
+
+	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+	public final static String mClassname = ControlBase.class.getName();
+	public final static Logger mLogger = Logger.getLogger(mClassname);
+
+	public final static long serialVersionUID = 1L;
+
+	public IntegerControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final int pValue) {
+		super(pDisplayName, pPropertyName, pContainer, new IntegerType(pValue));
+	}
+
+	public IntegerControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final int pValue, final int pMin, final int pMax, final int pStep) {
+		super(pDisplayName, pPropertyName, pContainer, new IntegerType(pValue, new IntegerMetaType(pMin, pMax, pStep)));
+	}
+
+	public IntegerControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final int pValue, final IntegerMetaType pMetaType) {
+		super(pDisplayName, pPropertyName, pContainer, new IntegerType(pValue, pMetaType));
+	}
+
+	public IntegerControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final IntegerType pValue) {
+		super(pDisplayName, pPropertyName, pContainer, pValue.clone());
+	}
+
+	@Override
+	public IntegerControl clone(final IContainer pContainer) {
+		if (pContainer == null) {
+			throw new IllegalArgumentException("pContainer MUST not be null.");
+		}
+
+		return new IntegerControl(getDisplayName(), getPropertyName(), pContainer, getValue(), getMetaType());
+	}
+
+	@Override
+	public IView createView() {
+		IView view = ViewFactory.getInstance().createView(this);
+		addView(view);
+		return view;
+	}
+
+	@Override
+	public double getNormalizedValue() {
+		return mValue.getNormalizedValue();
+	}
+
+	public IntegerProperty getProperty() {
+		return new IntegerProperty();
+	}
+
+	@Override
+	public boolean setNormalizedValue(final double pNormalizedValue) {
+		IntegerMetaType metaType = getMetaType();
+
+		if (metaType == null) {
+			throw new IllegalStateException("Cannot setNormalizedValue for an IntegerControl that does not have an IntegerMetaType.");
+		}
+
+		Integer value = metaType.getValueForNormalizedValue(pNormalizedValue);
+		setValue(value);
+		return true;
+	}
+
+}

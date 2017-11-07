@@ -1,0 +1,10 @@
+//.tab *.tab-label {
+//    -fx-rotate: 90;
+//	/* note these are reversed because of the -fx-rotate*/
+//	-fx-tab-min-width: 20px;  
+//	-fx-tab-min-height: 150px;
+//}
+
+//.tab {
+//    -fx-padding: 3em 0.5em 3em 0.5em;
+//}

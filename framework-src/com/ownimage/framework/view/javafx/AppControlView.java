@@ -1,0 +1,283 @@
+package com.ownimage.framework.view.javafx;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+import com.ownimage.framework.app.IAppControl;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.undo.IUndoRedoBuffer;
+import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Version;
+import com.ownimage.framework.view.IAppControlView;
+import com.ownimage.framework.view.IView;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
+
+public class AppControlView extends Application implements IAppControlView {
+
+	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+	public final static Logger mLogger = Framework.getLogger();
+
+	private static AppControlView mAppControlView;
+	private static IAppControl mAppControl;
+
+	private Stage mPrimaryStage;
+
+	private Scene mScene;
+
+	private ChangeListener<? super Number> mWidthListener;
+
+	public AppControlView() { // need public constructor for the app to work
+		if (mAppControlView != null) { throw new IllegalStateException("Can only create one instance of AppControlView."); }
+		if (mAppControl == null) { throw new IllegalStateException("mAppControl must be set before the instance can be created."); }
+
+		mAppControlView = this;
+		mAppControl.setView(mAppControlView);
+	}
+
+	public synchronized static IAppControlView createAppControlView(final IAppControl pAppControl) {
+		// if (mAppControlView != null || mAppControl != null) { throw new
+		// IllegalStateException("Cannot call createAppControlView can only be called once."); }
+		//
+		// mAppControl = pAppControl;
+		// // Application.launch(AppControlView.class);
+		//
+		// // note that the following block is needed as Application.launch does not return until the application is closed.
+		// // Application.launch(AppControlView.class);
+		// launch();
+		//
+		// // Runnable r = () -> Application.launch(AppControlView.class);
+		// // new Thread(r).start();
+		// //
+		// // try {
+		// // while (mAppControlView == null) {
+		// // Thread.sleep(100);
+		// // }
+		// // } catch (InterruptedException e) {
+		// //
+		// // }
+		// //
+		// // System.out.println("mAppControlView = " + mAppControlView);
+		return mAppControlView;
+	}
+
+	public static IAppControl getAppControl() {
+		return mAppControl;
+	}
+
+	public static AppControlView getAppControlView() {
+		return mAppControlView;
+	}
+
+	static AppControlView getInstance() {
+		return mAppControlView;
+	}
+
+	public static void launch(final String... pArgs) {
+		Runnable r = () -> Application.launch(AppControlView.class);
+		new Thread(r).start();
+
+		try {
+			while (mAppControlView == null) {
+				Thread.sleep(100);
+			}
+		} catch (InterruptedException e) {
+
+		}
+	}
+
+	public static void setAppControl(final IAppControl pAppControl) {
+		mAppControl = pAppControl;
+	}
+
+	@Override
+	public void exit() {
+		Platform.exit();
+	}
+
+	public FXViewFactory getFactory() {
+		return FXViewFactory.getInstance();
+	}
+
+	@Override
+	public void redraw() {
+
+		// mAppControl = new Perception();
+		MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
+
+		IView content = mAppControl.getContent();
+		BorderPane border = new BorderPane();
+		border.setTop(menuBar);
+		border.setCenter(((FXView) (content)).getUI());
+
+		ScrollPane scroll = new ScrollPane(border);
+		scroll.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+		mScene = new Scene(border, mAppControl.getWidth(), mAppControl.getHeight());
+		menuBar.prefWidthProperty().bind(mScene.widthProperty());
+		//
+		mPrimaryStage.setTitle(mAppControl.getTitle());
+		// mPrimaryStage.setScene(mScene);
+		// mPrimaryStage.sizeToScene();
+		// mPrimaryStage.show();
+		// MenuBar menuBar = new MenuBar();
+		// Menu menu = new Menu("File");
+		// MenuItem quit = new MenuItem("Quit");
+		// quit.setOnAction(e -> Platform.exit());
+		// menu.getItems().add(quit);
+		// menuBar.getMenus().add(menu);
+		menuBar.setUseSystemMenuBar(true);
+
+		BorderPane root = new BorderPane();
+		// root.setTop(menuBar);
+		// Scene scene = new Scene(root, 600, 600);
+		mPrimaryStage.setScene(mScene);
+		mPrimaryStage.show();
+
+	}
+
+	public void showDialog(final FileControl pFileControl) {
+		switch (pFileControl.getFileControlType()) {
+		case FILEOPEN:
+			showFileOpenChooserDialog(pFileControl);
+			break;
+		case DIRECTORY:
+			showDirectoryChooserDialog(pFileControl);
+			break;
+		case FILESAVE:
+			showFileSaveChooserDialog(pFileControl);
+			break;
+		}
+
+	}
+
+	@Override
+	public void showDialog(final IViewable pViewable, final DialogOptions pDialogOptions, final ActionControl... pButtons) {
+		showDialog(pViewable, pDialogOptions, null, pButtons);
+	}
+
+	@Override
+	public void showDialog(final IViewable pViewable, final DialogOptions pDialogOptions, final IUndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
+		Platform.runLater(() -> showDialogLater(pViewable, pDialogOptions, pUndoRedo, pButtons));
+	}
+
+	public void showDialogLater(final IViewable pViewable, final DialogOptions pDialogOptions, final IUndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
+		HashMap<ButtonType, ActionControl> buttonMap = new HashMap<ButtonType, ActionControl>();
+		FXView content = (FXView) (pViewable.createView());
+		Node contentUI = content.getUI();
+		Dialog<ActionControl> dialog = new Dialog<>();
+
+		// the width listener is needed in case the dialog is showing the UI controls that affect the width of the controls
+		// themselves which would mean that the dialaog would need to change size as the controls change value.
+		mWidthListener = (observable, oldValue, newValue) -> {
+			dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
+		};
+		FXViewFactory.getInstance().controlWidthProperty.addListener(mWidthListener);
+		FXViewFactory.getInstance().labelWidthProperty.addListener(mWidthListener);
+
+		dialog.setTitle(pViewable.getDisplayName());
+		dialog.getDialogPane().setContent(contentUI);
+		dialog.getDialogPane().layout();
+		dialog.setResultConverter(pButtonType -> {
+			return buttonMap.get(pButtonType);
+		});
+
+		for (ActionControl action : pButtons) {
+			ButtonType button = new ButtonType(action.getDisplayName(), ButtonData.OK_DONE);
+			buttonMap.put(button, action);
+			dialog.getDialogPane().getButtonTypes().add(button);
+		}
+
+		if (pUndoRedo != null) {
+			dialog.getDialogPane().setOnKeyPressed(t -> {
+				final KeyCodeCombination undo = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
+				final KeyCodeCombination redo = new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.CONTROL_DOWN);
+
+				mLogger.finest("KeyPressed");
+				if (undo.match(t)) {
+					mLogger.finest("Undo");
+					pUndoRedo.undo();
+
+				} else if (redo.match(t)) {
+					mLogger.finest("Redo");
+					pUndoRedo.redo();
+				}
+			});
+		}
+
+		dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
+	}
+
+	public void showDirectoryChooserDialog(final FileControl pFileControl) {
+		DirectoryChooser dirChooser = new DirectoryChooser();
+		dirChooser.setTitle("Open Resource File");
+
+		File selectedDir = dirChooser.showDialog(mPrimaryStage);
+		if (selectedDir != null) {
+			pFileControl.setValue(selectedDir.getAbsolutePath());
+		}
+	}
+
+	public void showFileOpenChooserDialog(final FileControl pFileControl) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(pFileControl.getDisplayName());
+		fileChooser.getExtensionFilters().addAll(
+				// new ExtensionFilter("Text Files", "*.txt"),
+				// new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+				// new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+				new ExtensionFilter("All Files", "*.*"));
+		//
+		fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
+		fileChooser.setInitialFileName(pFileControl.getFile().getName());
+		File selectedFile = fileChooser.showOpenDialog(mPrimaryStage);
+		if (selectedFile != null) {
+			pFileControl.setValue(selectedFile.getAbsolutePath());
+		}
+	}
+
+	public void showFileSaveChooserDialog(final FileControl pFileControl) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(pFileControl.getDisplayName());
+		fileChooser.getExtensionFilters().addAll(
+				// new ExtensionFilter("Text Files", "*.txt"),
+				// new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+				// new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+				new ExtensionFilter("All Files", "*.*"));
+		//
+		fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
+		fileChooser.setInitialFileName(pFileControl.getFile().getName());
+		File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
+		// System.out.println("File:" + selectedFile == null ? selectedFile : selectedFile.getAbsolutePath());
+		if (selectedFile != null) {
+			pFileControl.setValue(selectedFile.getAbsolutePath());
+		}
+	}
+
+	@Override
+	public void start(final Stage pPrimaryStage) throws Exception {
+		mPrimaryStage = pPrimaryStage;
+		redraw();
+	}
+
+}
