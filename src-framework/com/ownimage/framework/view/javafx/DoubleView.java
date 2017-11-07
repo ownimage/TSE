@@ -1,15 +1,14 @@
 package com.ownimage.framework.view.javafx;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
+import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Version;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -18,17 +17,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 
 public class DoubleView extends ViewBase<DoubleControl> {
 
-	private static Image mSpinnerImage;
-	private static Image mSliderImage;
+	public final static Version mVersion = new Version(2017, 0, 0, "2017/11/07 16:30");
+	private final static Logger mLogger = Framework.getLogger();
 
-	static {
-		mSpinnerImage = getImage("/icon/spinner.png");
-		mSliderImage = getImage("/icon/slider.png");
-	};
+	private static Image mSpinnerImage = getImage("/icon/spinner.png");
+	private static Image mSliderImage = getImage("/icon/slider.png");
 
 	private final HBox mUI;
 	private final HBox mControlPanel;
@@ -55,6 +51,7 @@ public class DoubleView extends ViewBase<DoubleControl> {
 		bindWidth(mSpinner, getFactory().controlWidthProperty);
 
 		mSlider = new Slider(min, max, value);
+		mSlider.setDisable(!mControl.isEnabled());
 		mSlider.valueProperty().addListener((observable, oldValue, newValue) -> setControlValueFromSlider());
 		InvalidationListener sliderSizeListener = o -> {
 			int width = getFactory().controlWidthProperty.get() - getFactory().sliderValueWidthProperty.get();
@@ -72,7 +69,7 @@ public class DoubleView extends ViewBase<DoubleControl> {
 
 		mDisplayOption = new Button();
 		mDisplayOption.setGraphic(new ImageView(mSliderImage));
-		mDisplayOption.setOnAction((e) -> changeDisplay());
+		mDisplayOption.setOnAction((e) -> toggleDisplayType());
 		bindWidth(mDisplayOption, getFactory().smallButtonWidthProperty);
 
 		mControlPanel = new HBox();
@@ -82,40 +79,6 @@ public class DoubleView extends ViewBase<DoubleControl> {
 		mUI = new HBox();
 		mUI.setAlignment(Pos.CENTER);
 		mUI.getChildren().addAll(mLabel, mControlPanel, mDisplayOption);
-	}
-
-	private static Image getImage(final String pName) {
-		try {
-			URL url = pName.getClass().getResource(pName);
-			InputStream stream = url.openStream();
-			Image image = new Image(stream);
-			;
-			return image;
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return null;
-	}
-
-	private void bindWidth(final Region pRegion, final SimpleIntegerProperty pWidthProperty) {
-		pRegion.prefWidthProperty().bind(pWidthProperty);
-		pRegion.maxWidthProperty().bind(pWidthProperty);
-		pRegion.minWidthProperty().bind(pWidthProperty);
-	}
-
-	private void changeDisplay() {
-		if (mDisplayState == DoubleMetaType.DisplayType.SPINNER) {
-			mDisplayState = DoubleMetaType.DisplayType.SLIDER;
-			mDisplayOption.setGraphic(new ImageView(mSliderImage));
-			mControlPanel.getChildren().clear();
-			mControlPanel.getChildren().addAll(mSlider, mDisplayedValue);
-		} else {
-			mDisplayState = DoubleMetaType.DisplayType.SPINNER;
-			mDisplayOption.setGraphic(new ImageView(mSpinnerImage));
-			mControlPanel.getChildren().clear();
-			mControlPanel.getChildren().add(mSpinner);
-		}
 	}
 
 	@Override
@@ -154,6 +117,20 @@ public class DoubleView extends ViewBase<DoubleControl> {
 			}
 		} finally {
 			mAllowUpdates = true;
+		}
+	}
+
+	private void toggleDisplayType() {
+		if (mDisplayState == DoubleMetaType.DisplayType.SPINNER) {
+			mDisplayState = DoubleMetaType.DisplayType.SLIDER;
+			mDisplayOption.setGraphic(new ImageView(mSliderImage));
+			mControlPanel.getChildren().clear();
+			mControlPanel.getChildren().addAll(mSlider, mDisplayedValue);
+		} else {
+			mDisplayState = DoubleMetaType.DisplayType.SPINNER;
+			mDisplayOption.setGraphic(new ImageView(mSpinnerImage));
+			mControlPanel.getChildren().clear();
+			mControlPanel.getChildren().add(mSpinner);
 		}
 	}
 
