@@ -34,7 +34,6 @@ import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Version;
-import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Intersect3D;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
@@ -45,6 +44,7 @@ import com.ownimage.perception.pixelMap.PixelChain.Thickness;
 import com.ownimage.perception.pixelMap.editor.EditPixelMapDialog;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.ownimage.perception.transform.IProgressBar;
 import com.ownimage.perception.util.KColor;
 
 /*
@@ -620,9 +620,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		return pColor;
 	}
 
-	private com.ownimage.perception.Properties getProperties() {
-		return Perception.getInstanceProperties();
-	}
+	// private com.ownimage.perception.Properties getProperties() {
+	// return Perception.getInstanceProperties();
+	// }
 
 	@Override
 	public String getPropertyName() {
@@ -1103,14 +1103,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	private void process06_straightLinesRefineCorders(final IProgressBar pProgress, final double pMaxiLineTolerance) {
 		System.out.println("process06_straightLinesRefineCorders");
 
-		final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders", mPixelChains) {
-			@Override
-			public void process(final PixelChain pPixelChain) {
-				pPixelChain.approximate01_straightLines(pMaxiLineTolerance);
-				pPixelChain.approximate02_refineCorners();
-			}
-		};
-		job.runImmediate();
+		// final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
+		// mPixelChains) {
+		// @Override
+		// public void process(final PixelChain pPixelChain) {
+		// pPixelChain.approximate01_straightLines(pMaxiLineTolerance);
+		// pPixelChain.approximate02_refineCorners();
+		// }
+		// };
+		// job.runImmediate();
 
 		indexSegments();
 	}
@@ -1138,13 +1139,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	}
 
 	public void process08_refine() {
-		final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
-			@Override
-			public void process(final PixelChain pPixelChain) {
-				pPixelChain.approximate();
-			}
-		};
-		job.runImmediate();
+		// final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
+		// @Override
+		// public void process(final PixelChain pPixelChain) {
+		// pPixelChain.approximate();
+		// }
+		// };
+		// job.runImmediate();
 	}
 
 	@Override
@@ -1153,7 +1154,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 	}
 
-	@Override
+	// @Override
 	public void read(final Properties pProperites, final String pId) {
 		// note that write/read does not preseve the mAllNodes values
 		mLogger.entering(mClassname, "read");
@@ -1378,7 +1379,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 	}
 
-	@Override
+	// @Override
 	public void write(final Properties pProperites, final String pId) throws Exception {
 		// note that write/read does not preserve the mAllNodes values
 		mLogger.entering(mClassname, "write");

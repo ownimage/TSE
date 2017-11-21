@@ -11,12 +11,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
 
 public class AccordionView extends ViewBase<IContainerList> implements ISingleSelectView {
 
-	private final Pane mUI = new Pane();
+	private final BorderPane mUI = new BorderPane();
+	private final ScrollPane mScroller = new ScrollPane();
 	private Accordion mAccordion;
 	private boolean mIsMutating = false;
 
@@ -32,7 +35,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	}
 
 	private void createView() {
-		mUI.getChildren().remove(mAccordion);
+		// mUI.getChildren().remove(mScroller);
 		mAccordion = new Accordion();
 		mPanes = new Vector<TitledPane>();
 
@@ -57,7 +60,9 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 			}
 		});
 
-		mUI.getChildren().add(mAccordion);
+		mScroller.setContent(mAccordion);
+		mScroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		mUI.setCenter(mScroller);
 	}
 
 	private int getIndex(final TitledPane pTitlePane) {
@@ -79,14 +84,10 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 		try {
 			mIsMutating = true;
 
-			if (pInt < -1) {
-				throw new IllegalArgumentException("pInt = " + pInt + ".  pInt must be >= -1.");
-			}
+			if (pInt < -1) { throw new IllegalArgumentException("pInt = " + pInt + ".  pInt must be >= -1."); }
 
 			int numberOfPanes = mPanes.size();
-			if (pInt >= numberOfPanes) {
-				throw new IllegalArgumentException("pInt = " + pInt + ".   mPanes.size() = " + numberOfPanes + " pInt must be < mPanes.size().");
-			}
+			if (pInt >= numberOfPanes) { throw new IllegalArgumentException("pInt = " + pInt + ".   mPanes.size() = " + numberOfPanes + " pInt must be < mPanes.size()."); }
 
 			if (pInt >= 0) {
 				TitledPane selected = mPanes.get(pInt);

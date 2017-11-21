@@ -142,6 +142,10 @@ public class Point implements Serializable {
 		return super.equals(pObj);
 	}
 
+	public Point getMidpoint(final Point pOther) {
+		return new Point((mX + pOther.mX) / 2.0d, (mY + pOther.mY) / 2.0d);
+	}
+
 	/**
 	 * Gets the x.
 	 * 
@@ -182,6 +186,15 @@ public class Point implements Serializable {
 		return Math.sqrt(length2());
 	}
 
+	// /**
+	// * Return the point 1 unit to the left of this with the same y value as this point.
+	// *
+	// * @return the point
+	// */
+	// public Point left1() {
+	// return this.minus(Point10);
+	// }
+
 	/**
 	 * Length squared.
 	 * 
@@ -191,13 +204,119 @@ public class Point implements Serializable {
 		return getX() * getX() + getY() * getY();
 	}
 
+	/**
+	 * Creates a Point that is (0,0) minus the original point..
+	 *
+	 * @return the point
+	 */
+	public Vector minus() {
+		return new Vector(-mX, -mY);
+	}
+
+	// public Point add(PointControl pIn) {
+	// return add(pIn.getPoint());
+	// }
+	//
+	/**
+	 * Subtracts pIn from this and returns a new point. Point is immutable.
+	 *
+	 * @param pIn
+	 *            the in
+	 * @return the vector
+	 */
+	public Vector minus(final Point pIn) {
+		return new Vector(getX() - pIn.getX(), getY() - pIn.getY());
+	}
+
+	//
 	// /**
-	// * Return the point 1 unit to the left of this with the same y value as this point.
+	// * Length taxi cab.
+	// *
+	// * @return the double
+	// */
+	// public double lengthTaxiCab() {
+	// return Math.abs(getX()) + Math.abs(getY());
+	// }
+	//
+	/**
+	 * Multiply this point by a scale factor and return a new point. Point is immutable..
+	 *
+	 * @param pScale
+	 *            the scale
+	 * @return the point
+	 */
+	public Point multiply(final double pScale) {
+		return new Point(getX() * pScale, getY() * pScale);
+	}
+
+	// /**
+	// * Return the point 1 unit to the right of this with the same y value as this point.
 	// *
 	// * @return the point
 	// */
-	// public Point left1() {
-	// return this.minus(Point10);
+	// public Point right1() {
+	// return this.add(Point10);
+	// }
+	//
+	// /**
+	// * Flip horizontal.
+	// *
+	// * @return the point
+	// */
+	// public Point flipHorizontal() {
+	// return new Point(1.0d - getX(), getY());
+	// }
+	//
+	// /**
+	// * Flip horizontal.
+	// *
+	// * @param pFlip
+	// * the flip
+	// * @return the point
+	// */
+	// public Point flipHorizontal(boolean pFlip) {
+	// if (pFlip)
+	// return flipHorizontal();
+	// else
+	// return this; // safe as Point is immutable
+	// }
+	//
+
+	/**
+	 * Return the point on the right edge of the unit square with the same y value as this point.
+	 *
+	 * @return the point
+	 */
+	public Point right() {
+		return new Point(1.0d, getY());
+	}
+
+	//
+	// /**
+	// * Mod1inc.
+	// *
+	// * @return the point
+	// */
+	// public Point mod1inc() {
+	// return new Point(KMath.mod1inc(getX()), KMath.mod1inc(getY()));
+	// }
+	//
+	/**
+	 * Rotate.
+	 *
+	 * @param pAngle
+	 *            the angle
+	 * @return the point
+	 */
+	public Point rotate(final double pAngle) {
+		double x = getX() * Math.cos(pAngle) - getY() * Math.sin(pAngle);
+		double y = getY() * Math.cos(pAngle) + getX() * Math.sin(pAngle);
+		return new Point(x, y);
+	}
+
+	//
+	// public Vector minus(PointControl pIn) {
+	// return minus(pIn.getPoint());
 	// }
 
 	//
@@ -294,131 +413,12 @@ public class Point implements Serializable {
 	// return Point00;
 	// }
 	//
-	// public Point scaleX(double pScale) {
-	// return new Point(mX * pScale, mY);
-	// }
-	//
-	// public Point scaleY(double pScale) {
-	// return new Point(mX, mY * pScale);
-	// }
-	//
-	// public Point getMidpoint(Point pOther) {
-	// return new Point((mX + pOther.mX) / 2.0d, (mY + pOther.mY) / 2.0d);
-	// }
-	//
-	/**
-	 * Creates a Point that is (0,0) minus the original point..
-	 *
-	 * @return the point
-	 */
-	public Vector minus() {
-		return new Vector(-mX, -mY);
+	public Point scaleX(final double pScale) {
+		return new Point(mX * pScale, mY);
 	}
 
-	// /**
-	// * Return the point 1 unit to the right of this with the same y value as this point.
-	// *
-	// * @return the point
-	// */
-	// public Point right1() {
-	// return this.add(Point10);
-	// }
-	//
-	// /**
-	// * Flip horizontal.
-	// *
-	// * @return the point
-	// */
-	// public Point flipHorizontal() {
-	// return new Point(1.0d - getX(), getY());
-	// }
-	//
-	// /**
-	// * Flip horizontal.
-	// *
-	// * @param pFlip
-	// * the flip
-	// * @return the point
-	// */
-	// public Point flipHorizontal(boolean pFlip) {
-	// if (pFlip)
-	// return flipHorizontal();
-	// else
-	// return this; // safe as Point is immutable
-	// }
-	//
-
-	// public Point add(PointControl pIn) {
-	// return add(pIn.getPoint());
-	// }
-	//
-	/**
-	 * Subtracts pIn from this and returns a new point. Point is immutable.
-	 *
-	 * @param pIn
-	 *            the in
-	 * @return the vector
-	 */
-	public Vector minus(final Point pIn) {
-		return new Vector(getX() - pIn.getX(), getY() - pIn.getY());
-	}
-
-	//
-	// /**
-	// * Length taxi cab.
-	// *
-	// * @return the double
-	// */
-	// public double lengthTaxiCab() {
-	// return Math.abs(getX()) + Math.abs(getY());
-	// }
-	//
-	/**
-	 * Multiply this point by a scale factor and return a new point. Point is immutable..
-	 *
-	 * @param pScale
-	 *            the scale
-	 * @return the point
-	 */
-	public Point multiply(final double pScale) {
-		return new Point(getX() * pScale, getY() * pScale);
-	}
-
-	//
-	// public Vector minus(PointControl pIn) {
-	// return minus(pIn.getPoint());
-	// }
-
-	/**
-	 * Return the point on the right edge of the unit square with the same y value as this point.
-	 *
-	 * @return the point
-	 */
-	public Point right() {
-		return new Point(1.0d, getY());
-	}
-
-	//
-	// /**
-	// * Mod1inc.
-	// *
-	// * @return the point
-	// */
-	// public Point mod1inc() {
-	// return new Point(KMath.mod1inc(getX()), KMath.mod1inc(getY()));
-	// }
-	//
-	/**
-	 * Rotate.
-	 *
-	 * @param pAngle
-	 *            the angle
-	 * @return the point
-	 */
-	public Point rotate(final double pAngle) {
-		double x = getX() * Math.cos(pAngle) - getY() * Math.sin(pAngle);
-		double y = getY() * Math.cos(pAngle) + getX() * Math.sin(pAngle);
-		return new Point(x, y);
+	public Point scaleY(final double pScale) {
+		return new Point(mX, mY * pScale);
 	}
 
 	// /*

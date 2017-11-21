@@ -191,6 +191,11 @@ public class CannyEdgeTransform extends BaseTransform {
 		getPerception().showDialog(mGenerateEdgesDialog, new DialogOptions(), mGenerateEdgesDialog.getUndoRedoBuffer(), cancel, ok);
 	}
 
+	@Override
+	public String getDisplayName() {
+		return "Canny Edge";
+	}
+
 	//
 	// private Color getBackgroundColor(final Point pIn) {
 	//
@@ -258,9 +263,10 @@ public class CannyEdgeTransform extends BaseTransform {
 	// }
 	//
 	// @Override
-	// public int getLongLineLength() {
-	// return mLongLineLength.getValue();
-	// }
+	public int getLongLineLength() {
+		return mLongLineLength.getValue();
+	}
+
 	//
 	// @Override
 	// public double getLongLineThickness() {
@@ -268,9 +274,15 @@ public class CannyEdgeTransform extends BaseTransform {
 	// }
 	//
 	// @Override
-	// public int getMediumLineLength() {
-	// return mMediumLineLength.getInt();
-	// }
+	public int getMediumLineLength() {
+		return mMediumLineLength.getValue();
+	}
+
+	@Override
+	public String getPropertyName() {
+		return "cannyEdge";
+	}
+
 	//
 	// @Override
 	// public double getMediumLineThickness() {
@@ -314,10 +326,9 @@ public class CannyEdgeTransform extends BaseTransform {
 	// return mShadowYOffset.getDouble();
 	// }
 	//
-	// @Override
-	// public int getShortLineLength() {
-	// return mShortLineLength.getInt();
-	// }
+	public int getShortLineLength() {
+		return mShortLineLength.getValue();
+	}
 	//
 	// @Override
 	// public double getShortLineThickness() {
@@ -456,16 +467,6 @@ public class CannyEdgeTransform extends BaseTransform {
 	// mPixelMap.write(pProperites, pId);
 	// }
 	// }
-
-	@Override
-	public String getDisplayName() {
-		return "Canny Edge";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "cannyEdge";
-	}
 
 	@Override
 	public void grafitti(final GrafittiHelper pGrafittiHelper) {
