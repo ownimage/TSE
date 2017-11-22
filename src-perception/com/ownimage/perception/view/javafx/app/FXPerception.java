@@ -17,7 +17,7 @@ public class FXPerception extends AppControlView {
 
 		FXViewFactory.setAsViewFactory();
 
-		Perception app = new Perception();
+		Perception app = Perception.getPerception();
 		setAppControl(app);
 		launch(pArgs);
 

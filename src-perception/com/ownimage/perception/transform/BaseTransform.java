@@ -124,6 +124,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 		return t;
 	}
 
+	public ColorProperty getColorOOBProperty() {
+		return getProperties().getColorOOBProperty();
+	}
+
 	protected Container getContainer() {
 		return mContainer;
 	}
@@ -168,7 +172,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 		return getProperties().getColorOOB();
 	}
 
-	protected Perception getPerception() {
+	public Perception getPerception() {
 		return mPerception;
 	}
 
@@ -214,6 +218,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	public boolean isControlSelected(final IControl pControl) {
 		ControlSelector cs = getControlSelector();
 		return cs != null && cs.isControlSelected(pControl);
+	}
+
+	public boolean isInitialized() {
+		return getPreviousTransform() != null;
 	}
 
 	public boolean isMouseDragInProgress() {

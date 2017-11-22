@@ -1293,7 +1293,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 	public void setValue(final int pX, final int pY, final byte pValue) {
 		// all the parameter bounds checking is dong in the saveValueNoUndo.
-		System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
+		// System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
 
 		if (mPixelUndoRedoAction != null) {
 			final byte before = getValue(pX, pY);

@@ -40,12 +40,14 @@ public class Perception extends AppControlBase {
 	private static final String PACKAGE_PREFIX = "com.ownimage";
 	private static final String mLoggingPropertiesFilename = new File("logging.properties").getAbsolutePath();
 
+	private static Perception mPerception;
 	private Properties mProperties;
 	private final UndoRedoBuffer mUndoRedoBuffer;
-	private final RenderService mRenderService;
 
+	private final RenderService mRenderService;
 	private TransformSequence mTransformSequence;
 	private final Container mContainer;
+
 	private final FileControl mFileControl;
 
 	private final PictureControl mPreviewControl;
@@ -55,7 +57,7 @@ public class Perception extends AppControlBase {
 	/** The absolute filename. i.e. full path. */
 	private String mFilename;
 
-	public Perception() {
+	private Perception() {
 		super("Perception");
 		Framework.logEntry(mLogger);
 
@@ -74,6 +76,13 @@ public class Perception extends AppControlBase {
 		mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
 
 		Framework.logEntry(mLogger);
+	}
+
+	public static synchronized Perception getPerception() {
+		if (mPerception == null) {
+			mPerception = new Perception();
+		}
+		return mPerception;
 	}
 
 	@Override
@@ -338,6 +347,7 @@ public class Perception extends AppControlBase {
 		return 800;
 	}
 
+	@Override
 	public Properties getProperties() {
 		return mProperties;
 	}

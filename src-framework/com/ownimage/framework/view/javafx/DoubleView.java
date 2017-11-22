@@ -1,5 +1,6 @@
 package com.ownimage.framework.view.javafx;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.DoubleControl;
@@ -96,7 +97,7 @@ public class DoubleView extends ViewBase<DoubleControl> {
 	}
 
 	private void setControlValueFromSlider() {
-		System.out.println("setControlValueFromSlider");
+		mLogger.log(Level.FINEST, "setControlValueFromSlider");
 		try {
 			if (mAllowUpdates) {
 				mAllowUpdates = false;

@@ -8,15 +8,13 @@ import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.ownimage.perception.Perception;
-import com.ownimage.perception.Properties;
+import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.util.Version;
+import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.util.IPictureReadOnly;
-import com.ownimage.perception.util.ProgressMonitor;
-import com.ownimage.perception.util.StopWatch;
-import com.ownimage.perception.util.Version;
-import com.ownimage.perception.util.logging.PerceptionLogger;
 
 /** note that this has been changed to work with com.ownimage.perception
  * Keith Hart, ownimage, 2013
@@ -34,8 +32,8 @@ import com.ownimage.perception.util.logging.PerceptionLogger;
  * </p>
  * 
  * <p>
- * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of shortcomings, but remains an effective tool in many scenarios.
- * <em>This class is designed
+ * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of
+ * shortcomings, but remains an effective tool in many scenarios. <em>This class is designed
  * for single threaded use only.</em>
  * </p>
  * 
@@ -84,7 +82,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	private int picsize;
 	private int[][] mData;
 	private int[][] mMagnitude;
-	private IPictureReadOnly sourceImage;
+	private PictureType sourceImage;
 	private PixelMap edgeData;
 
 	private float gaussianKernelRadius;
@@ -99,7 +97,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	private float[][] mYGradient;
 
 	private final CannyEdgeTransform mTransform;
-	private final ProgressMonitor mProgressMonitor;
+	// private final ProgressMonitor mProgressMonitor;
 	private boolean mShowProgress;
 	private boolean mKeepRunning;
 
@@ -111,15 +109,15 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	CannyEdgeDetectorJavaThreads(final CannyEdgeTransform pTransform) {
 		mTransform = pTransform;
-		mProgressMonitor = new ProgressMonitor(pTransform);
-		mProgressMonitor //
-				.addInterval("initArrays", 0) //
-				.addInterval("readLuminance", 4) //
-				.addInterval("normalizeContrast", 10) //
-				.addInterval("computeGradients", 96) //
-				.addInterval("performHysteresis", 97) //
-				.addInterval("thresholdEdges", 98) //
-				.addInterval("writeEdges", 100);
+		// mProgressMonitor = new ProgressMonitor(pTransform);
+		// mProgressMonitor //
+		// .addInterval("initArrays", 0) //
+		// .addInterval("readLuminance", 4) //
+		// .addInterval("normalizeContrast", 10) //
+		// .addInterval("computeGradients", 96) //
+		// .addInterval("performHysteresis", 97) //
+		// .addInterval("thresholdEdges", 98) //
+		// .addInterval("writeEdges", 100);
 
 		lowThreshold = 2.5f;
 		highThreshold = 7.5f;
@@ -206,7 +204,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 		maxX = width - 1;// kwidth;
 		initY = kwidth;
 		maxY = height - kwidth;
-		final Properties properties = Perception.getInstance().getProperties();
+		final Properties properties = Perception.getPerception().getProperties();
 
 		class NonMaximalSupressionThread extends Thread {
 			private final int mInitX;
@@ -230,24 +228,25 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 			}
 		}
 
-		if (properties.useThreads()) {
-			final Thread threads[] = new Thread[properties.getNumberOfThreads()];
+		if (properties.useJTP()) {
+			int threadCount = properties.getRenderThreadPoolSize(); // TODO looks like this could be better
+			final Thread threads[] = new Thread[threadCount];
 
-			for (int i = 0; i < properties.getNumberOfThreads(); i++) {
+			for (int i = 0; i < threadCount; i++) {
 				NonMaximalSupressionThread runnable;
-				runnable = new NonMaximalSupressionThread(initX + i, maxX, initY, maxY, properties.getNumberOfThreads());
+				runnable = new NonMaximalSupressionThread(initX + i, maxX, initY, maxY, threadCount);
 				runnable.setName("CannyEdgeDetectorJavaThreads NMS Thread: " + i);
 				runnable.start();
 				threads[i] = runnable;
 			}
 
-			for (int i = 0; i < properties.getNumberOfThreads(); i++) {
+			for (int i = 0; i < threadCount; i++) {
 				try {
 					threads[i].join();
 				} catch (final InterruptedException pEx) {
 					mLogger.warning("Interruped");
 					if (mLogger.isLoggable(Level.FINE)) {
-						mLogger.fine(PerceptionLogger.throwableToString(pEx));
+						mLogger.fine(FrameworkLogger.throwableToString(pEx));
 					}
 				}
 			}
@@ -288,8 +287,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque mData of type BufferedImage.TYPE_INT_ARGB in which edge pixels are
-	 * white and all other pixels are black.
+	 * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque
+	 * mData of type BufferedImage.TYPE_INT_ARGB in which edge pixels are white and all other pixels are black.
 	 * 
 	 * @return an mData containing the detected edges, or null if the process method has not yet been called.
 	 */
@@ -300,7 +299,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * The radius of the Gaussian convolution kernel used to smooth the source mData prior to gradient calculation. The default value is 16.
+	 * The radius of the Gaussian convolution kernel used to smooth the source mData prior to gradient calculation. The default
+	 * value is 16.
 	 * 
 	 * @return the Gaussian kernel radius in pixels
 	 */
@@ -359,7 +359,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	 */
 
 	@Override
-	public IPictureReadOnly getSourceImage() {
+	public PictureType getSourceImage() {
 		return sourceImage;
 	}
 
@@ -418,7 +418,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * Whether the luminance data extracted from the source mData is normalized by linearizing its histogram prior to edge extraction. The default value is false.
+	 * Whether the luminance data extracted from the source mData is normalized by linearizing its histogram prior to edge
+	 * extraction. The default value is false.
 	 * 
 	 * @return whether the contrast is normalized
 	 */
@@ -452,28 +453,34 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 				final float nwMag = hypot(getXGradient(x - 1, y - 1), getYGradient(x - 1, y - 1));
 				float tmp;
 				/*
-				 * An explanation of what's happening here, for those who want to understand the source: This performs the "non-maximal supression" phase of the Canny edge detection in which we need
-				 * to compare the gradient magnitude to that in the direction of the gradient; only if the value is a local maximum do we consider the point as an edge candidate.
+				 * An explanation of what's happening here, for those who want to understand the source: This performs the
+				 * "non-maximal supression" phase of the Canny edge detection in which we need to compare the gradient magnitude to
+				 * that in the direction of the gradient; only if the value is a local maximum do we consider the point as an edge
+				 * candidate.
 				 * 
-				 * We need to break the comparison into a number of different cases depending on the gradient direction so that the appropriate values can be used. To avoid computing the gradient
-				 * direction, we use two simple comparisons: first we check that the partial derivatives have the same sign (1) and then we check which is larger (2). As a consequence, we have reduced
-				 * the problem to one of four identical cases that each test the central gradient magnitude against the values at two points with 'identical support'; what this means is that the
-				 * geometry required to accurately interpolate the magnitude of gradient function at those points has an identical geometry (upto right-angled-rotation/reflection).
+				 * We need to break the comparison into a number of different cases depending on the gradient direction so that the
+				 * appropriate values can be used. To avoid computing the gradient direction, we use two simple comparisons: first
+				 * we check that the partial derivatives have the same sign (1) and then we check which is larger (2). As a
+				 * consequence, we have reduced the problem to one of four identical cases that each test the central gradient
+				 * magnitude against the values at two points with 'identical support'; what this means is that the geometry
+				 * required to accurately interpolate the magnitude of gradient function at those points has an identical geometry
+				 * (upto right-angled-rotation/reflection).
 				 * 
-				 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by multiplying both sides of each inequality by the greater of the two partial
-				 * derivatives. The common comparand is stored in a temporary variable (3) and reused in the mirror case (4).
+				 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by
+				 * multiplying both sides of each inequality by the greater of the two partial derivatives. The common comparand is
+				 * stored in a temporary variable (3) and reused in the mirror case (4).
 				 */
 				if (xGrad * yGrad <= 0 /* (1) */
-				? Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
-				? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /* (3) */
-						&& tmp > Math.abs(yGrad * swMag - (xGrad + yGrad) * wMag) /* (4) */
-				: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * neMag - (yGrad + xGrad) * nMag) /* (3) */
-						&& tmp > Math.abs(xGrad * swMag - (yGrad + xGrad) * sMag) /* (4) */
-				: Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
-				? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * seMag + (xGrad - yGrad) * eMag) /* (3) */
-						&& tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /* (4) */
-				: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /* (3) */
-						&& tmp > Math.abs(xGrad * nwMag + (yGrad - xGrad) * nMag) /* (4) */
+						? Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
+								? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /* (3) */
+										&& tmp > Math.abs(yGrad * swMag - (xGrad + yGrad) * wMag) /* (4) */
+								: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * neMag - (yGrad + xGrad) * nMag) /* (3) */
+										&& tmp > Math.abs(xGrad * swMag - (yGrad + xGrad) * sMag) /* (4) */
+						: Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
+								? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * seMag + (xGrad - yGrad) * eMag) /* (3) */
+										&& tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /* (4) */
+								: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /* (3) */
+										&& tmp > Math.abs(xGrad * nwMag + (yGrad - xGrad) * nMag) /* (4) */
 				) {
 					setMagnitude(x, y, gradMag >= MAGNITUDE_LIMIT ? MAGNITUDE_MAX : (int) (MAGNITUDE_SCALE * gradMag));
 					// NOTE: The orientation of the edge is not employed by this
@@ -540,69 +547,67 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	@Override
 	public void process(final boolean pShowProgress) {
-		final StopWatch stopWatch = new StopWatch(mLogger);
+		// final StopWatch stopWatch = new StopWatch(mLogger);
 		setShowProgress(pShowProgress);
 		setKeepRunning(true);
 
 		try {
-			if (pShowProgress) {
-				mTransform.showProgressBar();
-			}
+			// if (pShowProgress) {
+			// mTransform.showProgressBar();
+			// }
 
 			width = sourceImage.getWidth();
 			height = sourceImage.getHeight();
 			picsize = width * height;
 			initArrays();
-			stopWatch.logLapTime(Level.INFO, "initArrays");
+			// stopWatch.logLapTime(Level.INFO, "initArrays");
 
 			if (getKeepRunning()) {
 				readLuminance();
 			}
-			stopWatch.logLapTime(Level.INFO, "readLuminance");
+			// stopWatch.logLapTime(Level.INFO, "readLuminance");
 
 			if (getKeepRunning()) {
 				if (contrastNormalized) {
 					normalizeContrast();
 				}
 			}
-			stopWatch.logLapTime(Level.INFO, "normalizeContrast");
+			// stopWatch.logLapTime(Level.INFO, "normalizeContrast");
 
 			if (getKeepRunning()) {
 				computeGradients(gaussianKernelRadius, gaussianKernelWidth);
 			}
-			stopWatch.logLapTime(Level.INFO, "computeGradients");
+			// stopWatch.logLapTime(Level.INFO, "computeGradients");
 
 			if (getKeepRunning()) {
 				final int low = Math.round(lowThreshold * MAGNITUDE_SCALE);
 				final int high = Math.round(highThreshold * MAGNITUDE_SCALE);
 				performHysteresis(low, high);
 			}
-			stopWatch.logLapTime(Level.INFO, "performHysteresis");
+			// stopWatch.logLapTime(Level.INFO, "performHysteresis");
 
 			if (getKeepRunning()) {
 				thresholdEdges();
 			}
-			stopWatch.logLapTime(Level.INFO, "thresholdEdges");
+			// stopWatch.logLapTime(Level.INFO, "thresholdEdges");
 
 			if (getKeepRunning()) {
 				writeEdges(mData);
 			}
-			stopWatch.logLapTime(Level.INFO, "writeEdges");
-			stopWatch.logElapsedTime(Level.INFO, "Process");
+			// stopWatch.logLapTime(Level.INFO, "writeEdges");
+			// stopWatch.logElapsedTime(Level.INFO, "Process");
 
-			mProgressMonitor.log();
+			// mProgressMonitor.log();
 		} finally {
-			if (pShowProgress) {
-				mTransform.hideProgressBar();
-			}
+			// if (pShowProgress) {
+			// mTransform.hideProgressBar();
+			// }
 		}
 	}
 
 	private void readLuminance() {
 		for (int x = 0; x < width; x++) {
-			if (!showProgressBar("readLuminance", (float) x / width)) {
-				return;
-			}
+			if (!showProgressBar("readLuminance", (float) x / width)) { return; }
 			for (int y = 0; y < height; y++) {
 
 				final Color c = sourceImage.getColor(x, y);
@@ -673,8 +678,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * Sets the edges mData. Calling this method will not change the operation of the edge detector in any way. It is intended to provide a means by which the memory referenced by the detector object
-	 * may be reduced.
+	 * Sets the edges mData. Calling this method will not change the operation of the edge detector in any way. It is intended to
+	 * provide a means by which the memory referenced by the detector object may be reduced.
 	 * 
 	 * @param edgeData
 	 *            expected (though not required) to be null
@@ -693,15 +698,13 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	@Override
 	public void setGaussianKernelRadius(final float gaussianKernelRadius) {
-		if (gaussianKernelRadius < 0.1f) {
-			throw new IllegalArgumentException();
-		}
+		if (gaussianKernelRadius < 0.1f) { throw new IllegalArgumentException(); }
 		this.gaussianKernelRadius = gaussianKernelRadius;
 	}
 
 	/**
-	 * The number of pixels across which the Gaussian kernel is applied. This implementation will reduce the radius if the contribution of pixel values is deemed negligable, so this is actually a
-	 * maximum radius.
+	 * The number of pixels across which the Gaussian kernel is applied. This implementation will reduce the radius if the
+	 * contribution of pixel values is deemed negligable, so this is actually a maximum radius.
 	 * 
 	 * @param gaussianKernelWidth
 	 *            a radius for the convolution operation in pixels, at least 2.
@@ -709,15 +712,13 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	@Override
 	public void setGaussianKernelWidth(final int gaussianKernelWidth) {
-		if (gaussianKernelWidth < 2) {
-			throw new IllegalArgumentException();
-		}
+		if (gaussianKernelWidth < 2) { throw new IllegalArgumentException(); }
 		this.gaussianKernelWidth = gaussianKernelWidth;
 	}
 
 	/**
-	 * Sets the high threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each application. It is nonsensical (though not prohibited) for this value to be
-	 * less than the low threshold value.
+	 * Sets the high threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
+	 * application. It is nonsensical (though not prohibited) for this value to be less than the low threshold value.
 	 * 
 	 * @param threshold
 	 *            a high hysteresis threshold
@@ -725,9 +726,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	@Override
 	public void setHighThreshold(final float threshold) {
-		if (threshold < 0) {
-			throw new IllegalArgumentException();
-		}
+		if (threshold < 0) { throw new IllegalArgumentException(); }
 		highThreshold = threshold;
 	}
 
@@ -737,8 +736,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * Sets the low threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each application. It is nonsensical (though not prohibited) for this value to
-	 * exceed the high threshold value.
+	 * Sets the low threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
+	 * application. It is nonsensical (though not prohibited) for this value to exceed the high threshold value.
 	 * 
 	 * @param threshold
 	 *            a low hysteresis threshold
@@ -746,9 +745,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 	@Override
 	public void setLowThreshold(final float threshold) {
-		if (threshold < 0) {
-			throw new IllegalArgumentException();
-		}
+		if (threshold < 0) { throw new IllegalArgumentException(); }
 		lowThreshold = threshold;
 	}
 
@@ -761,14 +758,15 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	/**
-	 * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before the process method is called.
+	 * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before
+	 * the process method is called.
 	 * 
 	 * @param mData
 	 *            a source of luminance data
 	 */
 
 	@Override
-	public void setSourceImage(final IPictureReadOnly image) {
+	public void setSourceImage(final PictureType image) {
 		sourceImage = image;
 	}
 
@@ -802,9 +800,9 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	 * @return true, if ok to continue, false means stop processing thread ASAP
 	 */
 	private boolean showProgressBar(final String pSection, final float pFraction) {
-		if (showProgress() && mProgressMonitor != null) {
-			mProgressMonitor.setProgressBar(pSection, pFraction);
-		}
+		// if (showProgress() && mProgressMonitor != null) {
+		// mProgressMonitor.setProgressBar(pSection, pFraction);
+		// }
 		return mKeepRunning;
 	}
 
@@ -823,9 +821,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 		edgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
 
 		for (int x = 0; x < width; x++) {
-			if (!showProgressBar("writeEdges", (float) x / width)) {
-				return;
-			}
+			if (!showProgressBar("writeEdges", (float) x / width)) { return; }
 			for (int y = 0; y < height; y++) {
 
 				final boolean col = pixels[x][y] == -1;

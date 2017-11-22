@@ -56,6 +56,14 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
 
 	}
 
+	public int getHeight() {
+		return getValue().getHeight();
+	}
+
+	public int getWidth() {
+		return getValue().getWidth();
+	}
+
 	public void redrawGrafitti() {
 		mViews.invokeAll(view -> view.redrawGrafitti());
 		System.out.println("redraw grafitti");

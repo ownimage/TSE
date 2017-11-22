@@ -20,10 +20,11 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 
-public class CannyEdgeTransform extends BaseTransform {
+public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
 	public enum LineEndLengthType {
 		Percent, Pixels
@@ -196,6 +197,60 @@ public class CannyEdgeTransform extends BaseTransform {
 		return "Canny Edge";
 	}
 
+	@Override
+	public Color getLineColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getLineCurvePreference() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getLineEndLengthPercent() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getLineEndLengthPixel() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public LineEndLengthType getLineEndLengthType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LineEndShape getLineEndShape() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getLineEndThickness() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLineOpacity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLineTolerance() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	//
 	// private Color getBackgroundColor(final Point pIn) {
 	//
@@ -263,8 +318,15 @@ public class CannyEdgeTransform extends BaseTransform {
 	// }
 	//
 	// @Override
+	@Override
 	public int getLongLineLength() {
 		return mLongLineLength.getValue();
+	}
+
+	@Override
+	public double getLongLineThickness() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	//
@@ -274,13 +336,56 @@ public class CannyEdgeTransform extends BaseTransform {
 	// }
 	//
 	// @Override
+	@Override
 	public int getMediumLineLength() {
 		return mMediumLineLength.getValue();
 	}
 
 	@Override
+	public double getMediumLineThickness() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Color getPixelColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String getPropertyName() {
 		return "cannyEdge";
+	}
+
+	@Override
+	public Color getShadowColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getShadowOpacity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getShadowThickness() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getShadowXOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getShadowYOffset() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	//
@@ -326,6 +431,7 @@ public class CannyEdgeTransform extends BaseTransform {
 	// return mShadowYOffset.getDouble();
 	// }
 	//
+	@Override
 	public int getShortLineLength() {
 		return mShortLineLength.getValue();
 	}
@@ -467,6 +573,24 @@ public class CannyEdgeTransform extends BaseTransform {
 	// mPixelMap.write(pProperites, pId);
 	// }
 	// }
+
+	@Override
+	public double getShortLineThickness() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean getShowPixels() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean getShowShadow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 	@Override
 	public void grafitti(final GrafittiHelper pGrafittiHelper) {

@@ -6,15 +6,20 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.control.PointControl;
-import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
-import com.ownimage.framework.view.IView;
+import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.render.ITransformResult;
+import com.ownimage.perception.render.SingleTransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.ownimage.perception.transform.ITransform;
 
 /**
  * This is an Edge Transform Control Container Dialog
@@ -28,11 +33,10 @@ public class GenerateEdgesDialog extends Container {
 
 	private final CannyEdgeTransform mTransform;
 
-	private ICannyEdgeDetector mDetector;
-	private ICannyEdgeDetector mPreviewDetector;
 	private final PictureControl mPreviewPicture;
+	private final IntegerControl mPreviewSize;
 
-	private final PointControl mPreviewControl;
+	private final PointControl mPreviewPosition;
 	// private final EdgePointControl mPreviewPosition;
 
 	private final DoubleControl mGaussianKernelRadius;
@@ -44,30 +48,26 @@ public class GenerateEdgesDialog extends Container {
 	private final Container mPreviewContainer;
 	private final Container mControlContainer;
 
-	// private Thread mPreviewThread = new Thread() {
-	// @Override
-	// public void run() {
-	// updatePreviewControl();
-	// }
-	// };
+	private final Thread mPreviewThread = new Thread() {
+		@Override
+		public void run() {
+			updatePreview();
+		}
+	};
 
 	public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName, final String pPropertyName) {
 		super(pDisplayName, pPropertyName, pParent);
 
 		mTransform = pParent;
 
-		mPreviewContainer = new Container("Preview Container", "previewContainer", this);
-		PictureType picture = new PictureType(mTransform.getProperties().getColorOOBProperty(), 400, 400);
-		for (int x = 0; x < picture.getWidth(); x++)
-		{
-			for (int y = 0; y < picture.getHeight(); y++) {
-				picture.setColor(x, y, Color.pink);
-			}
-		}
-		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, picture);
+		mPreviewContainer = new Container("Preview Container", "previewContainer", this, this);
 
-		mControlContainer = new Container("ControlContainer", "controlContainer", this);
-		mPreviewControl = new PointControl("Preview", "preview", mControlContainer, new Point(100.0d, 100.0d));
+		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, updatePreview());
+		mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, 100, 100, 1000, 50);
+		mPreviewSize.addControlChangeListener(this);
+
+		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
+		mPreviewPosition = new PointControl("Preview", "preview", mControlContainer, new Point(100.0d, 100.0d));
 		// mPreviewPosition = addControl(new EdgePointControl(pParent, mPreviewControl, null, "GeneratePreview",
 		// "generatePreview"));
 		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius", mControlContainer, 0.2d, 0.1001d, 10.0d);
@@ -81,12 +81,6 @@ public class GenerateEdgesDialog extends Container {
 
 		// TODO I think we can remove this later
 		// mPreviewPosition.addControlEventListener(this);
-	}
-
-	@Override
-	public IView createView() {
-		HFlowLayout layout = new HFlowLayout(mPreviewContainer, mControlContainer);
-		return layout.createView();
 	}
 
 	// @Override
@@ -125,32 +119,44 @@ public class GenerateEdgesDialog extends Container {
 	// getTransform().run(new Execute());
 	// }
 	//
+	@Override
+	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+		mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " + pIsMutating);
+		// ICannyEdgeDetector mPreviewDetector = CannyEdgeDetectorFactory.createInstance(getTransform()); // TODO should I have a
+		// set
+		// of parameters rather than
+		// a CETransform
+
+		if (pControl == mPreviewSize) {
+			System.out.println("Preview Size changed to " + mPreviewSize.getValue());
+			mPreviewPicture.setValue(updatePreview());
+		} else if (pControl != mPreviewPicture) {
+			// getTransform().graffiti();
+			// if (mPreviewPicture.isVisible() && mPreviewDetector != null) {
+			// mPreviewDetector.setKeepRunning(false);
+			// try {
+			// if (mPreviewThread != null && mPreviewThread.isAlive()) {
+			// mPreviewThread.join();
+			// }
+			// } catch (final InterruptedException e) {
+			// // Do nothing
+			// }
+			//
+			// mPreviewThread = new Thread() {
+			// @Override
+			// public void run() {
+			// updatePreview();
+			// }
+			// };
+			// mPreviewThread.start();
+			// }
+		}
+	}
+
 	// @Override
-	// public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-	// mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent " + pControl == null ? "null" :
-	// pControl.getDisplayName() + " " + pIsMutating);
-	//
-	// if (pControl != mPreviewControl.getPictureControl()) {
-	// getTransform().graffiti();
-	// if (isVisible() && mPreviewDetector != null) {
-	// mPreviewDetector.setKeepRunning(false);
-	// try {
-	// if (mPreviewThread != null && mPreviewThread.isAlive()) {
-	// mPreviewThread.join();
-	// }
-	// } catch (final InterruptedException e) {
-	// // Do nothing
-	// }
-	//
-	// mPreviewThread = new Thread() {
-	// @Override
-	// public void run() {
-	// updatePreviewControl();
-	// }
-	// };
-	// mPreviewThread.start();
-	// }
-	// }
+	// public IView createView() {
+	// HFlowLayout layout = new HFlowLayout(mPreviewContainer, mControlContainer);
+	// return layout.createView();
 	// }
 	//
 	// public void generateEdgeImage() {
@@ -176,34 +182,43 @@ public class GenerateEdgesDialog extends Container {
 	// }
 	// }
 	//
-	// private void generatePreviewPictureFromData(final PixelMap pEdgeData) {
-	// final int size = mPreviewControl.getSize();
-	//
-	// if (mPreviewPicture == null || mPreviewPicture.getWidth() != size || mPreviewPicture.getWidth() != size) {
-	// mPreviewPicture = new Picture(size, size);
-	// }
-	//
-	// final Color foreground = getProperties().getEdgePreviewFgColor();
-	// final Color background = getProperties().getEdgePreviewBgColor();
-	// for (int x = 0; x < size; x++) {
-	// for (int y = 0; y < size; y++) {
-	// if (pEdgeData.getPixelAt(x, y).isEdge()) {
-	// mPreviewPicture.setColor(x, y, foreground);
-	// } else {
-	// mPreviewPicture.setColor(x, y, background);
-	// }
-	// }
-	// }
-	// }
-	//
-	// private Properties getProperties() {
-	// return getTransform().getProperties();
-	// }
-	//
-	// @Override
-	// public CannyEdgeTransform getTransform() {
-	// return (CannyEdgeTransform) super.getTransform();
-	// }
+	private void generatePreviewPictureFromData(final PixelMap pEdgeData) {
+		System.out.println("generatePreviewPictureFromData");
+		final int size = mPreviewSize.getValue();
+
+		PictureType preview;
+		if (mPreviewPicture == null || mPreviewPicture.getWidth() != size || mPreviewPicture.getWidth() != size) {
+			preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
+		} else {
+			preview = mPreviewPicture.getValue().createCompatible();
+		}
+
+		final Color foreground = getProperties().getColor1();
+		final Color background = getProperties().getColor2();
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				if (pEdgeData.getPixelAt(x, y).isEdge()) {
+					preview.setColor(x, y, foreground);
+				} else {
+					preview.setColor(x, y, background);
+				}
+			}
+		}
+		mPreviewPicture.setValue(preview);
+	}
+
+	private Properties getProperties() {
+		return Perception.getPerception().getProperties();
+	}
+
+	private int getSize() {
+		return (mPreviewSize != null) ? mPreviewSize.getValue() : 100;
+	}
+
+	public CannyEdgeTransform getTransform() {
+		return mTransform;
+	}
+
 	//
 	// public void graffitiTransform(final GraphicsHelper pGraphics) {
 	// mPreviewPosition.graffiti(pGraphics);
@@ -220,42 +235,65 @@ public class GenerateEdgesDialog extends Container {
 	// }
 	// }
 	//
-	// public void updatePreviewControl() {
-	// mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::updatePreviewControl");
-	//
-	// try {
-	// final int size = mPreviewControl.getSize();
-	// final int xoff = (int) (getTransform().getWidth() * mPreviewPosition.getX());
-	// final int yoff = (int) (getTransform().getHeight() * mPreviewPosition.getY());
-	// mPreviewPicture = new Picture(size, size);
-	// for (int x = 0; x < size; x++) {
-	// // TODO isnt there a different Picture constructor
-	// for (int y = 0; y < size; y++) {
-	// if (x + xoff < getTransform().getWidth() && y + yoff < getTransform().getHeight()) {
-	// mPreviewPicture.setColor(x, y, getTransform().getColorFromPreviousTransform(x + xoff, y + yoff));
-	// }
-	// }
-	// }
-	//
-	// mPreviewDetector = CannyEdgeDetectorFactory.createInstance(getTransform());
-	// mPreviewDetector.setGaussianKernelRadius((float) mGaussianKernelRadius.getDouble());
-	// mPreviewDetector.setLowThreshold((float) (mLowThreshold.getDouble() / 100.0d));
-	// mPreviewDetector.setHighThreshold((float) (mHighThreshold.getDouble() / 100.0d));
-	// mPreviewDetector.setGaussianKernelWidth(mGaussianKernelWidth.getInt());
-	// mPreviewDetector.setContrastNormalized(mContrastNormalized.getBoolean());
-	//
-	// mPreviewDetector.setSourceImage(mPreviewPicture);
-	// mPreviewDetector.process(false);
-	//
-	// if (mPreviewDetector.getKeepRunning()) {
-	// // only set the mData if the detector was allowed to finish
-	// generatePreviewPictureFromData(mPreviewDetector.getEdgeData());
-	// mPreviewControl.getPictureControl().setValue(mPreviewPicture);
-	// }
-	// } finally {
-	// mPreviewDetector.dispose();
-	// }
-	// }
+	public PictureType updatePreview() {
+		mLogger.finest("CannyEdgeTransform.ETControlContainerDialog::updatePreviewControl");
+
+		int size = getSize();
+		PictureType outputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+		for (int x = 0; x < outputPicture.getWidth(); x++) {
+			for (int y = 0; y < outputPicture.getHeight(); y++) {
+				outputPicture.setColor(x, y, Color.BLUE);
+			}
+		}
+		if (!getTransform().isInitialized()) { return outputPicture; }
+		mLogger.finest("past initialized");
+
+		ICannyEdgeDetector detector = null;
+		PictureType inputPicture;
+
+		try {
+
+			final int xoff = 0;// (int) (getTransform().getWidth() * mPreviewPosition.getX());
+			final int yoff = 0;// (int) (getTransform().getHeight() * mPreviewPosition.getY());
+			inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+			for (int x = 0; x < size; x++) {
+				for (int y = 0; y < size; y++) {
+					ITransformResult tr = new SingleTransformResult((double) x / size, (double) y / size);
+					ITransform transform = getTransform().getPreviousTransform();
+					while (transform != null) {
+						transform.transform(tr);
+						transform = transform.getPreviousTransform();
+					}
+					inputPicture.setColor(x, y, tr.getColor());
+				}
+			}
+			mLogger.finest("input picture generated");
+
+			// TODO CannyEdgeDetectorFactory.createInstance(getTransform());
+			detector = new CannyEdgeDetectorJavaThreads(getTransform());
+			detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
+			detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
+			detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
+			detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
+			detector.setContrastNormalized(mContrastNormalized.getValue());
+
+			detector.setSourceImage(inputPicture);
+			detector.process(false);
+
+			if (detector.getKeepRunning()) {
+				// only set the mData if the detector was allowed to finish
+				generatePreviewPictureFromData(detector.getEdgeData());
+				// mPreviewControl.getValue().setValue(mPreviewPicture);
+			}
+		} finally {
+			if (detector != null) {
+				detector.dispose();
+			}
+		}
+
+		mLogger.finest("at end");
+		return mPreviewPicture.getValue();
+	}
 	//
 	// @Override
 	// public boolean validate(final IControlPrimative<?> pControl) {
