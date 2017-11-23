@@ -18,7 +18,6 @@ import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Version;
-import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -185,11 +184,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	}
 
 	private void generateEdges() {
-
 		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
 		ActionControl cancel = ActionControl.create("Cancel", NullContainer, null);
-
-		getPerception().showDialog(mGenerateEdgesDialog, new DialogOptions(), mGenerateEdgesDialog.getUndoRedoBuffer(), cancel, ok);
+		mGenerateEdgesDialog.showDialog(cancel, ok);
 	}
 
 	@Override
