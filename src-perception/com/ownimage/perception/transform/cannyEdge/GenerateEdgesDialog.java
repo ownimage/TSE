@@ -193,8 +193,8 @@ public class GenerateEdgesDialog extends Container {
 			preview = mPreviewPicture.getValue().createCompatible();
 		}
 
-		final Color foreground = getProperties().getColor1();
-		final Color background = getProperties().getColor2();
+		final Color foreground = getProperties().getPixelMapFGColor();
+		final Color background = getProperties().getPixelMapBGColor();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if (pEdgeData.getPixelAt(x, y).isEdge()) {

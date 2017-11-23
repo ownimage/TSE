@@ -42,6 +42,9 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 	private final ColorControl mColor3 = new ColorControl("Color 3", "color3", mContainer, Color.GREEN);
 	private final ColorControl mColorOOB = new ColorControl("Color OOB", "colorOOB", mContainer, Color.PINK);
 
+	private final ColorControl mPixelMapBGColor = new ColorControl("PixelMap background", "pixelMapBG", mContainer, Color.WHITE);
+	private final ColorControl mPixelMapFGColor = new ColorControl("PixelMap foreground", "pixelMapFG", mContainer, Color.BLACK);
+
 	private final BooleanControl mUseJTP = new BooleanControl("Use JTP", "useJTP", mContainer, true);
 	private final IntegerControl mRenderBatchSize = new IntegerControl("Batch size", "batchSize", mContainer, 1000, 1, 1000000, 100000);
 	private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
@@ -57,7 +60,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 		NamedTabs view = new NamedTabs("Properties", "properties");
 
 		VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
-		VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB);
+		VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
 		VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize);
 
 		view.addTab("Defaults", defaults);
@@ -111,6 +114,22 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 
 	public double getJpgQuality() {
 		return 1.0d;
+	}
+
+	public Color getPixelMapBGColor() {
+		return mPixelMapBGColor.getValue();
+	}
+
+	public ColorProperty getPixelMapBGColorProperty() {
+		return mPixelMapBGColor.getProperty();
+	}
+
+	public Color getPixelMapFGColor() {
+		return mPixelMapFGColor.getValue();
+	}
+
+	public ColorProperty getPixelMapFGColorProperty() {
+		return mPixelMapFGColor.getProperty();
 	}
 
 	public int getPreviewSize() {
