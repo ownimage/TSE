@@ -74,7 +74,7 @@ public class GenerateEdgesDialog extends Container {
 		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
 		mControlContainer.addControlChangeListener(this);
 
-		mPreviewPosition = new PointControl("Preview", "preview", mControlContainer, new Point(100.0d, 100.0d));
+		mPreviewPosition = new PointControl("Preview Position", "previewPosition", mControlContainer, new Point(100.0d, 100.0d));
 		// mPreviewPosition = addControl(new EdgePointControl(pParent, mPreviewControl, null, "GeneratePreview",
 		// "generatePreview"));
 		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius", mControlContainer, 0.2d, 0.1001d, 10.0d);
