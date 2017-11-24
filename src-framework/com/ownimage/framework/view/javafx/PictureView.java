@@ -3,18 +3,6 @@ package com.ownimage.framework.view.javafx;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
-import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.StackPane;
-
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Framework;
@@ -23,6 +11,19 @@ import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
+
+import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
 
 public class PictureView extends ViewBase<PictureControl> implements IPictureView {
 
@@ -60,6 +61,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 			Platform.runLater(() -> {
 				updatePicture();
 				redrawGrafitti();
+				resizeTopParent();
 			});
 		}
 	}
@@ -121,6 +123,14 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 	public void redrawGrafitti() {
 		mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
 		mControl.drawGrafitti(mGrafittiImp);
+	}
+
+	private void resizeTopParent() {
+		Parent parent = mUI;
+		while (parent.getParent() != null) {
+			parent = parent.getParent();
+		}
+		parent.getScene().getWindow().sizeToScene();
 	}
 
 	private void scrollEvent(final ScrollEvent pSE) {

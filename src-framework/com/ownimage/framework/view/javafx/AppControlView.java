@@ -192,7 +192,7 @@ public class AppControlView extends Application implements IAppControlView {
 		Dialog<ActionControl> dialog = new Dialog<>();
 
 		// the width listener is needed in case the dialog is showing the UI controls that affect the width of the controls
-		// themselves which would mean that the dialaog would need to change size as the controls change value.
+		// themselves which would mean that the dialog would need to change size as the controls change value.
 		mWidthListener = (observable, oldValue, newValue) -> {
 			dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
 		};
