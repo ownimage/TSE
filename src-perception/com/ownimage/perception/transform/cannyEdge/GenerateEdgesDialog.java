@@ -11,9 +11,12 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.control.PointControl;
+import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
+import com.ownimage.framework.view.IView;
+import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.math.Point;
@@ -156,6 +159,14 @@ public class GenerateEdgesDialog extends Container {
 			// mPreviewThread.start();
 			// }
 		}
+	}
+
+	@Override
+	public IView createView() {
+		HFlowLayout hflow = new HFlowLayout(mPreviewContainer, mControlContainer);
+		IView view = ViewFactory.getInstance().createView(hflow);
+		addView(view);
+		return view;
 	}
 
 	// @Override
