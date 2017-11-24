@@ -69,6 +69,8 @@ public class GenerateEdgesDialog extends Container {
 		mPreviewSize.addControlChangeListener(this);
 
 		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
+		mControlContainer.addControlChangeListener(this);
+
 		mPreviewPosition = new PointControl("Preview", "preview", mControlContainer, new Point(100.0d, 100.0d));
 		// mPreviewPosition = addControl(new EdgePointControl(pParent, mPreviewControl, null, "GeneratePreview",
 		// "generatePreview"));
@@ -133,6 +135,7 @@ public class GenerateEdgesDialog extends Container {
 			System.out.println("Preview Size changed to " + mPreviewSize.getValue());
 			mPreviewPicture.setValue(updatePreview());
 		} else if (pControl != mPreviewPicture) {
+			mPreviewPicture.setValue(updatePreview());
 			// getTransform().graffiti();
 			// if (mPreviewPicture.isVisible() && mPreviewDetector != null) {
 			// mPreviewDetector.setKeepRunning(false);
