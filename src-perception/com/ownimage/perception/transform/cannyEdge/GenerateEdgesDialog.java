@@ -8,18 +8,19 @@ import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.PointControl;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
+import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
-import com.ownimage.perception.math.Point;
+import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.SingleTransformResult;
@@ -29,36 +30,33 @@ import com.ownimage.perception.transform.ITransform;
 /**
  * This is an Edge Transform Control Container Dialog
  */
-public class GenerateEdgesDialog extends Container {
+public class GenerateEdgesDialog extends Container implements IUIEventListener {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
 	public final static String mClassname = GenerateEdgesDialog.class.getName();
+
 	public final static Logger mLogger = Logger.getLogger(mClassname);
+
 	public final static long serialVersionUID = 1L;
-
 	private final CannyEdgeTransform mTransform;
-
 	private final PictureControl mPreviewPicture;
 	private final IntegerControl mPreviewSize;
 
-	private final PointControl mPreviewPosition;
-	// private final EdgePointControl mPreviewPosition;
+	private final IntegerControl mPreviewPositionX;
+	private final IntegerControl mPreviewPositionY;
 
 	private final DoubleControl mGaussianKernelRadius;
 	private final DoubleControl mLowThreshold;
 	private final DoubleControl mHighThreshold;
+
 	private final IntegerControl mGaussianKernelWidth;
 	private final BooleanControl mContrastNormalized;
-
 	private final Container mPreviewContainer;
 	private final Container mControlContainer;
+	private final Thread mPreviewThread = new Thread(() -> updatePreview());
 
-	private final Thread mPreviewThread = new Thread() {
-		@Override
-		public void run() {
-			updatePreview();
-		}
-	};
+	private IntegerPoint mDragStart = IntegerPoint.IntegerPoint00;
 
 	public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName, final String pPropertyName) {
 		super(pDisplayName, pPropertyName, pParent);
@@ -66,98 +64,39 @@ public class GenerateEdgesDialog extends Container {
 		mTransform = pParent;
 
 		mPreviewContainer = new Container("Preview Container", "previewContainer", this, this);
-
-		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, updatePreview());
-		mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, 100, 100, 1000, 50);
+		int size = 100;
+		mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, size, 100, 1000, 50);
 		mPreviewSize.addControlChangeListener(this);
+		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), size, size));
+		mPreviewPicture.setUIListener(this);
 
 		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
 		mControlContainer.addControlChangeListener(this);
 
-		mPreviewPosition = new PointControl("Preview Position", "previewPosition", mControlContainer, new Point(100.0d, 100.0d));
-		// mPreviewPosition = addControl(new EdgePointControl(pParent, mPreviewControl, null, "GeneratePreview",
-		// "generatePreview"));
+		mPreviewPositionX = new IntegerControl("Preview Position X", "previewPositionX", mControlContainer, 0, 0, mTransform.getWidth(), 10).setEnabled(false);
+		mPreviewPositionX.addControlValidator((c) -> validatePreviewPositionX(c));
+
+		mPreviewPositionY = new IntegerControl("Preview Position Y", "previewPositionY", mControlContainer, 0, 0, mTransform.getHeight(), 10).setEnabled(false);
+		mPreviewPositionY.addControlValidator((c) -> validatePreviewPositionY(c));
+
 		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius", mControlContainer, 0.2d, 0.1001d, 10.0d);
 		mLowThreshold = new DoubleControl("Low Threshold", "lowThreshold", mControlContainer, 1.0d, 0.0d, 100.0d);
 		mHighThreshold = new DoubleControl("High Threshold", "highThreshold", mControlContainer, 1.0d, 0.0d, 100.0d);
 		mGaussianKernelWidth = new IntegerControl("Gaussian Kernal Width", "gausianKernelWidth", mControlContainer, 2, 2, 15, 1);
 		mContrastNormalized = new BooleanControl("Contrast Normalized", "contrastNormalized", mControlContainer, false);
 
-		// getControlSelector().addMouseXYControl(mPreviewPosition, mPreviewPosition);
-		// TODO mPreviewPosition.addMouseControls(pParent); // TODO
-
-		// TODO I think we can remove this later
-		// mPreviewPosition.addControlEventListener(this);
+		updatePreview();
 	}
 
-	// @Override
-	// public void actionCancel() {
-	// try {
-	// setMutating(true);
-	// super.actionCancel();
-	// getTransform().graffiti();
-	// updatePreviewControl();
-	// } finally {
-	// setMutating(false);
-	// }
-	// }
-	//
-	// @Override
-	// public void actionOK() {
-	// getTransform().resetHeightWidth();
-	//
-	// class Execute extends Job {
-	// public Execute() {
-	// super(mClassname + "::actionOK", false);
-	// }
-	//
-	// @Override
-	// public void doJob() {
-	// try {
-	// getTransform().setEnabled(false);
-	// generateEdgeImage();
-	// getTransform().postProcess();
-	// getTransform().renderPreviewImages(true);
-	// } finally {
-	// getTransform().setEnabled(true);
-	// }
-	// }
-	// }
-	// getTransform().run(new Execute());
-	// }
-	//
 	@Override
 	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
 		mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " + pIsMutating);
-		// ICannyEdgeDetector mPreviewDetector = CannyEdgeDetectorFactory.createInstance(getTransform()); // TODO should I have a
-		// set
-		// of parameters rather than
-		// a CETransform
 
-		if (pControl == mPreviewSize) {
-			System.out.println("Preview Size changed to " + mPreviewSize.getValue());
-			mPreviewPicture.setValue(updatePreview());
+		if (pControl == mPreviewPositionX || pControl == mPreviewPositionY || pControl == mPreviewPicture) {
+
 		} else if (pControl != mPreviewPicture) {
 			mPreviewPicture.setValue(updatePreview());
-			// getTransform().graffiti();
-			// if (mPreviewPicture.isVisible() && mPreviewDetector != null) {
-			// mPreviewDetector.setKeepRunning(false);
-			// try {
-			// if (mPreviewThread != null && mPreviewThread.isAlive()) {
-			// mPreviewThread.join();
-			// }
-			// } catch (final InterruptedException e) {
-			// // Do nothing
-			// }
-			//
-			// mPreviewThread = new Thread() {
-			// @Override
-			// public void run() {
-			// updatePreview();
-			// }
-			// };
-			// mPreviewThread.start();
-			// }
+
 		}
 	}
 
@@ -169,35 +108,6 @@ public class GenerateEdgesDialog extends Container {
 		return view;
 	}
 
-	// @Override
-	// public IView createView() {
-	// HFlowLayout layout = new HFlowLayout(mPreviewContainer, mControlContainer);
-	// return layout.createView();
-	// }
-	//
-	// public void generateEdgeImage() {
-	// try {
-	// mLogger.fine("CannyEdgeDetector::generateEdgeImage");
-	//
-	// mDetector = CannyEdgeDetectorFactory.createInstance(getTransform());
-	// mDetector.setContrastNormalized(mContrastNormalized.getBoolean());
-	// mDetector.setGaussianKernelRadius((float) mGaussianKernelRadius.getDouble());
-	// mDetector.setGaussianKernelWidth(mGaussianKernelWidth.getInt());
-	// mDetector.setHighThreshold((float) (mHighThreshold.getDouble() / 100.0d));
-	// mDetector.setLowThreshold((float) (mLowThreshold.getDouble() / 100.0d));
-	// mDetector.setEdgeData(mTransform.getPixelMap());
-	//
-	// mDetector.setSourceImage(getTransform().getPreviousTransform());
-	// mDetector.process(true);
-	//
-	// } finally {
-	// mTransform.setPixelMap(mDetector.getEdgeData());
-	// mDetector.dispose();
-	// getTransform().showProgressBar("Done", 100);
-	// getTransform().hideProgressBar();
-	// }
-	// }
-	//
 	private void generatePreviewPictureFromData(final PixelMap pEdgeData) {
 		System.out.println("generatePreviewPictureFromData");
 		final int size = mPreviewSize.getValue();
@@ -235,27 +145,27 @@ public class GenerateEdgesDialog extends Container {
 		return mTransform;
 	}
 
+	@Override
+	public void mouseDragEndEvent(final IUIEvent pEvent) {
+		System.out.println("mouseDragEndEvent:" + pEvent);
+	}
+
+	@Override
+	public void mouseDragEvent(final IUIEvent pEvent) {
+		mPreviewPositionX.setValue(mDragStart.getX() + pEvent.getDeltaX());
+		mPreviewPositionY.setValue(mDragStart.getY() + pEvent.getDeltaY());
+	}
+
+	@Override
+	public void mouseDragStartEvent(final IUIEvent pEvent) {
+		mDragStart = new IntegerPoint(mPreviewPositionX.getValue(), mPreviewPositionY.getValue());
+	}
+
 	public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
 		Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
 		updatePreview();
 	}
 
-	//
-	// public void graffitiTransform(final GraphicsHelper pGraphics) {
-	// mPreviewPosition.graffiti(pGraphics);
-	// }
-	//
-	// @Override
-	// public void showDialog() {
-	// try {
-	// getTransform().setEnabled(false);
-	// updatePreviewControl();
-	// super.showDialog();
-	// } finally {
-	// getTransform().setEnabled(true);
-	// }
-	// }
-	//
 	public PictureType updatePreview() {
 		mLogger.finest("CannyEdgeTransform.ETControlContainerDialog::updatePreviewControl");
 
@@ -315,24 +225,14 @@ public class GenerateEdgesDialog extends Container {
 		mLogger.finest("at end");
 		return mPreviewPicture.getValue();
 	}
-	//
-	// @Override
-	// public boolean validate(final IControlPrimative<?> pControl) {
-	// if (!getTransform().isInitialized()) { return true; }
-	//
-	// boolean valid = true;
-	//
-	// if (pControl == mPreviewPosition.getXControl()) {
-	// final double xSize = (double) mPreviewControl.getSize() / getTransform().getWidth();
-	// valid &= mPreviewPosition.getXControl().getValidateDouble() + xSize <= 1.0d;
-	// }
-	//
-	// if (pControl == mPreviewPosition.getYControl()) {
-	// final double ySize = (double) mPreviewControl.getSize() / getTransform().getHeight();
-	// valid &= mPreviewPosition.getYControl().getValidateDouble() + ySize <= 1.0d;
-	// }
-	//
-	// return valid && super.validate(pControl);
-	// }
 
+	public boolean validatePreviewPositionX(final Object pControl) {
+		boolean rv = mPreviewPositionX.getValidateValue() + getSize() < getTransform().getWidth();
+		return rv;
+	}
+
+	public boolean validatePreviewPositionY(final Object pControl) {
+		boolean rv = mPreviewPositionY.getValidateValue() + getSize() < getTransform().getHeight();
+		return rv;
+	}
 }

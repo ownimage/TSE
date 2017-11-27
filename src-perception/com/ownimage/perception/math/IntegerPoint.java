@@ -16,6 +16,8 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 	public final static Logger mLogger = Logger.getLogger(mClassname);
 	public final static long serialVersionUID = 1L;
 
+	public static final IntegerPoint IntegerPoint00 = new IntegerPoint(0, 0);
+
 	private final int mX;
 	private final int mY;
 

@@ -48,48 +48,49 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	// TODO private final EditPixelMapDialog mEditPixelMapSegmentsDialog;
 	// TODO private final EditPixelMapDialog mEditPixelMapPixelsDialog;
 
-	private final GenerateEdgesDialog mGenerateEdgesDialog = new GenerateEdgesDialog(this, "Canny Edge Transform", "edge");
+	private GenerateEdgesDialog mGenerateEdgesDialog;
 
 	private final DoubleControl mWhiteFade = new DoubleControl("White Fade", "whiteFade", getContainer(), 0.0d);
-	private final BooleanControl mShowPixels = new BooleanControl("Show Pixels", "showPixels", getContainer(), false);
-	private final ColorControl mPixelColor = new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
 
+	private final BooleanControl mShowPixels = new BooleanControl("Show Pixels", "showPixels", getContainer(), false);
+
+	private final ColorControl mPixelColor = new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
 	private final DoubleControl mLineTolerance = new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
 	private final DoubleControl mLineCurvePreference = new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2d, 0.1d, 100.0d);
-	private final BooleanControl mLinesShow = new BooleanControl("Show Lines", "showLines", getContainer(), false);
 
+	private final BooleanControl mLinesShow = new BooleanControl("Show Lines", "showLines", getContainer(), false);
 	private final ObjectControl<LineEndShape> mLineEndShape = new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
 	private final ObjectControl<LineEndLengthType> mLineEndLengthType = new ObjectControl<>("Line End Length Type", "lineEndLengthType", getContainer(), LineEndLengthType.Pixels,
 			LineEndLengthType.values());
+
 	private final IntegerControl mLineEndLengthPercent = new IntegerControl("Length Percent", "lineEndLengthPercent", getContainer(), 10, 1, 50, 5);
 	private final IntegerControl mLineEndLengthPixels = new IntegerControl("Length Pixels", "lineEndLengthPixels", getContainer(), 50, 1, 500, 10);
 	private final DoubleControl mLineEndThickness = new DoubleControl("Line End Thickness", "LineEndThickness", getContainer(), 0.5d);
-
 	private final ColorControl mLineColor = new ColorControl("Line Color", "lineColor", getContainer(), Color.BLACK);
 	private final DoubleControl mLineOpacity = new DoubleControl("Line Opacity", "lineOpacity", getContainer(), 1.0d);
+
 	private final IntegerControl mLongLineLength = new IntegerControl("Long Line Length", "longLineLength", getContainer(), 50, 1, 500, 10);
 	private final DoubleControl mLongLineThickness = new DoubleControl("Long Line Thickness", "longLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
-
 	private final IntegerControl mMediumLineLength = new IntegerControl("Medium Line Length", "mediumLineLength", getContainer(), 0, 0, 1000, 20);
 	private final DoubleControl mMediumLineThickness = new DoubleControl("Medium Line Thickness", "mediumLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+
 	private final IntegerControl mShortLineLength = new IntegerControl("Short Line Length", "shortLineLength", getContainer(), 0, 0, 1000, 20);
 	private final DoubleControl mShortLineThickness = new DoubleControl("Short Line Thickness", "shortLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
-
-	// TODO private final ObjectControl<String> mEqualize = new ObjectControl<>("Equalize Lengths", "equalize", getContainer(),
-	// EqualizeValues.getDefaultValue(), EqualizeValues.getAllValues());
-
 	// shadow
 	private final BooleanControl mShowShadow = new BooleanControl("Show Shadow", "showShadow", getContainer(), false);
 	private final DoubleControl mShadowXOffset = new DoubleControl("Shadow X Offset", "shadowXOffset", getContainer(), 1.0d, -20.0d, 20.0d);
+
+	// TODO private final ObjectControl<String> mEqualize = new ObjectControl<>("Equalize Lengths", "equalize", getContainer(),
+	// EqualizeValues.getDefaultValue(), EqualizeValues.getAllValues());
 
 	private final DoubleControl mShadowYOffset = new DoubleControl("Shadow Y Offset", "shadowYOffset", getContainer(), 1.0d, -20.0d, 20.0d);
 	private final DoubleControl mShadowThickness = new DoubleControl("Shadow Thickness", "shadowThickness", getContainer(), 1.0d, 1.0d, 10.0d);
 
 	private final ColorControl mShadowColor = new ColorControl("Shadow Colour", "shadowColor", getContainer(), Color.WHITE);
-
 	private final DoubleControl mShadowOpacity = new DoubleControl("Shadow Opacity", "shadowOpacity", getContainer(), 1.0d);
 
 	private PixelMap mPixelMap; // this is the picture from the file processed for edges
+
 	private PictureControl mPreviewPictureControl;
 
 	public CannyEdgeTransform(final Perception pPerception) {
@@ -186,12 +187,32 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	private void generateEdges() {
 		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
 		ActionControl cancel = ActionControl.create("Cancel", NullContainer, null);
-		mGenerateEdgesDialog.showDialog(cancel, ok);
+		getGenerateEdgesDialog().showDialog(cancel, ok);
 	}
 
 	@Override
 	public String getDisplayName() {
 		return "Canny Edge";
+	}
+
+	public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
+		if (mGenerateEdgesDialog == null) {
+			mGenerateEdgesDialog = new GenerateEdgesDialog(this, "Canny Edge Transform", "edge");
+		}
+		return mGenerateEdgesDialog;
+	}
+
+	//
+	// private Color getBackgroundColor(final Point pIn) {
+	//
+	// final Color color = getColorFromPreviousTransform(pIn);
+	// final double fade = mWhiteFade.getDouble();
+	// return KColor.fade(color, Color.WHITE, fade);
+	// }
+	//
+	@Override
+	public int getHeight() {
+		return mHeight.getValue();
 	}
 
 	@Override
@@ -248,18 +269,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 		return 0;
 	}
 
-	//
-	// private Color getBackgroundColor(final Point pIn) {
-	//
-	// final Color color = getColorFromPreviousTransform(pIn);
-	// final double fade = mWhiteFade.getDouble();
-	// return KColor.fade(color, Color.WHITE, fade);
-	// }
-	//
-	// @Override
-	// public int getHeight() {
-	// return mHeight.getInt();
-	// }
 	//
 	// @Override
 	// public Color getLineColor() {
@@ -432,6 +441,25 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	public int getShortLineLength() {
 		return mShortLineLength.getValue();
 	}
+
+	@Override
+	public double getShortLineThickness() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean getShowPixels() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean getShowShadow() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	//
 	// @Override
 	// public double getShortLineThickness() {
@@ -461,10 +489,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	// .createUI();
 	// }
 	//
-	// @Override
-	// public int getWidth() {
-	// return mWidth.getInt();
-	// }
+	@Override
+	public int getWidth() {
+		return mWidth.getValue();
+	}
 	//
 	// @Override
 	// public void graffiti(final GraphicsHelper pGraphics) {
@@ -572,27 +600,13 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	// }
 
 	@Override
-	public double getShortLineThickness() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean getShowPixels() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean getShowShadow() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public void grafitti(final GrafittiHelper pGrafittiHelper) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setGenerateEdgesDialog(final GenerateEdgesDialog pGenerateEdgesDialog) {
+		mGenerateEdgesDialog = pGenerateEdgesDialog;
 	}
 
 }
