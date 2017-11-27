@@ -22,6 +22,7 @@ import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.math.IntegerPoint;
+import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.SingleTransformResult;
@@ -59,44 +60,58 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
 	private IntegerPoint mDragStart = IntegerPoint.IntegerPoint00;
 
-	public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName, final String pPropertyName) {
+	public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName,
+			final String pPropertyName) {
 		super(pDisplayName, pPropertyName, pParent);
 
 		mTransform = pParent;
 
 		mPreviewContainer = new Container("Preview Container", "previewContainer", this, this);
 		int size = 100;
-		mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, size, 100, 1000, 50);
+		mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, size,
+				100, 1000, 50);
 		mPreviewSize.addControlChangeListener(this);
-		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), size, size));
+		mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer,
+				new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(),
+						size, size));
 		mPreviewPicture.setUIListener(this);
 
 		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
 		mControlContainer.addControlChangeListener(this);
 		mControlContainer.addControlValidator(this);
 
-		mPreviewPositionX = new IntegerControl("Preview Position X", "previewPositionX", mControlContainer, 0, 0, mTransform.getWidth(), 10).setEnabled(false);
-		mPreviewPositionY = new IntegerControl("Preview Position Y", "previewPositionY", mControlContainer, 0, 0, mTransform.getHeight(), 10).setEnabled(false);
+		mPreviewPositionX = new IntegerControl("Preview Position X", "previewPositionX",
+				mControlContainer, 0, 0, mTransform.getWidth(), 10).setEnabled(false);
+		mPreviewPositionY = new IntegerControl("Preview Position Y", "previewPositionY",
+				mControlContainer, 0, 0, mTransform.getHeight(), 10).setEnabled(false);
 
-		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius", mControlContainer, 0.2d, 0.1001d, 10.0d);
-		mLowThreshold = new DoubleControl("Low Threshold", "lowThreshold", mControlContainer, 1.0d, 0.0d, 100.0d);
-		mHighThreshold = new DoubleControl("High Threshold", "highThreshold", mControlContainer, 1.0d, 0.0d, 100.0d);
-		mGaussianKernelWidth = new IntegerControl("Gaussian Kernal Width", "gausianKernelWidth", mControlContainer, 2, 2, 15, 1);
-		mContrastNormalized = new BooleanControl("Contrast Normalized", "contrastNormalized", mControlContainer, false);
+		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius",
+				mControlContainer, 0.2d, 0.1001d, 10.0d);
+		mLowThreshold = new DoubleControl("Low Threshold", "lowThreshold", mControlContainer, 1.0d,
+				0.0d, 100.0d);
+		mHighThreshold = new DoubleControl("High Threshold", "highThreshold", mControlContainer,
+				1.0d, 0.0d, 100.0d);
+		mGaussianKernelWidth = new IntegerControl("Gaussian Kernal Width", "gausianKernelWidth",
+				mControlContainer, 2, 2, 15, 1);
+		mContrastNormalized = new BooleanControl("Contrast Normalized", "contrastNormalized",
+				mControlContainer, false);
 
 		updatePreview();
 	}
 
 	@Override
 	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-		mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " + pIsMutating);
+		mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent "
+				+ pControl == null ? "null" : pControl.getDisplayName() + " " + pIsMutating);
 
-		if (pControl == mPreviewPositionX || pControl == mPreviewPositionY || pControl == mPreviewPicture) {
-
-		} else if (pControl != mPreviewPicture) {
-			mPreviewPicture.setValue(updatePreview());
-
+		if (pControl == mPreviewPositionX || pControl == mPreviewPositionY
+				|| pControl == mPreviewPicture) { return;
+		// ignore these preview position updates are handled my the mouse drag event
 		}
+		if (pControl == mPreviewSize) {
+			getTransform().redrawGrafitti();
+		}
+		mPreviewPicture.setValue(updatePreview());
 	}
 
 	@Override
@@ -112,7 +127,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 		final int size = mPreviewSize.getValue();
 
 		PictureType preview;
-		if (mPreviewPicture == null || mPreviewPicture.getWidth() != size || mPreviewPicture.getWidth() != size) {
+		if (mPreviewPicture == null || mPreviewPicture.getWidth() != size
+				|| mPreviewPicture.getWidth() != size) {
 			preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
 		} else {
 			preview = mPreviewPicture.getValue().createCompatible();
@@ -132,11 +148,28 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 		mPreviewPicture.setValue(preview);
 	}
 
+	public int getPreviewPositionX() {
+		return mPreviewPositionX.getValue();
+	}
+
+	public int getPreviewPositionY() {
+		return mPreviewPositionY.getValue();
+	}
+
+	public Rectangle getPreviewRectangle() {
+		double x1 = (double) getPreviewPositionX() / getTransform().getWidth();
+		double y1 = (double) getPreviewPositionY() / getTransform().getHeight();
+		double x2 = (double) (getPreviewPositionX() + getSize()) / getTransform().getWidth();
+		double y2 = (double) (getPreviewPositionY() + getSize()) / getTransform().getHeight();
+		Rectangle r = new Rectangle(x1, y1, x2, y2);
+		return r;
+	}
+
 	private Properties getProperties() {
 		return Perception.getPerception().getProperties();
 	}
 
-	private int getSize() {
+	public int getSize() {
 		return (mPreviewSize != null) ? mPreviewSize.getValue() : 100;
 	}
 
@@ -146,6 +179,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
 	@Override
 	public void mouseDragEndEvent(final IUIEvent pEvent) {
+		mTransform.redrawGrafitti();
 		updatePreview();
 	}
 
@@ -153,6 +187,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	public void mouseDragEvent(final IUIEvent pEvent) {
 		mPreviewPositionX.setValue(mDragStart.getX() + pEvent.getDeltaX());
 		mPreviewPositionY.setValue(mDragStart.getY() + pEvent.getDeltaY());
+		mTransform.redrawGrafitti();
 	}
 
 	@Override
@@ -161,7 +196,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	}
 
 	public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
-		Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
+		Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(),
+				pCancel, pOk);
 		updatePreview();
 	}
 
@@ -190,7 +226,9 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 			inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
 			for (int x = 0; x < size; x++) {
 				for (int y = 0; y < size; y++) {
-					ITransformResult tr = new SingleTransformResult(((double) (x + mPreviewPositionX.getValue())) / width, ((double) (y + mPreviewPositionY.getValue())) / height);
+					ITransformResult tr = new SingleTransformResult(
+							((double) (x + mPreviewPositionX.getValue())) / width,
+							((double) (y + mPreviewPositionY.getValue())) / height);
 					ITransform transform = getTransform().getPreviousTransform();
 					while (transform != null) {
 						transform.transform(tr);
