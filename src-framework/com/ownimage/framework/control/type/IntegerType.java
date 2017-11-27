@@ -77,12 +77,12 @@ public class IntegerType extends TypeBase<IntegerMetaType, Integer> {
 
 		} else if (pValue > max) {
 			super.setValue(max);
-			mLogger.info("Value " + pValue + "is greater than max " + max + "  in metamodel.");
+			mLogger.info("Value " + pValue + " is greater than max " + max + "  in metamodel.");
 			return false;
 
 		} else if (pValue < min) {
 			super.setValue(min);
-			mLogger.info("Value " + pValue + "is less than min " + min + "  in metamodel.");
+			mLogger.info("Value " + pValue + " is less than min " + min + "  in metamodel.");
 			return false;
 
 		} else {

@@ -40,8 +40,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	public final static long serialVersionUID = 1L;
 
 	private final IntegerControl mWidth = new IntegerControl("Width", "width", getContainer(), 1000, 100, 50000, 500);
-
 	private final IntegerControl mHeight = new IntegerControl("Height", "height", getContainer(), 1000, 100, 50000, 500);
+
 	private final ActionControl mGeneratePixelMapButton = new ActionControl("Generate Edges", "generate", getContainer(), () -> generateEdges());
 	private final ActionControl mEditPixelMapPixelsButton = new ActionControl("Edit Pixels", "editPixels", getContainer(), () -> editPixels());
 

@@ -130,7 +130,9 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		while (parent.getParent() != null) {
 			parent = parent.getParent();
 		}
-		parent.getScene().getWindow().sizeToScene();
+		if (parent.getScene() != null && parent.getScene().getWindow() != null) {
+			parent.getScene().getWindow().sizeToScene();
+		}
 	}
 
 	private void scrollEvent(final ScrollEvent pSE) {

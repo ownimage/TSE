@@ -11,6 +11,7 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
@@ -30,7 +31,7 @@ import com.ownimage.perception.transform.ITransform;
 /**
  * This is an Edge Transform Control Container Dialog
  */
-public class GenerateEdgesDialog extends Container implements IUIEventListener {
+public class GenerateEdgesDialog extends Container implements IUIEventListener, IControlValidator {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
@@ -72,12 +73,10 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener {
 
 		mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
 		mControlContainer.addControlChangeListener(this);
+		mControlContainer.addControlValidator(this);
 
 		mPreviewPositionX = new IntegerControl("Preview Position X", "previewPositionX", mControlContainer, 0, 0, mTransform.getWidth(), 10).setEnabled(false);
-		mPreviewPositionX.addControlValidator((c) -> validatePreviewPositionX(c));
-
 		mPreviewPositionY = new IntegerControl("Preview Position Y", "previewPositionY", mControlContainer, 0, 0, mTransform.getHeight(), 10).setEnabled(false);
-		mPreviewPositionY.addControlValidator((c) -> validatePreviewPositionY(c));
 
 		mGaussianKernelRadius = new DoubleControl("Kernal Radius", "gaussianKernelRadius", mControlContainer, 0.2d, 0.1001d, 10.0d);
 		mLowThreshold = new DoubleControl("Low Threshold", "lowThreshold", mControlContainer, 1.0d, 0.0d, 100.0d);
@@ -147,7 +146,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener {
 
 	@Override
 	public void mouseDragEndEvent(final IUIEvent pEvent) {
-		System.out.println("mouseDragEndEvent:" + pEvent);
+		updatePreview();
 	}
 
 	@Override
@@ -170,26 +169,28 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener {
 		mLogger.finest("CannyEdgeTransform.ETControlContainerDialog::updatePreviewControl");
 
 		int size = getSize();
-		PictureType outputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
-		for (int x = 0; x < outputPicture.getWidth(); x++) {
-			for (int y = 0; y < outputPicture.getHeight(); y++) {
-				outputPicture.setColor(x, y, Color.BLUE);
-			}
-		}
-		if (!getTransform().isInitialized()) { return outputPicture; }
-		mLogger.finest("past initialized");
+		// PictureType outputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+		// for (int x = 0; x < outputPicture.getWidth(); x++) {
+		// for (int y = 0; y < outputPicture.getHeight(); y++) {
+		// outputPicture.setColor(x, y, Color.BLUE);
+		// }
+		// }
+		// if (!getTransform().isInitialized()) { return outputPicture; }
+		// mLogger.finest("past initialized");
 
 		ICannyEdgeDetector detector = null;
 		PictureType inputPicture;
 
 		try {
 
-			final int xoff = 0;// (int) (getTransform().getWidth() * mPreviewPosition.getX());
-			final int yoff = 0;// (int) (getTransform().getHeight() * mPreviewPosition.getY());
+			final int xoff = 0;
+			final int yoff = 0;
+			final int width = mTransform.getWidth();
+			final int height = mTransform.getHeight();
 			inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
 			for (int x = 0; x < size; x++) {
 				for (int y = 0; y < size; y++) {
-					ITransformResult tr = new SingleTransformResult((double) x / size, (double) y / size);
+					ITransformResult tr = new SingleTransformResult(((double) (x + mPreviewPositionX.getValue())) / width, ((double) (y + mPreviewPositionY.getValue())) / height);
 					ITransform transform = getTransform().getPreviousTransform();
 					while (transform != null) {
 						transform.transform(tr);
@@ -226,13 +227,16 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener {
 		return mPreviewPicture.getValue();
 	}
 
-	public boolean validatePreviewPositionX(final Object pControl) {
-		boolean rv = mPreviewPositionX.getValidateValue() + getSize() < getTransform().getWidth();
-		return rv;
-	}
-
-	public boolean validatePreviewPositionY(final Object pControl) {
-		boolean rv = mPreviewPositionY.getValidateValue() + getSize() < getTransform().getHeight();
+	@Override
+	public boolean validateControl(final Object pControl) {
+		boolean rv = true;
+		if (pControl == mPreviewPositionX) {
+			rv = mPreviewPositionX.getValidateValue() + getSize() < getTransform().getWidth();
+			rv |= mPreviewPositionX.getValidateValue() < mPreviewPositionX.getValue();
+		} else if (pControl == mPreviewPositionY) {
+			rv = mPreviewPositionY.getValidateValue() + getSize() < getTransform().getHeight();
+			rv |= mPreviewPositionY.getValidateValue() < mPreviewPositionY.getValue();
+		}
 		return rv;
 	}
 }
