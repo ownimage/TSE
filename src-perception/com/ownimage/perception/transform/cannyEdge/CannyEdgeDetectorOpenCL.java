@@ -7,16 +7,14 @@ package com.ownimage.perception.transform.cannyEdge;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
+import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.util.IPictureReadOnly;
-import com.ownimage.perception.util.StopWatch;
-import com.ownimage.perception.util.Version;
 
 /**
  * <p>
@@ -30,8 +28,8 @@ import com.ownimage.perception.util.Version;
  * </p>
  * 
  * <p>
- * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of shortcomings, but remains an effective tool in many scenarios.
- * <em>This class is designed
+ * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of
+ * shortcomings, but remains an effective tool in many scenarios. <em>This class is designed
  * for single threaded use only.</em>
  * </p>
  * 
@@ -81,7 +79,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	protected int picsize;
 	protected int[] data;
 	protected int[] magnitude;
-	protected IPictureReadOnly sourceImage;
+	protected PictureType sourceImage;
 
 	protected float gaussianKernelRadius;
 	protected float lowThreshold;
@@ -100,15 +98,6 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 
 	// constructors
 
-	/**
-	 * Constructs a new detector with default parameters.
-	 */
-
-	CannyEdgeDetectorOpenCL(CannyEdgeTransform pTransform) {
-		this();
-		mTransform = pTransform;
-	}
-
 	private CannyEdgeDetectorOpenCL() {
 		System.out.println("Kernel created");
 
@@ -122,211 +111,18 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		setExplicit(false);
 	}
 
+	/**
+	 * Constructs a new detector with default parameters.
+	 */
+
+	CannyEdgeDetectorOpenCL(final CannyEdgeTransform pTransform) {
+		this();
+		mTransform = pTransform;
+	}
+
 	// accessors
 
-	/**
-	 * The low threshold for hysteresis. The default value is 2.5.
-	 * 
-	 * @return the low hysteresis threshold
-	 */
-
-	public float getLowThreshold() {
-		return lowThreshold;
-	}
-
-	/**
-	 * Sets the low threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each application. It is nonsensical (though not prohibited) for this value to
-	 * exceed the high threshold value.
-	 * 
-	 * @param threshold
-	 *            a low hysteresis threshold
-	 */
-
-	public void setLowThreshold(float threshold) {
-		if (threshold < 0)
-			throw new IllegalArgumentException();
-		lowThreshold = threshold;
-	}
-
-	/**
-	 * The high threshold for hysteresis. The default value is 7.5.
-	 * 
-	 * @return the high hysteresis threshold
-	 */
-
-	public float getHighThreshold() {
-		return highThreshold;
-	}
-
-	/**
-	 * Sets the high threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each application. It is nonsensical (though not prohibited) for this value to be
-	 * less than the low threshold value.
-	 * 
-	 * @param threshold
-	 *            a high hysteresis threshold
-	 */
-
-	public void setHighThreshold(float threshold) {
-		if (threshold < 0)
-			throw new IllegalArgumentException();
-		highThreshold = threshold;
-	}
-
-	/**
-	 * The number of pixels across which the Gaussian kernel is applied. The default value is 16.
-	 * 
-	 * @return the radius of the convolution operation in pixels
-	 */
-
-	public int getGaussianKernelWidth() {
-		return gaussianKernelWidth;
-	}
-
-	@Override
-	public synchronized void dispose() {
-		System.out.println("Kernel dispose");
-		super.dispose();
-	}
-
-	/**
-	 * The number of pixels across which the Gaussian kernel is applied. This implementation will reduce the radius if the contribution of pixel values is deemed negligable, so this is actually a
-	 * maximum radius.
-	 * 
-	 * @param gaussianKernelWidth
-	 *            a radius for the convolution operation in pixels, at least 2.
-	 */
-
-	public void setGaussianKernelWidth(int gaussianKernelWidth) {
-		if (gaussianKernelWidth < 2)
-			throw new IllegalArgumentException();
-		this.gaussianKernelWidth = gaussianKernelWidth;
-	}
-
-	/**
-	 * The radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation. The default value is 16.
-	 * 
-	 * @return the Gaussian kernel radius in pixels
-	 */
-
-	public float getGaussianKernelRadius() {
-		return gaussianKernelRadius;
-	}
-
-	/**
-	 * Sets the radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation.
-	 * 
-	 * @return a Gaussian kernel radius in pixels, must exceed 0.1f.
-	 */
-
-	public void setGaussianKernelRadius(float gaussianKernelRadius) {
-		if (gaussianKernelRadius < 0.1f)
-			throw new IllegalArgumentException();
-		this.gaussianKernelRadius = gaussianKernelRadius;
-	}
-
-	/**
-	 * Whether the luminance data extracted from the source image is normalized by linearizing its histogram prior to edge extraction. The default value is false.
-	 * 
-	 * @return whether the contrast is normalized
-	 */
-
-	public boolean isContrastNormalized() {
-		return contrastNormalized;
-	}
-
-	/**
-	 * Sets whether the contrast is normalized
-	 * 
-	 * @param contrastNormalized
-	 *            true if the contrast should be normalized, false otherwise
-	 */
-
-	public void setContrastNormalized(boolean contrastNormalized) {
-		this.contrastNormalized = contrastNormalized;
-	}
-
-	/**
-	 * The mData that provides the luminance data used by this detector to generate edges.
-	 * 
-	 * @return the source mData, or null
-	 */
-
-	public IPictureReadOnly getSourceImage() {
-		return sourceImage;
-	}
-
-	/**
-	 * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before the process method is called.
-	 * 
-	 * @param mData
-	 *            a source of luminance data
-	 */
-
-	public void setSourceImage(IPictureReadOnly image) {
-		sourceImage = image;
-	}
-
-	// methods
-
-	public synchronized void process() {
-		StopWatch stopWatch = new StopWatch(mLogger);
-
-		width = sourceImage.getWidth();
-		height = sourceImage.getHeight();
-		picsize = width * height;
-		initArrays();
-		stopWatch.logLapTime(Level.INFO, "initArrays");
-
-		readLuminance();
-		stopWatch.logLapTime(Level.INFO, "readLuminance");
-
-		if (contrastNormalized) {
-			normalizeContrast();
-		}
-		stopWatch.logLapTime(Level.INFO, "normalizeContrast");
-
-		computeGradients(gaussianKernelRadius, gaussianKernelWidth);
-		stopWatch.logLapTime(Level.INFO, "computeGradients");
-
-		int low = Math.round(lowThreshold * MAGNITUDE_SCALE);
-		int high = Math.round(highThreshold * MAGNITUDE_SCALE);
-		performHysteresis(low, high);
-		stopWatch.logLapTime(Level.INFO, "performHysteresis");
-
-		thresholdEdges();
-		stopWatch.logLapTime(Level.INFO, "thresholdEdges");
-
-		writeEdges(data);
-		stopWatch.logLapTime(Level.INFO, "writeEdges");
-		stopWatch.logElapsedTime(Level.INFO, "Process");
-	}
-
-	// private utility methods
-
-	private void initArrays() {
-		if (data == null || picsize != data.length) {
-			data = new int[picsize];
-			magnitude = new int[picsize];
-
-			xConv = new float[picsize];
-			yConv = new float[picsize];
-			xGradient = new float[picsize];
-			yGradient = new float[picsize];
-		}
-	}
-
-	// NOTE: The elements of the method below (specifically the technique for
-	// non-maximal suppression and the technique for gradient computation)
-	// are derived from an implementation posted in the following forum (with the
-	// clear intent of others using the code):
-	// http://forum.java.sun.com/thread.jspa?threadID=546211&start=45&tstart=0
-	// My code effectively mimics the algorithm exhibited above.
-	// Since I don't know the providence of the code that was posted it is a
-	// possibility (though I think a very remote one) that this code violates
-	// someone's intellectual property rights. If this concerns you feel free to
-	// contact me for an alternative, though less efficient, implementation.
-
-	private void computeGradients(float kernelRadius, int kernelWidth) {
+	private void computeGradients(final float kernelRadius, final int kernelWidth) {
 
 		// generate the gaussian convolution masks
 		float kernel[] = new float[kernelWidth];
@@ -334,8 +130,9 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		int kwidth;
 		for (kwidth = 0; kwidth < kernelWidth; kwidth++) {
 			float g1 = gaussian(kwidth, kernelRadius);
-			if (g1 <= GAUSSIAN_CUT_OFF && kwidth >= 2)
+			if (g1 <= GAUSSIAN_CUT_OFF && kwidth >= 2) {
 				break;
+			}
 			float g2 = gaussian(kwidth - 0.5f, kernelRadius);
 			float g3 = gaussian(kwidth + 0.5f, kernelRadius);
 			kernel[kwidth] = (g1 + g2 + g3) / 3f / (2f * (float) Math.PI * kernelRadius * kernelRadius);
@@ -372,8 +169,9 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 			for (int y = initY; y < maxY; y += width) {
 				float sum = 0f;
 				int index = x + y;
-				for (int i = 1; i < kwidth; i++)
+				for (int i = 1; i < kwidth; i++) {
 					sum += diffKernel[i] * (yConv[index - i] - yConv[index + i]);
+				}
 
 				xGradient[index] = sum;
 			}
@@ -420,13 +218,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		// }
 	}
 
-	public void run() {
-		int x = getGlobalId(0) + gaussianKernelWidth;
-		int y = (getGlobalId(1) + gaussianKernelWidth) * width;
-		computeGradientsNonMaximalSuppression(x, y);
-	}
-
-	public void computeGradientsNonMaximalSuppression(int x, int y) {
+	public void computeGradientsNonMaximalSuppression(final int x, final int y) {
 		int index = x + y;
 		int indexN = index - width;
 		int indexS = index + width;
@@ -452,20 +244,23 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		float nwMag = hypot(xGradient[indexNW], yGradient[indexNW]);
 		float tmp;
 		/*
-		 * An explanation of what's happening here, for those who want to understand the source: This performs the "non-maximal supression" phase of the Canny edge detection in which we need to
-		 * compare the gradient magnitude to that in the direction of the gradient; only if the value is a local maximum do we consider the point as an edge candidate.
+		 * An explanation of what's happening here, for those who want to understand the source: This performs the
+		 * "non-maximal supression" phase of the Canny edge detection in which we need to compare the gradient magnitude to that in
+		 * the direction of the gradient; only if the value is a local maximum do we consider the point as an edge candidate.
 		 * 
-		 * We need to break the comparison into a number of different cases depending on the gradient direction so that the appropriate values can be used. To avoid computing the gradient direction,
-		 * we use two simple comparisons: first we check that the partial derivatives have the same sign (1) and then we check which is larger (2). As a consequence, we have reduced the problem to one
-		 * of four identical cases that each test the central gradient magnitude against the values at two points with 'identical support'; what this means is that the geometry required to accurately
-		 * interpolate the magnitude of gradient function at those points has an identical geometry (upto right-angled-rotation/reflection).
+		 * We need to break the comparison into a number of different cases depending on the gradient direction so that the
+		 * appropriate values can be used. To avoid computing the gradient direction, we use two simple comparisons: first we check
+		 * that the partial derivatives have the same sign (1) and then we check which is larger (2). As a consequence, we have
+		 * reduced the problem to one of four identical cases that each test the central gradient magnitude against the values at
+		 * two points with 'identical support'; what this means is that the geometry required to accurately interpolate the
+		 * magnitude of gradient function at those points has an identical geometry (upto right-angled-rotation/reflection).
 		 * 
-		 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by multiplying both sides of each inequality by the greater of the two partial
-		 * derivatives. The common comparand is stored in a temporary variable (3) and reused in the mirror case (4).
+		 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by multiplying both
+		 * sides of each inequality by the greater of the two partial derivatives. The common comparand is stored in a temporary
+		 * variable (3) and reused in the mirror case (4).
 		 */
 		boolean b = false;
-		if (xGrad * yGrad <= (float) 0) /* (1) */
-
+		if (xGrad * yGrad <= 0) {
 			if (abs(xGrad) >= abs(yGrad)) /* (2) */
 			{
 				tmp = abs(xGrad * gradMag);
@@ -476,7 +271,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 				b = tmp >= abs(xGrad * neMag - (yGrad + xGrad) * nMag) /* (3) */
 						&& tmp > abs(xGrad * swMag - (yGrad + xGrad) * sMag); /* (4) */
 			}
-		else {
+		} else {
 			if (abs(xGrad) >= abs(yGrad)) {/* (2) */
 				tmp = abs(xGrad * gradMag);
 				b = tmp >= abs(yGrad * seMag + (xGrad - yGrad) * eMag) /* (3) */
@@ -499,59 +294,13 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		}
 	}
 
-	// NOTE: It is quite feasible to replace the implementation of this method
-	// with one which only loosely approximates the hypot function. I've tested
-	// simple approximations such as Math.abs(x) + Math.abs(y) and they work fine.
-	public float hypot(float x, float y) {
-		return sqrt(x * x + y * y);
+	@Override
+	public synchronized void dispose() {
+		System.out.println("Kernel dispose");
+		super.dispose();
 	}
 
-	public float gaussian(float x, float sigma) {
-		return (float) Math.exp(-(x * x) / (2f * sigma * sigma));
-	}
-
-	/**
-	 * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque mData of type BufferedImage.TYPE_INT_ARGB in which edge pixels are
-	 * white and all other pixels are black.
-	 * 
-	 * @return an mData containing the detected edges, or null if the process method has not yet been called.
-	 */
-
-	public PixelMap getEdgeData() {
-		return mEdgeData;
-	}
-
-	/**
-	 * Sets the edges mData. Calling this method will not change the operation of the edge detector in any way. It is intended to provide a means by which the memory referenced by the detector object
-	 * may be reduced.
-	 * 
-	 * @param edgeData
-	 *            expected (though not required) to be null
-	 */
-
-	public void setEdgeData(PixelMap edgeData) {
-		mEdgeData = edgeData;
-	}
-
-	private void performHysteresis(int low, int high) {
-		// NOTE: this implementation reuses the data array to store both
-		// luminance data from the image, and edge intensity from the processing.
-		// This is done for memory efficiency, other implementations may wish
-		// to separate these functions.
-		Arrays.fill(data, 0);
-
-		int offset = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (data[offset] == 0 && magnitude[offset] >= high) {
-					follow(x, y, offset, low);
-				}
-				offset++;
-			}
-		}
-	}
-
-	private void follow(int x1, int y1, int i1, int threshold) {
+	private void follow(final int x1, final int y1, final int i1, final int threshold) {
 		int x0 = x1 == 0 ? x1 : x1 - 1;
 		int x2 = x1 == width - 1 ? x1 : x1 + 1;
 		int y0 = y1 == 0 ? y1 : y1 - 1;
@@ -569,14 +318,209 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		}
 	}
 
-	private void thresholdEdges() {
-		for (int i = 0; i < picsize; i++) {
-			data[i] = data[i] > 0 ? -1 : 0xff000000;
+	public float gaussian(final float x, final float sigma) {
+		return (float) Math.exp(-(x * x) / (2f * sigma * sigma));
+	}
+
+	/**
+	 * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque
+	 * mData of type BufferedImage.TYPE_INT_ARGB in which edge pixels are white and all other pixels are black.
+	 * 
+	 * @return an mData containing the detected edges, or null if the process method has not yet been called.
+	 */
+
+	@Override
+	public PixelMap getEdgeData() {
+		return mEdgeData;
+	}
+
+	/**
+	 * The radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation. The default
+	 * value is 16.
+	 * 
+	 * @return the Gaussian kernel radius in pixels
+	 */
+
+	@Override
+	public float getGaussianKernelRadius() {
+		return gaussianKernelRadius;
+	}
+
+	/**
+	 * The number of pixels across which the Gaussian kernel is applied. The default value is 16.
+	 * 
+	 * @return the radius of the convolution operation in pixels
+	 */
+
+	@Override
+	public int getGaussianKernelWidth() {
+		return gaussianKernelWidth;
+	}
+
+	/**
+	 * The high threshold for hysteresis. The default value is 7.5.
+	 * 
+	 * @return the high hysteresis threshold
+	 */
+
+	@Override
+	public float getHighThreshold() {
+		return highThreshold;
+	}
+
+	@Override
+	public boolean getKeepRunning() {
+		return mKeepRunning;
+	}
+
+	/**
+	 * The low threshold for hysteresis. The default value is 2.5.
+	 * 
+	 * @return the low hysteresis threshold
+	 */
+
+	@Override
+	public float getLowThreshold() {
+		return lowThreshold;
+	}
+
+	/**
+	 * The mData that provides the luminance data used by this detector to generate edges.
+	 * 
+	 * @return the source mData, or null
+	 */
+
+	@Override
+	public PictureType getSourceImage() {
+		return sourceImage;
+	}
+
+	// NOTE: It is quite feasible to replace the implementation of this method
+	// with one which only loosely approximates the hypot function. I've tested
+	// simple approximations such as Math.abs(x) + Math.abs(y) and they work fine.
+	public float hypot(final float x, final float y) {
+		return sqrt(x * x + y * y);
+	}
+
+	// methods
+
+	private void initArrays() {
+		if (data == null || picsize != data.length) {
+			data = new int[picsize];
+			magnitude = new int[picsize];
+
+			xConv = new float[picsize];
+			yConv = new float[picsize];
+			xGradient = new float[picsize];
+			yGradient = new float[picsize];
 		}
 	}
 
-	private int luminance(float r, float g, float b) {
+	// private utility methods
+
+	/**
+	 * Whether the luminance data extracted from the source image is normalized by linearizing its histogram prior to edge
+	 * extraction. The default value is false.
+	 * 
+	 * @return whether the contrast is normalized
+	 */
+
+	@Override
+	public boolean isContrastNormalized() {
+		return contrastNormalized;
+	}
+
+	// NOTE: The elements of the method below (specifically the technique for
+	// non-maximal suppression and the technique for gradient computation)
+	// are derived from an implementation posted in the following forum (with the
+	// clear intent of others using the code):
+	// http://forum.java.sun.com/thread.jspa?threadID=546211&start=45&tstart=0
+	// My code effectively mimics the algorithm exhibited above.
+	// Since I don't know the providence of the code that was posted it is a
+	// possibility (though I think a very remote one) that this code violates
+	// someone's intellectual property rights. If this concerns you feel free to
+	// contact me for an alternative, though less efficient, implementation.
+
+	private int luminance(final float r, final float g, final float b) {
 		return Math.round(0.299f * r + 0.587f * g + 0.114f * b);
+	}
+
+	private void normalizeContrast() {
+		int[] histogram = new int[256];
+		for (int i = 0; i < data.length; i++) {
+			histogram[data[i]]++;
+		}
+		int[] remap = new int[256];
+		int sum = 0;
+		int j = 0;
+		for (int i = 0; i < histogram.length; i++) {
+			sum += histogram[i];
+			int target = sum * 255 / picsize;
+			for (int k = j + 1; k <= target; k++) {
+				remap[k] = i;
+			}
+			j = target;
+		}
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = remap[data[i]];
+		}
+	}
+
+	private void performHysteresis(final int low, final int high) {
+		// NOTE: this implementation reuses the data array to store both
+		// luminance data from the image, and edge intensity from the processing.
+		// This is done for memory efficiency, other implementations may wish
+		// to separate these functions.
+		Arrays.fill(data, 0);
+
+		int offset = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (data[offset] == 0 && magnitude[offset] >= high) {
+					follow(x, y, offset, low);
+				}
+				offset++;
+			}
+		}
+	}
+
+	public synchronized void process() {
+		// StopWatch stopWatch = new StopWatch(mLogger);
+
+		width = sourceImage.getWidth();
+		height = sourceImage.getHeight();
+		picsize = width * height;
+		initArrays();
+		// stopWatch.logLapTime(Level.INFO, "initArrays");
+
+		readLuminance();
+		// stopWatch.logLapTime(Level.INFO, "readLuminance");
+
+		if (contrastNormalized) {
+			normalizeContrast();
+		}
+		// stopWatch.logLapTime(Level.INFO, "normalizeContrast");
+
+		computeGradients(gaussianKernelRadius, gaussianKernelWidth);
+		// stopWatch.logLapTime(Level.INFO, "computeGradients");
+
+		int low = Math.round(lowThreshold * MAGNITUDE_SCALE);
+		int high = Math.round(highThreshold * MAGNITUDE_SCALE);
+		performHysteresis(low, high);
+		// stopWatch.logLapTime(Level.INFO, "performHysteresis");
+
+		thresholdEdges();
+		// stopWatch.logLapTime(Level.INFO, "thresholdEdges");
+
+		writeEdges(data);
+		// stopWatch.logLapTime(Level.INFO, "writeEdges");
+		// stopWatch.logElapsedTime(Level.INFO, "Process");
+	}
+
+	@Override
+	public void process(final boolean pShowProgress) {
+		process();
 	}
 
 	private void readLuminance() {
@@ -625,46 +569,122 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		// }
 	}
 
-	private void normalizeContrast() {
-		int[] histogram = new int[256];
-		for (int i = 0; i < data.length; i++) {
-			histogram[data[i]]++;
-		}
-		int[] remap = new int[256];
-		int sum = 0;
-		int j = 0;
-		for (int i = 0; i < histogram.length; i++) {
-			sum += histogram[i];
-			int target = sum * 255 / picsize;
-			for (int k = j + 1; k <= target; k++) {
-				remap[k] = i;
-			}
-			j = target;
-		}
-
-		for (int i = 0; i < data.length; i++) {
-			data[i] = remap[data[i]];
-		}
+	@Override
+	public void run() {
+		int x = getGlobalId(0) + gaussianKernelWidth;
+		int y = (getGlobalId(1) + gaussianKernelWidth) * width;
+		computeGradientsNonMaximalSuppression(x, y);
 	}
 
-	public void process(boolean pShowProgress) {
-		process();
+	/**
+	 * Sets whether the contrast is normalized
+	 * 
+	 * @param contrastNormalized
+	 *            true if the contrast should be normalized, false otherwise
+	 */
+
+	@Override
+	public void setContrastNormalized(final boolean contrastNormalized) {
+		this.contrastNormalized = contrastNormalized;
 	}
 
-	public boolean getKeepRunning() {
-		return mKeepRunning;
-	}
-
-	public void setKeepRunning(boolean pKeepRunning) {
-		mKeepRunning = pKeepRunning;
-	}
-
-	private void setData(int pX, int pY, int pValue) {
+	private void setData(final int pX, final int pY, final int pValue) {
 		int index = pX + pY * width;
 		data[index] = pValue;
 	}
 
-	private void writeEdges(int pixels[]) {
+	/**
+	 * Sets the edges mData. Calling this method will not change the operation of the edge detector in any way. It is intended to
+	 * provide a means by which the memory referenced by the detector object may be reduced.
+	 * 
+	 * @param edgeData
+	 *            expected (though not required) to be null
+	 */
+
+	@Override
+	public void setEdgeData(final PixelMap edgeData) {
+		mEdgeData = edgeData;
+	}
+
+	/**
+	 * Sets the radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation.
+	 * 
+	 * @return a Gaussian kernel radius in pixels, must exceed 0.1f.
+	 */
+
+	@Override
+	public void setGaussianKernelRadius(final float gaussianKernelRadius) {
+		if (gaussianKernelRadius < 0.1f) { throw new IllegalArgumentException(); }
+		this.gaussianKernelRadius = gaussianKernelRadius;
+	}
+
+	/**
+	 * The number of pixels across which the Gaussian kernel is applied. This implementation will reduce the radius if the
+	 * contribution of pixel values is deemed negligable, so this is actually a maximum radius.
+	 * 
+	 * @param gaussianKernelWidth
+	 *            a radius for the convolution operation in pixels, at least 2.
+	 */
+
+	@Override
+	public void setGaussianKernelWidth(final int gaussianKernelWidth) {
+		if (gaussianKernelWidth < 2) { throw new IllegalArgumentException(); }
+		this.gaussianKernelWidth = gaussianKernelWidth;
+	}
+
+	/**
+	 * Sets the high threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
+	 * application. It is nonsensical (though not prohibited) for this value to be less than the low threshold value.
+	 * 
+	 * @param threshold
+	 *            a high hysteresis threshold
+	 */
+
+	@Override
+	public void setHighThreshold(final float threshold) {
+		if (threshold < 0) { throw new IllegalArgumentException(); }
+		highThreshold = threshold;
+	}
+
+	@Override
+	public void setKeepRunning(final boolean pKeepRunning) {
+		mKeepRunning = pKeepRunning;
+	}
+
+	/**
+	 * Sets the low threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
+	 * application. It is nonsensical (though not prohibited) for this value to exceed the high threshold value.
+	 * 
+	 * @param threshold
+	 *            a low hysteresis threshold
+	 */
+
+	@Override
+	public void setLowThreshold(final float threshold) {
+		if (threshold < 0) { throw new IllegalArgumentException(); }
+		lowThreshold = threshold;
+	}
+
+	/**
+	 * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before
+	 * the process method is called.
+	 * 
+	 * @param mData
+	 *            a source of luminance data
+	 */
+
+	@Override
+	public void setSourceImage(final PictureType image) {
+		sourceImage = image;
+	}
+
+	private void thresholdEdges() {
+		for (int i = 0; i < picsize; i++) {
+			data[i] = data[i] > 0 ? -1 : 0xff000000;
+		}
+	}
+
+	private void writeEdges(final int pixels[]) {
 		if (mEdgeData == null || mEdgeData.getWidth() != width || mEdgeData.getHeight() != height) {
 			mEdgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
 		}

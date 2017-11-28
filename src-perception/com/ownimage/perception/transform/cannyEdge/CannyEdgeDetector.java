@@ -7,14 +7,12 @@ package com.ownimage.perception.transform.cannyEdge;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.util.IPictureReadOnly;
-import com.ownimage.perception.util.StopWatch;
-import com.ownimage.perception.util.Version;
 
 /**
  * <p>
@@ -28,8 +26,8 @@ import com.ownimage.perception.util.Version;
  * </p>
  * 
  * <p>
- * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of shortcomings, but remains an effective tool in many scenarios.
- * <em>This class is designed
+ * This class provides a configurable implementation of the Canny edge detection algorithm. This classic algorithm has a number of
+ * shortcomings, but remains an effective tool in many scenarios. <em>This class is designed
  * for single threaded use only.</em>
  * </p>
  * 
@@ -79,7 +77,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	private int picsize;
 	private int[] data;
 	private int[] magnitude;
-	private IPictureReadOnly sourceImage;
+	private PictureType sourceImage;
 
 	private float gaussianKernelRadius;
 	private float lowThreshold;
@@ -98,15 +96,6 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 
 	// constructors
 
-	/**
-	 * Constructs a new detector with default parameters.
-	 */
-
-	CannyEdgeDetector(CannyEdgeTransform pTransform) {
-		this();
-		mTransform = pTransform;
-	}
-
 	private CannyEdgeDetector() {
 		lowThreshold = 2.5f;
 		highThreshold = 7.5f;
@@ -117,6 +106,15 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 		mKeepRunning = true;
 	}
 
+	/**
+	 * Constructs a new detector with default parameters.
+	 */
+
+	CannyEdgeDetector(final CannyEdgeTransform pTransform) {
+		this();
+		mTransform = pTransform;
+	}
+
 	// accessors
 
 	/*
@@ -125,201 +123,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getLowThreshold()
 	 */
 
-	@Override
-	public float getLowThreshold() {
-		return lowThreshold;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setLowThreshold(float)
-	 */
-
-	@Override
-	public void setLowThreshold(float threshold) {
-		if (threshold < 0)
-			throw new IllegalArgumentException();
-		lowThreshold = threshold;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getHighThreshold()
-	 */
-
-	@Override
-	public float getHighThreshold() {
-		return highThreshold;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setHighThreshold(float)
-	 */
-
-	@Override
-	public void setHighThreshold(float threshold) {
-		if (threshold < 0)
-			throw new IllegalArgumentException();
-		highThreshold = threshold;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getGaussianKernelWidth()
-	 */
-
-	@Override
-	public int getGaussianKernelWidth() {
-		return gaussianKernelWidth;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setGaussianKernelWidth(int)
-	 */
-
-	@Override
-	public void setGaussianKernelWidth(int gaussianKernelWidth) {
-		if (gaussianKernelWidth < 2)
-			throw new IllegalArgumentException();
-		this.gaussianKernelWidth = gaussianKernelWidth;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getGaussianKernelRadius()
-	 */
-
-	@Override
-	public float getGaussianKernelRadius() {
-		return gaussianKernelRadius;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setGaussianKernelRadius(float)
-	 */
-
-	@Override
-	public void setGaussianKernelRadius(float gaussianKernelRadius) {
-		if (gaussianKernelRadius < 0.1f)
-			throw new IllegalArgumentException();
-		this.gaussianKernelRadius = gaussianKernelRadius;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#isContrastNormalized()
-	 */
-
-	@Override
-	public boolean isContrastNormalized() {
-		return contrastNormalized;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setContrastNormalized(boolean)
-	 */
-
-	@Override
-	public void setContrastNormalized(boolean contrastNormalized) {
-		this.contrastNormalized = contrastNormalized;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getSourceImage()
-	 */
-
-	@Override
-	public IPictureReadOnly getSourceImage() {
-		return sourceImage;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setSourceImage(com.ownimage.perception.util.IPictureReadOnly)
-	 */
-
-	@Override
-	public void setSourceImage(IPictureReadOnly image) {
-		sourceImage = image;
-	}
-
-	// methods
-
-	public void process() {
-		StopWatch stopWatch = new StopWatch(mLogger);
-
-		width = sourceImage.getWidth();
-		height = sourceImage.getHeight();
-		picsize = width * height;
-		initArrays();
-		stopWatch.logLapTime(Level.INFO, "initArrays");
-
-		readLuminance();
-		stopWatch.logLapTime(Level.INFO, "readLuminance");
-
-		if (contrastNormalized) {
-			normalizeContrast();
-		}
-		stopWatch.logLapTime(Level.INFO, "normalizeContrast");
-
-		computeGradients(gaussianKernelRadius, gaussianKernelWidth);
-		stopWatch.logLapTime(Level.INFO, "computeGradients");
-
-		int low = Math.round(lowThreshold * MAGNITUDE_SCALE);
-		int high = Math.round(highThreshold * MAGNITUDE_SCALE);
-		performHysteresis(low, high);
-		stopWatch.logLapTime(Level.INFO, "performHysteresis");
-
-		thresholdEdges();
-		stopWatch.logLapTime(Level.INFO, "thresholdEdges");
-
-		writeEdges(data);
-		stopWatch.logLapTime(Level.INFO, "writeEdges");
-		stopWatch.logElapsedTime(Level.INFO, "Process");
-	}
-
-	// private utility methods
-
-	private void initArrays() {
-		if (data == null || picsize != data.length) {
-			data = new int[picsize];
-			magnitude = new int[picsize];
-
-			xConv = new float[picsize];
-			yConv = new float[picsize];
-			xGradient = new float[picsize];
-			yGradient = new float[picsize];
-		}
-	}
-
-	// NOTE: The elements of the method below (specifically the technique for
-	// non-maximal suppression and the technique for gradient computation)
-	// are derived from an implementation posted in the following forum (with the
-	// clear intent of others using the code):
-	// http://forum.java.sun.com/thread.jspa?threadID=546211&start=45&tstart=0
-	// My code effectively mimics the algorithm exhibited above.
-	// Since I don't know the providence of the code that was posted it is a
-	// possibility (though I think a very remote one) that this code violates
-	// someone's intellectual property rights. If this concerns you feel free to
-	// contact me for an alternative, though less efficient, implementation.
-
-	private void computeGradients(float kernelRadius, int kernelWidth) {
+	private void computeGradients(final float kernelRadius, final int kernelWidth) {
 
 		// generate the gaussian convolution masks
 		float kernel[] = new float[kernelWidth];
@@ -327,8 +131,9 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 		int kwidth;
 		for (kwidth = 0; kwidth < kernelWidth; kwidth++) {
 			float g1 = gaussian(kwidth, kernelRadius);
-			if (g1 <= GAUSSIAN_CUT_OFF && kwidth >= 2)
+			if (g1 <= GAUSSIAN_CUT_OFF && kwidth >= 2) {
 				break;
+			}
 			float g2 = gaussian(kwidth - 0.5f, kernelRadius);
 			float g3 = gaussian(kwidth + 0.5f, kernelRadius);
 			kernel[kwidth] = (g1 + g2 + g3) / 3f / (2f * (float) Math.PI * kernelRadius * kernelRadius);
@@ -365,8 +170,9 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 			for (int y = initY; y < maxY; y += width) {
 				float sum = 0f;
 				int index = x + y;
-				for (int i = 1; i < kwidth; i++)
+				for (int i = 1; i < kwidth; i++) {
 					sum += diffKernel[i] * (yConv[index - i] - yConv[index + i]);
+				}
 
 				xGradient[index] = sum;
 			}
@@ -419,28 +225,34 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 				float nwMag = hypot(xGradient[indexNW], yGradient[indexNW]);
 				float tmp;
 				/*
-				 * An explanation of what's happening here, for those who want to understand the source: This performs the "non-maximal supression" phase of the Canny edge detection in which we need
-				 * to compare the gradient magnitude to that in the direction of the gradient; only if the value is a local maximum do we consider the point as an edge candidate.
+				 * An explanation of what's happening here, for those who want to understand the source: This performs the
+				 * "non-maximal supression" phase of the Canny edge detection in which we need to compare the gradient magnitude to
+				 * that in the direction of the gradient; only if the value is a local maximum do we consider the point as an edge
+				 * candidate.
 				 * 
-				 * We need to break the comparison into a number of different cases depending on the gradient direction so that the appropriate values can be used. To avoid computing the gradient
-				 * direction, we use two simple comparisons: first we check that the partial derivatives have the same sign (1) and then we check which is larger (2). As a consequence, we have reduced
-				 * the problem to one of four identical cases that each test the central gradient magnitude against the values at two points with 'identical support'; what this means is that the
-				 * geometry required to accurately interpolate the magnitude of gradient function at those points has an identical geometry (upto right-angled-rotation/reflection).
+				 * We need to break the comparison into a number of different cases depending on the gradient direction so that the
+				 * appropriate values can be used. To avoid computing the gradient direction, we use two simple comparisons: first
+				 * we check that the partial derivatives have the same sign (1) and then we check which is larger (2). As a
+				 * consequence, we have reduced the problem to one of four identical cases that each test the central gradient
+				 * magnitude against the values at two points with 'identical support'; what this means is that the geometry
+				 * required to accurately interpolate the magnitude of gradient function at those points has an identical geometry
+				 * (upto right-angled-rotation/reflection).
 				 * 
-				 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by multiplying both sides of each inequality by the greater of the two partial
-				 * derivatives. The common comparand is stored in a temporary variable (3) and reused in the mirror case (4).
+				 * When comparing the central gradient to the two interpolated values, we avoid performing any divisions by
+				 * multiplying both sides of each inequality by the greater of the two partial derivatives. The common comparand is
+				 * stored in a temporary variable (3) and reused in the mirror case (4).
 				 */
-				if (xGrad * yGrad <= (float) 0 /* (1) */
-				? Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
-				? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /* (3) */
-						&& tmp > Math.abs(yGrad * swMag - (xGrad + yGrad) * wMag) /* (4) */
-				: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * neMag - (yGrad + xGrad) * nMag) /* (3) */
-						&& tmp > Math.abs(xGrad * swMag - (yGrad + xGrad) * sMag) /* (4) */
-				: Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
-				? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * seMag + (xGrad - yGrad) * eMag) /* (3) */
-						&& tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /* (4) */
-				: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /* (3) */
-						&& tmp > Math.abs(xGrad * nwMag + (yGrad - xGrad) * nMag) /* (4) */
+				if (xGrad * yGrad <= 0 /* (1) */
+						? Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
+								? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * neMag - (xGrad + yGrad) * eMag) /* (3) */
+										&& tmp > Math.abs(yGrad * swMag - (xGrad + yGrad) * wMag) /* (4) */
+								: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * neMag - (yGrad + xGrad) * nMag) /* (3) */
+										&& tmp > Math.abs(xGrad * swMag - (yGrad + xGrad) * sMag) /* (4) */
+						: Math.abs(xGrad) >= Math.abs(yGrad) /* (2) */
+								? (tmp = Math.abs(xGrad * gradMag)) >= Math.abs(yGrad * seMag + (xGrad - yGrad) * eMag) /* (3) */
+										&& tmp > Math.abs(yGrad * nwMag + (xGrad - yGrad) * wMag) /* (4) */
+								: (tmp = Math.abs(yGrad * gradMag)) >= Math.abs(xGrad * seMag + (yGrad - xGrad) * sMag) /* (3) */
+										&& tmp > Math.abs(xGrad * nwMag + (yGrad - xGrad) * nMag) /* (4) */
 				) {
 					magnitude[index] = gradMag >= MAGNITUDE_LIMIT ? MAGNITUDE_MAX : (int) (MAGNITUDE_SCALE * gradMag);
 					// NOTE: The orientation of the edge is not employed by this
@@ -453,58 +265,23 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 		}
 	}
 
-	// NOTE: It is quite feasible to replace the implementation of this method
-	// with one which only loosely approximates the hypot function. I've tested
-	// simple approximations such as Math.abs(x) + Math.abs(y) and they work fine.
-	private float hypot(float x, float y) {
-		return (float) Math.hypot(x, y);
-	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setLowThreshold(float)
+	 */
 
-	private float gaussian(float x, float sigma) {
-		return (float) Math.exp(-(x * x) / (2f * sigma * sigma));
+	@Override
+	public void dispose() {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getEdgeData()
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getHighThreshold()
 	 */
 
-	@Override
-	public PixelMap getEdgeData() {
-		return mEdgeData;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setEdgeData(com.ownimage.perception.pixelMap.PixelMap)
-	 */
-
-	@Override
-	public void setEdgeData(PixelMap edgeData) {
-		mEdgeData = edgeData;
-	}
-
-	private void performHysteresis(int low, int high) {
-		// NOTE: this implementation reuses the data array to store both
-		// luminance data from the image, and edge intensity from the processing.
-		// This is done for memory efficiency, other implementations may wish
-		// to separate these functions.
-		Arrays.fill(data, 0);
-
-		int offset = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				if (data[offset] == 0 && magnitude[offset] >= high) {
-					follow(x, y, offset, low);
-				}
-				offset++;
-			}
-		}
-	}
-
-	private void follow(int x1, int y1, int i1, int threshold) {
+	private void follow(final int x1, final int y1, final int i1, final int threshold) {
 		int x0 = x1 == 0 ? x1 : x1 - 1;
 		int x2 = x1 == width - 1 ? x1 : x1 + 1;
 		int y0 = y1 == 0 ? y1 : y1 - 1;
@@ -522,14 +299,241 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 		}
 	}
 
-	private void thresholdEdges() {
-		for (int i = 0; i < picsize; i++) {
-			data[i] = data[i] > 0 ? -1 : 0xff000000;
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setHighThreshold(float)
+	 */
+
+	private float gaussian(final float x, final float sigma) {
+		return (float) Math.exp(-(x * x) / (2f * sigma * sigma));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getGaussianKernelWidth()
+	 */
+
+	@Override
+	public PixelMap getEdgeData() {
+		return mEdgeData;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setGaussianKernelWidth(int)
+	 */
+
+	@Override
+	public float getGaussianKernelRadius() {
+		return gaussianKernelRadius;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getGaussianKernelRadius()
+	 */
+
+	@Override
+	public int getGaussianKernelWidth() {
+		return gaussianKernelWidth;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setGaussianKernelRadius(float)
+	 */
+
+	@Override
+	public float getHighThreshold() {
+		return highThreshold;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#isContrastNormalized()
+	 */
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getKeepRunning()
+	 */
+	@Override
+	public boolean getKeepRunning() {
+		return mKeepRunning;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setContrastNormalized(boolean)
+	 */
+
+	@Override
+	public float getLowThreshold() {
+		return lowThreshold;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getSourceImage()
+	 */
+
+	@Override
+	public PictureType getSourceImage() {
+		return sourceImage;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setSourceImage(com.ownimage.perception.util.IPictureReadOnly)
+	 */
+
+	// NOTE: It is quite feasible to replace the implementation of this method
+	// with one which only loosely approximates the hypot function. I've tested
+	// simple approximations such as Math.abs(x) + Math.abs(y) and they work fine.
+	private float hypot(final float x, final float y) {
+		return (float) Math.hypot(x, y);
+	}
+
+	// methods
+
+	private void initArrays() {
+		if (data == null || picsize != data.length) {
+			data = new int[picsize];
+			magnitude = new int[picsize];
+
+			xConv = new float[picsize];
+			yConv = new float[picsize];
+			xGradient = new float[picsize];
+			yGradient = new float[picsize];
 		}
 	}
 
-	private int luminance(float r, float g, float b) {
+	// private utility methods
+
+	@Override
+	public boolean isContrastNormalized() {
+		return contrastNormalized;
+	}
+
+	// NOTE: The elements of the method below (specifically the technique for
+	// non-maximal suppression and the technique for gradient computation)
+	// are derived from an implementation posted in the following forum (with the
+	// clear intent of others using the code):
+	// http://forum.java.sun.com/thread.jspa?threadID=546211&start=45&tstart=0
+	// My code effectively mimics the algorithm exhibited above.
+	// Since I don't know the providence of the code that was posted it is a
+	// possibility (though I think a very remote one) that this code violates
+	// someone's intellectual property rights. If this concerns you feel free to
+	// contact me for an alternative, though less efficient, implementation.
+
+	private int luminance(final float r, final float g, final float b) {
 		return Math.round(0.299f * r + 0.587f * g + 0.114f * b);
+	}
+
+	private void normalizeContrast() {
+		int[] histogram = new int[256];
+		for (int i = 0; i < data.length; i++) {
+			histogram[data[i]]++;
+		}
+		int[] remap = new int[256];
+		int sum = 0;
+		int j = 0;
+		for (int i = 0; i < histogram.length; i++) {
+			sum += histogram[i];
+			int target = sum * 255 / picsize;
+			for (int k = j + 1; k <= target; k++) {
+				remap[k] = i;
+			}
+			j = target;
+		}
+
+		for (int i = 0; i < data.length; i++) {
+			data[i] = remap[data[i]];
+		}
+	}
+
+	private void performHysteresis(final int low, final int high) {
+		// NOTE: this implementation reuses the data array to store both
+		// luminance data from the image, and edge intensity from the processing.
+		// This is done for memory efficiency, other implementations may wish
+		// to separate these functions.
+		Arrays.fill(data, 0);
+
+		int offset = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (data[offset] == 0 && magnitude[offset] >= high) {
+					follow(x, y, offset, low);
+				}
+				offset++;
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getEdgeData()
+	 */
+
+	public void process() {
+		// StopWatch stopWatch = new StopWatch(mLogger);
+
+		width = sourceImage.getWidth();
+		height = sourceImage.getHeight();
+		picsize = width * height;
+		initArrays();
+		// stopWatch.logLapTime(Level.INFO, "initArrays");
+
+		readLuminance();
+		// stopWatch.logLapTime(Level.INFO, "readLuminance");
+
+		if (contrastNormalized) {
+			normalizeContrast();
+		}
+		// stopWatch.logLapTime(Level.INFO, "normalizeContrast");
+
+		computeGradients(gaussianKernelRadius, gaussianKernelWidth);
+		// stopWatch.logLapTime(Level.INFO, "computeGradients");
+
+		int low = Math.round(lowThreshold * MAGNITUDE_SCALE);
+		int high = Math.round(highThreshold * MAGNITUDE_SCALE);
+		performHysteresis(low, high);
+		// stopWatch.logLapTime(Level.INFO, "performHysteresis");
+
+		thresholdEdges();
+		// stopWatch.logLapTime(Level.INFO, "thresholdEdges");
+
+		writeEdges(data);
+		// stopWatch.logLapTime(Level.INFO, "writeEdges");
+		// stopWatch.logElapsedTime(Level.INFO, "Process");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setEdgeData(com.ownimage.perception.pixelMap.PixelMap)
+	 */
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#process(boolean)
+	 */
+	@Override
+	public void process(final boolean pShowProgress) {
+		process();
 	}
 
 	private void readLuminance() {
@@ -578,46 +582,37 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 		// }
 	}
 
-	private void normalizeContrast() {
-		int[] histogram = new int[256];
-		for (int i = 0; i < data.length; i++) {
-			histogram[data[i]]++;
-		}
-		int[] remap = new int[256];
-		int sum = 0;
-		int j = 0;
-		for (int i = 0; i < histogram.length; i++) {
-			sum += histogram[i];
-			int target = sum * 255 / picsize;
-			for (int k = j + 1; k <= target; k++) {
-				remap[k] = i;
-			}
-			j = target;
-		}
-
-		for (int i = 0; i < data.length; i++) {
-			data[i] = remap[data[i]];
-		}
+	@Override
+	public void setContrastNormalized(final boolean contrastNormalized) {
+		this.contrastNormalized = contrastNormalized;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#process(boolean)
-	 */
-	@Override
-	public void process(boolean pShowProgress) {
-		process();
+	private void setData(final int pX, final int pY, final int pValue) {
+		int index = pX + pY * width;
+		data[index] = pValue;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#getKeepRunning()
-	 */
 	@Override
-	public boolean getKeepRunning() {
-		return mKeepRunning;
+	public void setEdgeData(final PixelMap edgeData) {
+		mEdgeData = edgeData;
+	}
+
+	@Override
+	public void setGaussianKernelRadius(final float gaussianKernelRadius) {
+		if (gaussianKernelRadius < 0.1f) { throw new IllegalArgumentException(); }
+		this.gaussianKernelRadius = gaussianKernelRadius;
+	}
+
+	@Override
+	public void setGaussianKernelWidth(final int gaussianKernelWidth) {
+		if (gaussianKernelWidth < 2) { throw new IllegalArgumentException(); }
+		this.gaussianKernelWidth = gaussianKernelWidth;
+	}
+
+	@Override
+	public void setHighThreshold(final float threshold) {
+		if (threshold < 0) { throw new IllegalArgumentException(); }
+		highThreshold = threshold;
 	}
 
 	/*
@@ -626,16 +621,28 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setKeepRunning(boolean)
 	 */
 	@Override
-	public void setKeepRunning(boolean pKeepRunning) {
+	public void setKeepRunning(final boolean pKeepRunning) {
 		mKeepRunning = pKeepRunning;
 	}
 
-	private void setData(int pX, int pY, int pValue) {
-		int index = pX + pY * width;
-		data[index] = pValue;
+	@Override
+	public void setLowThreshold(final float threshold) {
+		if (threshold < 0) { throw new IllegalArgumentException(); }
+		lowThreshold = threshold;
 	}
 
-	private void writeEdges(int pixels[]) {
+	@Override
+	public void setSourceImage(final PictureType image) {
+		sourceImage = image;
+	}
+
+	private void thresholdEdges() {
+		for (int i = 0; i < picsize; i++) {
+			data[i] = data[i] > 0 ? -1 : 0xff000000;
+		}
+	}
+
+	private void writeEdges(final int pixels[]) {
 		if (mEdgeData == null || mEdgeData.getWidth() != width || mEdgeData.getHeight() != height) {
 			mEdgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
 		}
@@ -648,9 +655,5 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 			}
 		}
 
-	}
-
-	@Override
-	public void dispose() {
 	}
 }

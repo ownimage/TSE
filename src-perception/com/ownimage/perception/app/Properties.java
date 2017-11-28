@@ -1,6 +1,7 @@
 package com.ownimage.perception.app;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -9,8 +10,10 @@ import com.ownimage.framework.control.control.BooleanControl.BooleanProperty;
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
 import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.IntegerControl.IntegerProperty;
+import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.layout.VFlowLayout;
@@ -24,7 +27,7 @@ import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
-public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist {
+public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist, IControlChangeListener {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	private final static Logger mLogger = Framework.getLogger();
@@ -50,9 +53,20 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 	private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
 	private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100, 1, 100000, 1000);
 
+	private final BooleanControl mUseOpenCL = new BooleanControl("Use OpenCL", "useOpenCL", mContainer, true);
+
 	public Properties() {
 		Framework.logEntry(mLogger);
+		mContainer.addControlChangeListener(this);
 		Framework.logExit(mLogger);
+	}
+
+	@Override
+	public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+		if (pControl == mUseJTP) {
+			setEnabled(mUseJTP.getValue(), mRenderBatchSize, mRenderJTPBatchSize, mRenderThreadPoolSize);
+		}
+
 	}
 
 	@Override
@@ -61,7 +75,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 
 		VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
 		VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
-		VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize);
+		VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
 
 		view.addTab("Defaults", defaults);
 		view.addTab("Colors", colors);
@@ -170,6 +184,10 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 		return ViewFactory.getInstance().getPropertiesUndoRedoBuffer();
 	}
 
+	public boolean useOpenCL() {
+		return mUseOpenCL.getValue();
+	}
+
 	@Override
 	public boolean isPersistent() {
 		return true;
@@ -179,6 +197,10 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist 
 	public void read(final IPersistDB pDB, final String pId) {
 		mContainer.read(pDB, pId);
 		ViewFactory.getInstance().getViewFactoryPropertiesViewable().read(pDB, pId);
+	}
+
+	private void setEnabled(final boolean pEnabled, final IControl... pControls) {
+		Arrays.stream(pControls).forEach(c -> c.setEnabled(pEnabled));
 	}
 
 	public boolean useAutoLoadTransformFile() {

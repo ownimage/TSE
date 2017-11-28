@@ -7,9 +7,10 @@ package com.ownimage.perception.transform.cannyEdge;
 
 import java.util.logging.Logger;
 
-import com.ownimage.perception.Perception;
+import com.ownimage.framework.util.Version;
+import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.util.Version;
 
 public class CannyEdgeDetectorFactory {
 
@@ -17,17 +18,24 @@ public class CannyEdgeDetectorFactory {
 	@SuppressWarnings("unused")
 	private final static Logger mLogger = Logger.getLogger(CannyEdgeDetector.class.getName());
 
-	public static ICannyEdgeDetector createInstance(CannyEdgeTransform pTransform) {
+	public static ICannyEdgeDetector createInstance(final CannyEdgeTransform pTransform) {
 
-		if (Perception.getInstanceProperties().useOpenCL()) {
+		if (getProperties().useOpenCL()) {
+			System.out.println("####################  OpenCL");
 			return new CannyEdgeDetectorOpenCL(pTransform);
 		}
 
-		if (Perception.getInstanceProperties().useThreads()) {
+		if (getProperties().useJTP()) {
+			System.out.println("####################  JTP");
 			return new CannyEdgeDetectorJavaThreads(pTransform);
 		}
 
+		System.out.println("####################  Normal");
 		return new CannyEdgeDetector(pTransform);
 
+	}
+
+	private static Properties getProperties() {
+		return Perception.getPerception().getProperties();
 	}
 }
