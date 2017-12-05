@@ -14,6 +14,9 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.queue.ExecuteQueue;
+import com.ownimage.framework.queue.IJob;
+import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -194,48 +197,58 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	private PictureType updatePreview() {
 		int size = getSize();
 
-		ICannyEdgeDetector detector = null;
-		PictureType inputPicture;
+		Job job = new Job("Update CannyEdgePreview", IJob.Priority.HIGHEST, mPreviewPicture) {
 
-		try {
-			final int width = mTransform.getWidth();
-			final int height = mTransform.getHeight();
-			inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
-			for (int x = 0; x < size; x++) {
-				for (int y = 0; y < size; y++) {
-					ITransformResult tr = new SingleTransformResult(
-							((double) (x + mPreviewPositionX.getValue())) / width,
-							((double) (y + mPreviewPositionY.getValue())) / height);
-					ITransform transform = getTransform().getPreviousTransform();
-					while (transform != null) {
-						transform.transform(tr);
-						transform = transform.getPreviousTransform();
+			@Override
+			public void doJob() {
+				super.doJob();
+
+				ICannyEdgeDetector detector = null;
+				PictureType inputPicture;
+				try {
+					final int width = mTransform.getWidth();
+					final int height = mTransform.getHeight();
+					inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+					for (int x = 0; x < size; x++) {
+						for (int y = 0; y < size; y++) {
+							ITransformResult tr = new SingleTransformResult(
+									((double) (x + mPreviewPositionX.getValue())) / width,
+									((double) (y + mPreviewPositionY.getValue())) / height);
+							ITransform transform = getTransform().getPreviousTransform();
+							while (transform != null) {
+								transform.transform(tr);
+								transform = transform.getPreviousTransform();
+							}
+							inputPicture.setColor(x, y, tr.getColor());
+						}
 					}
-					inputPicture.setColor(x, y, tr.getColor());
+
+					detector = CannyEdgeDetectorFactory.createInstance(getTransform(), CannyEdgeDetectorFactory.JAVA_THREADS);
+					detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
+					detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
+					detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
+					detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
+					detector.setContrastNormalized(mContrastNormalized.getValue());
+
+					detector.setSourceImage(inputPicture);
+					detector.process(false);
+
+					if (detector.getKeepRunning()) {
+						// only set the mData if the detector was allowed to finish
+						generatePreviewPictureFromData(detector.getEdgeData());
+						// mPreviewControl.getValue().setValue(mPreviewPicture);
+					}
+				} finally {
+					if (detector != null) {
+						detector.dispose();
+					}
 				}
 			}
 
-			detector = CannyEdgeDetectorFactory.createInstance(getTransform());
-			// new CannyEdgeDetectorJavaThreads(getTransform());
-			detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
-			detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
-			detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
-			detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
-			detector.setContrastNormalized(mContrastNormalized.getValue());
+		};
 
-			detector.setSourceImage(inputPicture);
-			detector.process(false);
-
-			if (detector.getKeepRunning()) {
-				// only set the mData if the detector was allowed to finish
-				generatePreviewPictureFromData(detector.getEdgeData());
-				// mPreviewControl.getValue().setValue(mPreviewPicture);
-			}
-		} finally {
-			if (detector != null) {
-				detector.dispose();
-			}
-		}
+		job.submit();
+		System.out.println(ExecuteQueue.getInstance().getDepth());
 
 		mLogger.finest("at end");
 		return mPreviewPicture.getValue();

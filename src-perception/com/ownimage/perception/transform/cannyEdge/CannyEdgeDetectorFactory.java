@@ -18,14 +18,28 @@ public class CannyEdgeDetectorFactory {
 	@SuppressWarnings("unused")
 	private final static Logger mLogger = Logger.getLogger(CannyEdgeDetector.class.getName());
 
-	public static ICannyEdgeDetector createInstance(final CannyEdgeTransform pTransform) {
+	public static final int JAVA_THREADS = 1;
+	public static final int OPENCL = 2;
 
+	public static ICannyEdgeDetector createInstance(final CannyEdgeTransform pTransform) {
 		if (getProperties().useOpenCL()) {
 			System.out.println("####################  OpenCL");
 			return new CannyEdgeDetectorOpenCL(pTransform);
 		}
-
 		if (getProperties().useJTP()) {
+			System.out.println("####################  JTP");
+			return new CannyEdgeDetectorJavaThreads(pTransform);
+		}
+		System.out.println("####################  Normal");
+		return new CannyEdgeDetector(pTransform);
+	}
+
+	public static ICannyEdgeDetector createInstance(final CannyEdgeTransform pTransform, final int pAllowedTypes) {
+		if (getProperties().useOpenCL() && (pAllowedTypes & OPENCL) != 0) {
+			System.out.println("####################  OpenCL");
+			return new CannyEdgeDetectorOpenCL(pTransform);
+		}
+		if (getProperties().useJTP() && (pAllowedTypes & JAVA_THREADS) != 0) {
 			System.out.println("####################  JTP");
 			return new CannyEdgeDetectorJavaThreads(pTransform);
 		}

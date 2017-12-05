@@ -204,12 +204,11 @@ public class Job implements IJob {
 		mStatus = pStatus;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Submits the job to the ExecuteQueue to be run in the background with the specified priority. This will call the ExecuteQueues
+	 * runBackground which control the interaction with other running jobs.
 	 * 
-	 * @see com.ownimage.perception.queue.IJob#runBackground(int)
 	 */
-	@Override
 	public void submit() {
 		Framework.logEntry(mLogger);
 
@@ -232,7 +231,6 @@ public class Job implements IJob {
 		Framework.logEntry(mLogger);
 
 		synchronized (mStatus) {
-			if (getStatus() != Status.RUNNING) { throw new IllegalStateException("Can only terminate a RUNNING job, this job  is " + getStatus()); }
 			setStatus(Status.TERMINATED);
 		}
 

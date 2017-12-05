@@ -129,15 +129,6 @@ public interface IJob {
 	public Status getStatus();
 
 	/**
-	 * Submits the job to the ExecuteQueue to be run in the background with the specified priority. This will call the ExecuteQueues
-	 * runBackground which control the interaction with other running jobs.
-	 * 
-	 * @param pPriority
-	 *            the priority
-	 */
-	public void submit();
-
-	/**
 	 * Sends a request to terminate the job; this must only be called by the ExecuteQueue. Whilst the job is RUNNING or QUEUED
 	 * terminate can be called. The job should terminate in a timely fashion and release all unneeded resources.
 	 */
