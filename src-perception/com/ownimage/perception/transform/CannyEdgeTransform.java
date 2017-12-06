@@ -217,7 +217,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
 	private void generateEdges() {
 		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
-		ActionControl cancel = ActionControl.create("Cancel", NullContainer, null);
+		ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
 		getGenerateEdgesDialog().showDialog(cancel, ok);
 	}
 

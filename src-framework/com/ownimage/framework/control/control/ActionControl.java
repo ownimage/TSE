@@ -11,6 +11,7 @@ import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.type.BooleanType;
 import com.ownimage.framework.control.type.IMetaType;
 import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -32,6 +33,7 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
 
 	public ActionControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final IAction pAction) {
 		super(pDisplayName, pPropertyName, pContainer, new BooleanType(false));
+		Framework.checkNotNull(mLogger, pAction, "pAction");
 		mAction = pAction;
 	}
 
