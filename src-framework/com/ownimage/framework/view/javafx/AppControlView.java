@@ -250,9 +250,11 @@ public class AppControlView extends Application implements IAppControlView {
 				// new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
 				// new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
 				new ExtensionFilter("All Files", "*.*"));
-		//
-		fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
-		fileChooser.setInitialFileName(pFileControl.getFile().getName());
+
+		if (pFileControl.getFile() != null) {
+			fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
+			fileChooser.setInitialFileName(pFileControl.getFile().getName());
+		}
 		File selectedFile = fileChooser.showOpenDialog(mPrimaryStage);
 		if (selectedFile != null) {
 			pFileControl.setValue(selectedFile.getAbsolutePath());

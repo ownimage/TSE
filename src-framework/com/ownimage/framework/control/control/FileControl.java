@@ -51,7 +51,8 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
 
 	public synchronized File getFile() {
 		if (mFile == null) {
-			mFile = new File(getValue());
+			String file = getValue();
+			mFile = file != null ? new File(file) : null;
 		}
 		return mFile;
 	}
