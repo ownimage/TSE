@@ -1,5 +1,7 @@
 package com.ownimage.perception.transform.cannyEdge;
 
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
+
 import java.awt.Color;
 import java.util.logging.Logger;
 
@@ -15,8 +17,6 @@ import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.queue.ExecuteQueue;
-import com.ownimage.framework.queue.IJob;
-import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -27,10 +27,8 @@ import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.PixelMap;
-import com.ownimage.perception.render.ITransformResult;
-import com.ownimage.perception.render.SingleTransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.transform.ITransform;
+import com.ownimage.perception.transform.CropTransform;
 
 /**
  * This is an Edge Transform Control Container Dialog
@@ -196,62 +194,41 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
 	private PictureType updatePreview() {
 		int size = getSize();
-
-		Job job = new Job("Update CannyEdgePreview", IJob.Priority.HIGHEST, mPreviewPicture) {
-
-			@Override
-			public void doJob() {
-				super.doJob();
-
-				ICannyEdgeDetector detector = null;
-				PictureType inputPicture;
-				try {
-					final int width = mTransform.getWidth();
-					final int height = mTransform.getHeight();
-					inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
-					for (int x = 0; x < size; x++) {
-						for (int y = 0; y < size; y++) {
-							ITransformResult tr = new SingleTransformResult(
-									((double) (x + mPreviewPositionX.getValue())) / width,
-									((double) (y + mPreviewPositionY.getValue())) / height);
-							ITransform transform = getTransform().getPreviousTransform();
-							while (transform != null) {
-								transform.transform(tr);
-								transform = transform.getPreviousTransform();
-							}
-							inputPicture.setColor(x, y, tr.getColor());
-						}
-					}
-
-					detector = CannyEdgeDetectorFactory.createInstance(getTransform(), CannyEdgeDetectorFactory.JAVA_THREADS);
-					detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
-					detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
-					detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
-					detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
-					detector.setContrastNormalized(mContrastNormalized.getValue());
-
-					detector.setSourceImage(inputPicture);
-					detector.process(false);
-
-					if (detector.getKeepRunning()) {
-						// only set the mData if the detector was allowed to finish
-						generatePreviewPictureFromData(detector.getEdgeData());
-						// mPreviewControl.getValue().setValue(mPreviewPicture);
-					}
-				} finally {
-					if (detector != null) {
-						detector.dispose();
-					}
-				}
-			}
-
-		};
-
-		job.submit();
+		PictureType inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+		PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
+		CropTransform crop = new CropTransform(Perception.getPerception());
+		crop.setPreviousTransform(getTransform().getPreviousTransform());
+		crop.setCrop(getPreviewRectangle(), true);
+		Perception.getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()));
 		System.out.println(ExecuteQueue.getInstance().getDepth());
 
 		mLogger.finest("at end");
 		return mPreviewPicture.getValue();
+	}
+
+	private void updatePreview(final PictureType pInputPicture) {
+		ICannyEdgeDetector detector = null;
+		try {
+			detector = CannyEdgeDetectorFactory.createInstance(getTransform(), CannyEdgeDetectorFactory.JAVA_THREADS);
+			detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
+			detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
+			detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
+			detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
+			detector.setContrastNormalized(mContrastNormalized.getValue());
+
+			detector.setSourceImage(pInputPicture);
+			detector.process(false);
+
+			if (detector.getKeepRunning()) {
+				// only set the mData if the detector was allowed to finish
+				generatePreviewPictureFromData(detector.getEdgeData());
+				// mPreviewControl.getValue().setValue(mPreviewPicture);
+			}
+		} finally {
+			if (detector != null) {
+				detector.dispose();
+			}
+		}
 	}
 
 	@Override

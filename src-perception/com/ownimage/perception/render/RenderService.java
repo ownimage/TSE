@@ -175,7 +175,8 @@ public class RenderService {
 		cal.setTime(new Date());
 		long end = cal.getTimeInMillis();
 
-		System.out.println(String.format("Transform=%s, batchSise=%d, millisecs=%d", pTransform.getDisplayName(), pBatch.getBatchSize(), (end - start)));
+		// System.out.println(String.format("Transform=%s, batchSise=%d, millisecs=%d", pTransform.getDisplayName(),
+		// pBatch.getBatchSize(), (end - start)));
 
 		IBatchTransform previousTransform = pTransform.getPreviousTransform();
 		if (previousTransform != null) {

@@ -57,6 +57,22 @@ public class Rectangle implements Serializable {
 		return true;
 	}
 
+	public double getBottom() {
+		return mY1;
+	}
+
+	public double getLeft() {
+		return mX1;
+	}
+
+	public double getRight() {
+		return mX2;
+	}
+
+	public double getTop() {
+		return mY2;
+	}
+
 	public double getX1() {
 		return mX1;
 	}

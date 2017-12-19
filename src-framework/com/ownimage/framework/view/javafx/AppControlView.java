@@ -185,7 +185,7 @@ public class AppControlView extends Application implements IAppControlView {
 		Platform.runLater(() -> showDialogLater(pViewable, pDialogOptions, pUndoRedo, pButtons));
 	}
 
-	public void showDialogLater(final IViewable pViewable, final DialogOptions pDialogOptions, final IUndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
+	private void showDialogLater(final IViewable pViewable, final DialogOptions pDialogOptions, final IUndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
 		HashMap<ButtonType, ActionControl> buttonMap = new HashMap<ButtonType, ActionControl>();
 		FXView content = (FXView) (pViewable.createView());
 		Node contentUI = content.getUI();
@@ -228,8 +228,8 @@ public class AppControlView extends Application implements IAppControlView {
 				}
 			});
 		}
-
 		dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
+
 	}
 
 	public void showDirectoryChooserDialog(final FileControl pFileControl) {

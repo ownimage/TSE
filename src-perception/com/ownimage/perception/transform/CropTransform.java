@@ -14,16 +14,13 @@ import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.render.ITransformResult;
 
 public class CropTransform extends BaseTransform implements IControlValidator {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	private final static Logger mLogger = Framework.getLogger();
-
-	public static double x() {
-		return 1.0d;
-	}
 
 	private double mBottom;
 	private double mTop;
@@ -82,9 +79,9 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 		setUseTransform(pEnabled);
 	}
 
-	// public void setCrop(final Rectangle pBounds, final boolean pEnabled) {
-	// setCrop(pBounds.getLeft(), pBounds.getBottom(), pBounds.getRight(), pBounds.getTop(), pEnabled);
-	// }
+	public void setCrop(final Rectangle pBounds, final boolean pEnabled) {
+		setCrop(pBounds.getLeft(), pBounds.getBottom(), pBounds.getRight(), pBounds.getTop(), pEnabled);
+	}
 
 	@Override
 	public void setValues() {
