@@ -17,6 +17,7 @@ import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.queue.ExecuteQueue;
+import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -112,6 +113,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	}
 
 	private void generatePreviewPictureFromData(final PixelMap pEdgeData) {
+		SplitTimer.split("generatePreviewPictureFromData(final PixelMap pEdgeData) start");
 		final int size = getSize();
 
 		PictureType preview;
@@ -134,6 +136,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 			}
 		}
 		mPreviewPicture.setValue(preview);
+		SplitTimer.split("generatePreviewPictureFromData(final PixelMap pEdgeData) end");
 	}
 
 	private int getDefaultSize() {
@@ -193,12 +196,13 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	}
 
 	private PictureType updatePreview() {
+		SplitTimer.split("updatePreview() start");
 		int size = getSize();
 		PictureType inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
 		PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
-		CropTransform crop = new CropTransform(Perception.getPerception());
+		CropTransform crop = new CropTransform(Perception.getPerception(), true);
 		crop.setPreviousTransform(getTransform().getPreviousTransform());
-		crop.setCrop(getPreviewRectangle(), true);
+		crop.setCrop(getPreviewRectangle());
 		Perception.getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()));
 		System.out.println(ExecuteQueue.getInstance().getDepth());
 
@@ -207,6 +211,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 	}
 
 	private void updatePreview(final PictureType pInputPicture) {
+		SplitTimer.split("updatePreview(final PictureType pInputPicture) start");
 		ICannyEdgeDetector detector = null;
 		try {
 			detector = CannyEdgeDetectorFactory.createInstance(getTransform(), CannyEdgeDetectorFactory.JAVA_THREADS);

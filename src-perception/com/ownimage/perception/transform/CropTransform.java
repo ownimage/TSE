@@ -20,21 +20,33 @@ import com.ownimage.perception.render.ITransformResult;
 public class CropTransform extends BaseTransform implements IControlValidator {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
 	private final static Logger mLogger = Framework.getLogger();
+
+	/**
+	 * The Isolated value indicates that this is used independently of the main transform stack. Specifically this means that when
+	 * the transforms control values change then the super controlChangeEvent will NOT be called.
+	 */
+	private final boolean mIndependent;
 
 	private double mBottom;
 	private double mTop;
 	private double mLeft;
-
 	private double mRight;
+
 	private final DoubleControl mBottomControl;
 	private final DoubleControl mTopControl;
 	private final DoubleControl mLeftControl;
-
 	private final DoubleControl mRightControl;
 
 	public CropTransform(final Perception pPerception) {
+		this(pPerception, false);
+	}
+
+	public CropTransform(final Perception pPerception, final boolean pIndependent) {
 		super(pPerception);
+
+		mIndependent = pIndependent;
 
 		mBottomControl = new DoubleControl("Bottom", "bottom", getContainer(), 0.1d);
 		mTopControl = new DoubleControl("Top", "top", getContainer(), 0.9d);
@@ -51,6 +63,16 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 		addXControl(mLeftControl);
 		addXControl(mRightControl);
 		addYControl(mBottomControl);
+	}
+
+	@Override
+	public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+		if (mIndependent) {
+			setValues();
+			redrawGrafitti();
+		} else {
+			super.controlChangeEvent(pControl, pIsMutating);
+		}
 	}
 
 	@Override
@@ -71,24 +93,23 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 		pGrafittiHelper.drawVerticalLine(mRight, getGrafitiColor1(), isControlSelected(mRightControl));
 	}
 
-	public void setCrop(final double pLeft, final double pBottom, final double pRight, final double pTop, final boolean pEnabled) {
-		mLeftControl.setValue(pLeft);
-		mBottomControl.setValue(pBottom);
-		mRightControl.setValue(pRight);
-		mTopControl.setValue(pTop);
-		setUseTransform(pEnabled);
+	public void setCrop(final double pLeft, final double pBottom, final double pRight, final double pTop) {
+		mLeftControl.setValue(pLeft, null, true);
+		mBottomControl.setValue(pBottom, null, true);
+		mRightControl.setValue(pRight, null, true);
+		mTopControl.setValue(pTop, null, false);
 	}
 
-	public void setCrop(final Rectangle pBounds, final boolean pEnabled) {
-		setCrop(pBounds.getLeft(), pBounds.getBottom(), pBounds.getRight(), pBounds.getTop(), pEnabled);
+	public void setCrop(final Rectangle pBounds) {
+		setCrop(pBounds.getLeft(), pBounds.getBottom(), pBounds.getRight(), pBounds.getTop());
 	}
 
 	@Override
 	public void setValues() {
-		mBottom = KMath.mod1inc(mBottomControl.getValue());
-		mTop = KMath.mod1inc(mTopControl.getValue());
-		mLeft = KMath.mod1inc(mLeftControl.getValue());
-		mRight = KMath.mod1inc(mRightControl.getValue());
+		mBottom = KMath.limit01(mBottomControl.getValue());
+		mTop = KMath.limit01(mTopControl.getValue());
+		mLeft = KMath.limit01(mLeftControl.getValue());
+		mRight = KMath.limit01(mRightControl.getValue());
 	}
 
 	@Override
