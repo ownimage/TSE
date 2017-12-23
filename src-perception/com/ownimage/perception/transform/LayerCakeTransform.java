@@ -31,7 +31,7 @@ public class LayerCakeTransform extends BaseTransform {
 	private double mCutOffHeight;
 
 	public LayerCakeTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Layer Cake", "layerCake");
 
 		mCutOffSlider = new DoubleControl("CutOff", "cutoff", getContainer(), 0.5d, new DoubleMetaType(1.0d / 6.0d, 1.0d / 1.2d, 0.01d, DisplayType.BOTH));
 		mMirrorTop = new BooleanControl("Mirror top", "mirror", getContainer(), true);
@@ -41,16 +41,6 @@ public class LayerCakeTransform extends BaseTransform {
 		setValues();
 
 		addYControl(mCutOffSlider);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Layer Cake";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "layerCake";
 	}
 
 	@Override

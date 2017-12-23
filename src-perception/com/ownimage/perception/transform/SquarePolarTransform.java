@@ -25,23 +25,13 @@ public class SquarePolarTransform extends BaseTransform {
 	private double mRotate;
 
 	public SquarePolarTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Square Polar", "squarePolar");
 
 		mRotateSlider = new DoubleControl("Rotate", "rotate", getContainer(), 180.0d, 0.0d, 359.0d);
 
 		setValues();
 
 		addXControl(mRotateSlider);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Square Polar";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "squarePolar";
 	}
 
 	@Override

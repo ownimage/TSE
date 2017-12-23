@@ -36,7 +36,7 @@ public class CircleMaskTransform extends BaseTransform {
 	private double mBlend;
 
 	public CircleMaskTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Circle Mask", "circleMask");
 
 		mDiameterControl = new DoubleControl("Diameter", "diameter", getContainer(), 0.3d, 0.0d, 1.0d);
 		mBlendControl = new DoubleControl("Blend", "blend", getContainer(), 0.45d, 0.0d, 1.0d);
@@ -48,16 +48,6 @@ public class CircleMaskTransform extends BaseTransform {
 		addXControl(mDiameterControl);
 		addYControl(mBlendControl);
 
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Circle Mask";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "circleMask";
 	}
 
 	@Override

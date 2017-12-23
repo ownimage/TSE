@@ -38,7 +38,7 @@ public class WoodcutTransform extends BaseTransform {
 	private final DoubleControl mBackgroundTransparency = new DoubleControl("Background Transparency", "backgroundTransparency", getContainer(), 0.5d);
 
 	public WoodcutTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Wood Cut", "woodCut");
 		PictureType etch = new PictureType(getProperties().getColorOOBProperty(), 100, mLines.getValue());
 		mEtchPicture = new PictureControl("Etch", "etch", NullContainer, etch);
 
@@ -52,16 +52,6 @@ public class WoodcutTransform extends BaseTransform {
 		getPerception().getRenderService().transform(mEtchPicture, getPreviousTransform(), null);
 		// TODO should make this part of the
 		// TransformBase
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Wood Cut";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "woodCut";
 	}
 
 	@Override

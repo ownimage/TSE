@@ -44,7 +44,7 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 	}
 
 	public CropTransform(final Perception pPerception, final boolean pIndependent) {
-		super(pPerception);
+		super("Crop", "crop");
 
 		mIndependent = pIndependent;
 
@@ -73,16 +73,6 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 		} else {
 			super.controlChangeEvent(pControl, pIsMutating);
 		}
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Crop";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "crop";
 	}
 
 	@Override

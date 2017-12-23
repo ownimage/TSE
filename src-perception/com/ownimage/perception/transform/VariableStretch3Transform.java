@@ -2,8 +2,6 @@ package com.ownimage.perception.transform;
 
 import java.util.logging.Logger;
 
-import Jama.Matrix;
-
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
@@ -15,6 +13,8 @@ import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.LinearEquation;
 import com.ownimage.perception.math.QuadraticEquation;
 import com.ownimage.perception.render.ITransformResult;
+
+import Jama.Matrix;
 
 public class VariableStretch3Transform extends BaseTransform implements IControlValidator {
 
@@ -42,7 +42,7 @@ public class VariableStretch3Transform extends BaseTransform implements IControl
 	private LinearEquation mMidLE;
 
 	public VariableStretch3Transform(final Perception pPerception) {
-		super(pPerception);
+		super("Variable Stretch", "variableStretch");
 
 		mCutoffControl = new DoubleControl("Cutoff", "cutoff", getContainer(), 0.8d);
 		mHighestControl = new DoubleControl("Highest", "highest", getContainer(), 0.6d);
@@ -67,21 +67,6 @@ public class VariableStretch3Transform extends BaseTransform implements IControl
 		addYControl(mHighestControl);
 		addYControl(mLowControl);
 		addYControl(mLowestControl);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Variable Stretch";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "variableStretch";
-	}
-
-	@Override
-	public String getTransformName() {
-		return "variableStretchTransform";
 	}
 
 	// @Override

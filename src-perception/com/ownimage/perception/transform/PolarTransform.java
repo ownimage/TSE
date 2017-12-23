@@ -30,22 +30,12 @@ public class PolarTransform extends BaseTransform {
 	double mRotate;
 
 	public PolarTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Polar", "polar");
 
 		mRotateSlider = new DoubleControl("Rotate", "rotate", getContainer(), 0.5d, 0.0d, 1.0d);
 		setValues();
 
 		addXControl(mRotateSlider);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Polar";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "polar";
 	}
 
 	@Override

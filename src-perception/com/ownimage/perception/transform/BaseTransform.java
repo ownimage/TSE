@@ -40,23 +40,22 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
 	private final static Logger mLogger = Framework.getLogger();
 
-	private final Perception mPerception;
+	private final String mDisplayName;
+	private final String mPropertyName;
 	private final Container mContainer;
-
 	private final BooleanControl mUseTransform;
-
 	private final PictureControl mPreviewImage;
 
 	private ITransform mPreviousTransform;
-
 	private ControlSelector mControlSelector;
 
-	public BaseTransform(final Perception pPerception) {
+	public BaseTransform(final String pDisplayName, final String pPropertyName) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPerception, "pPerception");
 
-		mPerception = pPerception;
-		mContainer = new Container(getDisplayName(), getTransformName(), mPerception);
+		mDisplayName = pDisplayName;
+		mPropertyName = pPropertyName;
+
+		mContainer = new Container(getDisplayName(), getPropertyName(), getPerception());
 		mUseTransform = new BooleanControl("Use Transform", "use", mContainer, true);
 
 		int previewSize = getProperties().getPreviewSize();
@@ -68,7 +67,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 				preview.setColor(x, y, c);
 			}
 		}
-		mPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", mPerception), preview);
+		mPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", getPerception()), preview);
 		mPreviewImage.setUIListener(this);
 		mContainer.addControlChangeListener(this);
 
@@ -147,8 +146,8 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	}
 
 	@Override
-	public String getDisplayName() {
-		return "BaseTransform";
+	public final String getDisplayName() {
+		return mDisplayName;
 	}
 
 	public Color getGrafitiColor1() {
@@ -173,12 +172,12 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	}
 
 	public Perception getPerception() {
-		return mPerception;
+		return Perception.getPerception();
 	}
 
 	@Override
 	public IBatchEngine getPreferredBatchEngine() {
-		return mPerception.getRenderService().getBaseBatchEngine();
+		return getPerception().getRenderService().getBaseBatchEngine();
 	}
 
 	protected PictureControl getPreviewImage() {
@@ -191,18 +190,22 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	}
 
 	public Properties getProperties() {
-		// TODO this needs to come from the stored value
-		return mPerception.getProperties();
+		return getPerception().getProperties();
 	}
 
 	@Override
-	public String getTransformName() {
-		return "BaseTransform";
+	public final String getPropertyName() {
+		return mPropertyName;
+	}
+
+	@Override
+	public final String getTransformName() {
+		return mDisplayName;
 	}
 
 	@Override
 	public UndoRedoBuffer getUndoRedoBuffer() {
-		return mPerception.getUndoRedoBuffer();
+		return getPerception().getUndoRedoBuffer();
 	}
 
 	@Override
@@ -285,7 +288,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
 	public void refreshPreview() {
 		Framework.logEntry(mLogger);
-		mPerception.refreshPreview();
+		getPerception().refreshPreview();
 		Framework.logExit(mLogger);
 	}
 
@@ -339,7 +342,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	@Override
 	public void updatePreview() {
 		Framework.logEntry(mLogger);
-		mPerception.getRenderService().transform(mPreviewImage, mPreviousTransform, null);
+		getPerception().getRenderService().transform(mPreviewImage, mPreviousTransform, null);
 		Framework.logExit(mLogger);
 	}
 

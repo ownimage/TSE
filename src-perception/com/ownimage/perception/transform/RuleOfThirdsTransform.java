@@ -74,7 +74,7 @@ public class RuleOfThirdsTransform extends BaseTransform {
 	Quadrilateral mCropQuadrilateral;
 
 	public RuleOfThirdsTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Rule of Thirds", "ruleOfThirds");
 
 		setValues();
 
@@ -96,16 +96,6 @@ public class RuleOfThirdsTransform extends BaseTransform {
 
 	private DoubleControl createDoubleControl(final String pDisplayName, final String pPropertyName, final double pValue) {
 		return new DoubleControl(pDisplayName, pPropertyName, getContainer(), pValue);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Rule of Thirds";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "ruleOfThirds";
 	}
 
 	@Override

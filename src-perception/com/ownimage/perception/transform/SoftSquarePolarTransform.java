@@ -30,23 +30,13 @@ public class SoftSquarePolarTransform extends BaseTransform {
 	private double mPower;
 
 	public SoftSquarePolarTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Soft Square Polar", "softSquarePolar");
 
 		mRotateControl = new DoubleControl("Rotate", "rotate", getContainer(), 0.5d, 0.0d, 1.0d);
 		mPowerControl = new DoubleControl("Power", "power", getContainer(), 1.0d, 1.0d, 3.0d);
 
 		setValues();
 		addXYControlPair(mRotateControl, mPowerControl);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Soft Square Polar";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "softSquarePolar";
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class RotateTransform extends BaseTransform {
 	private double mScale;
 
 	public RotateTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Rotate", "rotate");
 
 		mPointRotateControl = new BooleanControl("Point", "point", getContainer(), false);
 		mExtendControl = new BooleanControl("Extend", "extend", getContainer(), false);
@@ -83,21 +83,6 @@ public class RotateTransform extends BaseTransform {
 		}
 
 		Framework.logExit(mLogger);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Rotate";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "rotate";
-	}
-
-	@Override
-	public String getTransformName() {
-		return "rotateTransform";
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public class BorderTransform extends BaseTransform {
 	private final ColorControl mBorderColorControl;
 
 	public BorderTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Border", "border");
 
 		DoubleMetaType modelZeroHalf = new DoubleMetaType(0.0d, 0.5d, 0.05d, DisplayType.BOTH);
 		DoubleMetaType modelHalfOne = new DoubleMetaType(0.5d, 1d, 0.05d, DisplayType.BOTH);
@@ -51,16 +51,6 @@ public class BorderTransform extends BaseTransform {
 		addXControl(mLeftControl);
 		addXControl(mRightControl);
 		addYControl(mBottomControl);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Border";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "border";
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class ImageLoadTransform extends BaseTransform {
 	private final int mCurrentPasses = -1;
 
 	public ImageLoadTransform(final Perception pPerception, final File pFile) {
-		super(pPerception);
+		super("Image Load", "imageLoad");
 
 		Framework.logEntry(mLogger);
 
@@ -87,11 +87,6 @@ public class ImageLoadTransform extends BaseTransform {
 	}
 
 	@Override
-	public String getDisplayName() {
-		return "Image Load";
-	}
-
-	@Override
 	public int getHeight() {
 		return mSourcePicture.getValue().getHeight();
 	}
@@ -99,11 +94,6 @@ public class ImageLoadTransform extends BaseTransform {
 	// @Override
 	public int getOversample() {
 		return 1;
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "imageLoad";
 	}
 
 	// private byte mOffset[][];
@@ -291,11 +281,6 @@ public class ImageLoadTransform extends BaseTransform {
 	// public int getWidth() {
 	// return mSourcePicture != null ? mSourcePicture.getWidth() : 100;
 	// }
-
-	@Override
-	public String getTransformName() {
-		return "imageLoadTransform";
-	}
 
 	@Override
 	public int getWidth() {

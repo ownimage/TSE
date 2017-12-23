@@ -124,7 +124,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	private PictureControl mPreviewPictureControl;
 
 	public CannyEdgeTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Canny Edge", "cannyEdge");
 		// getPreviewImage().setGrafitti(this);
 
 		// mWidth.setEnabled(false);
@@ -219,11 +219,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
 		ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
 		getGenerateEdgesDialog().showDialog(cancel, ok);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Canny Edge";
 	}
 
 	public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
@@ -388,11 +383,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	public Color getPixelColor() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "cannyEdge";
 	}
 
 	@Override

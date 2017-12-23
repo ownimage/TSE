@@ -32,7 +32,7 @@ public class QuadSpaceTransform extends BaseTransform {
 	private final DoubleControl mFourControl;
 
 	public QuadSpaceTransform(final Perception pPerception) {
-		super(pPerception);
+		super("Quad Space", "quadSpaceTransform");
 
 		mOneControl = new DoubleControl("One", "one", getContainer(), 0.125);
 		mTwoControl = new DoubleControl("Two", "two", getContainer(), 0.375);
@@ -45,16 +45,6 @@ public class QuadSpaceTransform extends BaseTransform {
 		addXControl(mTwoControl);
 		addXControl(mThreeControl);
 		addXControl(mFourControl);
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "Quad Space";
-	}
-
-	@Override
-	public String getPropertyName() {
-		return "quadSpaceTransform";
 	}
 
 	@Override
