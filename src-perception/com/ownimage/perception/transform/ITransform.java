@@ -31,8 +31,6 @@ public interface ITransform extends IBatchTransform, IPersist { // extends , IGr
 	@Override
 	public ITransform getPreviousTransform();
 
-	public String getTransformName();
-
 	public int getWidth();
 
 	public void setPreviousTransform(ITransform pPreviousTransform);

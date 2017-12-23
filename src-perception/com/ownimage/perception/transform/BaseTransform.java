@@ -199,11 +199,6 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	}
 
 	@Override
-	public final String getTransformName() {
-		return mDisplayName;
-	}
-
-	@Override
 	public UndoRedoBuffer getUndoRedoBuffer() {
 		return getPerception().getUndoRedoBuffer();
 	}

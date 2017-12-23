@@ -39,6 +39,8 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 	private final DoubleControl mLeftControl;
 	private final DoubleControl mRightControl;
 
+	private boolean mIsMutating = false;
+
 	public CropTransform(final Perception pPerception) {
 		this(pPerception, false);
 	}
@@ -67,11 +69,13 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 
 	@Override
 	public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
-		if (mIndependent) {
-			setValues();
-			redrawGrafitti();
-		} else {
-			super.controlChangeEvent(pControl, pIsMutating);
+		if (!mIsMutating) {
+			if (mIndependent) { // supress the update to the base component which updates the main preview
+				setValues();
+				redrawGrafitti();
+			} else {
+				super.controlChangeEvent(this, pIsMutating);
+			}
 		}
 	}
 
@@ -84,10 +88,16 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 	}
 
 	public void setCrop(final double pLeft, final double pBottom, final double pRight, final double pTop) {
-		mLeftControl.setValue(pLeft, null, true);
-		mBottomControl.setValue(pBottom, null, true);
-		mRightControl.setValue(pRight, null, true);
-		mTopControl.setValue(pTop, null, false);
+		try {
+			mIsMutating = true;
+			mLeftControl.setValue(pLeft);
+			mBottomControl.setValue(pBottom);
+			mRightControl.setValue(pRight);
+			mIsMutating = false;
+			mTopControl.setValue(pTop);
+		} finally {
+			mIsMutating = false;
+		}
 	}
 
 	public void setCrop(final Rectangle pBounds) {
