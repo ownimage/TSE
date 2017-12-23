@@ -1,5 +1,6 @@
 package com.ownimage.framework.util;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,6 +86,12 @@ public class Framework {
 		return Logger.getLogger("");
 	}
 
+	public static void log(final Logger pLogger, final Level pLevel, final Supplier<String> pMessageSupplier) {
+		if (pLogger.isLoggable(pLevel)) {
+			pLogger.log(pLevel, pMessageSupplier.get());
+		}
+	}
+
 	public static void logEntry(final Logger pLogger) {
 		try {
 			if (pLogger.isLoggable(Level.FINE)) {
@@ -151,8 +158,6 @@ public class Framework {
 	}
 
 	public static void logValue(final Logger pLogger, final String pName, final Object pValue) {
-		if (pLogger.isLoggable(Level.FINE)) {
-			pLogger.fine(pName + ": " + pValue);
-		}
+		log(pLogger, Level.FINE, () -> pName + ": " + pValue);
 	}
 }
