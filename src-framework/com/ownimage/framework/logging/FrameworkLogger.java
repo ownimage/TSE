@@ -6,6 +6,7 @@ package com.ownimage.framework.logging;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -124,6 +125,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 				mConsoleHandler = new ConsoleHandler();
 				mConsoleHandler.setFormatter(new PerceptionFormatter());
 
+				new File(pLogFilename).createNewFile();
 				mLogFileHandler = new FileHandler(pLogFilename);
 				mLogFileHandler.setFormatter(new PerceptionFormatter());
 
@@ -145,6 +147,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 				setLevel(Level.INFO);
 
 				java.util.Properties logProperties = new java.util.Properties();
+				new File(pPropertiesFilename).createNewFile();
 				logProperties.load(new FileInputStream(pPropertiesFilename));
 				read(logProperties, "");
 

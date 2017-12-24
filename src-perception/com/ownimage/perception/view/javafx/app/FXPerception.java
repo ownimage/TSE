@@ -13,7 +13,7 @@ import javafx.scene.image.Image;
 public class FXPerception extends AppControlView {
 
 	public static void main(final String[] pArgs) {
-		FrameworkLogger.getInstance().init("logging.properies", "log\\Perception.log");
+		FrameworkLogger.getInstance().init("logging.properies", "Perception.log");
 
 		FXViewFactory.setAsViewFactory();
 

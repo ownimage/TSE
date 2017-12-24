@@ -348,7 +348,10 @@ public class Perception extends AppControlBase {
 	}
 
 	@Override
-	public Properties getProperties() {
+	public synchronized Properties getProperties() {
+		if (mProperties == null) {
+			mProperties = new Properties();
+		}
 		return mProperties;
 	}
 
@@ -554,7 +557,7 @@ public class Perception extends AppControlBase {
 		try (FileInputStream fos = new FileInputStream(pFile)) {
 			PersistDB db = new PersistDB();
 			db.load(fos);
-			mProperties.read(db, "");
+			getProperties().read(db, "");
 		} catch (Throwable pT) {
 			mLogger.log(Level.SEVERE, "Error", pT);
 		}
@@ -573,10 +576,6 @@ public class Perception extends AppControlBase {
 
 	private synchronized void propertiesOpenSystemDefault() {
 		Framework.logEntry(mLogger);
-
-		if (mProperties == null) {
-			propertiesSetSystemDefault();
-		}
 
 		File file = new File(getPropertySystemDefaultFilename());
 		propertiesOpen(file);

@@ -214,6 +214,9 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
 	// additional intermediate prefixes and just a name e.g. Transform.0.angle=0.1 rather than
 	// Transform.0.ContainerProperty.angle=0.1
 	public void write(final IPersistDB pDB, final String pId) {
+		Framework.logEntry(mLogger);
+		Framework.logParams(mLogger, "pId", pId);
+
 		if (pDB == null) { throw new IllegalArgumentException("pDB must not be null"); }
 		if (pId == null) { throw new IllegalArgumentException("pId must not be null"); }
 
@@ -226,6 +229,8 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
 		for (final IPersist control : mChildContainers) {
 			control.write(pDB, id);
 		}
+
+		Framework.logExit(mLogger);
 	}
 
 }
