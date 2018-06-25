@@ -21,6 +21,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.transform.IPictureSource;
 
 /**
  * The Class PictureType represents a picture resource.
@@ -33,7 +34,7 @@ import com.ownimage.perception.math.Point;
  * This has been done to make it like the like the other imutable types, but without the overhead of needing to copy the entire
  * object to create a readonly copy.
  */
-public class PictureType implements IType<NullMetaType<PictureType>, PictureType> {
+public class PictureType implements IType<NullMetaType<PictureType>, PictureType>, IPictureSource {
 
 	/** The Constant mLogger. */
 	private final static Logger mLogger = Framework.getLogger();
@@ -203,6 +204,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 	 *            the y
 	 * @return the color
 	 */
+	@Override
 	public synchronized Color getColor(final int pX, final int pY) {
 		if (pY < 0 || pY >= getHeight()) { return mColorProperty.getValue(); }
 
@@ -283,6 +285,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 	 *
 	 * @return the height
 	 */
+	@Override
 	public synchronized int getHeight() {
 		return mHeight;
 	}
@@ -322,6 +325,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 	 *
 	 * @return the width
 	 */
+	@Override
 	public synchronized int getWidth() {
 		return mWidth;
 	}

@@ -17,12 +17,18 @@ import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.render.ITransformResult;
+import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
+import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
@@ -216,9 +222,17 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 	}
 
 	private void generateEdges() {
-		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
+		ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
 		ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
 		getGenerateEdgesDialog().showDialog(cancel, ok);
+	}
+
+	private void generateEdgesOK() {
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
+		SplitTimer.split("generateEdgesOK() start");
+		PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
+		PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
+		Perception.getPerception().getRenderService().transform(inputPictureControl, getPreviousTransform(), () -> regeneratePixelMap(inputPictureControl));
 	}
 
 	public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
@@ -626,8 +640,38 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 		pGrafittiHelper.drawRectangle(r, Perception.getPerception().getProperties().getColor1());
 	}
 
+	private void regeneratePixelMap(final PictureControl inputPicture) {
+		SplitTimer.split("regeneratePixelMap() start");
+		ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
+		try {
+			detector.setSourceImage(inputPicture.getValue());
+			detector.progress(false);
+
+			if (detector.getKeepRunning()) {
+				// only set the mData if the detector was allowed to finish
+				mPixelMap = detector.getEdgeData();
+				// mPreviewControl.getValue().setValue(mPreviewPicture);
+				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
+			}
+		} finally {
+			if (detector != null) {
+				detector.dispose();
+			}
+		}
+
+	}
+
 	public void setGenerateEdgesDialog(final GenerateEdgesDialog pGenerateEdgesDialog) {
 		mGenerateEdgesDialog = pGenerateEdgesDialog;
 	}
 
+	@Override
+	public void transform(final ITransformResult pRenderResult) {
+		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		int x = (int) Math.floor(getWidth() * pRenderResult.getX());
+		int y = (int) Math.floor(getHeight() * pRenderResult.getY());
+		if (mPixelMap != null && mPixelMap.getPixelAt(x, y).isEdge()) {
+			pRenderResult.setColor(Color.RED);
+		}
+	}
 }

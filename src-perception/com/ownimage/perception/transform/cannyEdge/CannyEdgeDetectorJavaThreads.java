@@ -8,13 +8,13 @@ import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.ownimage.perception.transform.IPictureSource;
 
 /** note that this has been changed to work with com.ownimage.perception
  * Keith Hart, ownimage, 2013
@@ -82,7 +82,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	private int picsize;
 	private int[][] mData;
 	private int[][] mMagnitude;
-	private PictureType sourceImage;
+	private IPictureSource sourceImage;
 	private PixelMap edgeData;
 
 	private float gaussianKernelRadius;
@@ -359,7 +359,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	 */
 
 	@Override
-	public PictureType getSourceImage() {
+	public IPictureSource getSourceImage() {
 		return sourceImage;
 	}
 
@@ -546,7 +546,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	@Override
-	public void process(final boolean pShowProgress) {
+	public void progress(final boolean pShowProgress) {
 		// final StopWatch stopWatch = new StopWatch(mLogger);
 		setShowProgress(pShowProgress);
 		setKeepRunning(true);
@@ -766,7 +766,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	 */
 
 	@Override
-	public void setSourceImage(final PictureType image) {
+	public void setSourceImage(final IPictureSource image) {
 		sourceImage = image;
 	}
 
