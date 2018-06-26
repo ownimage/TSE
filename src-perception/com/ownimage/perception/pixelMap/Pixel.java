@@ -79,9 +79,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 		setUHVWPoint(pPixel.getUHVWPoint());
 	}
 
-	public Pixel(final PixelChain pPixelChain, final int pIndex) {
-		this(pPixelChain.getPixel(pIndex));
-	}
+	// public Pixel(final PixelChain pPixelChain, final int pIndex) {
+	// this(pPixelChain.getPixel(pIndex));
+	// }
 
 	public Pixel(final PixelMap pPixelMap, final int pX, final int pY) {
 		super(pX, pY);
@@ -295,7 +295,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 				final int y = getY() - dy;
 				final Pixel pixel = new Pixel(getPixelMap(), x, y);
 				// System.out.print(pixel.getPixelMap().getValue(pixel) + "(" + x + "," + y + ")\t");
-				System.out.print(pixel.getPixelMap().getValue(pixel) + "\t");
+				// System.out.print(pixel.getPixelMap().getValue(pixel) + "\t");
 				// if (pixel.isNode())
 				// System.out.print("O");
 				// else if (pixel.isEdge())
@@ -341,7 +341,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 	}
 
 	public boolean thin() {
-		return getPixelMap().thin(this);
+		// return getPixelMap().thin(this);
+		return true;
 	}
 
 	public Point toPoint() {

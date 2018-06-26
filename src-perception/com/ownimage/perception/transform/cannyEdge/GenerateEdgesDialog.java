@@ -226,7 +226,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 		ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
 		try {
 			detector.setSourceImage(pInputPicture);
-			detector.progress(false);
+			detector.process(false);
 
 			if (detector.getKeepRunning()) {
 				// only set the mData if the detector was allowed to finish

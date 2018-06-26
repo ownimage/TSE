@@ -519,7 +519,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	}
 
 	@Override
-	public void progress(final boolean pShowProgress) {
+	public void process(final boolean pShowProgress) {
 		process();
 	}
 

@@ -532,7 +532,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#process(boolean)
 	 */
 	@Override
-	public void progress(final boolean pShowProgress) {
+	public void process(final boolean pShowProgress) {
 		process();
 	}
 

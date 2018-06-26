@@ -546,7 +546,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 	}
 
 	@Override
-	public void progress(final boolean pShowProgress) {
+	public void process(final boolean pShowProgress) {
 		// final StopWatch stopWatch = new StopWatch(mLogger);
 		setShowProgress(pShowProgress);
 		setKeepRunning(true);

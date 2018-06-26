@@ -71,7 +71,7 @@ public interface ICannyEdgeDetector {
 
 	public boolean isContrastNormalized();
 
-	public void progress(boolean pShowProgress);
+	public void process(boolean pShowProgress);
 
 	/**
 	 * Sets whether the contrast is normalized

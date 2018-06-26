@@ -645,7 +645,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 		ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
 		try {
 			detector.setSourceImage(inputPicture.getValue());
-			detector.progress(false);
+			detector.process(false);
 
 			if (detector.getKeepRunning()) {
 				// only set the mData if the detector was allowed to finish

@@ -5,47 +5,19 @@
 
 package com.ownimage.perception.pixelMap;
 
-import java.awt.Color;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBuffer;
 import com.ownimage.framework.undo.UndoRedoBuffer;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Version;
-import com.ownimage.perception.math.Intersect3D;
-import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.Point3D;
-import com.ownimage.perception.math.Range;
-import com.ownimage.perception.math.Vector3D;
-import com.ownimage.perception.pixelMap.PixelChain.Thickness;
-import com.ownimage.perception.pixelMap.editor.EditPixelMapDialog;
-import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.transform.IProgressBar;
-import com.ownimage.perception.util.KColor;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed throught the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -106,36 +78,36 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		}
 	}
 
-	private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
-
-		int mX = 0;
-		int mY = 0;
-
-		@Override
-		public boolean hasNext() {
-			return mX < getWidth() && mY < getHeight();
-		}
-
-		@Override
-		public Iterator<Pixel> iterator() {
-			return this;
-		}
-
-		@Override
-		public Pixel next() {
-			final Pixel next = getPixelAt(mX, mY);
-			if (++mY == getHeight()) {
-				mY = 0;
-				mX++;
-			}
-			return next;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
+	// private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
+	//
+	// int mX = 0;
+	// int mY = 0;
+	//
+	// @Override
+	// public boolean hasNext() {
+	// return mX < getWidth() && mY < getHeight();
+	// }
+	//
+	// @Override
+	// public Iterator<Pixel> iterator() {
+	// return this;
+	// }
+	//
+	// @Override
+	// public Pixel next() {
+	// final Pixel next = getPixelAt(mX, mY);
+	// if (++mY == getHeight()) {
+	// mY = 0;
+	// mX++;
+	// }
+	// return next;
+	// }
+	//
+	// @Override
+	// public void remove() {
+	// throw new UnsupportedOperationException();
+	// }
+	// }
 
 	public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 06:49");
 	public final static String mClassname = PixelMap.class.getName();
@@ -154,14 +126,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	private final double mAspectRatio;
 	private final Point mUHVWHalfPixel;
 	private final byte mData[][];
-	private AllNodes mAllNodes = new AllNodes();
-	private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+	private final AllNodes mAllNodes = new AllNodes();
+	// private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
-	private LinkedList<ISegment>[][] mSegmentIndex;
-	private boolean mSegmentIndexValid = false;
+	// private LinkedList<ISegment>[][] mSegmentIndex;
+	private final boolean mSegmentIndexValid = false;
 	private int mSegmentCount;
 
-	private final PixelAction mPixelAction = new PixelAction(this);
+	// private final PixelAction mPixelAction = new PixelAction(this);
 
 	private final IUndoRedoBuffer mUndoRedoBuffer = new UndoRedoBuffer(30);
 	private PixelUndoRedoAction mPixelUndoRedoAction;
@@ -175,7 +147,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		// mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
 		mAspectRatio = (double) pWidth / pHeight;
 		mData = new byte[pWidth][pHeight];
-		resetSegmentIndex();
+		// resetSegmentIndex();
 		mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
 	}
 
@@ -186,214 +158,217 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	// mLogger.exiting(mClassname, "addPixelChain");
 	// }
 
-	public void addPixelChains(final Collection<PixelChain> pPixelChains) {
-		mLogger.entering(mClassname, "addPixelChain");
-		indexSegments();
-		mPixelChains.addAll(pPixelChains);
-		mLogger.exiting(mClassname, "addPixelChain");
-	}
-
-	public void addPixelChains(final PixelChain... pPixelChains) {
-		mLogger.entering(mClassname, "addPixelChain");
-		indexSegments();
-		mPixelChains.addAll(Arrays.asList(pPixelChains));
-		mLogger.exiting(mClassname, "addPixelChain");
-	}
-
-	public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
-		mLogger.entering(mClassname, "addVertexes");
-		for (final PixelChain pixelChain : getAllPixelChains()) {
-			pixelChain.checkAllVertexesAttached();
-			pixelChain.addVertexes(pVisibleVertexes, pOrigin, pTopLeft);
-		}
-		mLogger.exiting(mClassname, "addVertexes");
-	}
-
-	private AllPixels allPixels() {
-		return new AllPixels();
-	}
-
-	private synchronized void calcSegmentIndex() {
-		if (!mSegmentIndexValid) {
-			mLogger.entering(mClassname, "indexSegmentsValidate");
-			resetSegmentIndex();
-
-			for (final PixelChain pixelChain : mPixelChains) {
-				pixelChain.indexSegments();
-			}
-
-			printNodeCounts();
-			mSegmentIndexValid = true;
-		}
-		mLogger.exiting(mClassname, "indexSegmentsValidate");
-	}
-
-	public void equalizeValues(final EqualizeValues pValues) {
-
-		int totalLength = 0;
-		for (final PixelChain chain : mPixelChains) {
-			totalLength += chain.getPixelLength();
-		}
-
-		final Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
-
-		final int shortThreshold = (int) (totalLength * pValues.getIgnoreFraction());
-		final int mediumThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
-		final int longThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction() + pValues.getMediumFraction()));
-
-		Integer shortLength = null;
-		Integer mediumLength = null;
-		Integer longLength = null;
-
-		int currentLength = 0;
-		for (final PixelChain chain : sortedChains) {
-			currentLength += chain.getPixelLength();
-
-			if (shortLength == null && currentLength > shortThreshold) {
-				shortLength = chain.getPixelLength();
-			}
-
-			if (mediumLength == null && currentLength > mediumThreshold) {
-				mediumLength = chain.getPixelLength();
-			}
-
-			if (longLength == null && currentLength > longThreshold) {
-				longLength = chain.getPixelLength();
-				break;
-			}
-		}
-
-		pValues.setReturnValues(shortLength, mediumLength, longLength);
-	}
-
-	public Node findNodeInPixelChains(final Pixel pPixel) {
-		Node result = null;
-		for (final PixelChain pixelChain : mPixelChains) {
-			if (pixelChain.firstPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
-				result = (Node) pixelChain.firstPixel();
-				break;
-			}
-			if (pixelChain.lastPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
-				result = (Node) pixelChain.lastPixel();
-				break;
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Find PixelChain for the given Pixel. A Pixel can be constructed from a PixelMap and an x, y coordinate. This Pixel might be
-	 * part of a PixelChain (so its mPixelChain member will be set). Subsequently a Pixel might be created from the same PixelMap
-	 * with the same x, y coordinates. This method enables us to recover the PixelChain of the original Pixel.
-	 * 
-	 * @param pPixel
-	 *            the pixel
-	 */
-	public PixelChain findPixelChain(final Pixel pPixel) {
-		PixelChain result = null;
-
-		// AbstractCollection<ISegment> segments = getSegments(pPixel);
-		for (final PixelChain pixelChain : mPixelChains) {
-			if (pixelChain.contains(pPixel)) {
-				result = pixelChain;
-				break;
-			}
-		}
-
-		// for (PixelChain pixelChain : mPixelChains) {
-		// if (pixelChain.contains(pPixel)) {
-		// result = pixelChain;
-		// break;
-		// }
-		// }
-
-		return result;
-	}
-
-	private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
-		try {
-			mLogger.entering(mClassname, "generateChain");
-			if (mLogger.isLoggable(Level.FINEST)) {
-				mLogger.finest("pStartNode: " + pStartNode);
-				mLogger.finest("pCurrentPixel: " + pCurrentPixel);
-				mLogger.finest("pChain: " + pChain);
-			}
-
-			if (pCurrentPixel.isNode()) {
-				pChain.setEndNode(getNode(pCurrentPixel));
-				mLogger.exiting(mClassname, "generateChain");
-				return;
-			}
-
-			pChain.add(pCurrentPixel);
-			pCurrentPixel.setInChain(true);
-			pCurrentPixel.setVisited(true);
-
-			// try to end quickly at a node to prevent bypassing
-			for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours()) {
-				// !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-				// going back to the staring node.
-				// if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
-				// !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-				if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 && nodalNeighbour.equals(pChain.firstPixel()))) {
-					generateChain(pStartNode, nodalNeighbour, pChain);
-					mLogger.exiting(mClassname, "generateChain");
-					return;
-				}
-			}
-
-			// otherwise go to the next pixel normally
-			for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
-				// !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-				// going back to the staring node.
-				// if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
-				// !neighbour.isNeighbour(pChain.firstPixel()))) {
-				if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
-					generateChain(pStartNode, neighbour, pChain);
-					mLogger.exiting(mClassname, "generateChain");
-					return;
-				}
-			}
-
-		} catch (final Throwable pT) {
-			mLogger.log(Level.SEVERE, "Exception thrown", pT);
-			mLogger.severe("pStartNode: " + pStartNode);
-			mLogger.severe("pCurrentPixel: " + pCurrentPixel);
-			mLogger.severe("pChain: " + pChain);
-		}
-	}
-
-	Collection<PixelChain> generateChains(final Node pStartNode) {
-		final Vector<PixelChain> chains = new Vector<PixelChain>();
-		pStartNode.setVisited(true);
-		pStartNode.setInChain(true);
-		for (final Pixel neighbour : pStartNode.getNeighbours()) {
-			if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
-				final PixelChain chain = new PixelChain(pStartNode);
-				generateChain(pStartNode, neighbour, chain);
-				if (chain.length() > 2) {
-					chains.add(chain);
-					chain.addToNodes();
-				}
-			}
-		}
-		return chains;
-	}
-
-	/**
-	 * Gets all of the Nodes in the PixelMap, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
-	 * load, only during the generate phase.
-	 * 
-	 * @return the all nodes
-	 */
-	private Iterable<Node> getAllNodes() {
-		return mAllNodes;
-	}
-
-	public Iterable<PixelChain> getAllPixelChains() {
-		return mPixelChains;
-	}
-
+	// public void addPixelChains(final Collection<PixelChain> pPixelChains) {
+	// mLogger.entering(mClassname, "addPixelChain");
+	// indexSegments();
+	// mPixelChains.addAll(pPixelChains);
+	// mLogger.exiting(mClassname, "addPixelChain");
+	// }
+	//
+	// public void addPixelChains(final PixelChain... pPixelChains) {
+	// mLogger.entering(mClassname, "addPixelChain");
+	// indexSegments();
+	// mPixelChains.addAll(Arrays.asList(pPixelChains));
+	// mLogger.exiting(mClassname, "addPixelChain");
+	// }
+	//
+	// public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
+	// mLogger.entering(mClassname, "addVertexes");
+	// for (final PixelChain pixelChain : getAllPixelChains()) {
+	// pixelChain.checkAllVertexesAttached();
+	// pixelChain.addVertexes(pVisibleVertexes, pOrigin, pTopLeft);
+	// }
+	// mLogger.exiting(mClassname, "addVertexes");
+	// }
+	//
+	// private AllPixels allPixels() {
+	// return new AllPixels();
+	// }
+	//
+	// private synchronized void calcSegmentIndex() {
+	// if (!mSegmentIndexValid) {
+	// mLogger.entering(mClassname, "indexSegmentsValidate");
+	// resetSegmentIndex();
+	//
+	// for (final PixelChain pixelChain : mPixelChains) {
+	// pixelChain.indexSegments();
+	// }
+	//
+	// printNodeCounts();
+	// mSegmentIndexValid = true;
+	// }
+	// mLogger.exiting(mClassname, "indexSegmentsValidate");
+	// }
+	//
+	// public void equalizeValues(final EqualizeValues pValues) {
+	//
+	// int totalLength = 0;
+	// for (final PixelChain chain : mPixelChains) {
+	// totalLength += chain.getPixelLength();
+	// }
+	//
+	// final Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
+	//
+	// final int shortThreshold = (int) (totalLength * pValues.getIgnoreFraction());
+	// final int mediumThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
+	// final int longThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction() +
+	// pValues.getMediumFraction()));
+	//
+	// Integer shortLength = null;
+	// Integer mediumLength = null;
+	// Integer longLength = null;
+	//
+	// int currentLength = 0;
+	// for (final PixelChain chain : sortedChains) {
+	// currentLength += chain.getPixelLength();
+	//
+	// if (shortLength == null && currentLength > shortThreshold) {
+	// shortLength = chain.getPixelLength();
+	// }
+	//
+	// if (mediumLength == null && currentLength > mediumThreshold) {
+	// mediumLength = chain.getPixelLength();
+	// }
+	//
+	// if (longLength == null && currentLength > longThreshold) {
+	// longLength = chain.getPixelLength();
+	// break;
+	// }
+	// }
+	//
+	// pValues.setReturnValues(shortLength, mediumLength, longLength);
+	// }
+	//
+	// public Node findNodeInPixelChains(final Pixel pPixel) {
+	// Node result = null;
+	// for (final PixelChain pixelChain : mPixelChains) {
+	// if (pixelChain.firstPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
+	// result = (Node) pixelChain.firstPixel();
+	// break;
+	// }
+	// if (pixelChain.lastPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
+	// result = (Node) pixelChain.lastPixel();
+	// break;
+	// }
+	// }
+	// return result;
+	// }
+	//
+	// /**
+	// * Find PixelChain for the given Pixel. A Pixel can be constructed from a PixelMap and an x, y coordinate. This Pixel might be
+	// * part of a PixelChain (so its mPixelChain member will be set). Subsequently a Pixel might be created from the same PixelMap
+	// * with the same x, y coordinates. This method enables us to recover the PixelChain of the original Pixel.
+	// *
+	// * @param pPixel
+	// * the pixel
+	// */
+	// public PixelChain findPixelChain(final Pixel pPixel) {
+	// PixelChain result = null;
+	//
+	// // AbstractCollection<ISegment> segments = getSegments(pPixel);
+	// for (final PixelChain pixelChain : mPixelChains) {
+	// if (pixelChain.contains(pPixel)) {
+	// result = pixelChain;
+	// break;
+	// }
+	// }
+	//
+	// // for (PixelChain pixelChain : mPixelChains) {
+	// // if (pixelChain.contains(pPixel)) {
+	// // result = pixelChain;
+	// // break;
+	// // }
+	// // }
+	//
+	// return result;
+	// }
+	//
+	// private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
+	// try {
+	// mLogger.entering(mClassname, "generateChain");
+	// if (mLogger.isLoggable(Level.FINEST)) {
+	// mLogger.finest("pStartNode: " + pStartNode);
+	// mLogger.finest("pCurrentPixel: " + pCurrentPixel);
+	// mLogger.finest("pChain: " + pChain);
+	// }
+	//
+	// if (pCurrentPixel.isNode()) {
+	// pChain.setEndNode(getNode(pCurrentPixel));
+	// mLogger.exiting(mClassname, "generateChain");
+	// return;
+	// }
+	//
+	// pChain.add(pCurrentPixel);
+	// pCurrentPixel.setInChain(true);
+	// pCurrentPixel.setVisited(true);
+	//
+	// // try to end quickly at a node to prevent bypassing
+	// for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours()) {
+	// // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+	// // going back to the staring node.
+	// // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
+	// // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
+	// if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 &&
+	// nodalNeighbour.equals(pChain.firstPixel()))) {
+	// generateChain(pStartNode, nodalNeighbour, pChain);
+	// mLogger.exiting(mClassname, "generateChain");
+	// return;
+	// }
+	// }
+	//
+	// // otherwise go to the next pixel normally
+	// for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
+	// // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+	// // going back to the staring node.
+	// // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
+	// // !neighbour.isNeighbour(pChain.firstPixel()))) {
+	// if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode())))
+	// {
+	// generateChain(pStartNode, neighbour, pChain);
+	// mLogger.exiting(mClassname, "generateChain");
+	// return;
+	// }
+	// }
+	//
+	// } catch (final Throwable pT) {
+	// mLogger.log(Level.SEVERE, "Exception thrown", pT);
+	// mLogger.severe("pStartNode: " + pStartNode);
+	// mLogger.severe("pCurrentPixel: " + pCurrentPixel);
+	// mLogger.severe("pChain: " + pChain);
+	// }
+	// }
+	//
+	// Collection<PixelChain> generateChains(final Node pStartNode) {
+	// final Vector<PixelChain> chains = new Vector<PixelChain>();
+	// pStartNode.setVisited(true);
+	// pStartNode.setInChain(true);
+	// for (final Pixel neighbour : pStartNode.getNeighbours()) {
+	// if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
+	// final PixelChain chain = new PixelChain(pStartNode);
+	// generateChain(pStartNode, neighbour, chain);
+	// if (chain.length() > 2) {
+	// chains.add(chain);
+	// chain.addToNodes();
+	// }
+	// }
+	// }
+	// return chains;
+	// }
+	//
+	// /**
+	// * Gets all of the Nodes in the PixelMap, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
+	// * load, only during the generate phase.
+	// *
+	// * @return the all nodes
+	// */
+	// private Iterable<Node> getAllNodes() {
+	// return mAllNodes;
+	// }
+	//
+	// public Iterable<PixelChain> getAllPixelChains() {
+	// return mPixelChains;
+	// }
+	//
 	public double getAspectRatio() {
 		return mAspectRatio;
 	}
@@ -412,154 +387,160 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		return mHeight;
 	}
 
-	public int getLineCount() {
-		return mSegmentCount;
-	}
-
-	public double getLineOpacity() {
-		return mTransformSource.getLineOpacity();
-	}
-
-	public double getLineTolerance() {
-		return mTransformSource.getLineTolerance();
-	}
-
-	public int getLongLineLength() {
-		return mTransformSource.getLongLineLength();
-	}
-
-	public double getLongLineThickness() {
-		return mTransformSource.getLongLineThickness();
-	}
-
-	public Color getMaxiLineColor() {
-		return mTransformSource.getLineColor();
-	}
-
-	private Color getMaxiLineColor(final Point pIn, final Color pColor) {
-		return getMaxiLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d);
-		// return getMaxiLineColor3D(pIn, pColor, getMaxiLineColor(), getLineOpacity());
-	}
-
-	private Color getMaxiLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final double pThicknessMuliplier) {
-		final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d;
-		final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
-		final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
-		if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) { return KColor.fade(pColorIn, pLineColor, pOpacity); }
-		return pColorIn;
-	}
-
-	private Color getMaxiLineColor3D(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity) {
-		final double shortThickness = getMediumLineThickness() / 1000d;
-		final double normalThickness = getShortLineThickness() / 1000d;
-		final double longThickness = getLongLineThickness() / 1000d;
-		final Intersect3D intersect = getMaxIntersect3d(pIn, shortThickness, normalThickness, longThickness);
-
-		if (intersect != null) {
-			final Point3D light = new Point3D(-10.0d, 0.0d, 10.0d);
-			final Point3D point = intersect.getPoint();
-			final Vector3D normal = intersect.getNormal();
-
-			final Vector3D vectorToLight = point.to(light).normalize();
-			final double lightDotNormal = vectorToLight.dot(normal);
-
-			final Point3D eye = new Point3D(0.5d, 0.5d, 200.0d);
-			final Vector3D vectorToEye = point.to(eye).normalize();
-			// final double eyeDotNormal = vectorToEye.dot(normal);
-
-			if (lightDotNormal > 0.0d) { // need to avoid highlights on hidden surfaces
-
-				final Vector3D reflectedDirection = normal.scale(2.0d * lightDotNormal).minus(vectorToLight);
-				final double cos = reflectedDirection.normalize().dot(vectorToEye);
-				double highlight = Math.pow(cos, 4.0d);
-
-				final Range range = Range.ZeroToOne;
-				highlight = range.getBoundedValue(highlight);
-				if (highlight < 0.0d || highlight > 1.0d) {
-					final int i = 1;
-				}
-				final Color lineColor = KColor.fade(pLineColor, Color.WHITE, highlight);
-				return KColor.fade(pColorIn, lineColor, pOpacity);
-				// return Color.RED;
-			}
-			return KColor.fade(pColorIn, pLineColor, pOpacity);
-		}
-
-		return pColorIn;
-	}
-
-	private Color getMaxiLineShadowColor(final Point pIn, final Color pColor) {
-		if (getShowShadow()) {
-			double x = pIn.getX() - getShadowXOffset() / 1000d;
-			x = x < 0 ? 0 : x > getWidth() - 1 ? x - getWidth() : x;
-
-			double y = pIn.getY() - getShadowYOffset() / 1000d;
-			y = y < 0 ? 0 : y > getHeight() - 1 ? y - (getHeight() - 1) : y;
-
-			final Point uhvw = new Point(x, y);
-			return getMaxiLineColor(uhvw, pColor, getShadowColor(), getShadowOpacity(), getShadowThickness());
-		}
-		return pColor;
-	}
-
-	private Intersect3D getMaxIntersect3d(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth) {
-		calcSegmentIndex();
-
-		final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
-		final Point uhvw = toUHVW(pPoint);
-		Intersect3D maxIntersect = null;
-
-		for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
-			for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
-				if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-					for (final ISegment segment : getSegments(x, y)) {
-						if (segment.getPixelChain().length() < getShortLineLength()) {
-							break;
-						}
-						if (segment.getPixelLength() > getShortLineLength()) {
-							final Intersect3D intersect = segment.intersect3D(uhvw);
-							if (maxIntersect == null || intersect != null && intersect.getPoint().getZ() > maxIntersect.getPoint().getZ()) {
-								maxIntersect = intersect;
-							}
-						}
-					}
-				}
-			}
-		}
-		return maxIntersect;
-	}
-
-	public int getMediumLineLength() {
-		return mTransformSource.getMediumLineLength();
-	}
-
-	public double getMediumLineThickness() {
-		return mTransformSource.getMediumLineThickness();
-	}
-
-	/**
-	 * Gets the Node at the PixelPosition, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform load,
-	 * only during the generate phase
-	 * 
-	 * @param pPixel
-	 *            the pixel
-	 * @return the node
-	 */
-	private Node getNode(final Pixel pPixel) {
-		Node node = mAllNodes.getNode(pPixel);
-		if (node == null) {
-			node = new Node(pPixel);
-		}
-		return node;
-	}
-
-	public double getNormalWidth() {
-		return getMediumLineThickness() / 1000d;
-	}
-
+	// public int getLineCount() {
+	// return mSegmentCount;
+	// }
+	//
+	// public double getLineOpacity() {
+	// return mTransformSource.getLineOpacity();
+	// }
+	//
+	// public double getLineTolerance() {
+	// return mTransformSource.getLineTolerance();
+	// }
+	//
+	// public int getLongLineLength() {
+	// return mTransformSource.getLongLineLength();
+	// }
+	//
+	// public double getLongLineThickness() {
+	// return mTransformSource.getLongLineThickness();
+	// }
+	//
+	// public Color getMaxiLineColor() {
+	// return mTransformSource.getLineColor();
+	// }
+	//
+	// private Color getMaxiLineColor(final Point pIn, final Color pColor) {
+	// return getMaxiLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d);
+	// // return getMaxiLineColor3D(pIn, pColor, getMaxiLineColor(), getLineOpacity());
+	// }
+	//
+	// private Color getMaxiLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
+	// double pThicknessMuliplier) {
+	// final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d;
+	// final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
+	// final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
+	// if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) { return KColor.fade(pColorIn, pLineColor,
+	// pOpacity); }
+	// return pColorIn;
+	// }
+	//
+	// private Color getMaxiLineColor3D(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity) {
+	// final double shortThickness = getMediumLineThickness() / 1000d;
+	// final double normalThickness = getShortLineThickness() / 1000d;
+	// final double longThickness = getLongLineThickness() / 1000d;
+	// final Intersect3D intersect = getMaxIntersect3d(pIn, shortThickness, normalThickness, longThickness);
+	//
+	// if (intersect != null) {
+	// final Point3D light = new Point3D(-10.0d, 0.0d, 10.0d);
+	// final Point3D point = intersect.getPoint();
+	// final Vector3D normal = intersect.getNormal();
+	//
+	// final Vector3D vectorToLight = point.to(light).normalize();
+	// final double lightDotNormal = vectorToLight.dot(normal);
+	//
+	// final Point3D eye = new Point3D(0.5d, 0.5d, 200.0d);
+	// final Vector3D vectorToEye = point.to(eye).normalize();
+	// // final double eyeDotNormal = vectorToEye.dot(normal);
+	//
+	// if (lightDotNormal > 0.0d) { // need to avoid highlights on hidden surfaces
+	//
+	// final Vector3D reflectedDirection = normal.scale(2.0d * lightDotNormal).minus(vectorToLight);
+	// final double cos = reflectedDirection.normalize().dot(vectorToEye);
+	// double highlight = Math.pow(cos, 4.0d);
+	//
+	// final Range range = Range.ZeroToOne;
+	// highlight = range.getBoundedValue(highlight);
+	// if (highlight < 0.0d || highlight > 1.0d) {
+	// final int i = 1;
+	// }
+	// final Color lineColor = KColor.fade(pLineColor, Color.WHITE, highlight);
+	// return KColor.fade(pColorIn, lineColor, pOpacity);
+	// // return Color.RED;
+	// }
+	// return KColor.fade(pColorIn, pLineColor, pOpacity);
+	// }
+	//
+	// return pColorIn;
+	// }
+	//
+	// private Color getMaxiLineShadowColor(final Point pIn, final Color pColor) {
+	// if (getShowShadow()) {
+	// double x = pIn.getX() - getShadowXOffset() / 1000d;
+	// x = x < 0 ? 0 : x > getWidth() - 1 ? x - getWidth() : x;
+	//
+	// double y = pIn.getY() - getShadowYOffset() / 1000d;
+	// y = y < 0 ? 0 : y > getHeight() - 1 ? y - (getHeight() - 1) : y;
+	//
+	// final Point uhvw = new Point(x, y);
+	// return getMaxiLineColor(uhvw, pColor, getShadowColor(), getShadowOpacity(), getShadowThickness());
+	// }
+	// return pColor;
+	// }
+	//
+	// private Intersect3D getMaxIntersect3d(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
+	// pThickWidth) {
+	// calcSegmentIndex();
+	//
+	// final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
+	// final Point uhvw = toUHVW(pPoint);
+	// Intersect3D maxIntersect = null;
+	//
+	// for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() +
+	// maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
+	// for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() +
+	// maxWidth) + 1; y++) {
+	// if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
+	// for (final ISegment segment : getSegments(x, y)) {
+	// if (segment.getPixelChain().length() < getShortLineLength()) {
+	// break;
+	// }
+	// if (segment.getPixelLength() > getShortLineLength()) {
+	// final Intersect3D intersect = segment.intersect3D(uhvw);
+	// if (maxIntersect == null || intersect != null && intersect.getPoint().getZ() > maxIntersect.getPoint().getZ()) {
+	// maxIntersect = intersect;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return maxIntersect;
+	// }
+	//
+	// public int getMediumLineLength() {
+	// return mTransformSource.getMediumLineLength();
+	// }
+	//
+	// public double getMediumLineThickness() {
+	// return mTransformSource.getMediumLineThickness();
+	// }
+	//
+	// /**
+	// * Gets the Node at the PixelPosition, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
+	// load,
+	// * only during the generate phase
+	// *
+	// * @param pPixel
+	// * the pixel
+	// * @return the node
+	// */
+	// private Node getNode(final Pixel pPixel) {
+	// Node node = mAllNodes.getNode(pPixel);
+	// if (node == null) {
+	// node = new Node(pPixel);
+	// }
+	// return node;
+	// }
+	//
+	// public double getNormalWidth() {
+	// return getMediumLineThickness() / 1000d;
+	// }
+	//
 	public Pixel getPixelAt(final double pX, final double pY) {
 		mLogger.entering(mClassname, "getPixelAt");
-		Framework.logParams(mLogger, "pX, pY", pX, pY);
+		// Framework.logParams(mLogger, "pX, pY", pX, pY);
 
 		int x = (int) (pX * getWidth());
 		int y = (int) (pY * getHeight());
@@ -575,249 +556,254 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		return new Pixel(this, pX, pY);
 	}
 
-	public Pixel getPixelAt(final Point pPoint) {
-		mLogger.entering(mClassname, "getPixelAt");
-		Framework.logParams(mLogger, "pPoint", pPoint);
-
-		final Pixel pixel = getPixelAt(pPoint.getX(), pPoint.getY());
-
-		mLogger.exiting(mClassname, "getPixelAt", pixel);
-		return pixel;
-	}
-
-	private Vector<PixelChain> getPixelChainsSortedByLength() {
-		final Vector<PixelChain> chains = new Vector<PixelChain>(); // this will be the sorted collection
-
-		for (final PixelChain chain : mPixelChains) {
-			chains.add(chain);
-		}
-
-		final Comparator<PixelChain> comparator = new Comparator<PixelChain>() {
-
-			@Override
-			public int compare(final PixelChain pChain1, final PixelChain pChain2) {
-				return pChain1.getPixelLength() - pChain2.getPixelLength();
-			}
-		};
-		Collections.sort(chains, comparator);
-
-		return chains;
-	}
-
-	public Color getPixelColor() {
-		return mTransformSource.getPixelColor();
-	}
-
-	private Color getPixelColor(final Point pIn, final Color pColor) {
-		if (getShowPixels()) {
-			final Pixel pixelIn = getPixelAt(pIn);
-			// if (pixelIn.isInChain())
-			// return Color.YELLOW;
-			if (pixelIn.isNode()) { return Color.RED; } // TODO could do something here about being in chain
-			if (pixelIn.isEdge() && pixelIn.isVisited()) { return Color.BLUE; } // TODO could do something here about being in chain
-		}
-
-		return pColor;
-	}
-
-	// private com.ownimage.perception.Properties getProperties() {
-	// return Perception.getInstanceProperties();
+	// public Pixel getPixelAt(final Point pPoint) {
+	// mLogger.entering(mClassname, "getPixelAt");
+	// Framework.logParams(mLogger, "pPoint", pPoint);
+	//
+	// final Pixel pixel = getPixelAt(pPoint.getX(), pPoint.getY());
+	//
+	// mLogger.exiting(mClassname, "getPixelAt", pixel);
+	// return pixel;
 	// }
-
+	//
+	// private Vector<PixelChain> getPixelChainsSortedByLength() {
+	// final Vector<PixelChain> chains = new Vector<PixelChain>(); // this will be the sorted collection
+	//
+	// for (final PixelChain chain : mPixelChains) {
+	// chains.add(chain);
+	// }
+	//
+	// final Comparator<PixelChain> comparator = new Comparator<PixelChain>() {
+	//
+	// @Override
+	// public int compare(final PixelChain pChain1, final PixelChain pChain2) {
+	// return pChain1.getPixelLength() - pChain2.getPixelLength();
+	// }
+	// };
+	// Collections.sort(chains, comparator);
+	//
+	// return chains;
+	// }
+	//
+	// public Color getPixelColor() {
+	// return mTransformSource.getPixelColor();
+	// }
+	//
+	// private Color getPixelColor(final Point pIn, final Color pColor) {
+	// if (getShowPixels()) {
+	// final Pixel pixelIn = getPixelAt(pIn);
+	// // if (pixelIn.isInChain())
+	// // return Color.YELLOW;
+	// if (pixelIn.isNode()) { return Color.RED; } // TODO could do something here about being in chain
+	// if (pixelIn.isEdge() && pixelIn.isVisited()) { return Color.BLUE; } // TODO could do something here about being in chain
+	// }
+	//
+	// return pColor;
+	// }
+	//
+	// // private com.ownimage.perception.Properties getProperties() {
+	// // return Perception.getInstanceProperties();
+	// // }
+	//
 	@Override
 	public String getPropertyName() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	AbstractCollection<ISegment> getSegments(final int pX, final int pY) {
-
-		if (pX < 0 || pX >= getWidth()) { throw new IllegalArgumentException("pX out of range.  pX = " + pX + ".  It needs to be greater than 0 and less than " + getWidth()); }
-
-		if (pY < 0 || pY >= getHeight()) { throw new IllegalArgumentException("pY out of range.  pY = " + pY + ".  It needs to be greater than 0 and less than " + getHeight()); }
-
-		if (mSegmentIndex[pX][pY] == null) { //
-			mSegmentIndex[pX][pY] = new LinkedList<ISegment>();
-		}
-		return mSegmentIndex[pX][pY];
-	}
-
-	private AbstractCollection<ISegment> getSegments(final Pixel pPixel) {
-		return getSegments(pPixel.getX(), pPixel.getY());
-	}
-
-	public Color getShadowColor() {
-		return mTransformSource.getShadowColor();
-	}
-
-	public double getShadowOpacity() {
-		return mTransformSource.getShadowOpacity();
-	}
-
-	public double getShadowThickness() {
-		return mTransformSource.getShadowThickness();
-	}
-
-	public double getShadowXOffset() {
-		return mTransformSource.getShadowXOffset();
-	}
-
-	public double getShadowYOffset() {
-		return mTransformSource.getShadowYOffset();
-	}
-
-	private Color getShortLineColor(final Point pIn, final Color pColor) {
-		// if (mShowShortLines.getBoolean()) {
-		// Pixel pixelIn = getEdgeData().getPixelAt(pIn);
-		// Point pictureResolutionPoint = getEdgeData().toUHVW(pIn);
-		//
-		// int[][] segments = { //
-		// //
-		// { 1, 4 }, { 3, 4 }, { 5, 4 }, { 7, 4 }, // plus
-		// { 0, 4 }, { 2, 4 }, { 6, 4 }, { 8, 4 },// cross
-		// { 1, 3 }, { 3, 7 }, { 7, 5 }, { 5, 1 }, // diamond
-		// { 0, 1 }, { 1, 2 }, { 2, 5 }, { 5, 8 }, { 8, 7 }, { 7, 6 }, { 6, 3 }, { 3, 0 } // big square
-		// };
-		//
-		// boolean[] pixel = new boolean[9];
-		// for (int i = 0; i < 9; i++) {
-		// pixel[i] = pixelIn.getNeighbour(i).isEdge();// && !pixelIn.getNeighbour(i).isInChain();
-		// }
-		//
-		// for (int i = 0; i < segments.length; i++) {
-		// if (pixel[segments[i][0]] && pixel[segments[i][1]]) {
-		// LineApproximation line = new LineApproximation(pixelIn.getNeighbour(segments[i][0]).getUHVWPoint(), //
-		// pixelIn.getNeighbour(segments[i][1]).getUHVWPoint());
-		// if (line.isCloserThan(pictureResolutionPoint, mShortLineThickness.getValue())) {
-		// return mShortLineColor.getValue();
-		// }
-		// }
-		// }
-		// }
-		//
-		return pColor;
-	}
-
-	public int getShortLineLength() {
-		return mTransformSource.getShortLineLength();
-	}
-
-	public double getShortLineThickness() {
-		return mTransformSource.getShortLineThickness();
-	}
-
-	public boolean getShowPixels() {
-		return mTransformSource.getShowPixels();
-	}
-
-	public boolean getShowShadow() {
-		return mTransformSource.getShowShadow();
-	}
-
-	public double getThickWidth() {
-		return getLongLineThickness() / 1000d;
-	}
-
-	public double getThinWidth() {
-		return getShortLineThickness() / 1000d;
-	}
-
-	public IPixelMapTransformSource getTransformSource() {
-		return mTransformSource;
-	}
-
-	public Point getUHVWHalfPixel() {
-		return mUHVWHalfPixel;
-	}
-
-	public IUndoRedoBuffer getUndoRedoBuffer() {
-		return mUndoRedoBuffer;
-	}
-
+	// AbstractCollection<ISegment> getSegments(final int pX, final int pY) {
+	//
+	// if (pX < 0 || pX >= getWidth()) { throw new IllegalArgumentException("pX out of range. pX = " + pX + ". It needs to be
+	// greater than 0 and less than " + getWidth()); }
+	//
+	// if (pY < 0 || pY >= getHeight()) { throw new IllegalArgumentException("pY out of range. pY = " + pY + ". It needs to be
+	// greater than 0 and less than " + getHeight()); }
+	//
+	// if (mSegmentIndex[pX][pY] == null) { //
+	// mSegmentIndex[pX][pY] = new LinkedList<ISegment>();
+	// }
+	// return mSegmentIndex[pX][pY];
+	// }
+	//
+	// private AbstractCollection<ISegment> getSegments(final Pixel pPixel) {
+	// return getSegments(pPixel.getX(), pPixel.getY());
+	// }
+	//
+	// public Color getShadowColor() {
+	// return mTransformSource.getShadowColor();
+	// }
+	//
+	// public double getShadowOpacity() {
+	// return mTransformSource.getShadowOpacity();
+	// }
+	//
+	// public double getShadowThickness() {
+	// return mTransformSource.getShadowThickness();
+	// }
+	//
+	// public double getShadowXOffset() {
+	// return mTransformSource.getShadowXOffset();
+	// }
+	//
+	// public double getShadowYOffset() {
+	// return mTransformSource.getShadowYOffset();
+	// }
+	//
+	// private Color getShortLineColor(final Point pIn, final Color pColor) {
+	// // if (mShowShortLines.getBoolean()) {
+	// // Pixel pixelIn = getEdgeData().getPixelAt(pIn);
+	// // Point pictureResolutionPoint = getEdgeData().toUHVW(pIn);
+	// //
+	// // int[][] segments = { //
+	// // //
+	// // { 1, 4 }, { 3, 4 }, { 5, 4 }, { 7, 4 }, // plus
+	// // { 0, 4 }, { 2, 4 }, { 6, 4 }, { 8, 4 },// cross
+	// // { 1, 3 }, { 3, 7 }, { 7, 5 }, { 5, 1 }, // diamond
+	// // { 0, 1 }, { 1, 2 }, { 2, 5 }, { 5, 8 }, { 8, 7 }, { 7, 6 }, { 6, 3 }, { 3, 0 } // big square
+	// // };
+	// //
+	// // boolean[] pixel = new boolean[9];
+	// // for (int i = 0; i < 9; i++) {
+	// // pixel[i] = pixelIn.getNeighbour(i).isEdge();// && !pixelIn.getNeighbour(i).isInChain();
+	// // }
+	// //
+	// // for (int i = 0; i < segments.length; i++) {
+	// // if (pixel[segments[i][0]] && pixel[segments[i][1]]) {
+	// // LineApproximation line = new LineApproximation(pixelIn.getNeighbour(segments[i][0]).getUHVWPoint(), //
+	// // pixelIn.getNeighbour(segments[i][1]).getUHVWPoint());
+	// // if (line.isCloserThan(pictureResolutionPoint, mShortLineThickness.getValue())) {
+	// // return mShortLineColor.getValue();
+	// // }
+	// // }
+	// // }
+	// // }
+	// //
+	// return pColor;
+	// }
+	//
+	// public int getShortLineLength() {
+	// return mTransformSource.getShortLineLength();
+	// }
+	//
+	// public double getShortLineThickness() {
+	// return mTransformSource.getShortLineThickness();
+	// }
+	//
+	// public boolean getShowPixels() {
+	// return mTransformSource.getShowPixels();
+	// }
+	//
+	// public boolean getShowShadow() {
+	// return mTransformSource.getShowShadow();
+	// }
+	//
+	// public double getThickWidth() {
+	// return getLongLineThickness() / 1000d;
+	// }
+	//
+	// public double getThinWidth() {
+	// return getShortLineThickness() / 1000d;
+	// }
+	//
+	// public IPixelMapTransformSource getTransformSource() {
+	// return mTransformSource;
+	// }
+	//
+	// public Point getUHVWHalfPixel() {
+	// return mUHVWHalfPixel;
+	// }
+	//
+	// public IUndoRedoBuffer getUndoRedoBuffer() {
+	// return mUndoRedoBuffer;
+	// }
+	//
 	public byte getValue(final int pX, final int pY) {
 
 		if (pX < 0) { throw new IllegalArgumentException("pX must be > 0."); }
 
-		if (pX > getWidth() - 1) { throw new IllegalArgumentException("pX must be less than getWidth() -1.  pX = " + pX + ", getWidth() = " + getWidth()); }
+		if (pX > getWidth() - 1) { throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth()); }
 
 		if (pY < 0) { throw new IllegalArgumentException("pY must be > 0."); }
 
-		if (pY > getHeight() - 1) { throw new IllegalArgumentException("pX must be less than getHeight() -1.  pX = " + pX + ", getHeight() = " + getHeight()); }
+		if (pY > getHeight() - 1) { throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight()); }
 
 		return mData[pX][pY];
 	}
 
-	public byte getValue(final Pixel pPixel) {
-		if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
-			final int x = modWidth(pPixel.getX());
-			return getValue(x, pPixel.getY());
-		} else {
-			return 0;
-		}
-	}
-
+	// public byte getValue(final Pixel pPixel) {
+	// if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
+	// final int x = modWidth(pPixel.getX());
+	// return getValue(x, pPixel.getY());
+	// } else {
+	// return 0;
+	// }
+	// }
+	//
 	public int getWidth() {
 		return mWidth;
 	}
 
-	void index(final ISegment pSegment) {
-		mSegmentCount++;
-		// // TODO make assumption that this is 360
-		// // mSegmentIndex.add(pLineSegment);
-		//
-		int minX = (int) Math.floor(pSegment.getMinX() * getWidth() / mAspectRatio) - 1;
-		minX = minX < 0 ? 0 : minX;
-		minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
-
-		int maxX = (int) Math.ceil(pSegment.getMaxX() * getWidth() / mAspectRatio) + 1;
-		maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
-
-		int minY = (int) Math.floor(pSegment.getMinY() * getHeight()) - 1;
-		minY = minY < 0 ? 0 : minY;
-		minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
-
-		int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
-		maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
-
-		for (int x = minX; x <= maxX; x++) {
-			for (int y = minY; y <= maxY; y++) {
-				final Pixel pixel = getPixelAt(x, y);
-				final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
-				if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
-					getSegments(x, y).add(pSegment);
-				}
-			}
-		}
-
-	}
-
-	public synchronized void indexSegments() {
-		mLogger.entering(mClassname, "indexSegments");
-		mSegmentIndexValid = false;
-		mLogger.exiting(mClassname, "indexSegments");
-	}
-
-	private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth) {
-		calcSegmentIndex();
-
-		final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
-		final Point uhvw = toUHVW(pPoint);
-
-		for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
-			for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
-				if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-					for (final ISegment segment : getSegments(x, y)) {
-						if (segment.getPixelChain().getThickness() == Thickness.None) {
-							break;
-						}
-						if (segment.closerThan(uhvw)) { return true; }
-					}
-				}
-			}
-		}
-		return false;
-	}
-
+	// void index(final ISegment pSegment) {
+	// mSegmentCount++;
+	// // // TODO make assumption that this is 360
+	// // // mSegmentIndex.add(pLineSegment);
+	// //
+	// int minX = (int) Math.floor(pSegment.getMinX() * getWidth() / mAspectRatio) - 1;
+	// minX = minX < 0 ? 0 : minX;
+	// minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
+	//
+	// int maxX = (int) Math.ceil(pSegment.getMaxX() * getWidth() / mAspectRatio) + 1;
+	// maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
+	//
+	// int minY = (int) Math.floor(pSegment.getMinY() * getHeight()) - 1;
+	// minY = minY < 0 ? 0 : minY;
+	// minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
+	//
+	// int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
+	// maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
+	//
+	// for (int x = minX; x <= maxX; x++) {
+	// for (int y = minY; y <= maxY; y++) {
+	// final Pixel pixel = getPixelAt(x, y);
+	// final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
+	// if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
+	// getSegments(x, y).add(pSegment);
+	// }
+	// }
+	// }
+	//
+	// }
+	//
+	// public synchronized void indexSegments() {
+	// mLogger.entering(mClassname, "indexSegments");
+	// mSegmentIndexValid = false;
+	// mLogger.exiting(mClassname, "indexSegments");
+	// }
+	//
+	// private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
+	// pThickWidth) {
+	// calcSegmentIndex();
+	//
+	// final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
+	// final Point uhvw = toUHVW(pPoint);
+	//
+	// for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() +
+	// maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
+	// for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() +
+	// maxWidth) + 1; y++) {
+	// if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
+	// for (final ISegment segment : getSegments(x, y)) {
+	// if (segment.getPixelChain().getThickness() == Thickness.None) {
+	// break;
+	// }
+	// if (segment.closerThan(uhvw)) { return true; }
+	// }
+	// }
+	// }
+	// }
+	// return false;
+	// }
+	//
 	@Override
 	public boolean isPersistent() {
 		// TODO Auto-generated method stub
@@ -835,435 +821,435 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		}
 	}
 
-	public void pixelAction(final Pixel pPixel, final EditPixelMapDialog pEPMD) {
-		mPixelUndoRedoAction = new PixelUndoRedoAction(this);
-		mPixelAction.pixelAction(pPixel, pEPMD);
-		mUndoRedoBuffer.add(mPixelUndoRedoAction);
-		mPixelUndoRedoAction = null;
-	}
-
+	// // public void pixelAction(final Pixel pPixel, final EditPixelMapDialog pEPMD) {
+	// // mPixelUndoRedoAction = new PixelUndoRedoAction(this);
+	// // mPixelAction.pixelAction(pPixel, pEPMD);
+	// // mUndoRedoBuffer.add(mPixelUndoRedoAction);
+	// // mPixelUndoRedoAction = null;
+	// // }
+	//
 	public Point pixelToPoint(final Pixel pPixel) {
 		final Point point = new Point((double) pPixel.getX() / (double) getWidth(), (double) pPixel.getY() / (double) getHeight());
 		return point;
 	}
 
-	private void printNodeCounts() {
-		final int[] values = new int[9];
-		for (final Node node : mAllNodes) {
-			values[node.countPixelChains()]++;
-		}
-		for (int i = 0; i < 9; i++) {
-			// System.out.println("Nodes with " + i + "chains:" + values[i]);
-		}
-	}
-
-	public void process(final IProgressBar pProgress) {
-		try {
-			// pProgress.showProgressBar();
-			process01_reset();
-			process02_thin(pProgress);
-			process03_generateNodes();
-			process04a_removeLoneNodes();
-			process04b_removeBristles();
-			process05_generateChains(pProgress);
-			process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-			validate();
-			process07_mergeChains();
-			validate();
-			process08_refine();
-			validate();
-			// reapproximate(null, mTransformSource.getLineTolerance());
-			validate();
-			process04a_removeLoneNodes();
-			indexSegments();
-
-		} catch (final Exception pEx) {
-			System.out.println("pEx");
-			pEx.printStackTrace(System.err);
-		}
-		// } finally {
-		// pProgress.hideProgressBar();
-		// }
-	}
-
-	// resets everything but the isEdgeData
-	public void process01_reset() {
-		resetVisited();
-		resetInChain();
-		resetNode();
-
-		mAllNodes.removeAllElements();
-		mPixelChains.removeAllElements();
-		resetSegmentIndex();
-	}
-
-	// public void process08_refine_old() {
-	// System.out.println("Refine");
-	//
-	// class RefineThread extends Thread {
-	//
-	// private final int mOffset;
-	// private final int mStep;
-	//
-	// public RefineThread(int pOffset, int pStep) {
-	// mOffset = pOffset;
-	// mStep = pStep;
+	// private void printNodeCounts() {
+	// final int[] values = new int[9];
+	// for (final Node node : mAllNodes) {
+	// values[node.countPixelChains()]++;
+	// }
+	// for (int i = 0; i < 9; i++) {
+	// // System.out.println("Nodes with " + i + "chains:" + values[i]);
+	// }
 	// }
 	//
-	// @Override
-	// public void run() {
-	// for (int i = mOffset; i < mPixelChains.size(); i += mStep) {
+	// public void process(final IProgressBar pProgress) {
 	// try {
-	// mPixelChains.get(i).approximate();
+	// // pProgress.showProgressBar();
+	// process01_reset();
+	// process02_thin(pProgress);
+	// process03_generateNodes();
+	// process04a_removeLoneNodes();
+	// process04b_removeBristles();
+	// process05_generateChains(pProgress);
+	// process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+	// validate();
+	// process07_mergeChains();
+	// validate();
+	// process08_refine();
+	// validate();
+	// // reapproximate(null, mTransformSource.getLineTolerance());
+	// validate();
+	// process04a_removeLoneNodes();
+	// indexSegments();
 	//
-	// } catch (Throwable pT) {
-	// mLogger.log(Level.SEVERE, pT.getMessage());
-	// if (mLogger.isLoggable(Level.FINEST)) {
-	// mLogger.log(Level.FINEST, Framework.throwableToString(pT));
+	// } catch (final Exception pEx) {
+	// System.out.println("pEx");
+	// pEx.printStackTrace(System.err);
 	// }
+	// // } finally {
+	// // pProgress.hideProgressBar();
+	// // }
 	// }
-	// }
-	// }
-	// }
-	// ;
 	//
-	// Job job = new Job("PixelMap_refinePixelChains", false, this) {
+	// // resets everything but the isEdgeData
+	// public void process01_reset() {
+	// resetVisited();
+	// resetInChain();
+	// resetNode();
 	//
-	// @Override
-	// public void run() {
+	// mAllNodes.removeAllElements();
+	// mPixelChains.removeAllElements();
+	// resetSegmentIndex();
+	// }
 	//
-	// int threadCount = getProperties().getNumberOfThreads();
+	// // public void process08_refine_old() {
+	// // System.out.println("Refine");
+	// //
+	// // class RefineThread extends Thread {
+	// //
+	// // private final int mOffset;
+	// // private final int mStep;
+	// //
+	// // public RefineThread(int pOffset, int pStep) {
+	// // mOffset = pOffset;
+	// // mStep = pStep;
+	// // }
+	// //
+	// // @Override
+	// // public void run() {
+	// // for (int i = mOffset; i < mPixelChains.size(); i += mStep) {
+	// // try {
+	// // mPixelChains.get(i).approximate();
+	// //
+	// // } catch (Throwable pT) {
+	// // mLogger.log(Level.SEVERE, pT.getMessage());
+	// // if (mLogger.isLoggable(Level.FINEST)) {
+	// // mLogger.log(Level.FINEST, Framework.throwableToString(pT));
+	// // }
+	// // }
+	// // }
+	// // }
+	// // }
+	// // ;
+	// //
+	// // Job job = new Job("PixelMap_refinePixelChains", false, this) {
+	// //
+	// // @Override
+	// // public void run() {
+	// //
+	// // int threadCount = getProperties().getNumberOfThreads();
+	// // try {
+	// // if (getProperties().useThreads()) {
+	// // Thread threads[] = new Thread[threadCount];
+	// //
+	// // for (int i = 0; i < getProperties().getNumberOfThreads(); i++) {
+	// // RefineThread runnable;
+	// // runnable = new RefineThread(i, threadCount);
+	// // runnable.setName("PixelMap_refinePixelChains Thread: " + i);
+	// // runnable.start();
+	// //
+	// // threads[i] = runnable;
+	// // }
+	// //
+	// // for (int i = 0; i < threadCount; i++) {
+	// // try {
+	// // threads[i].join();
+	// // } catch (InterruptedException pEx) {
+	// // mLogger.warning("Interruped");
+	// // if (mLogger.isLoggable(Level.FINE)) mLogger.fine(Framework.throwableToString(pEx));
+	// // }
+	// // }
+	// // } else {
+	// // RefineThread runnable = new RefineThread(0, 1);
+	// // runnable.run(); // note this should be run as it is a synchronous call.
+	// // }
+	// // } finally {
+	// // indexSegments();
+	// // }
+	// //
+	// // }
+	// // };
+	// //
+	// // Perception.getInstance().run(job);
+	// //
+	// //
+	// //
+	// // }
+	//
+	// // chains need to have been thinned
+	// public void process02_thin(final IProgressBar pProgress) {
+	// int cnt = 0;
+	// final int total = getHeight() * getWidth();
+	// int thinned = 0;
+	//
+	// for (final Pixel pixel : allPixels()) {
+	// if (pProgress != null) {
+	// pProgress.showProgressBar("thin", 100 * cnt++ / total);
+	// }
+	// if (thin(pixel)) {
+	// thinned++;
+	// }
+	// }
+	//
+	// mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
+	// }
+	//
+	// private void process03_generateNodes() {
+	// mAllNodes = new AllNodes();
+	// for (final Pixel pixel : allPixels()) {
+	// if (pixel.calcIsNode()) {
+	// mAllNodes.add(pixel);
+	// }
+	// }
+	//
+	// }
+	//
+	// public void process04a_removeLoneNodes() {
+	//
+	// // indexSegments();
+	// //
+	// // Vector<PixelChain> delete = new Vector<PixelChain>();
+	// // for (PixelChain pixelChain : mPixelChains) {
+	// // if (pixelChain.getSegmentCount() == 0) {
+	// // delete.add(pixelChain);
+	// // }
+	// // }
+	// //
+	// // for (PixelChain pixelChain : delete) {
+	// // pixelChain.setInChain(false);
+	// // pixelChain.setVisited(false);
+	// // removePixelChain(pixelChain);
+	// // }
+	// // System.out.println(delete.size() + " pixelchains removed");
+	// //
+	// // for (PixelChain pixelChain : mPixelChains) {
+	// // try {
+	// // ISegment first = pixelChain.getFirstSegment();
+	// // IVertex start = first.getStartVertex();
+	// // if (start.getStartSegment() != null) {
+	// // System.out.println("Invalid start segment");
+	// // }
+	// //
+	// // ISegment last = pixelChain.getLastSegment();
+	// // IVertex end = last.getEndVertex();
+	// // if (end.getEndSegment() != null) {
+	// // System.out.println("Invalid end segment");
+	// // }
+	// // } catch (Throwable pT) {
+	// // System.out.println(pT.getMessage());
+	// // }
+	// // }
+	// //
+	// // calcSegmentIndex();
+	//
+	// for (final Pixel pixel : allPixels()) {
+	// if (pixel.isNode()) {
+	// final Node node = getNode(pixel);
+	// if (node.countEdgeNeighbours() == 0) {
+	// pixel.setEdge(false);
+	// pixel.setNode(false);
+	// pixel.setVisited(false);
+	// }
+	// }
+	// }
+	//
+	// }
+	//
+	// private void process04b_removeBristles() {
+	// final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
+	//
+	// for (final Node node : mAllNodes) {
+	// for (final Pixel other : node.getNodeNeighbours()) {
+	// final Set<Pixel> nodeSet = node.allEdgeNeighbours();
+	// final Set<Pixel> otherSet = other.allEdgeNeighbours();
+	//
+	// nodeSet.remove(other);
+	// nodeSet.removeAll(otherSet);
+	//
+	// otherSet.remove(node);
+	// otherSet.removeAll(nodeSet);
+	//
+	// if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+	// // TODO should be a better check here to see whether it is better to remove the other node
+	// toBeRemoved.add(node);
+	// node.setEdge(false);
+	// }
+	// }
+	// }
+	// mAllNodes.removeAll(toBeRemoved);
+	//
+	// }
+	//
+	// private void process05_generateChains(final IProgressBar pProgress) {
 	// try {
-	// if (getProperties().useThreads()) {
-	// Thread threads[] = new Thread[threadCount];
 	//
-	// for (int i = 0; i < getProperties().getNumberOfThreads(); i++) {
-	// RefineThread runnable;
-	// runnable = new RefineThread(i, threadCount);
-	// runnable.setName("PixelMap_refinePixelChains Thread: " + i);
-	// runnable.start();
+	// process03_generateNodes();
 	//
-	// threads[i] = runnable;
+	// for (final Node node : mAllNodes.allNodes()) {
+	// mPixelChains.addAll(generateChains(node));
 	// }
 	//
-	// for (int i = 0; i < threadCount; i++) {
-	// try {
-	// threads[i].join();
-	// } catch (InterruptedException pEx) {
-	// mLogger.warning("Interruped");
-	// if (mLogger.isLoggable(Level.FINE)) mLogger.fine(Framework.throwableToString(pEx));
+	// // this captures all the simple loops (i.e. connected sets of pixels with no nodes).
+	// for (final Pixel pixel : allPixels()) {
+	// if (pixel.isUnVisitedEdge()) {
+	// final Node node = mAllNodes.add(pixel);
+	// mPixelChains.addAll(generateChains(node));
 	// }
 	// }
-	// } else {
-	// RefineThread runnable = new RefineThread(0, 1);
-	// runnable.run(); // note this should be run as it is a synchronous call.
-	// }
+	//
+	// System.out.println("Number of chains: " + mPixelChains.size());
 	// } finally {
+	// if (pProgress != null) {
+	// pProgress.hideProgressBar();
+	// }
+	// }
+	// }
+	//
+	// private void process06_straightLinesRefineCorders(final IProgressBar pProgress, final double pMaxiLineTolerance) {
+	// System.out.println("process06_straightLinesRefineCorders");
+	//
+	// // final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
+	// // mPixelChains) {
+	// // @Override
+	// // public void process(final PixelChain pPixelChain) {
+	// // pPixelChain.approximate01_straightLines(pMaxiLineTolerance);
+	// // pPixelChain.approximate02_refineCorners();
+	// // }
+	// // };
+	// // job.runImmediate();
+	//
 	// indexSegments();
 	// }
 	//
+	// private void process07_mergeChains() {
+	// System.out.println("Segments: " + mSegmentCount);
+	// for (final Node node : getAllNodes()) {
+	// switch (node.countPixelChains()) {
+	// case 2:
+	// final PixelChain chain0 = node.getPixelChain(0);
+	// final PixelChain chain1 = node.getPixelChain(1);
+	// if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
+	// chain0.merge(chain1, node);
 	// }
-	// };
-	//
-	// Perception.getInstance().run(job);
-	//
-	//
-	//
+	// break;
+	// case 3:
+	// break;
+	// case 4:
+	// break;
 	// }
-
-	// chains need to have been thinned
-	public void process02_thin(final IProgressBar pProgress) {
-		int cnt = 0;
-		final int total = getHeight() * getWidth();
-		int thinned = 0;
-
-		for (final Pixel pixel : allPixels()) {
-			if (pProgress != null) {
-				pProgress.showProgressBar("thin", 100 * cnt++ / total);
-			}
-			if (thin(pixel)) {
-				thinned++;
-			}
-		}
-
-		mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
-	}
-
-	private void process03_generateNodes() {
-		mAllNodes = new AllNodes();
-		for (final Pixel pixel : allPixels()) {
-			if (pixel.calcIsNode()) {
-				mAllNodes.add(pixel);
-			}
-		}
-
-	}
-
-	public void process04a_removeLoneNodes() {
-
-		// indexSegments();
-		//
-		// Vector<PixelChain> delete = new Vector<PixelChain>();
-		// for (PixelChain pixelChain : mPixelChains) {
-		// if (pixelChain.getSegmentCount() == 0) {
-		// delete.add(pixelChain);
-		// }
-		// }
-		//
-		// for (PixelChain pixelChain : delete) {
-		// pixelChain.setInChain(false);
-		// pixelChain.setVisited(false);
-		// removePixelChain(pixelChain);
-		// }
-		// System.out.println(delete.size() + " pixelchains removed");
-		//
-		// for (PixelChain pixelChain : mPixelChains) {
-		// try {
-		// ISegment first = pixelChain.getFirstSegment();
-		// IVertex start = first.getStartVertex();
-		// if (start.getStartSegment() != null) {
-		// System.out.println("Invalid start segment");
-		// }
-		//
-		// ISegment last = pixelChain.getLastSegment();
-		// IVertex end = last.getEndVertex();
-		// if (end.getEndSegment() != null) {
-		// System.out.println("Invalid end segment");
-		// }
-		// } catch (Throwable pT) {
-		// System.out.println(pT.getMessage());
-		// }
-		// }
-		//
-		// calcSegmentIndex();
-
-		for (final Pixel pixel : allPixels()) {
-			if (pixel.isNode()) {
-				final Node node = getNode(pixel);
-				if (node.countEdgeNeighbours() == 0) {
-					pixel.setEdge(false);
-					pixel.setNode(false);
-					pixel.setVisited(false);
-				}
-			}
-		}
-
-	}
-
-	private void process04b_removeBristles() {
-		final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
-
-		for (final Node node : mAllNodes) {
-			for (final Pixel other : node.getNodeNeighbours()) {
-				final Set<Pixel> nodeSet = node.allEdgeNeighbours();
-				final Set<Pixel> otherSet = other.allEdgeNeighbours();
-
-				nodeSet.remove(other);
-				nodeSet.removeAll(otherSet);
-
-				otherSet.remove(node);
-				otherSet.removeAll(nodeSet);
-
-				if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-					// TODO should be a better check here to see whether it is better to remove the other node
-					toBeRemoved.add(node);
-					node.setEdge(false);
-				}
-			}
-		}
-		mAllNodes.removeAll(toBeRemoved);
-
-	}
-
-	private void process05_generateChains(final IProgressBar pProgress) {
-		try {
-
-			process03_generateNodes();
-
-			for (final Node node : mAllNodes.allNodes()) {
-				mPixelChains.addAll(generateChains(node));
-			}
-
-			// this captures all the simple loops (i.e. connected sets of pixels with no nodes).
-			for (final Pixel pixel : allPixels()) {
-				if (pixel.isUnVisitedEdge()) {
-					final Node node = mAllNodes.add(pixel);
-					mPixelChains.addAll(generateChains(node));
-				}
-			}
-
-			System.out.println("Number of chains: " + mPixelChains.size());
-		} finally {
-			if (pProgress != null) {
-				pProgress.hideProgressBar();
-			}
-		}
-	}
-
-	private void process06_straightLinesRefineCorders(final IProgressBar pProgress, final double pMaxiLineTolerance) {
-		System.out.println("process06_straightLinesRefineCorders");
-
-		// final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
-		// mPixelChains) {
-		// @Override
-		// public void process(final PixelChain pPixelChain) {
-		// pPixelChain.approximate01_straightLines(pMaxiLineTolerance);
-		// pPixelChain.approximate02_refineCorners();
-		// }
-		// };
-		// job.runImmediate();
-
-		indexSegments();
-	}
-
-	private void process07_mergeChains() {
-		System.out.println("Segments: " + mSegmentCount);
-		for (final Node node : getAllNodes()) {
-			switch (node.countPixelChains()) {
-			case 2:
-				final PixelChain chain0 = node.getPixelChain(0);
-				final PixelChain chain1 = node.getPixelChain(1);
-				if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-					chain0.merge(chain1, node);
-				}
-				break;
-			case 3:
-				break;
-			case 4:
-				break;
-			}
-		}
-		mSegmentCount = 0;
-		indexSegments();
-		System.out.println("Segments: " + mSegmentCount);
-	}
-
-	public void process08_refine() {
-		// final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
-		// @Override
-		// public void process(final PixelChain pPixelChain) {
-		// pPixelChain.approximate();
-		// }
-		// };
-		// job.runImmediate();
-	}
-
+	// }
+	// mSegmentCount = 0;
+	// indexSegments();
+	// System.out.println("Segments: " + mSegmentCount);
+	// }
+	//
+	// public void process08_refine() {
+	// // final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
+	// // @Override
+	// // public void process(final PixelChain pPixelChain) {
+	// // pPixelChain.approximate();
+	// // }
+	// // };
+	// // job.runImmediate();
+	// }
+	//
 	@Override
 	public void read(final IPersistDB pDB, final String pId) {
 		// TODO Auto-generated method stub
 
 	}
 
-	// @Override
-	public void read(final Properties pProperites, final String pId) {
-		// note that write/read does not preseve the mAllNodes values
-		mLogger.entering(mClassname, "read");
-
-		try {
-			// pixel data
-			{
-				String pixelString = pProperites.getProperty(pId + ".data");
-				byte[] pixelBytes = MyBase64.decodeAndDecompress(pixelString);
-
-				ByteArrayInputStream bais = new ByteArrayInputStream(pixelBytes);
-				ObjectInputStream ois = new ObjectInputStream(bais);
-				for (int x = 0; x < getWidth(); x++) {
-					final byte[] buff = new byte[getHeight()];
-					int cnt = 0;
-					while ((cnt += ois.read(buff, cnt, getHeight() - cnt)) < getHeight()) {
-					}
-					mData[x] = buff;
-				}
-
-				bais = null;
-				ois = null;
-				pixelString = null;
-				pixelBytes = null;
-
-				int cnt = 0;
-				for (int x = 0; x < getWidth(); x++) {
-					for (int y = 0; y < getHeight(); y++) {
-						if (getValue(x, y) != 0) {
-							cnt++;
-						}
-					}
-				}
-				mLogger.info("mData cnt = " + cnt);
-			}
-
-			// mPixelChains
-			{
-				String objectString = pProperites.getProperty(pId + ".objects");
-				byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
-
-				ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
-				ObjectInputStream ois = new ObjectInputStream(bais);
-				final Object o = ois.readObject();
-				mPixelChains = (Vector<PixelChain>) o;
-
-				bais = null;
-				ois = null;
-				objectString = null;
-				objectBytes = null;
-
-				mLogger.info("mPixelChains size() = " + mPixelChains.size());
-
-				for (final PixelChain chain : mPixelChains) {
-					chain.setPixelMap(this);
-				}
-
-				for (final PixelChain chain : mPixelChains) {
-					chain.indexSegments();
-				}
-
-				mLogger.info("mSegmentCount = " + mSegmentCount);
-			}
-
-		} catch (final EOFException pEx) {
-			mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
-		} catch (final Exception pEx) {
-			mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
-		}
-		mLogger.exiting(mClassname, "read");
-	}
-
-	public synchronized void removePixelChain(final PixelChain pPixelChain) {
-		mPixelChains.remove(pPixelChain);
-		indexSegments();
-	}
-
-	private void resetInChain() {
-		for (int x = 0; x < getWidth() - 1; x++) {
-			for (int y = 0; y < getHeight() - 1; y++) {
-				final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
-				setValue(x, y, newValue);
-			}
-		}
-	}
-
-	private void resetNode() {
-		for (int x = 0; x < getWidth() - 1; x++) {
-			for (int y = 0; y < getHeight() - 1; y++) {
-				final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
-				setValue(x, y, newValue);
-			}
-		}
-	}
-
-	private void resetSegmentIndex() {
-		mSegmentIndex = new LinkedList[getWidth()][getHeight()];
-		mSegmentCount = 0;
-	}
-
-	private void resetVisited() {
-		for (int x = 0; x < getWidth() - 1; x++) {
-			for (int y = 0; y < getHeight() - 1; y++) {
-				final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
-				setValue(x, y, newValue);
-			}
-		}
-	}
-
+	// // @Override
+	// public void read(final Properties pProperites, final String pId) {
+	// // note that write/read does not preseve the mAllNodes values
+	// mLogger.entering(mClassname, "read");
+	//
+	// try {
+	// // pixel data
+	// {
+	// String pixelString = pProperites.getProperty(pId + ".data");
+	// byte[] pixelBytes = MyBase64.decodeAndDecompress(pixelString);
+	//
+	// ByteArrayInputStream bais = new ByteArrayInputStream(pixelBytes);
+	// ObjectInputStream ois = new ObjectInputStream(bais);
+	// for (int x = 0; x < getWidth(); x++) {
+	// final byte[] buff = new byte[getHeight()];
+	// int cnt = 0;
+	// while ((cnt += ois.read(buff, cnt, getHeight() - cnt)) < getHeight()) {
+	// }
+	// mData[x] = buff;
+	// }
+	//
+	// bais = null;
+	// ois = null;
+	// pixelString = null;
+	// pixelBytes = null;
+	//
+	// int cnt = 0;
+	// for (int x = 0; x < getWidth(); x++) {
+	// for (int y = 0; y < getHeight(); y++) {
+	// if (getValue(x, y) != 0) {
+	// cnt++;
+	// }
+	// }
+	// }
+	// mLogger.info("mData cnt = " + cnt);
+	// }
+	//
+	// // mPixelChains
+	// {
+	// String objectString = pProperites.getProperty(pId + ".objects");
+	// byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
+	//
+	// ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
+	// ObjectInputStream ois = new ObjectInputStream(bais);
+	// final Object o = ois.readObject();
+	// mPixelChains = (Vector<PixelChain>) o;
+	//
+	// bais = null;
+	// ois = null;
+	// objectString = null;
+	// objectBytes = null;
+	//
+	// mLogger.info("mPixelChains size() = " + mPixelChains.size());
+	//
+	// for (final PixelChain chain : mPixelChains) {
+	// chain.setPixelMap(this);
+	// }
+	//
+	// for (final PixelChain chain : mPixelChains) {
+	// chain.indexSegments();
+	// }
+	//
+	// mLogger.info("mSegmentCount = " + mSegmentCount);
+	// }
+	//
+	// } catch (final EOFException pEx) {
+	// mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
+	// } catch (final Exception pEx) {
+	// mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
+	// }
+	// mLogger.exiting(mClassname, "read");
+	// }
+	//
+	// public synchronized void removePixelChain(final PixelChain pPixelChain) {
+	// mPixelChains.remove(pPixelChain);
+	// indexSegments();
+	// }
+	//
+	// private void resetInChain() {
+	// for (int x = 0; x < getWidth() - 1; x++) {
+	// for (int y = 0; y < getHeight() - 1; y++) {
+	// final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
+	// setValue(x, y, newValue);
+	// }
+	// }
+	// }
+	//
+	// private void resetNode() {
+	// for (int x = 0; x < getWidth() - 1; x++) {
+	// for (int y = 0; y < getHeight() - 1; y++) {
+	// final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
+	// setValue(x, y, newValue);
+	// }
+	// }
+	// }
+	//
+	// private void resetSegmentIndex() {
+	// mSegmentIndex = new LinkedList[getWidth()][getHeight()];
+	// mSegmentCount = 0;
+	// }
+	//
+	// private void resetVisited() {
+	// for (int x = 0; x < getWidth() - 1; x++) {
+	// for (int y = 0; y < getHeight() - 1; y++) {
+	// final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
+	// setValue(x, y, newValue);
+	// }
+	// }
+	// }
+	//
 	void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
 		if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
 			final int x = modWidth(pPixel.getX());
@@ -1279,20 +1265,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		mHeight = pHeight;
 	}
 
-	public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
-		mLogger.entering(mClassname, "setPixelChainDefaultThickness");
-		final int shortLength = pTransform.getShortLineLength();
-		final int mediumLength = pTransform.getMediumLineLength();
-		final int longLength = pTransform.getLongLineLength();
-
-		for (final PixelChain chain : getAllPixelChains()) {
-			chain.setThickness(shortLength, mediumLength, longLength);
-		}
-		mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
-	}
-
+	// public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
+	// mLogger.entering(mClassname, "setPixelChainDefaultThickness");
+	// final int shortLength = pTransform.getShortLineLength();
+	// final int mediumLength = pTransform.getMediumLineLength();
+	// final int longLength = pTransform.getLongLineLength();
+	//
+	// for (final PixelChain chain : getAllPixelChains()) {
+	// chain.setThickness(shortLength, mediumLength, longLength);
+	// }
+	// mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
+	// }
+	//
 	public void setValue(final int pX, final int pY, final byte pValue) {
-		// all the parameter bounds checking is dong in the saveValueNoUndo.
+		// all the parameter bounds checking is doing in the saveValueNoUndo.
 		// System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
 
 		if (mPixelUndoRedoAction != null) {
@@ -1306,7 +1292,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	/**
 	 * Sets the value of a pixel in the PixelMap BUT does not generate the Undo/Redo information. This is specifically intended to
 	 * be called from the UndoRedo mechanism. All normal usage should be to the setValue(...) method.
-	 * 
+	 *
 	 * @param pX
 	 *            the x
 	 * @param pY
@@ -1318,11 +1304,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 		if (pX < 0) { throw new IllegalArgumentException("pX must be > 0."); }
 
-		if (pX > getWidth() - 1) { throw new IllegalArgumentException("pX must be less than getWidth() -1.  pX = " + pX + ", getWidth() = " + getWidth()); }
+		if (pX > getWidth() - 1) { throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth()); }
 
 		if (pY < 0) { throw new IllegalArgumentException("pY must be > 0."); }
 
-		if (pY > getHeight() - 1) { throw new IllegalArgumentException("pX must be less than getHeight() -1.  pX = " + pX + ", getHeight() = " + getHeight()); }
+		if (pY > getHeight() - 1) { throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight()); }
 
 		mData[pX][pY] = pValue;
 	}
@@ -1331,105 +1317,106 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 		mWidth = pWidth;
 	}
 
-	/**
-	 * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
-	 * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
-	 * false.
-	 * 
-	 * @param pPixel
-	 *            the pixel
-	 * @return true, if the Pixel was thinned.
-	 */
-	boolean thin(final Pixel pPixel) {
-		if (!pPixel.isEdge()) { return false; }
-
-		boolean canEliminate = false;
-		for (final int[] set : eliminate) {
-			canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() && !pPixel.getNeighbour(set[2]).isEdge();
-		}
-
-		if (canEliminate) {
-			pPixel.setEdge(false);
-		}
-		return canEliminate;
-	}
-
+	// /**
+	// * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
+	// * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
+	// * false.
+	// *
+	// * @param pPixel
+	// * the pixel
+	// * @return true, if the Pixel was thinned.
+	// */
+	// boolean thin(final Pixel pPixel) {
+	// if (!pPixel.isEdge()) { return false; }
 	//
-	public Point toUHVW(final Point pIn) {
-		return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
-	}
-
-	public Color transform(final Point pIn, final Color pColor) {
-		Color color = getPixelColor(pIn, pColor);
-		color = getMaxiLineShadowColor(pIn, color);
-		color = getMaxiLineColor(pIn, color);
-		color = getShortLineColor(pIn, color);
-		return color;
-	}
-
-	private void validate() {
-		for (final PixelChain pixelChain : mPixelChains) {
-			pixelChain.validate();
-		}
-	}
-
+	// boolean canEliminate = false;
+	// for (final int[] set : eliminate) {
+	// canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
+	// !pPixel.getNeighbour(set[2]).isEdge();
+	// }
+	//
+	// if (canEliminate) {
+	// pPixel.setEdge(false);
+	// }
+	// return canEliminate;
+	// }
+	//
+	// //
+	// public Point toUHVW(final Point pIn) {
+	// return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
+	// }
+	//
+	// public Color transform(final Point pIn, final Color pColor) {
+	// Color color = getPixelColor(pIn, pColor);
+	// color = getMaxiLineShadowColor(pIn, color);
+	// color = getMaxiLineColor(pIn, color);
+	// color = getShortLineColor(pIn, color);
+	// return color;
+	// }
+	//
+	// private void validate() {
+	// for (final PixelChain pixelChain : mPixelChains) {
+	// pixelChain.validate();
+	// }
+	// }
+	//
 	@Override
 	public void write(final IPersistDB pDB, final String pId) {
 		// TODO Auto-generated method stub
 
 	}
-
-	// @Override
-	public void write(final Properties pProperites, final String pId) throws Exception {
-		// note that write/read does not preserve the mAllNodes values
-		mLogger.entering(mClassname, "write");
-		// from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
-		ByteArrayOutputStream baos;
-		ObjectOutputStream oos;
-
-		// mData
-		{
-			mLogger.finest("About to wrtie mData");
-			baos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(baos);
-			for (int x = 0; x < getWidth(); x++) {
-				oos.write(mData[x]);
-			}
-			oos.close();
-
-			String pixelString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
-			pProperites.setProperty(pId + ".data", pixelString);
-			pixelString = null;
-		}
-
-		// mData check
-		{
-			int cnt = 0;
-			for (int x = 0; x < getWidth(); x++) {
-				for (int y = 0; y < getHeight(); y++) {
-					if (getValue(x, y) != 0) {
-						cnt++;
-					}
-				}
-			}
-			mLogger.info("mData cnt = " + cnt);
-
-			// mAllNodes & mPixelChains
-			mLogger.finest("About to wrtie mAllNodes and mPixelChains");
-			mLogger.info("mAllNodes size() = " + mAllNodes.size());
-			mLogger.info("mPixelChains size() = " + mPixelChains.size());
-			baos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(baos);
-			oos.writeObject(mPixelChains);
-			oos.close();
-
-			String objectString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
-			pProperites.setProperty(pId + ".objects", objectString);
-			objectString = null;
-		}
-		mLogger.info("mSegmentCount = " + mSegmentCount);
-
-		mLogger.exiting(mClassname, "write");
-	}
+	//
+	// // @Override
+	// public void write(final Properties pProperites, final String pId) throws Exception {
+	// // note that write/read does not preserve the mAllNodes values
+	// mLogger.entering(mClassname, "write");
+	// // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
+	// ByteArrayOutputStream baos;
+	// ObjectOutputStream oos;
+	//
+	// // mData
+	// {
+	// mLogger.finest("About to wrtie mData");
+	// baos = new ByteArrayOutputStream();
+	// oos = new ObjectOutputStream(baos);
+	// for (int x = 0; x < getWidth(); x++) {
+	// oos.write(mData[x]);
+	// }
+	// oos.close();
+	//
+	// String pixelString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
+	// pProperites.setProperty(pId + ".data", pixelString);
+	// pixelString = null;
+	// }
+	//
+	// // mData check
+	// {
+	// int cnt = 0;
+	// for (int x = 0; x < getWidth(); x++) {
+	// for (int y = 0; y < getHeight(); y++) {
+	// if (getValue(x, y) != 0) {
+	// cnt++;
+	// }
+	// }
+	// }
+	// mLogger.info("mData cnt = " + cnt);
+	//
+	// // mAllNodes & mPixelChains
+	// mLogger.finest("About to wrtie mAllNodes and mPixelChains");
+	// mLogger.info("mAllNodes size() = " + mAllNodes.size());
+	// mLogger.info("mPixelChains size() = " + mPixelChains.size());
+	// baos = new ByteArrayOutputStream();
+	// oos = new ObjectOutputStream(baos);
+	// oos.writeObject(mPixelChains);
+	// oos.close();
+	//
+	// String objectString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
+	// pProperites.setProperty(pId + ".objects", objectString);
+	// objectString = null;
+	// }
+	// mLogger.info("mSegmentCount = " + mSegmentCount);
+	//
+	// mLogger.exiting(mClassname, "write");
+	// }
 
 }
