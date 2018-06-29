@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
-import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.ownimage.perception.transform.IPictureSource;
 
 /**
  * <p>
@@ -79,7 +79,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	protected int picsize;
 	protected int[] data;
 	protected int[] magnitude;
-	protected PictureType sourceImage;
+	protected IPictureSource sourceImage;
 
 	protected float gaussianKernelRadius;
 	protected float lowThreshold;
@@ -391,7 +391,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	 */
 
 	@Override
-	public PictureType getSourceImage() {
+	public IPictureSource getSourceImage() {
 		return sourceImage;
 	}
 
@@ -674,7 +674,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	 */
 
 	@Override
-	public void setSourceImage(final PictureType image) {
+	public void setSourceImage(final IPictureSource image) {
 		sourceImage = image;
 	}
 

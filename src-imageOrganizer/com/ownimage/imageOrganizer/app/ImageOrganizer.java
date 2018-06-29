@@ -21,7 +21,7 @@ import com.ownimage.framework.util.FileFilter;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
-public class ImageOrganizer extends AppControlBase {
+public abstract class ImageOrganizer extends AppControlBase {
 
 	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
 	public final static String mClassname = ImageOrganizer.class.getName();
@@ -48,7 +48,7 @@ public class ImageOrganizer extends AppControlBase {
 
 	public static synchronized ImageOrganizer getInstance() {
 		if (mImageOrganizer == null) {
-			mImageOrganizer = new ImageOrganizer();
+			//mImageOrganizer = new ImageOrganizer();
 		}
 
 		return mImageOrganizer;

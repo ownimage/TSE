@@ -30,6 +30,18 @@ public interface IContainer extends IPersist, IUndoRedoBufferProvider, IViewable
 	public void addContainer(IContainer pChild);
 
 	/**
+	 * Adds a child Container. A child container will be persisted when the parent is persisted.
+	 * Events will trigger from the child container to its parent based on the value of pListenForEvents.
+	 * This method should only be called by a container whose parent is set to this object.
+	 *
+	 * @param pChild
+	 *            the child
+	 * @param pListenForEvents
+	 *            specifies whether this container will listen for control change events from the child
+	 */
+	public void addContainer(IContainer pChild, boolean pListenForEvents);
+
+	/**
 	 * Adds the control to the container. The control is NOT duplicated so it is still linked to the original control. This means
 	 * that if the same control is added to multiple containers the values will be linked ... until the container is saved and
 	 * restored when they will be separate.
@@ -40,22 +52,8 @@ public interface IContainer extends IPersist, IUndoRedoBufferProvider, IViewable
 	 */
 	public IContainer addControl(IControl<?, ?, ?, ?> pControl);
 
-	@Override
-	public void fireControlChangeEvent(IControl<?, ?, ?, ?> pControl);
-
-	@Override
-	public void fireControlChangeEvent(IControl<?, ?, ?, ?> pControl, IView pView, boolean pIsMutating);
-
-	@Override
-	public boolean fireControlValidate(IControl<?, ?, ?, ?> pControl);
-
-	@Override
-	String getDisplayName();
-
 	public IContainer getParent();
 
-	@Override
-	public String getPropertyName();
 
 	public Iterator<IViewable<?>> getViewableChildrenIterator();
 }

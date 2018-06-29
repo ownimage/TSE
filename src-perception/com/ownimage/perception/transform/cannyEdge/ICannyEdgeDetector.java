@@ -1,8 +1,8 @@
 package com.ownimage.perception.transform.cannyEdge;
 
-import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.transform.IPictureSource;
 
 public interface ICannyEdgeDetector {
 
@@ -60,7 +60,7 @@ public interface ICannyEdgeDetector {
 	 * @return the source mData, or null
 	 */
 
-	public PictureType getSourceImage();
+	public IPictureSource getSourceImage();
 
 	/**
 	 * Whether the luminance data extracted from the source image is normalized by linearizing its histogram prior to edge
@@ -140,6 +140,6 @@ public interface ICannyEdgeDetector {
 	 *            a source of luminance data
 	 */
 
-	public void setSourceImage(PictureType image);
+	public void setSourceImage(IPictureSource image);
 
 }

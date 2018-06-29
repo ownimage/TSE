@@ -30,9 +30,9 @@ public class ContainerList implements IContainerList {
 		mPropertyName = pPropertyName;
 	}
 
-	public void add(final IContainer pContaienr) {
-
-		mContainers.add(pContaienr);
+	public IContainer add(final IContainer pContainer) {
+		mContainers.add(pContainer);
+		return pContainer;
 	}
 
 	@Override

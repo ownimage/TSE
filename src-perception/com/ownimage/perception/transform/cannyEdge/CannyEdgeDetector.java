@@ -9,10 +9,10 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.ownimage.perception.transform.IPictureSource;
 
 /**
  * <p>
@@ -77,7 +77,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	private int picsize;
 	private int[] data;
 	private int[] magnitude;
-	private PictureType sourceImage;
+	private IPictureSource sourceImage;
 
 	private float gaussianKernelRadius;
 	private float lowThreshold;
@@ -387,7 +387,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 */
 
 	@Override
-	public PictureType getSourceImage() {
+	public IPictureSource getSourceImage() {
 		return sourceImage;
 	}
 
@@ -632,7 +632,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	}
 
 	@Override
-	public void setSourceImage(final PictureType image) {
+	public void setSourceImage(final IPictureSource image) {
 		sourceImage = image;
 	}
 

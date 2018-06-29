@@ -104,6 +104,17 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 		mPreviewPicture.setValue(updatePreview());
 	}
 
+	public ICannyEdgeDetector createCannyEdgeDetector(final CannyEdgeDetectorFactory.Type type) {
+		ICannyEdgeDetector detector = null;
+		detector = CannyEdgeDetectorFactory.createInstance(getTransform(), type);
+		detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
+		detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
+		detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
+		detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
+		detector.setContrastNormalized(mContrastNormalized.getValue());
+		return detector;
+	}
+
 	@Override
 	public IView createView() {
 		HFlowLayout hflow = new HFlowLayout(mPreviewContainer, mControlContainer);
@@ -212,15 +223,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
 	private void updatePreview(final PictureType pInputPicture) {
 		SplitTimer.split("updatePreview(final PictureType pInputPicture) start");
-		ICannyEdgeDetector detector = null;
+		ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
 		try {
-			detector = CannyEdgeDetectorFactory.createInstance(getTransform(), CannyEdgeDetectorFactory.JAVA_THREADS);
-			detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
-			detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
-			detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
-			detector.setGaussianKernelWidth(mGaussianKernelWidth.getValue());
-			detector.setContrastNormalized(mContrastNormalized.getValue());
-
 			detector.setSourceImage(pInputPicture);
 			detector.process(false);
 

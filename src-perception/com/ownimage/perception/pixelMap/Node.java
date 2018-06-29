@@ -5,8 +5,6 @@
 
 package com.ownimage.perception.pixelMap;
 
-import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Version;
@@ -30,7 +28,7 @@ public class Node extends Pixel {
 	public static final long serialVersionUID = 1L;
 
 	/** The m pixel chains. */
-	private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+	// private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
 	/**
 	 * Instantiates a new node.
@@ -62,18 +60,18 @@ public class Node extends Pixel {
 	 * @param pPixelChain
 	 *            the pixel chain
 	 */
-	public void addPixelChain(final PixelChain pPixelChain) {
-		mPixelChains.add(pPixelChain);
-	}
+	// public void addPixelChain(final PixelChain pPixelChain) {
+	// mPixelChains.add(pPixelChain);
+	// }
 
 	/**
 	 * Count pixel chains.
 	 * 
 	 * @return the int
 	 */
-	public int countPixelChains() {
-		return mPixelChains.size();
-	}
+	// public int countPixelChains() {
+	// return mPixelChains.size();
+	// }
 
 	/**
 	 * Gets the pixel chain.
@@ -82,15 +80,16 @@ public class Node extends Pixel {
 	 *            the p n
 	 * @return the pixel chain
 	 */
-	public PixelChain getPixelChain(final int pN) {
-		if (pN > countPixelChains()) { throw new IllegalArgumentException("Cannot return item: " + pN + ".  There are only " + countPixelChains() + " chains."); }
-
-		return mPixelChains.get(pN);
-	}
-
-	public List<PixelChain> getPixelChains() {
-		return mPixelChains;
-	}
+	// public PixelChain getPixelChain(final int pN) {
+	// if (pN > countPixelChains()) { throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
+	// countPixelChains() + " chains."); }
+	//
+	// return mPixelChains.get(pN);
+	// }
+	//
+	// public List<PixelChain> getPixelChains() {
+	// return mPixelChains;
+	// }
 
 	/**
 	 * Removes the pixel chain.
@@ -98,15 +97,15 @@ public class Node extends Pixel {
 	 * @param pPixelChain
 	 *            the pixel chain
 	 */
-	public void removePixelChain(final PixelChain pPixelChain) {
-		mPixelChains.remove(pPixelChain);
-	}
-
-	public void setPixelChainsVisited(final boolean pValue) {
-		for (PixelChain pixelChain : mPixelChains) {
-			pixelChain.setVisited(pValue);
-		}
-	}
+	// public void removePixelChain(final PixelChain pPixelChain) {
+	// mPixelChains.remove(pPixelChain);
+	// }
+	//
+	// public void setPixelChainsVisited(final boolean pValue) {
+	// for (PixelChain pixelChain : mPixelChains) {
+	// pixelChain.setVisited(pValue);
+	// }
+	// }
 
 	@Override
 	public String toString() {

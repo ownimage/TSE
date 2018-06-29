@@ -75,7 +75,7 @@ public class Perception extends AppControlBase {
 
 		mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
 
-		Framework.logEntry(mLogger);
+		Framework.logExit(mLogger);
 	}
 
 	public static synchronized Perception getPerception() {

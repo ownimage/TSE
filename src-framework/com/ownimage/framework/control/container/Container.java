@@ -27,210 +27,243 @@ import com.ownimage.framework.view.factory.ViewFactory;
 /**
  * The Class Container. Events propagate from a Control to its Container and other registered EventListeners. They do NOT propagate
  * from a Container to its parent.
- * 
  */
 public class Container extends ViewableBase<IViewable, IView> implements IContainer {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
-	public final static long serialVersionUID = 1L;
+    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+    public final static Logger mLogger = Framework.getLogger();
+    public final static long serialVersionUID = 1L;
 
-	private final IUndoRedoBufferProvider mGetUndoRedoBuffer;
+    private final IUndoRedoBufferProvider mGetUndoRedoBuffer;
 
-	private final IContainer mParent;
-	private final String mPropertyName;
-	private final String mDisplayName;
+    private final IContainer mParent;
+    private final String mPropertyName;
+    private final String mDisplayName;
 
-	private final Vector<IControl<?, ?, ?, ?>> mChlidControls = new Vector<IControl<?, ?, ?, ?>>();
-	private final Vector<IContainer> mChildContainers = new Vector<IContainer>();
-	private final Vector<IViewable<?>> mAllChildren = new Vector<IViewable<?>>();
+    private final Vector<IControl<?, ?, ?, ?>> mChlidControls = new Vector<IControl<?, ?, ?, ?>>();
+    private final Vector<IContainer> mChildContainers = new Vector<IContainer>();
+    private final Vector<IViewable<?>> mAllChildren = new Vector<IViewable<?>>();
 
-	private final ControlEventDispatcher mEventDispatcher = new ControlEventDispatcher(this);
+    private final ControlEventDispatcher mEventDispatcher = new ControlEventDispatcher(this);
 
-	public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pIGetUndoRedoBuffer) {
-		this(pDisplayName, pPropertyName, pIGetUndoRedoBuffer, null);
-	}
+    public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pIGetUndoRedoBuffer) {
+        this(pDisplayName, pPropertyName, pIGetUndoRedoBuffer, null);
+    }
 
-	public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pGetUndoRedoBuffer, final IContainer pParent) {
-		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pGetUndoRedoBuffer, "pIGetUndoRedoBuffer");
+    public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pGetUndoRedoBuffer, final IContainer pParent) {
+        Framework.logEntry(mLogger);
+        Framework.checkNotNull(mLogger, pGetUndoRedoBuffer, "pIGetUndoRedoBuffer");
 
-		ControlBase.validate(pDisplayName, pPropertyName);
+        ControlBase.validate(pDisplayName, pPropertyName);
 
-		mGetUndoRedoBuffer = pGetUndoRedoBuffer;
-		mDisplayName = pDisplayName;
-		mPropertyName = pPropertyName;
-		mParent = pParent;
+        mGetUndoRedoBuffer = pGetUndoRedoBuffer;
+        mDisplayName = pDisplayName;
+        mPropertyName = pPropertyName;
+        mParent = pParent;
 
-		if (mParent != null) {
-			mParent.addContainer(this);
-		}
+        if (mParent != null) {
+            mParent.addContainer(this);
+        }
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public void addContainer(final IContainer pChild) {
-		if (pChild.getParent() != this) { throw new IllegalArgumentException("the parent of pChild needs to be this object."); }
-		if (mChildContainers.contains(pChild)) { throw new IllegalArgumentException("this child has already been added"); }
+    @Override
+    public void addContainer(final IContainer pChild) {
+        addContainer(pChild, false);
+    }
 
-		mChildContainers.add(pChild);
-		mAllChildren.add(pChild);
-	}
+    @Override
+    public void addContainer(final IContainer pChild, final boolean pListenForEvents) {
+        if (pChild.getParent() != this) {
+            throw new IllegalArgumentException("the parent of pChild needs to be this object.");
+        }
+        if (mChildContainers.contains(pChild)) {
+            throw new IllegalArgumentException("this child has already been added");
+        }
 
-	@Override
-	public IContainer addControl(final IControl<?, ?, ?, ?> pControl) {
-		if (pControl == null) { throw new NullPointerException("pControl must not be null"); }
+        mChildContainers.add(pChild);
+        mAllChildren.add(pChild);
 
-		mChlidControls.add(pControl);
-		mAllChildren.add(pControl);
-		pControl.addControlChangeListener(this);
+        if (pListenForEvents) {
+            pChild.addControlChangeListener(this);
+            if (this instanceof IControlValidator) {
+                pChild.addControlValidator((IControlValidator) this);
+            }
+        }
+    }
 
-		return this;
-	}
+    @Override
+    public IContainer addControl(final IControl<?, ?, ?, ?> pControl) {
+        if (pControl == null) {
+            throw new NullPointerException("pControl must not be null");
+        }
 
-	@Override
-	public void addControlChangeListener(final IControlChangeListener pListener) {
-		mEventDispatcher.addControlChangeListener(pListener);
-	}
+        mChlidControls.add(pControl);
+        mAllChildren.add(pControl);
+        pControl.addControlChangeListener(this);
 
-	@Override
-	public void addControlValidator(final IControlValidator pValidator) {
-		mEventDispatcher.addControlValidator(pValidator);
-	}
+        return this;
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-		fireControlChangeEvent(pControl, null, pIsMutating);
-	}
+    @Override
+    public void addControlChangeListener(final IControlChangeListener pListener) {
+        mEventDispatcher.addControlChangeListener(pListener);
+    }
 
-	@Override
-	public IView createView() { // TODO can we push this into the base class
-		IView view = ViewFactory.getInstance().createView(this);
-		addView(view);
-		return view;
-	}
+    @Override
+    public void addControlValidator(final IControlValidator pValidator) {
+        mEventDispatcher.addControlValidator(pValidator);
+    }
 
-	@Override
-	public void fireControlChangeEvent(final IControl<?, ?, ?, ?> pControl) {
-		mEventDispatcher.fireControlChangeEvent(pControl);
-	}
+    @Override
+    public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
+        fireControlChangeEvent(pControl, null, pIsMutating);
+    }
 
-	@Override
-	public void fireControlChangeEvent(final IControl<?, ?, ?, ?> pControl, final IView pView, final boolean pIsMutating) {
-		mEventDispatcher.fireControlChangeEvent(pControl, pView, pIsMutating);
-	}
+    @Override
+    public IView createView() { // TODO can we push this into the base class
+        IView view = ViewFactory.getInstance().createView(this);
+        addView(view);
+        return view;
+    }
 
-	@Override
-	public boolean fireControlValidate(final IControl<?, ?, ?, ?> pControl) {
-		return mEventDispatcher.fireControlValidate(pControl);
-	}
+    @Override
+    public void fireControlChangeEvent(final IControl<?, ?, ?, ?> pControl) {
+        mEventDispatcher.fireControlChangeEvent(pControl);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return mDisplayName;
-	}
+    @Override
+    public void fireControlChangeEvent(final IControl<?, ?, ?, ?> pControl, final IView pView, final boolean pIsMutating) {
+        mEventDispatcher.fireControlChangeEvent(pControl, pView, pIsMutating);
+    }
 
-	@Override
-	public IContainer getParent() {
-		return mParent;
-	}
+    @Override
+    public boolean fireControlValidate(final IControl<?, ?, ?, ?> pControl) {
+        return mEventDispatcher.fireControlValidate(pControl);
+    }
 
-	@Override
-	public String getPropertyName() {
-		return mPropertyName;
-	}
+    @Override
+    public String getDisplayName() {
+        return mDisplayName;
+    }
 
-	@Override
-	public UndoRedoBuffer getUndoRedoBuffer() {
-		return mGetUndoRedoBuffer.getUndoRedoBuffer();
-	}
+    @Override
+    public IContainer getParent() {
+        return mParent;
+    }
 
-	@Override
-	public Iterator<IViewable<?>> getViewableChildrenIterator() {
-		return mAllChildren.iterator();
-	}
+    @Override
+    public String getPropertyName() {
+        return mPropertyName;
+    }
 
-	// public Iterator<IViewable> getViewableChildrenIterator() {
-	// return new Iterator<IViewable>() {
-	// Iterator<IViewable> mIterator = mAllChildren.iterator();
-	//
-	// @Override
-	// public boolean hasNext() {
-	// return mIterator.hasNext();
-	// }
-	//
-	// @Override
-	// public IViewable next() {
-	// return mIterator.next();
-	// }
-	//
-	// };
-	// }
+    @Override
+    public UndoRedoBuffer getUndoRedoBuffer() {
+        return mGetUndoRedoBuffer.getUndoRedoBuffer();
+    }
 
-	@Override
-	public boolean isPersistent() {
-		return true;
-	}
+    @Override
+    public Iterator<IViewable<?>> getViewableChildrenIterator() {
+        return mAllChildren.iterator();
+    }
 
-	@Override
-	public void read(final IPersistDB pDB, final String pId) {
-		if (pDB == null) { throw new IllegalArgumentException("pDB must not be null"); }
-		if (pId == null) { throw new IllegalArgumentException("pId must not be null"); }
+    // public Iterator<IViewable> getViewableChildrenIterator() {
+    // return new Iterator<IViewable>() {
+    // Iterator<IViewable> mIterator = mAllChildren.iterator();
+    //
+    // @Override
+    // public boolean hasNext() {
+    // return mIterator.hasNext();
+    // }
+    //
+    // @Override
+    // public IViewable next() {
+    // return mIterator.next();
+    // }
+    //
+    // };
+    // }
 
-		final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
 
-		for (final IControl<?, ?, ?, ?> c : mChlidControls) {
-			c.read(pDB, id);
-		}
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        if (pDB == null) {
+            throw new IllegalArgumentException("pDB must not be null");
+        }
+        if (pId == null) {
+            throw new IllegalArgumentException("pId must not be null");
+        }
 
-		for (final IPersist control : mChildContainers) {
-			control.read(pDB, id);
-		}
+        final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
 
-		setValues();
-	}
+        for (final IControl<?, ?, ?, ?> c : mChlidControls) {
+            c.read(pDB, id);
+        }
 
-	@Override
-	public void removeControlChangeListener(final IControlChangeListener pListener) {
-		mEventDispatcher.removeControlChangeListener(pListener);
-	}
+        for (final IPersist control : mChildContainers) {
+            control.read(pDB, id);
+        }
 
-	@Override
-	public void removeControlValidator(final IControlValidator pValidator) {
-		mEventDispatcher.removeControlValidator(pValidator);
-	}
+        setValues();
+    }
 
-	/**
-	 * Transfers the values in the controls to normal Java types to improve performance. This would be overridden in child classes,
-	 * i.e. a Transform.
-	 */
-	protected void setValues() {
-	}
+    @Override
+    public void removeControlChangeListener(final IControlChangeListener pListener) {
+        mEventDispatcher.removeControlChangeListener(pListener);
+    }
 
-	@Override
-	// When a container does not have a parent it writes its controls out without any additional prefix. This is so that the
-	// properties of a trasnform, e.g. Rotate can be written out without
-	// additional intermediate prefixes and just a name e.g. Transform.0.angle=0.1 rather than
-	// Transform.0.ContainerProperty.angle=0.1
-	public void write(final IPersistDB pDB, final String pId) {
-		Framework.logEntry(mLogger);
-		Framework.logParams(mLogger, "pId", pId);
+    @Override
+    public void removeControlValidator(final IControlValidator pValidator) {
+        mEventDispatcher.removeControlValidator(pValidator);
+    }
 
-		if (pDB == null) { throw new IllegalArgumentException("pDB must not be null"); }
-		if (pId == null) { throw new IllegalArgumentException("pId must not be null"); }
+    /**
+     * Transfers the values in the controls to normal Java types to improve performance. This would be overridden in child classes,
+     * i.e. a Transform.
+     */
+    protected void setValues() {
+    }
 
-		final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
+    @Override
+    // When a container does not have a parent it writes its controls out without any additional prefix. This is so that the
+    // properties of a trasnform, e.g. Rotate can be written out without
+    // additional intermediate prefixes and just a name e.g. Transform.0.angle=0.1 rather than
+    // Transform.0.ContainerProperty.angle=0.1
+    public void write(final IPersistDB pDB, final String pId) {
+        Framework.logEntry(mLogger);
+        Framework.logParams(mLogger, "pId", pId);
 
-		for (final IPersist c : mChlidControls) {
-			c.write(pDB, id);
-		}
+        if (pDB == null) {
+            throw new IllegalArgumentException("pDB must not be null");
+        }
+        if (pId == null) {
+            throw new IllegalArgumentException("pId must not be null");
+        }
 
-		for (final IPersist control : mChildContainers) {
-			control.write(pDB, id);
-		}
+        final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
 
-		Framework.logExit(mLogger);
-	}
+        for (final IPersist c : mChlidControls) {
+            c.write(pDB, id);
+        }
+
+        for (final IPersist control : mChildContainers) {
+            control.write(pDB, id);
+        }
+
+        Framework.logExit(mLogger);
+    }
+
+    public Container newContainer(String pDisplayName, String pPropertyName, boolean pListenForEvents) {
+        Container container = new Container(pDisplayName, pPropertyName, this, this);
+        if (pListenForEvents) {
+            container.addControlChangeListener(this);
+        }
+        return container;
+    }
 
 }

@@ -8,6 +8,6 @@ public class FXImageOrganizer {
 	public static void main(final String[] pArgs) {
 		FXViewFactory.setAsViewFactory();
 		ImageOrganizer appControl = ImageOrganizer.getInstance();
-		appControl.createView();
+		//appControl.createView();
 	}
 }
