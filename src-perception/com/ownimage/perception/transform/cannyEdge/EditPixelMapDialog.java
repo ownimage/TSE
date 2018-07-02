@@ -42,20 +42,23 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
                                                         new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), 100, 100));
 
-    private IContainer mGeneralContainer = newContainer("General", "general", true);
+    private ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
+    private IContainer mGeneralContainer = mContainerList.add( newContainer("General", "general", true));
+    private IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
+    private IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
+
+    // General Container
     private IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
     private IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
     private IntegerControl mX;
     private IntegerControl mY;
 
-
-    private ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
-    private IContainer mPixelControlContainer = mContainerList.add(new Container("Pixel", "pixel", this));
-    private IContainer mVertexControlContainer = mContainerList.add(new Container("Vertex", "vertex", this));
-
+    // Pixel Container
     private IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
     private IntegerControl mPCC2 = new IntegerControl("Pixel test 2", "pixelTest2", mPixelControlContainer, 2, 2, 15, 1);
     private IntegerControl mPCC3 = new IntegerControl("Pixel test 3", "pixelTest3", mPixelControlContainer, 2, 2, 15, 1);
+
+    // Vertex Container
     private IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
     private IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
     private IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
@@ -91,8 +94,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public IView createView() {
-        VFlowLayout vflow = new VFlowLayout(mGeneralContainer, mContainerList);
-        HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
+        HFlowLayout hflow = new HFlowLayout(mPictureControl, mContainerList);
         IView view = ViewFactory.getInstance().createView(hflow);
         addView(view);
         return view;

@@ -242,7 +242,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
         Perception.getPerception().getRenderService().transform(inputPictureControl, getPreviousTransform(), () -> regeneratePixelMap(inputPictureControl));
-        mEditPixelMapPixelsButton.setEnabled(true);
     }
 
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
@@ -667,6 +666,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             if (detector.getKeepRunning()) {
                 // only set the mData if the detector was allowed to finish
                 mPixelMap = detector.getEdgeData();
+                mEditPixelMapPixelsButton.setEnabled(true);
                 // mPreviewControl.getValue().setValue(mPreviewPicture);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
             }
