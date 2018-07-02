@@ -47,15 +47,16 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     public final static Logger mLogger = Logger.getLogger(mClassname);
     public final static long serialVersionUID = 1L;
 
-    private final IntegerControl mWidth = new IntegerControl("Width", "width", getContainer(), 1000,
-                                                             100, 50000, 500).setEnabled(false);
-    private final IntegerControl mHeight = new IntegerControl("Height", "height", getContainer(),
-                                                              1000, 100, 50000, 500).setEnabled(false);
+    private final IntegerControl mWidth =
+            new IntegerControl("Width", "width", getContainer(), 1000, 100, 50000, 500).setEnabled(false);
+    private final IntegerControl mHeight =
+            new IntegerControl("Height", "height", getContainer(), 1000, 100, 50000, 500).setEnabled(false);
 
-    private final ActionControl mGeneratePixelMapButton = new ActionControl("Generate Edges",
-                                                                            "generate", getContainer(), () -> generateEdges());
-    private final ActionControl mEditPixelMapPixelsButton = new ActionControl("Edit Pixels",
-                                                                              "editPixels", getContainer(), () -> editPixels());
+    private final ActionControl mGeneratePixelMapButton =
+            new ActionControl("Generate Edges", "generate", getContainer(), () -> generateEdges());
+    private final ActionControl mEditPixelMapPixelsButton =
+            new ActionControl("Edit Pixels", "editPixels", getContainer(), () -> editPixels())
+                    .setEnabled(false);
 
     // TODO private final EditPixelMapDialog mEditPixelMapSegmentsDialog;
     // TODO private final EditPixelMapDialog mEditPixelMapPixelsDialog;
@@ -63,69 +64,73 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private GenerateEdgesDialog mGenerateEdgesDialog;
     private EditPixelMapDialog mEditPixelMapDialog;
 
-    private final DoubleControl mWhiteFade = new DoubleControl("White Fade", "whiteFade",
-                                                               getContainer(), 0.0d);
+    private final DoubleControl mWhiteFade =
+            new DoubleControl("White Fade", "whiteFade", getContainer(), 0.0d);
 
-    private final BooleanControl mShowPixels = new BooleanControl("Show Pixels", "showPixels",
-                                                                  getContainer(), false);
+    private final BooleanControl mShowPixels =
+            new BooleanControl("Show Pixels", "showPixels", getContainer(), false);
 
-    private final ColorControl mPixelColor = new ColorControl("Pixel Colour", "pixelColor",
-                                                              getContainer(), Color.BLACK);
-    private final DoubleControl mLineTolerance = new DoubleControl("Line Tolerance",
-                                                                   "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
-    private final DoubleControl mLineCurvePreference = new DoubleControl("Curve Preference",
-                                                                         "curvePreference", getContainer(), 1.2d, 0.1d, 100.0d);
+    private final ColorControl mPixelColor =
+            new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
+    private final DoubleControl mLineTolerance =
+            new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
+    private final DoubleControl mLineCurvePreference =
+            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2d, 0.1d, 100.0d);
 
-    private final BooleanControl mLinesShow = new BooleanControl("Show Lines", "showLines",
-                                                                 getContainer(), false);
-    private final ObjectControl<LineEndShape> mLineEndShape = new ObjectControl<>("Line End Shape",
-                                                                                  "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
-    private final ObjectControl<LineEndLengthType> mLineEndLengthType = new ObjectControl<>(
-            "Line End Length Type", "lineEndLengthType", getContainer(), LineEndLengthType.Pixels,
-            LineEndLengthType.values());
+    private final BooleanControl mLinesShow =
+            new BooleanControl("Show Lines", "showLines", getContainer(), false);
+    private final ObjectControl<LineEndShape> mLineEndShape =
+            new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
+    private final ObjectControl<LineEndLengthType> mLineEndLengthType =
+            new ObjectControl<>(
+                    "Line End Length Type",
+                    "lineEndLengthType",
+                    getContainer(),
+                    LineEndLengthType.Pixels,
+                    LineEndLengthType.values());
 
-    private final IntegerControl mLineEndLengthPercent = new IntegerControl("Length Percent",
-                                                                            "lineEndLengthPercent", getContainer(), 10, 1, 50, 5);
-    private final IntegerControl mLineEndLengthPixels = new IntegerControl("Length Pixels",
-                                                                           "lineEndLengthPixels", getContainer(), 50, 1, 500, 10);
-    private final DoubleControl mLineEndThickness = new DoubleControl("Line End Thickness",
-                                                                      "LineEndThickness", getContainer(), 0.5d);
-    private final ColorControl mLineColor = new ColorControl("Line Color", "lineColor",
-                                                             getContainer(), Color.BLACK);
-    private final DoubleControl mLineOpacity = new DoubleControl("Line Opacity", "lineOpacity",
-                                                                 getContainer(), 1.0d);
+    private final IntegerControl mLineEndLengthPercent =
+            new IntegerControl("Length Percent", "lineEndLengthPercent", getContainer(), 10, 1, 50, 5);
+    private final IntegerControl mLineEndLengthPixels =
+            new IntegerControl("Length Pixels", "lineEndLengthPixels", getContainer(), 50, 1, 500, 10);
+    private final DoubleControl mLineEndThickness =
+            new DoubleControl("Line End Thickness", "LineEndThickness", getContainer(), 0.5d);
+    private final ColorControl mLineColor =
+            new ColorControl("Line Color", "lineColor", getContainer(), Color.BLACK);
+    private final DoubleControl mLineOpacity =
+            new DoubleControl("Line Opacity", "lineOpacity", getContainer(), 1.0d);
 
-    private final IntegerControl mLongLineLength = new IntegerControl("Long Line Length",
-                                                                      "longLineLength", getContainer(), 50, 1, 500, 10);
-    private final DoubleControl mLongLineThickness = new DoubleControl("Long Line Thickness",
-                                                                       "longLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
-    private final IntegerControl mMediumLineLength = new IntegerControl("Medium Line Length",
-                                                                        "mediumLineLength", getContainer(), 0, 0, 1000, 20);
-    private final DoubleControl mMediumLineThickness = new DoubleControl("Medium Line Thickness",
-                                                                         "mediumLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+    private final IntegerControl mLongLineLength =
+            new IntegerControl("Long Line Length", "longLineLength", getContainer(), 50, 1, 500, 10);
+    private final DoubleControl mLongLineThickness =
+            new DoubleControl("Long Line Thickness", "longLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+    private final IntegerControl mMediumLineLength =
+            new IntegerControl("Medium Line Length", "mediumLineLength", getContainer(), 0, 0, 1000, 20);
+    private final DoubleControl mMediumLineThickness =
+            new DoubleControl("Medium Line Thickness", "mediumLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
 
-    private final IntegerControl mShortLineLength = new IntegerControl("Short Line Length",
-                                                                       "shortLineLength", getContainer(), 0, 0, 1000, 20);
-    private final DoubleControl mShortLineThickness = new DoubleControl("Short Line Thickness",
-                                                                        "shortLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+    private final IntegerControl mShortLineLength =
+            new IntegerControl("Short Line Length", "shortLineLength", getContainer(), 0, 0, 1000, 20);
+    private final DoubleControl mShortLineThickness =
+            new DoubleControl("Short Line Thickness", "shortLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
     // shadow
-    private final BooleanControl mShowShadow = new BooleanControl("Show Shadow", "showShadow",
-                                                                  getContainer(), false);
-    private final DoubleControl mShadowXOffset = new DoubleControl("Shadow X Offset",
-                                                                   "shadowXOffset", getContainer(), 1.0d, -20.0d, 20.0d);
+    private final BooleanControl mShowShadow =
+            new BooleanControl("Show Shadow", "showShadow", getContainer(), false);
+    private final DoubleControl mShadowXOffset =
+            new DoubleControl("Shadow X Offset", "shadowXOffset", getContainer(), 1.0d, -20.0d, 20.0d);
 
     // TODO private final ObjectControl<String> mEqualize = new ObjectControl<>("Equalize Lengths", "equalize", getContainer(),
     // EqualizeValues.getDefaultValue(), EqualizeValues.getAllValues());
 
-    private final DoubleControl mShadowYOffset = new DoubleControl("Shadow Y Offset",
-                                                                   "shadowYOffset", getContainer(), 1.0d, -20.0d, 20.0d);
-    private final DoubleControl mShadowThickness = new DoubleControl("Shadow Thickness",
-                                                                     "shadowThickness", getContainer(), 1.0d, 1.0d, 10.0d);
+    private final DoubleControl mShadowYOffset =
+            new DoubleControl("Shadow Y Offset", "shadowYOffset", getContainer(), 1.0d, -20.0d, 20.0d);
+    private final DoubleControl mShadowThickness =
+            new DoubleControl("Shadow Thickness", "shadowThickness", getContainer(), 1.0d, 1.0d, 10.0d);
 
-    private final ColorControl mShadowColor = new ColorControl("Shadow Colour", "shadowColor",
-                                                               getContainer(), Color.WHITE);
-    private final DoubleControl mShadowOpacity = new DoubleControl("Shadow Opacity",
-                                                                   "shadowOpacity", getContainer(), 1.0d);
+    private final ColorControl mShadowColor =
+            new ColorControl("Shadow Colour", "shadowColor", getContainer(), Color.WHITE);
+    private final DoubleControl mShadowOpacity =
+            new DoubleControl("Shadow Opacity", "shadowOpacity", getContainer(), 1.0d);
 
     private PixelMap mPixelMap; // this is the picture from the file processed for edges
 
@@ -237,6 +242,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
         Perception.getPerception().getRenderService().transform(inputPictureControl, getPreviousTransform(), () -> regeneratePixelMap(inputPictureControl));
+        mEditPixelMapPixelsButton.setEnabled(true);
     }
 
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
