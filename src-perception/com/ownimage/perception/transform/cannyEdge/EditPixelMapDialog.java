@@ -16,10 +16,10 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
-import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -28,6 +28,7 @@ import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
 
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
@@ -39,11 +40,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private PixelMap mPixelMap;
 
     private final ITransform mTransform;
+    private final CropTransform mCropTransform;
+
     PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
                                                         new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), 100, 100));
 
     private ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
-    private IContainer mGeneralContainer = mContainerList.add( newContainer("General", "general", true));
+    private IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
     private IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
     private IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
 
@@ -67,6 +70,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         mTransform = pTransform;
+        mCropTransform = new CropTransform(Perception.getPerception(), true);
+        mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updatePreview();
@@ -77,7 +82,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), mPreviewSize.getValue(), mPreviewSize.getValue());
             mPictureControl.setValue(pictureType);
         }
-        Perception.getPerception().getRenderService().transform(mPictureControl, mTransform.getPreviousTransform());
+        setCrop();
+        Perception.getPerception().getRenderService().transform(mPictureControl, mCropTransform);
         //mPictureControl.setValue(pictureType, null, false);
     }
 
@@ -107,17 +113,37 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
-        mPixelMap.forEach((x, y) -> {
+        int zoom = mZoom.getValue();
+
+        // going to scan over pixelMap
+        int xMin = mX.getValue();
+        int yMin = mY.getValue();
+        int xSize = 1 + Math.floorDiv(mPixelMap.getWidth(), zoom);
+        int ySize = 1 + Math.floorDiv(mPixelMap.getHeight(), zoom);
+
+        System.out.println(xMin + " " + yMin + " " + xSize + " " + ySize);
+
+        Range2D.forEach(xMin, Math.min(mPixelMap.getWidth() -1, xMin + xSize), yMin, Math.min(mPixelMap.getHeight() -1, yMin + ySize), (x, y) -> {
             if (mPixelMap.getValue(x, y) != 0) {
-                double x1 = (double) x / mPixelMap.getWidth();
-                double x2 = (double) (x + 1) / mPixelMap.getWidth();
-                double y1 = (double) y / mPixelMap.getHeight();
-                double y2 = (double) (y + 1) / mPixelMap.getHeight();
+                double x1 = (double) (x - xMin) * zoom / mPixelMap.getWidth();
+                double x2 = (double) (x + 1 - xMin) * zoom / mPixelMap.getWidth();
+                double y1 = (double) (y - yMin) * zoom / mPixelMap.getHeight();
+                double y2 = (double) (y + 1 - yMin) * zoom / mPixelMap.getHeight();
                 Rectangle r = new Rectangle(x1, y1, x2, y2);
                 pGrafittiHelper.drawFilledRectangle(r, Color.YELLOW);
             }
         });
-        pGrafittiHelper.drawCircle(.5, .5, .2, Color.RED, false);
+    }
+
+    private void setCrop() {
+        if (mPixelMap != null) {
+            double left = (double) mX.getValue() / mPixelMap.getWidth();
+            double right = left + 1.0d / mZoom.getValue();
+            double bottom = (double) mY.getValue() / mPixelMap.getHeight();
+            double top = bottom + 1.0d / mZoom.getValue();
+            System.out.print("lrbt " + left + " " + right + " " + bottom + " " + top);
+            mCropTransform.setCrop(left, bottom, right, top);
+        }
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
