@@ -43,8 +43,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                                                         new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), 100, 100));
 
     private IContainer mGeneralContainer = newContainer("General", "general", true);
-    private IntegerControl ggg = new IntegerControl("ggg 1", "ggg", mGeneralContainer, 2, 2, 15, 1);
     private IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
+    private IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
+    private IntegerControl mX;
+    private IntegerControl mY;
+
 
     private ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private IContainer mPixelControlContainer = mContainerList.add(new Container("Pixel", "pixel", this));
@@ -117,7 +120,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
+        Framework.checkNotNull(mLogger, pPixelMap, "pPixelMap");
+        Framework.checkNoChangeOnceSet(mLogger, mPixelMap, "mPixelMap");
         mPixelMap = pPixelMap;
+         mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
+        mY = new IntegerControl("Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
     }
 
     @Override

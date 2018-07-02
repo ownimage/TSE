@@ -74,6 +74,13 @@ public class Framework {
 		}
 	}
 
+	public static void checkNoChangeOnceSet(final Logger pLogger, final Object pObject, final String pName) {
+		if (pObject != null) {
+			String message = pName + " cannot be changed once set";
+			mLogger.warning(message);
+			throw new IllegalArgumentException(message);
+		}
+	}
 	public static Logger getLogger() {
 		try {
 			StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
