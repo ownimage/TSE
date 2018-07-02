@@ -226,7 +226,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private void editPixels() {
         ActionControl ok = ActionControl.create("OK", NullContainer, () -> System.out.println("edit pixelmap OK"));
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-        getEditPixelMapDialog().setPixelMap(mPixelMap);
         getEditPixelMapDialog().showDialog(cancel, ok);
     }
 
@@ -253,7 +252,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     public synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            mEditPixelMapDialog = new EditPixelMapDialog(this, "Edit PixelMap Dialog", "pixelMapEditor", this);
+            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap,"Edit PixelMap Dialog", "pixelMapEditor", this);
         }
         return mEditPixelMapDialog;
     }
@@ -666,6 +665,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             if (detector.getKeepRunning()) {
                 // only set the mData if the detector was allowed to finish
                 mPixelMap = detector.getEdgeData();
+                mEditPixelMapDialog = null;
                 mEditPixelMapPixelsButton.setEnabled(true);
                 // mPreviewControl.getValue().setValue(mPreviewPicture);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");

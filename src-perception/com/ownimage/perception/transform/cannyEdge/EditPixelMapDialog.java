@@ -37,7 +37,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private PixelMap mPixelMap;
+    private final PixelMap mPixelMap;
 
     private final ITransform mTransform;
     private final CropTransform mCropTransform;
@@ -45,31 +45,35 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
                                                         new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), 100, 100));
 
-    private ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
-    private IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
-    private IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
-    private IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
+    private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
+    private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
+    private final  IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
+    private final IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
 
     // General Container
-    private IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
-    private IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
-    private IntegerControl mX;
-    private IntegerControl mY;
+    private final  IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
+    private final  IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
+    private final IntegerControl mX;
+    private final IntegerControl mY;
 
     // Pixel Container
-    private IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
-    private IntegerControl mPCC2 = new IntegerControl("Pixel test 2", "pixelTest2", mPixelControlContainer, 2, 2, 15, 1);
-    private IntegerControl mPCC3 = new IntegerControl("Pixel test 3", "pixelTest3", mPixelControlContainer, 2, 2, 15, 1);
+    private final  IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mPCC2 = new IntegerControl("Pixel test 2", "pixelTest2", mPixelControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mPCC3 = new IntegerControl("Pixel test 3", "pixelTest3", mPixelControlContainer, 2, 2, 15, 1);
 
     // Vertex Container
-    private IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
-    private IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
-    private IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
 
-    public EditPixelMapDialog(final ITransform pTransform, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
+    public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
+        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
         mTransform = pTransform;
+        mPixelMap = pPixelMap;
+        mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
+        mY = new IntegerControl("Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
         mCropTransform = new CropTransform(Perception.getPerception(), true);
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         mPictureControl.setGrafitti(this);
@@ -144,14 +148,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             System.out.print("lrbt " + left + " " + right + " " + bottom + " " + top);
             mCropTransform.setCrop(left, bottom, right, top);
         }
-    }
-
-    public void setPixelMap(final PixelMap pPixelMap) {
-        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
-        Framework.checkStateNoChangeOnceSet(mLogger, mPixelMap, "mPixelMap");
-        mPixelMap = pPixelMap;
-        mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
-        mY = new IntegerControl("Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
     }
 
     @Override
