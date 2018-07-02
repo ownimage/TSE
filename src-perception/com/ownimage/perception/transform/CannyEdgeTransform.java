@@ -7,6 +7,7 @@ package com.ownimage.perception.transform;
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.ActionControl;
@@ -18,6 +19,7 @@ import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
@@ -252,7 +254,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     public synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap,"Edit PixelMap Dialog", "pixelMapEditor", this);
+            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", this);
         }
         return mEditPixelMapDialog;
     }
@@ -543,6 +545,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     public int getWidth() {
         return mWidth.getValue();
     }
+
     //
     // @Override
     // public void graffiti(final GraphicsHelper pGraphics) {
@@ -556,14 +559,16 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // getPixelMap().setPixelChainDefaultThickness(this);
     // }
     //
-    // @Override
-    // public void read(final Properties pProperites, final String pId) {
-    // super.read(pProperites, pId);
-    //
-    // mPixelMap = new PixelMap(getWidth(), getHeight(), m360, this);
-    // mPixelMap.read(pProperites, pId);
-    // System.out.println("mPixelMap linecount=" + mPixelMap.getLineCount());
-    // }
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        super.read(pDB, pId);
+
+        // TODO need to change the 360 value to one that is generated from something
+        mPixelMap = new PixelMap(getWidth(), getHeight(), false, this);
+        mPixelMap.read(pDB, pId);
+        //System.out.println("mPixelMap linecount=" + mPixelMap.getLineCount());
+    }
+
     //
     // public void reapproximate() {
     // getPixelMap().process08_refine();
@@ -596,40 +601,40 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // mHeight.setValue(super.getHeight());
     // }
     //
-    // @Override
-    // public void setValues() {
-    // super.setValues();
-    // if (!isInitialized()) { return; }
-    //
-    // mPixelColor.setVisible(mShowPixels.getBoolean());
-    //
-    // final boolean showMaxiLines = mLinesShow.getBoolean();
-    // mLongLineLength.setVisible(showMaxiLines);
-    // mLongLineThickness.setVisible(showMaxiLines);
-    // mMediumLineLength.setVisible(showMaxiLines);
-    // mMediumLineThickness.setVisible(showMaxiLines);
-    // mShortLineLength.setVisible(showMaxiLines);
-    // mShortLineThickness.setVisible(showMaxiLines);
-    // mLineOpacity.setVisible(showMaxiLines);
-    // mLineColor.setVisible(showMaxiLines);
-    // mShowShadow.setVisible(showMaxiLines);
-    //
-    // final boolean showShadow = mShowShadow.getBoolean() && mLinesShow.getBoolean();
-    // mShadowColor.setVisible(showShadow);
-    // mShadowOpacity.setVisible(showShadow);
-    // mShadowThickness.setVisible(showShadow);
-    // mShadowXOffset.setVisible(showShadow);
-    // mShadowYOffset.setVisible(showShadow);
-    //
-    // final boolean isPercent = mLineEndLengthType.getEnum() == LineEndLengthType.Percent;
-    // mLineEndLengthPercent.setVisible(isPercent);
-    // mLineEndLengthPixels.setVisible(!isPercent);
-    //
-    // final boolean isSquare = mLineEndShape.getEnum() == LineEndShape.Square;
-    // mLineEndLengthType.setEnabled(!isSquare);
-    // mLineEndLengthPercent.setEnabled(!isSquare);
-    // mLineEndLengthPixels.setEnabled(!isSquare);
-    // }
+    @Override
+    public void setValues() {
+        super.setValues();
+        mEditPixelMapPixelsButton.setEnabled(mPixelMap != null);
+
+        mPixelColor.setVisible(mShowPixels.getValue());
+
+        final boolean showMaxiLines = mLinesShow.getValue();
+        mLongLineLength.setVisible(showMaxiLines);
+        mLongLineThickness.setVisible(showMaxiLines);
+        mMediumLineLength.setVisible(showMaxiLines);
+        mMediumLineThickness.setVisible(showMaxiLines);
+        mShortLineLength.setVisible(showMaxiLines);
+        mShortLineThickness.setVisible(showMaxiLines);
+        mLineOpacity.setVisible(showMaxiLines);
+        mLineColor.setVisible(showMaxiLines);
+        mShowShadow.setVisible(showMaxiLines);
+
+        final boolean showShadow = mShowShadow.getValue() && mLinesShow.getValue();
+        mShadowColor.setVisible(showShadow);
+        mShadowOpacity.setVisible(showShadow);
+        mShadowThickness.setVisible(showShadow);
+        mShadowXOffset.setVisible(showShadow);
+        mShadowYOffset.setVisible(showShadow);
+
+        final boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
+        mLineEndLengthPercent.setVisible(isPercent);
+        mLineEndLengthPixels.setVisible(!isPercent);
+
+        final boolean isSquare = mLineEndShape.getValue() == LineEndShape.Square;
+        mLineEndLengthType.setEnabled(!isSquare);
+        mLineEndLengthPercent.setEnabled(!isSquare);
+        mLineEndLengthPixels.setEnabled(!isSquare);
+    }
     //
     // @Override
     // public Color transform(final Point pIn) {
@@ -640,14 +645,14 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // return color;
     // }
     //
-    // @Override
-    // public void write(final Properties pProperites, final String pId) throws Exception {
-    // super.write(pProperites, pId);
-    //
-    // if (mPixelMap != null) {
-    // mPixelMap.write(pProperites, pId);
-    // }
-    // }
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        super.write(pDB, pId);
+
+        if (mPixelMap != null) {
+            mPixelMap.write(pDB, pId);
+        }
+    }
 
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {

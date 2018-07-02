@@ -7,6 +7,7 @@ package com.ownimage.perception.transformSequence;
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -381,7 +382,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 	}
 
 	@Override
-	public void write(final IPersistDB pDB, final String pId) {
+	public void write(final IPersistDB pDB, final String pId) throws IOException {
 		ITransform[] transforms = mTransforms.toArray(new ITransform[mTransforms.size()]);
 		for (int i = 0; i < transforms.length; i++) {
 			transforms[i].write(pDB, pId + "." + i);

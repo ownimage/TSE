@@ -4,6 +4,7 @@
  */
 package com.ownimage.framework.control.container;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -234,7 +235,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
     // properties of a trasnform, e.g. Rotate can be written out without
     // additional intermediate prefixes and just a name e.g. Transform.0.angle=0.1 rather than
     // Transform.0.ContainerProperty.angle=0.1
-    public void write(final IPersistDB pDB, final String pId) {
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pId", pId);
 

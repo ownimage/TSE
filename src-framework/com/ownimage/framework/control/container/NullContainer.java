@@ -1,5 +1,6 @@
 package com.ownimage.framework.control.container;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -122,7 +123,7 @@ public class NullContainer implements IContainer {
 	}
 
 	@Override
-	public void write(final IPersistDB pDB, final String pId) {
+	public void write(final IPersistDB pDB, final String pId) throws IOException {
 		mContainer.write(pDB, pId);
 	}
 

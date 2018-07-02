@@ -4,6 +4,8 @@
  */
 package com.ownimage.framework.persist;
 
+import java.io.IOException;
+
 import com.ownimage.framework.util.Version;
 
 public interface IPersist {
@@ -21,5 +23,5 @@ public interface IPersist {
 
 	public void read(IPersistDB pDB, String pId);
 
-	public void write(IPersistDB pDB, String pId);
+	public void write(IPersistDB pDB, String pId) throws IOException;
 }

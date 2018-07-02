@@ -1,6 +1,7 @@
 package com.ownimage.perception.app;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -236,7 +237,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 	}
 
 	@Override
-	public void write(final IPersistDB pDB, final String pId) {
+	public void write(final IPersistDB pDB, final String pId) throws IOException {
 		mContainer.write(pDB, pId);
 		ViewFactory.getInstance().getViewFactoryPropertiesViewable().write(pDB, pId);
 	}

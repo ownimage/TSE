@@ -5,6 +5,7 @@
 package com.ownimage.perception.transform;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
 
@@ -342,7 +343,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	}
 
 	@Override
-	public void write(final IPersistDB pDB, final String pId) {
+	public void write(final IPersistDB pDB, final String pId) throws IOException {
 		pDB.write(pId + ".name", getPropertyName());
 		mContainer.write(pDB, pId);
 	}
