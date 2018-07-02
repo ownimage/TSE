@@ -26,7 +26,7 @@ public class BaseBatchEngine implements IBatchEngine {
 	@Override
 	public void next(final TransformResultBatch pBatch) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pBatch, "pBatch");
+		Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 
 		int index = 0;
 		int x = pBatch.getXCurrent();
@@ -66,8 +66,8 @@ public class BaseBatchEngine implements IBatchEngine {
 	@Override
 	public void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pBatch, "pBatch");
-		Framework.checkNotNull(mLogger, pTransform, "pTransform");
+		Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
+		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
 		pBatch.moveTo(this);
 		pTransform.transform(pBatch);

@@ -53,7 +53,7 @@ public class SquarePolarTransform extends BaseTransform {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		double fx = 0;
 		double fy = 0;

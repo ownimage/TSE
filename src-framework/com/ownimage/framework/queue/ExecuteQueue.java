@@ -89,7 +89,7 @@ public class ExecuteQueue {
 	 */
 	public void submit(final IJob pJob) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pJob, "pJob");
+		Framework.checkParameterNotNull(mLogger, pJob, "pJob");
 
 		synchronized (mQueue) {
 			ExecuteThread runningThread = mRunningThread;

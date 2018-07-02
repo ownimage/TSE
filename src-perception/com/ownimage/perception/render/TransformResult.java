@@ -28,9 +28,9 @@ public class TransformResult implements ITransformResult {
 
 	public TransformResult(final TransformResultBatch pTRB, final int pIndex, final int pXPixel, final int pYPixel, final double pX, final double pY, final float pR, final float pG, final float pB,
 			final float pA) {
-		Framework.checkNotNull(mLogger, pTRB, "pTRB");
-		Framework.checkGreaterThanEqual(mLogger, pIndex, 0, "pIndex (%d) must be greater than 0.");
-		Framework.checkLessThan(mLogger, pIndex, pTRB.getBatchSize(), "pIndex (%d) must be less than pTRB.getBatchSize() (%d%).");
+		Framework.checkParameterNotNull(mLogger, pTRB, "pTRB");
+		Framework.checkParameterGreaterThanEqual(mLogger, pIndex, 0, "pIndex (%d) must be greater than 0.");
+		Framework.checkParameterLessThan(mLogger, pIndex, pTRB.getBatchSize(), "pIndex (%d) must be less than pTRB.getBatchSize() (%d%).");
 
 		mTransformResultBatch = pTRB;
 		mIndex = pIndex;
@@ -117,7 +117,7 @@ public class TransformResult implements ITransformResult {
 
 	@Override
 	public void setColor(final Color pColor) {
-		Framework.checkNotNull(mLogger, pColor, "pColor");
+		Framework.checkParameterNotNull(mLogger, pColor, "pColor");
 		float[] c = pColor.getRGBComponents(null);
 		setRGBA(c[0], c[1], c[2], c[3]);
 	}

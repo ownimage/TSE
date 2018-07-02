@@ -47,9 +47,9 @@ public class TransformResultBatch implements ITransformResultBatch {
 
 	public TransformResultBatch(final RenderService pRenderService, final int pMaxBatchSize) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderService, "pRenderService");
+		Framework.checkParameterNotNull(mLogger, pRenderService, "pRenderService");
 		Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-		Framework.checkGreaterThan(mLogger, pMaxBatchSize, 0, "pMaxBatchSize (%d) must be greater than 0");
+		Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pMaxBatchSize (%d) must be greater than 0");
 
 		mRenderService = pRenderService;
 		mMaxBatchSize = pMaxBatchSize;
@@ -194,8 +194,8 @@ public class TransformResultBatch implements ITransformResultBatch {
 	public void initialize(final PictureType pPicture, final IBatchEngine pOwner, final int pMaxBatchSize) {
 		Framework.logEntry(mLogger);
 		Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-		Framework.checkNotNull(mLogger, pPicture, "pPicture");
-		Framework.checkNotNull(mLogger, pOwner, "pOwner");
+		Framework.checkParameterNotNull(mLogger, pPicture, "pPicture");
+		Framework.checkParameterNotNull(mLogger, pOwner, "pOwner");
 
 		mCurrentOwner = pOwner;
 		setMaxBatchSize(pMaxBatchSize);
@@ -213,7 +213,7 @@ public class TransformResultBatch implements ITransformResultBatch {
 
 	void moveTo(final IBatchEngine pNewOwner) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pNewOwner, "pNewOwner");
+		Framework.checkParameterNotNull(mLogger, pNewOwner, "pNewOwner");
 
 		if (mCurrentOwner.getProcessingLocation() != pNewOwner.getProcessingLocation()) {
 			mLogger.fine(String.format("Moving batch from %s to %s", pNewOwner.getProcessingLocation(), mCurrentOwner.getProcessingLocation()));
@@ -233,7 +233,7 @@ public class TransformResultBatch implements ITransformResultBatch {
 
 	public void render(final PictureType pPicture) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPicture, "pPicture");
+		Framework.checkParameterNotNull(mLogger, pPicture, "pPicture");
 
 		moveTo(mRenderService.getBaseBatchEngine());
 
@@ -258,7 +258,7 @@ public class TransformResultBatch implements ITransformResultBatch {
 	private void setMaxBatchSize(final int pMaxBatchSize) {
 		Framework.logEntry(mLogger);
 		Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-		Framework.checkGreaterThan(mLogger, pMaxBatchSize, 0, "pBatchSize (%d) must be greater than 0.");
+		Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pBatchSize (%d) must be greater than 0.");
 
 		if (mMaxBatchSize != pMaxBatchSize) {
 			mLogger.fine("mMaxBatchSize = " + mMaxBatchSize);
@@ -273,8 +273,8 @@ public class TransformResultBatch implements ITransformResultBatch {
 	public void setXCurrent(final int pXCurrent) {
 		Framework.logEntry(mLogger);
 		Framework.logParams(mLogger, "pXCurrent", pXCurrent);
-		Framework.checkGreaterThanEqual(mLogger, pXCurrent, 0, "pXCurrent (%d) must be >= 0.");
-		Framework.checkLessThan(mLogger, pXCurrent, mXMax, "pXCurrent (%d) must be < mXMax (%d).");
+		Framework.checkParameterGreaterThanEqual(mLogger, pXCurrent, 0, "pXCurrent (%d) must be >= 0.");
+		Framework.checkParameterLessThan(mLogger, pXCurrent, mXMax, "pXCurrent (%d) must be < mXMax (%d).");
 
 		mXCurrent = pXCurrent;
 
@@ -291,8 +291,8 @@ public class TransformResultBatch implements ITransformResultBatch {
 	public void setYCurrent(final int pYCurrent) {
 		Framework.logEntry(mLogger);
 		Framework.logParams(mLogger, "pYCurrent", pYCurrent);
-		Framework.checkGreaterThanEqual(mLogger, pYCurrent, 0, "pXCurrent (%d) must be >= 0.");
-		Framework.checkLessThanEqual(mLogger, pYCurrent, mYMax, "pXCurrent (%d) must be < mYMax (%d).");
+		Framework.checkParameterGreaterThanEqual(mLogger, pYCurrent, 0, "pXCurrent (%d) must be >= 0.");
+		Framework.checkParameterLessThanEqual(mLogger, pYCurrent, mYMax, "pXCurrent (%d) must be < mYMax (%d).");
 
 		mYCurrent = pYCurrent;
 

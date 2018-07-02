@@ -13,35 +13,35 @@ public class Framework {
 	public final static Logger mLogger = Logger.getLogger(mClassname);
 	public final static long serialVersionUID = 1L;
 
-	public static void checkGreaterThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkNotNull(pLogger, pMessage, "pMessage");
+	public static void checkParameterGreaterThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
+		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
 		if (!(pA > pB)) {
-			checkMessage(pLogger, pMessage, pA, pB);
+			checkParameterMessage(pLogger, pMessage, pA, pB);
 		}
 	}
 
-	public static void checkGreaterThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkNotNull(pLogger, pMessage, "pMessage");
+	public static void checkParameterGreaterThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
+		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
 		if (!(pA >= pB)) {
-			checkMessage(pLogger, pMessage, pA, pB);
+			checkParameterMessage(pLogger, pMessage, pA, pB);
 		}
 	}
 
-	public static void checkLessThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkNotNull(pLogger, pMessage, "pMessage");
+	public static void checkParameterLessThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
+		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
 		if (!(pA < pB)) {
-			checkMessage(pLogger, pMessage, pA, pB);
+			checkParameterMessage(pLogger, pMessage, pA, pB);
 		}
 	}
 
-	public static void checkLessThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkNotNull(pLogger, pMessage, "pMessage");
+	public static void checkParameterLessThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
+		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
 		if (!(pA <= pB)) {
-			checkMessage(pLogger, pMessage, pA, pB);
+			checkParameterMessage(pLogger, pMessage, pA, pB);
 		}
 	}
 
-	private static void checkMessage(final Logger pLogger, final String pMessage, final int pA, final int pB) {
+	private static void checkParameterMessage(final Logger pLogger, final String pMessage, final int pA, final int pB) {
 		Framework.logValue(pLogger, "pA", pA);
 		Framework.logValue(pLogger, "pB", pB);
 		String msg = String.format(pMessage, pA, pB);
@@ -49,7 +49,7 @@ public class Framework {
 		throw new IllegalArgumentException(msg);
 	}
 
-	public static void checkNotNull(final Logger pLogger, final Object pObject, final String pName) {
+	public static void checkParameterNotNull(final Logger pLogger, final Object pObject, final String pName) {
 		if (pObject == null) {
 			String message = pName + " must not be null";
 			mLogger.warning(message);
@@ -57,8 +57,8 @@ public class Framework {
 		}
 	}
 
-	public static void checkNotNullOrEmpty(final Logger pLogger, final String pString, final String pName) {
-		checkNotNull(pLogger, pString, pName);
+	public static void checkParameterNotNullOrEmpty(final Logger pLogger, final String pString, final String pName) {
+		checkParameterNotNull(pLogger, pString, pName);
 		if ("".equals(pString)) {
 			String message = pName + " must not be an empty string.";
 			mLogger.warning(message);
@@ -66,19 +66,18 @@ public class Framework {
 		}
 	}
 
-	public static void checkNull(final Logger pLogger, final Object pObject, final String pName) {
-		if (pObject != null) {
-			String message = pName + " must be null";
+	public static void checkStateNotNull(final Logger pLogger, final Object pObject, final String pName) {
+		if (pObject == null) {
+			String message = pName + " must not be null";
 			mLogger.warning(message);
-			throw new IllegalArgumentException(message);
+			throw new IllegalStateException(message);
 		}
 	}
-
-	public static void checkNoChangeOnceSet(final Logger pLogger, final Object pObject, final String pName) {
+	public static void checkStateNoChangeOnceSet(final Logger pLogger, final Object pObject, final String pName) {
 		if (pObject != null) {
 			String message = pName + " cannot be changed once set";
 			mLogger.warning(message);
-			throw new IllegalArgumentException(message);
+			throw new IllegalStateException(message);
 		}
 	}
 	public static Logger getLogger() {

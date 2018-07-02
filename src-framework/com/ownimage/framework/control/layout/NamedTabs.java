@@ -35,7 +35,7 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
 
 	public INamedTabs addTab(final IContainer pContainer) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pContainer, "pContent");
+		Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
 		addTab(pContainer.getDisplayName(), pContainer);
 		Framework.logExit(mLogger);
 		return this;
@@ -43,8 +43,8 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
 
 	public INamedTabs addTab(final String pTabName, final IViewable<?> pContainer) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pTabName, "pTabName");
-		Framework.checkNotNull(mLogger, pContainer, "pContent");
+		Framework.checkParameterNotNull(mLogger, pTabName, "pTabName");
+		Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
 
 		checkUniqueContainerPropertyName(pTabName);
 

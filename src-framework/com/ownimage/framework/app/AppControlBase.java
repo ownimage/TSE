@@ -84,10 +84,10 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
 
 	protected void dialogOKCancel(final String pTitle, final String pMessage, final IAction pOKAction, final IAction pCancelAction) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkNotNull(mLogger, pMessage, "pMessage");
-		Framework.checkNotNull(mLogger, pOKAction, "pOKAction");
-		Framework.checkNotNull(mLogger, pCancelAction, "pCancelAction");
+		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+		Framework.checkParameterNotNull(mLogger, pMessage, "pMessage");
+		Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
+		Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
 		Container dialogContainer = new Container(pTitle, "title", this);
 
@@ -106,10 +106,10 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
 
 	protected void fileExistsCheck(final File pFile, final String pTitle, final IAction pOKAction, final IAction pCancelAction) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
-		Framework.checkNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkNotNull(mLogger, pOKAction, "pOKAction");
-		Framework.checkNotNull(mLogger, pCancelAction, "pCancelAction");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+		Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
+		Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
 		if (pFile.exists()) {
 			String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
@@ -196,8 +196,8 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
 
 	private void setTitle(final String pTitle) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkGreaterThan(mLogger, pTitle.length(), 0, "pTitle.length()=%d, it must not be must not zero.");
+		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+		Framework.checkParameterGreaterThan(mLogger, pTitle.length(), 0, "pTitle.length()=%d, it must not be must not zero.");
 
 		mTitle = pTitle;
 		Framework.logExit(mLogger);
@@ -205,10 +205,9 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
 
 	@Override
 	public void setView(final IAppControlView pAppControlView) {
-		Framework.checkNotNull(mLogger, pAppControlView, "pAppControlView");
-		Framework.checkNull(mLogger, mAppControlView, "mAppControlView");
+		Framework.checkParameterNotNull(mLogger, pAppControlView, "pAppControlView");
+		Framework.checkStateNoChangeOnceSet(mLogger, mAppControlView, "mAppControlView");
 		mAppControlView = pAppControlView;
-
 	}
 
 	@Override

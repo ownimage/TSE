@@ -166,7 +166,7 @@ public class RuleOfThirdsTransform extends BaseTransform {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		Point point = pRenderResult.getPoint();
 

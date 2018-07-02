@@ -57,8 +57,8 @@ public class Job implements IJob {
 	 */
 	public Job(final String pName, final Priority pPriority, final Object pControlObject) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPriority, "pPriority");
-		Framework.checkNotNullOrEmpty(mLogger, pName, "pName");
+		Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
+		Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
 
 		mName = pName;
 		mPriority = pPriority;

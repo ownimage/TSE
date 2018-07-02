@@ -79,7 +79,7 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
 
     public void setUIListener(final IUIEventListener pUIEventListener) {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pUIEventListener, "pUIEventListener");
+        Framework.checkParameterNotNull(mLogger, pUIEventListener, "pUIEventListener");
         if (mUIEventListener != null) {
             throw new IllegalStateException("setUIListener can only be called once during the lifetime of a control.");
         }
@@ -102,7 +102,7 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
 
     public void uiEvent(final IUIEvent pEvent) {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pEvent, "pEvent");
+        Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
 
         if (mUIEventListener != null) {
             switch (pEvent.getEventType()) {

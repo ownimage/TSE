@@ -66,7 +66,7 @@ public class QuadSpaceTransform extends BaseTransform {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		final double x = pRenderResult.getX();
 

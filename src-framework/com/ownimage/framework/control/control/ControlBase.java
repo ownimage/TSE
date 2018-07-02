@@ -56,10 +56,10 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 	 *            the property name
 	 */
 	public static void validate(final String pDisplayName, final String pPropertyName) {
-		Framework.checkNotNull(mLogger, pDisplayName, "pDisplayName");
-		Framework.checkNotNull(mLogger, pPropertyName, "pPropertyName");
-		Framework.checkGreaterThan(mLogger, pDisplayName.length(), 0, "pDisplayName.length() = %d, it must not be zero length.");
-		Framework.checkGreaterThan(mLogger, pPropertyName.length(), 0, "pPropertyName.length() = %d, it must not be zero length.");
+		Framework.checkParameterNotNull(mLogger, pDisplayName, "pDisplayName");
+		Framework.checkParameterNotNull(mLogger, pPropertyName, "pPropertyName");
+		Framework.checkParameterGreaterThan(mLogger, pDisplayName.length(), 0, "pDisplayName.length() = %d, it must not be zero length.");
+		Framework.checkParameterGreaterThan(mLogger, pPropertyName.length(), 0, "pPropertyName.length() = %d, it must not be zero length.");
 
 		if (!Pattern.matches("[a-zA-Z0-9 ]*",
 				pDisplayName)) { throw new IllegalArgumentException("pDisplayName must only contain characters \"a-zA-Z0-9 \", pDisplayName = \"" + pDisplayName + "\"."); }
@@ -112,18 +112,18 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
 	@Override
 	public void addControlChangeListener(final IControlChangeListener pListener) {
-		Framework.checkNotNull(mLogger, pListener, "pListener");
+		Framework.checkParameterNotNull(mLogger, pListener, "pListener");
 		mEventDispatcher.addControlChangeListener(pListener);
 	}
 
 	@Override
 	public void addControlValidator(final IControlValidator pValidator) {
-		Framework.checkNotNull(mLogger, pValidator, "pValidator");
+		Framework.checkParameterNotNull(mLogger, pValidator, "pValidator");
 		mEventDispatcher.addControlValidator(pValidator);
 	}
 
 	protected void addView(final V pView) {
-		Framework.checkNotNull(mLogger, pView, "pView");
+		Framework.checkParameterNotNull(mLogger, pView, "pView");
 		mViews.addListener(pView);
 	}
 

@@ -52,7 +52,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
 
     public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pGetUndoRedoBuffer, final IContainer pParent) {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pGetUndoRedoBuffer, "pIGetUndoRedoBuffer");
+        Framework.checkParameterNotNull(mLogger, pGetUndoRedoBuffer, "pIGetUndoRedoBuffer");
 
         ControlBase.validate(pDisplayName, pPropertyName);
 

@@ -324,7 +324,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	@Override
 	public void transform(final ITransformResultBatch pBatch) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pBatch, "pBatch");
+		Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 
 		for (int i = 0; i < pBatch.getBatchSize(); i++) {
 			ITransformResult rr = pBatch.getTransformResult(i);

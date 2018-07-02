@@ -9,7 +9,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -86,8 +85,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     public PictureType(final ColorProperty pColorProperty, final File pFile) throws FrameworkException {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pColorProperty, "pColorProperty");
-        Framework.checkNotNull(mLogger, pFile, "pFile");
+        Framework.checkParameterNotNull(mLogger, pColorProperty, "pColorProperty");
+        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         mColorProperty = pColorProperty;
         try {
@@ -132,7 +131,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 
     public PictureType(final PictureType pOrig) {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pOrig, "pOrig");
+        Framework.checkParameterNotNull(mLogger, pOrig, "pOrig");
 
         mColorProperty = pOrig.mColorProperty;
         mWidth = pOrig.getWidth();
@@ -394,7 +393,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     // TODO need to have the quality as a parameter
     public void save(final File pFile) throws Exception {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pFile, "pFile");
+        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         mLogger.info("mImage.getType() = " + mImage.getType());
 
         String fileName = pFile.getName();
@@ -437,7 +436,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     public void save(final String pFileName) throws Exception {
         Framework.logEntry(mLogger);
-        Framework.checkNotNull(mLogger, pFileName, "pFileName");
+        Framework.checkParameterNotNull(mLogger, pFileName, "pFileName");
 
         save(new File(pFileName));
 

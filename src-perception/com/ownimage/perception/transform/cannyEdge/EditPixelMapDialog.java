@@ -62,7 +62,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public EditPixelMapDialog(final ITransform pTransform, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
-        Framework.checkNotNull(mLogger, pTransform, "pTransform");
+        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         mTransform = pTransform;
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
@@ -104,26 +104,25 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
-        if (mPixelMap != null) {
-            mPixelMap.forEach((x, y) -> {
-                if (mPixelMap.getValue(x, y) != 0) {
-                    double x1 = (double) x / mPixelMap.getWidth();
-                    double x2 = (double) (x + 1) / mPixelMap.getWidth();
-                    double y1 = (double) y / mPixelMap.getHeight();
-                    double y2 = (double) (y + 1) / mPixelMap.getHeight();
-                    Rectangle r = new Rectangle(x1, y1, x2, y2);
-                    pGrafittiHelper.drawFilledRectangle(r, Color.YELLOW);
-                }
-            });
-            pGrafittiHelper.drawCircle(.5, .5, .2, Color.RED, false);
-        }
+        Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
+        mPixelMap.forEach((x, y) -> {
+            if (mPixelMap.getValue(x, y) != 0) {
+                double x1 = (double) x / mPixelMap.getWidth();
+                double x2 = (double) (x + 1) / mPixelMap.getWidth();
+                double y1 = (double) y / mPixelMap.getHeight();
+                double y2 = (double) (y + 1) / mPixelMap.getHeight();
+                Rectangle r = new Rectangle(x1, y1, x2, y2);
+                pGrafittiHelper.drawFilledRectangle(r, Color.YELLOW);
+            }
+        });
+        pGrafittiHelper.drawCircle(.5, .5, .2, Color.RED, false);
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
-        Framework.checkNotNull(mLogger, pPixelMap, "pPixelMap");
-        Framework.checkNoChangeOnceSet(mLogger, mPixelMap, "mPixelMap");
+        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+        Framework.checkStateNoChangeOnceSet(mLogger, mPixelMap, "mPixelMap");
         mPixelMap = pPixelMap;
-         mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
+        mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
         mY = new IntegerControl("Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
     }
 

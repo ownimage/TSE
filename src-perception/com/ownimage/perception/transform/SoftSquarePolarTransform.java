@@ -98,7 +98,7 @@ public class SoftSquarePolarTransform extends BaseTransform {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		pRenderResult.setPoint(map(pRenderResult.getPoint()));
 

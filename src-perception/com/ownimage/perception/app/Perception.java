@@ -178,7 +178,7 @@ public class Perception extends AppControlBase {
 	 */
 	public void fileOpen(final File pFile) throws IllegalArgumentException {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		mFilename = pFile.getAbsolutePath();
 		mTransformSequence = new TransformSequence(this, pFile);
@@ -232,7 +232,7 @@ public class Perception extends AppControlBase {
 	 */
 	private void fileSave(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		fileExistsCheck(pFile, "File Save", () -> fileSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -452,7 +452,7 @@ public class Perception extends AppControlBase {
 
 	private void loggingSave(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		fileExistsCheck(pFile, "Log Properties File", () -> loggingSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -481,7 +481,7 @@ public class Perception extends AppControlBase {
 
 	private void loggingSaveUnchecked(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		try (FileOutputStream fstream = new FileOutputStream(pFile);) {
 			PersistDB props = new PersistDB();
@@ -552,7 +552,7 @@ public class Perception extends AppControlBase {
 
 	private void propertiesOpen(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		try (FileInputStream fos = new FileInputStream(pFile)) {
 			PersistDB db = new PersistDB();
@@ -605,7 +605,7 @@ public class Perception extends AppControlBase {
 
 	private void propertiesSave(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		fileExistsCheck(pFile, "Default Properties", () -> propertiesSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -633,7 +633,7 @@ public class Perception extends AppControlBase {
 
 	private void propertiesSaveUnchecked(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		try (FileOutputStream fos = new FileOutputStream(pFile)) {
 			PersistDB db = new PersistDB();
@@ -687,7 +687,7 @@ public class Perception extends AppControlBase {
 
 	private void transformOpen(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		try (FileInputStream fos = new FileInputStream(pFile)) {
 			PersistDB db = new PersistDB();
@@ -720,7 +720,7 @@ public class Perception extends AppControlBase {
 
 	private void transformSave(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
 		fileExistsCheck(pFile, "Transform File", () -> transformSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -739,7 +739,7 @@ public class Perception extends AppControlBase {
 
 	private void transformSaveUnchecked(final File pFile) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pFile, "pFile");
+		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 		Framework.logParams(mLogger, "pFile.getAbsolutePath()", pFile.getAbsolutePath());
 
 		try (FileOutputStream fos = new FileOutputStream(pFile)) {

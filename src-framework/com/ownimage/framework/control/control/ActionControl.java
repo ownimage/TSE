@@ -33,7 +33,7 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
 
 	public ActionControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final IAction pAction) {
 		super(pDisplayName, pPropertyName, pContainer, new BooleanType(false));
-		Framework.checkNotNull(mLogger, pAction, "pAction");
+		Framework.checkParameterNotNull(mLogger, pAction, "pAction");
 		mAction = pAction;
 	}
 

@@ -51,7 +51,7 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 	// this is required as the UI can not support the Generic type
 	@Override
 	public boolean setValue(final Object pObject) {
-		Framework.checkNotNull(mLogger, pObject, "pObject");
+		Framework.checkParameterNotNull(mLogger, pObject, "pObject");
 
 		R rObject = (R) pObject;
 		boolean b = super.setValue(rObject);

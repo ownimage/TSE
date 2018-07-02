@@ -64,8 +64,8 @@ public class JTPBatchEngine extends BaseBatchEngine {
 	@Override
 	public synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pBatch, "pBatch");
-		Framework.checkNotNull(mLogger, pTransform, "pTransform");
+		Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
+		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
 		Framework.logValue(mLogger, "mThreadPoolSize", mThreadPoolSize);
 

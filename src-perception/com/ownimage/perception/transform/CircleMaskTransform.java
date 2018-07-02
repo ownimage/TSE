@@ -65,7 +65,7 @@ public class CircleMaskTransform extends BaseTransform {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		Point delta = pRenderResult.getPoint().minus(Point.Point0505);
 		double radius = delta.length();

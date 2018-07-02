@@ -42,7 +42,7 @@ public class UIEvent implements IUIEvent {
 
 	public static UIEvent createKeyEvent(final EventType pEventType, final IControl pSource, final String pKey, final boolean pCtrl, final boolean pAlt,
 	final boolean pShift) {
-		Framework.checkNotNull(mLogger, pEventType, "pEventType");
+		Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.KeyPressed && pEventType != EventType.KeyReleased && pEventType != EventType.KeyTyped ) {
 			throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of KeyPressed, KeyReleased, KeyTyped.");
 		}
@@ -62,7 +62,7 @@ public class UIEvent implements IUIEvent {
 
 	public static UIEvent createMouseEvent(final EventType pEventType, final IControl pSource, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
 										   final boolean pShift) {
-		Framework.checkNotNull(mLogger, pEventType, "pEventType");
+		Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.Click && pEventType != EventType.DoubleClick && pEventType != EventType.Drag && pEventType != EventType.MouseDown
 				&& pEventType != EventType.MouseUp) { throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of Click, DoubleClick, Drag, MouseDown, MouseUp."); }
 
@@ -84,7 +84,7 @@ public class UIEvent implements IUIEvent {
 
 	public static UIEvent createMouseScrollEvent(final EventType pEventType, final IControl pSource, final int pScroll, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
 			final boolean pShift) {
-		Framework.checkNotNull(mLogger, pEventType, "pEventType");
+		Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.Scroll) { throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be Scroll."); }
 
 		UIEvent uiEvent = new UIEvent();

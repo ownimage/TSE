@@ -678,7 +678,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public void transform(final ITransformResult pRenderResult) {
-        Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 //        int x = (int) Math.floor(getWidth() * pRenderResult.getX());
 //        int y = (int) Math.floor(getHeight() * pRenderResult.getY());
 //        if (mPixelMap != null && mPixelMap.getPixelAt(x, y).isEdge()) {

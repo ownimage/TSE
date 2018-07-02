@@ -221,8 +221,8 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 
 	public void showEditDialog(final IAppControlView mAppView, final String mPrefix) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, mAppView, "mAppView");
-		Framework.checkNotNull(mLogger, mPrefix, "mPrefix");
+		Framework.checkParameterNotNull(mLogger, mAppView, "mAppView");
+		Framework.checkParameterNotNull(mLogger, mPrefix, "mPrefix");
 
 		Vector<String> loggerNames = new Vector<String>();
 		Enumeration<String> names = LogManager.getLogManager().getLoggerNames();

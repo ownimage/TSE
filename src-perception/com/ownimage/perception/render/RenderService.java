@@ -32,7 +32,7 @@ public class RenderService {
 
 	public RenderService(final Perception pPerception) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPerception, "pPerception");
+		Framework.checkParameterNotNull(mLogger, pPerception, "pPerception");
 
 		mPerception = pPerception;
 
@@ -45,7 +45,7 @@ public class RenderService {
 
 	private IBatchEngine getActualBatchEngine(final IBatchEngine pPreferredBatchEngine) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPreferredBatchEngine, "pPreferredBatchEngine");
+		Framework.checkParameterNotNull(mLogger, pPreferredBatchEngine, "pPreferredBatchEngine");
 
 		return (getProperties().useJTP()) ? mJTPBatchEngine : mBaseBatchEngine;
 	}
@@ -89,8 +89,8 @@ public class RenderService {
 	 */
 	public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPictureControl, "pPictureControl");
-		Framework.checkNotNull(mLogger, pTransform, "pTransform");
+		Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
+		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
 		transform(pPictureControl, pTransform, null);
 
@@ -99,8 +99,8 @@ public class RenderService {
 
 	public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pPictureControl, "pPictureControl");
-		Framework.checkNotNull(mLogger, pTransform, "pTransform");
+		Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
+		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
 		ExecuteQueue eq = ExecuteQueue.getInstance();
 		String name = pTransform.getClass().getSimpleName();
@@ -156,8 +156,8 @@ public class RenderService {
 
 	synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pBatch, "pBatch");
-		Framework.checkNotNull(mLogger, pTransform, "pTransform");
+		Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
+		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
 		mLogger.info("transform pBatch " + pTransform.getClass().getSimpleName());
 

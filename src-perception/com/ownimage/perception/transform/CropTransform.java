@@ -115,7 +115,7 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 	@Override
 	public void transform(final ITransformResult pRenderResult) {
 		Framework.logEntry(mLogger);
-		Framework.checkNotNull(mLogger, pRenderResult, "pRenderResult");
+		Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
 		double x = pRenderResult.getX();
 		double y = pRenderResult.getY();
