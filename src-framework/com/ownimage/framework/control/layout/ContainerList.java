@@ -70,6 +70,16 @@ public class ContainerList implements IContainerList {
 	}
 
 	@Override
+	public void setSelectedIndex(IContainer pContainer) {
+		int index = mContainers.indexOf(pContainer);
+		if (index >= 0 ) {
+			setSelectedIndex(index);
+			return;
+		}
+		throw new IllegalStateException("ContainerList does not container specified container.");
+	}
+
+	@Override
 	public void setSelectedIndex(final int pSelectedIndex) {
 		System.out.println(String.format("setSelectedIndex(%s).", pSelectedIndex));
 		selectedIndexCheck(pSelectedIndex);

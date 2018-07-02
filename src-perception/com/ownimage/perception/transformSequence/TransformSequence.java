@@ -337,6 +337,16 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		}
 	}
 
+
+	@Override
+	public void setSelectedIndex(IContainer pContainer) {
+		int index = mTransforms.indexOf(pContainer);
+		if (index >= 0 ) {
+			setSelectedIndex(index);
+		}
+		throw new IllegalStateException("TransformSequence does not container specified container.");
+	}
+
 	@Override
 	public void setSelectedIndex(final int pIndex) {
 		setSelectedIndex(pIndex, null);

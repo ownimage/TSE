@@ -1,6 +1,9 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -47,17 +50,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
-    private final  IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
+    private final IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
     private final IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
 
     // General Container
-    private final  IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
-    private final  IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
+    private final IntegerControl mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
+    private final IntegerControl mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
     private final IntegerControl mX;
     private final IntegerControl mY;
 
     // Pixel Container
-    private final  IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
+    private final IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
     private final IntegerControl mPCC2 = new IntegerControl("Pixel test 2", "pixelTest2", mPixelControlContainer, 2, 2, 15, 1);
     private final IntegerControl mPCC3 = new IntegerControl("Pixel test 3", "pixelTest3", mPixelControlContainer, 2, 2, 15, 1);
 
@@ -65,6 +68,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
     private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
     private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
+
+    private Map<String, IContainer> mKeyToContainerMap = new HashMap();
+
 
     public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
@@ -75,10 +81,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mX = new IntegerControl("X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
         mY = new IntegerControl("Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
         mCropTransform = new CropTransform(Perception.getPerception(), true);
-        mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updatePreview();
+
+        mKeyToContainerMap.put("G", mGeneralContainer);
+        mKeyToContainerMap.put("P", mPixelControlContainer);
+        mKeyToContainerMap.put("V", mVertexControlContainer);
     }
 
     private void updatePreview() {
@@ -111,6 +120,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
+        mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
     }
 
@@ -127,7 +137,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         System.out.println(xMin + " " + yMin + " " + xSize + " " + ySize);
 
-        Range2D.forEach(xMin, Math.min(mPixelMap.getWidth() -1, xMin + xSize), yMin, Math.min(mPixelMap.getHeight() -1, yMin + ySize), (x, y) -> {
+        Range2D.forEach(xMin, Math.min(mPixelMap.getWidth() - 1, xMin + xSize), yMin, Math.min(mPixelMap.getHeight() - 1, yMin + ySize), (x, y) -> {
             if (mPixelMap.getValue(x, y) != 0) {
                 double x1 = (double) (x - xMin) * zoom / mPixelMap.getWidth();
                 double x2 = (double) (x + 1 - xMin) * zoom / mPixelMap.getWidth();
@@ -181,10 +191,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         System.out.println("scrollEvent");
     }
 
-
     @Override
     public void keyPressed(final IUIEvent pEvent) {
         System.out.println("keyPressed " + pEvent.getKey());
+        Optional.of(mKeyToContainerMap.get(pEvent.getKey()))
+                .ifPresent(c -> mContainerList.setSelectedIndex(c));
     }
 
     @Override

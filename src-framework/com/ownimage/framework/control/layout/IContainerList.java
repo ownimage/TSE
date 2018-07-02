@@ -11,7 +11,9 @@ public interface IContainerList extends IViewable<ISingleSelectView> {
 
 	public int getSelectedIndex();
 
-	public void setSelectedIndex(final int pSelectedIndex);
+    public void setSelectedIndex(IContainer pContainer);
+
+    public void setSelectedIndex(final int pSelectedIndex);
 
 	public void setSelectedIndex(final int pSelectedIndex, final ISingleSelectView pView);
 
