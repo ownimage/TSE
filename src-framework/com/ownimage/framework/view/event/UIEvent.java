@@ -12,63 +12,96 @@ import com.ownimage.framework.util.Version;
 public class UIEvent implements IUIEvent {
 
 	public enum EventType {
-		Click, DoubleClick, Drag, MouseDown, MouseUp, Scroll
+		Click, DoubleClick, Drag, MouseDown, MouseUp, Scroll, KeyPressed, KeyReleased, KeyTyped
 	}
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	private final static Logger mLogger = Framework.getLogger();;
 
-	private final IControl mSource;
-	private final EventType mEventType;
-	private final Date mWhen;
+	private IControl mSource;
+	private EventType mEventType;
+	private Date mWhen;
 
-	private final Integer mWidth;
-	private final Integer mHeight;
-	private final Integer mX;
-	private final Integer mY;
+	private Integer mWidth;
+	private Integer mHeight;
+	private Integer mX;
+	private Integer mY;
 	private Integer mDeltaX;
 	private Integer mDeltaY;
 
 	private int mScroll;
 
-	private final boolean mCtrl;
-	private final boolean mAlt;
-	private final boolean mShift;
+	private boolean mCtrl;
+	private boolean mAlt;
+	private boolean mShift;
 
-	public UIEvent(final EventType pEventType, final IControl pSource, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
-			final boolean pShift) {
+	private String mKey;
+
+	private UIEvent() {
+	}
+
+	public static UIEvent createKeyEvent(final EventType pEventType, final IControl pSource, final String pKey, final boolean pCtrl, final boolean pAlt,
+	final boolean pShift) {
+		Framework.checkNotNull(mLogger, pEventType, "pEventType");
+		if (pEventType != EventType.KeyPressed && pEventType != EventType.KeyReleased && pEventType != EventType.KeyTyped ) {
+			throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of KeyPressed, KeyReleased, KeyTyped.");
+		}
+
+		UIEvent uiEvent = new UIEvent();
+
+		uiEvent.mEventType = pEventType;
+		uiEvent.mSource = pSource;
+		uiEvent.mWhen = new Date();
+		uiEvent.mKey = pKey;
+		uiEvent.mCtrl = pCtrl;
+		uiEvent.mAlt = pAlt;
+		uiEvent.mShift = pShift;
+
+		return uiEvent;
+	}
+
+	public static UIEvent createMouseEvent(final EventType pEventType, final IControl pSource, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
+										   final boolean pShift) {
 		Framework.checkNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.Click && pEventType != EventType.DoubleClick && pEventType != EventType.Drag && pEventType != EventType.MouseDown
 				&& pEventType != EventType.MouseUp) { throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of Click, DoubleClick, Drag, MouseDown, MouseUp."); }
 
-		mEventType = pEventType;
-		mSource = pSource;
-		mWhen = new Date();
-		mWidth = pWidth;
-		mHeight = pHeight;
-		mX = pX;
-		mY = pY;
-		mCtrl = pCtrl;
-		mAlt = pAlt;
-		mShift = pShift;
+		UIEvent uiEvent = new UIEvent();
+
+		uiEvent.mEventType = pEventType;
+		uiEvent.mSource = pSource;
+		uiEvent.mWhen = new Date();
+		uiEvent.mWidth = pWidth;
+		uiEvent.mHeight = pHeight;
+		uiEvent.mX = pX;
+		uiEvent.mY = pY;
+		uiEvent.mCtrl = pCtrl;
+		uiEvent.mAlt = pAlt;
+		uiEvent.mShift = pShift;
+
+		return uiEvent;
 	}
 
-	public UIEvent(final EventType pEventType, final IControl pSource, final int pScroll, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
+	public static UIEvent createMouseScrollEvent(final EventType pEventType, final IControl pSource, final int pScroll, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
 			final boolean pShift) {
 		Framework.checkNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.Scroll) { throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be Scroll."); }
 
-		mEventType = pEventType;
-		mSource = pSource;
-		mScroll = pScroll;
-		mWhen = new Date();
-		mWidth = pWidth;
-		mHeight = pHeight;
-		mX = pX;
-		mY = pY;
-		mCtrl = pCtrl;
-		mAlt = pAlt;
-		mShift = pShift;
+		UIEvent uiEvent = new UIEvent();
+
+		uiEvent.mEventType = pEventType;
+		uiEvent.mSource = pSource;
+		uiEvent.mScroll = pScroll;
+		uiEvent.mWhen = new Date();
+		uiEvent.mWidth = pWidth;
+		uiEvent.mHeight = pHeight;
+		uiEvent.mX = pX;
+		uiEvent.mY = pY;
+		uiEvent.mCtrl = pCtrl;
+		uiEvent.mAlt = pAlt;
+		uiEvent.mShift = pShift;
+
+		return uiEvent;
 	}
 
 	@Override
@@ -146,6 +179,11 @@ public class UIEvent implements IUIEvent {
 	}
 
 	@Override
+	public String getKey() {
+		return mKey;
+	}
+
+	@Override
 	public boolean isAlt() {
 		return mAlt;
 	}
@@ -188,6 +226,7 @@ public class UIEvent implements IUIEvent {
 		sb.append(",mY:" + mY);
 		sb.append(",mDeltaX:" + mDeltaX);
 		sb.append(",mDeltaY:" + mDeltaY);
+		sb.append(",mKey:" + mKey);
 		sb.append(",mCtrl:" + mCtrl);
 		sb.append(",mAlt:" + mAlt);
 		sb.append(",mShift:" + mShift);

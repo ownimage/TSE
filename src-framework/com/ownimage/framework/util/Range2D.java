@@ -10,7 +10,7 @@ public class Range2D {
         // For large x, y images the overhead of parallalizing in 2 dimensions might offset some of the
         // parallel advantages.
         IntStream.range(0, pX)
-                .parallel().forEach(x -> {
+                .forEach(x -> {
             IntStream.range(0, pY)
                     .forEach(y -> {
                         pFunction.accept(x, y);

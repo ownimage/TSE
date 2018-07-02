@@ -35,6 +35,8 @@ public interface IUIEvent {
 
 	public Integer getY();
 
+	public String getKey();
+
 	public boolean isAlt();
 
 	public boolean isCtrl();

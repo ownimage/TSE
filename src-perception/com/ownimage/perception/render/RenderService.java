@@ -82,7 +82,7 @@ public class RenderService {
 	/**
 	 * This is the public entry point into the RenderService.
 	 *
-	 * @param pPicture
+	 * @param pPictureControl
 	 *            the picture
 	 * @param pTransform
 	 *            the transform
@@ -92,7 +92,7 @@ public class RenderService {
 		Framework.checkNotNull(mLogger, pPictureControl, "pPictureControl");
 		Framework.checkNotNull(mLogger, pTransform, "pTransform");
 
-		transform(pPictureControl, pTransform);
+		transform(pPictureControl, pTransform, null);
 
 		Framework.logExit(mLogger);
 	}

@@ -21,6 +21,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
@@ -45,12 +46,14 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		mUI = new StackPane();
 		mUI.setAlignment(Pos.TOP_LEFT);
 		mUI.setUserData(this); // stops the view being garbage collected
+		mUI.setFocusTraversable(true);
+		mUI.requestFocus();
 
-		mUI.setOnMouseClicked((e) -> mouseClickedEvent(e));
-		mUI.setOnMouseDragged((e) -> mouseDraggedEvent(e));
-		mUI.setOnMousePressed((e) -> mousePressedEvent(e));
-		mUI.setOnMouseReleased((e) -> mouseReleasedEvent(e));
-		mUI.setOnScroll((e) -> scrollEvent(e));
+		mUI.setOnMouseClicked(this::mouseClickedEvent);
+		mUI.setOnMouseDragged(this::mouseDraggedEvent);
+		mUI.setOnMousePressed(this::mousePressedEvent);
+		mUI.setOnMouseReleased(this::mouseReleasedEvent);
+		mUI.setOnScroll(this::scrollEvent);
 
 		updatePicture();
 	}
@@ -71,7 +74,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		int height = mControl.getValue().getHeight();
 		int x = (int) pME.getX();
 		int y = (int) (height - pME.getY());
-		UIEvent event = new UIEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
+		UIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
 		return event;
 	}
 
@@ -81,7 +84,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		int x = (int) pSE.getX();
 		int y = (int) (height - pSE.getY());
 		int scroll = (int) Math.signum(pSE.getDeltaY());
-		UIEvent event = new UIEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
+		UIEvent event = UIEvent.createMouseScrollEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
 		return event;
 	}
 

@@ -10,12 +10,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBuffer;
 import com.ownimage.framework.undo.UndoRedoBuffer;
+import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Point;
 
@@ -1419,4 +1421,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 	// mLogger.exiting(mClassname, "write");
 	// }
 
+	public void forEach(BiConsumer<Integer, Integer> pFunction) {
+		Range2D.forEach(getWidth(), getHeight(), pFunction);
+	}
 }

@@ -21,4 +21,14 @@ public interface IUIEventListener {
 
 	default void scrollEvent(final IUIEvent pEvent) {
 	};
+
+	default void keyPressed(final IUIEvent pEvent) {
+	};
+
+	default void keyReleased(final IUIEvent pEvent) {
+	};
+
+	default void keyTyped(final IUIEvent pEvent) {
+	};
+
 }
