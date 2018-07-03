@@ -97,7 +97,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
         setCrop();
         Perception.getPerception().getRenderService().transform(mPictureControl, mCropTransform);
-        //mPictureControl.setValue(pictureType, null, false);
     }
 
     @Override
@@ -121,6 +120,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
+        updatePreview();
         Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
     }
 
