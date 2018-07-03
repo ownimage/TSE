@@ -29,7 +29,7 @@ import com.ownimage.framework.view.factory.ViewFactory;
  * The Class Container. Events propagate from a Control to its Container and other registered EventListeners. They do NOT propagate
  * from a Container to its parent.
  */
-public class Container extends ViewableBase<IViewable, IView> implements IContainer {
+public class Container extends ViewableBase<IViewable, IView> implements IContainer, IControlValidator {
 
     public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
     public final static Logger mLogger = Framework.getLogger();
@@ -103,6 +103,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
         mChlidControls.add(pControl);
         mAllChildren.add(pControl);
         pControl.addControlChangeListener(this);
+        pControl.addControlValidator(this);
 
         return this;
     }
@@ -263,8 +264,13 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
         Container container = new Container(pDisplayName, pPropertyName, this, this);
         if (pListenForEvents) {
             container.addControlChangeListener(this);
+            container.addControlValidator(this);
         }
         return container;
     }
 
+    @Override
+    public boolean validateControl(final Object pControl) {
+        return true;
+    }
 }
