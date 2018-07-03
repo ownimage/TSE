@@ -70,7 +70,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
 
     private Map<String, IContainer> mKeyToContainerMap = new HashMap();
-
+    private int mMouseDragStartX;
+    private int mMouseDragStartY;
 
     public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
@@ -177,13 +178,19 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseDragEvent(final IUIEvent pEvent) {
-        System.out.println("mouseDragEvent");
+        System.out.println("mouseDragEvent " + pEvent.getDeltaX());
+        if (mContainerList.getSelectedContainer() == mGeneralContainer) {
+            mX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / mZoom.getValue()));
+            mY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / mZoom.getValue()));
+        }
     }
 
 
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
         System.out.println("mouseDragStartEvent");
+        mMouseDragStartX = mX.getValue();
+        mMouseDragStartY = mY.getValue();
     }
 
     @Override

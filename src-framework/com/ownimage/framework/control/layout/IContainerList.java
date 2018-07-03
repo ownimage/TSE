@@ -5,16 +5,20 @@ import com.ownimage.framework.view.ISingleSelectView;
 
 public interface IContainerList extends IViewable<ISingleSelectView> {
 
-	public IContainer getContainer(final int pTab);
+    public IContainer getContainer(final int pTab);
 
-	public int getCount();
+    public int getCount();
 
-	public int getSelectedIndex();
+    public int getSelectedIndex();
+
+    default IContainer getSelectedContainer() {
+        return getContainer(getSelectedIndex());
+    }
 
     public void setSelectedIndex(IContainer pContainer);
 
     public void setSelectedIndex(final int pSelectedIndex);
 
-	public void setSelectedIndex(final int pSelectedIndex, final ISingleSelectView pView);
+    public void setSelectedIndex(final int pSelectedIndex, final ISingleSelectView pView);
 
 }
