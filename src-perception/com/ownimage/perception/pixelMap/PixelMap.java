@@ -1160,8 +1160,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // // job.runImmediate();
     // }
     //
+
+
+    @Override
+    public boolean canRead(final IPersistDB pDB, final String pId) {
+        String pixelString = pDB.read(pId + ".data");
+        return pixelString != null && pixelString.length() != 0;
+    }
+
     @Override
     public void read(final IPersistDB pDB, final String pId) {
+        // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
         // note that write/read does not preseve the mAllNodes values
         mLogger.entering(mClassname, "read");
 
@@ -1233,182 +1242,182 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "read");
     }
 
-                // public synchronized void removePixelChain(final PixelChain pPixelChain) {
-                // mPixelChains.remove(pPixelChain);
-                // indexSegments();
-                // }
-                //
-                // private void resetInChain() {
-                // for (int x = 0; x < getWidth() - 1; x++) {
-                // for (int y = 0; y < getHeight() - 1; y++) {
-                // final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
-                // setValue(x, y, newValue);
-                // }
-                // }
-                // }
-                //
-                // private void resetNode() {
-                // for (int x = 0; x < getWidth() - 1; x++) {
-                // for (int y = 0; y < getHeight() - 1; y++) {
-                // final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
-                // setValue(x, y, newValue);
-                // }
-                // }
-                // }
-                //
-                // private void resetSegmentIndex() {
-                // mSegmentIndex = new LinkedList[getWidth()][getHeight()];
-                // mSegmentCount = 0;
-                // }
-                //
-                // private void resetVisited() {
-                // for (int x = 0; x < getWidth() - 1; x++) {
-                // for (int y = 0; y < getHeight() - 1; y++) {
-                // final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
-                // setValue(x, y, newValue);
-                // }
-                // }
-                // }
-                //
-                void setData ( final Pixel pPixel, final boolean pState, final byte pValue){
-                if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
-                    final int x = modWidth(pPixel.getX());
-                    byte newValue = (byte) (getValue(x, pPixel.getY()) & (ALL ^ pValue));
-                    if (pState) {
-                        newValue |= pValue;
-                    }
-                    setValue(x, pPixel.getY(), newValue);
-                }
+    // public synchronized void removePixelChain(final PixelChain pPixelChain) {
+    // mPixelChains.remove(pPixelChain);
+    // indexSegments();
+    // }
+    //
+    // private void resetInChain() {
+    // for (int x = 0; x < getWidth() - 1; x++) {
+    // for (int y = 0; y < getHeight() - 1; y++) {
+    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
+    // setValue(x, y, newValue);
+    // }
+    // }
+    // }
+    //
+    // private void resetNode() {
+    // for (int x = 0; x < getWidth() - 1; x++) {
+    // for (int y = 0; y < getHeight() - 1; y++) {
+    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
+    // setValue(x, y, newValue);
+    // }
+    // }
+    // }
+    //
+    // private void resetSegmentIndex() {
+    // mSegmentIndex = new LinkedList[getWidth()][getHeight()];
+    // mSegmentCount = 0;
+    // }
+    //
+    // private void resetVisited() {
+    // for (int x = 0; x < getWidth() - 1; x++) {
+    // for (int y = 0; y < getHeight() - 1; y++) {
+    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
+    // setValue(x, y, newValue);
+    // }
+    // }
+    // }
+    //
+    void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
+        if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
+            final int x = modWidth(pPixel.getX());
+            byte newValue = (byte) (getValue(x, pPixel.getY()) & (ALL ^ pValue));
+            if (pState) {
+                newValue |= pValue;
             }
+            setValue(x, pPixel.getY(), newValue);
+        }
+    }
 
-                private void setHeight ( final int pHeight){
-                mHeight = pHeight;
+    private void setHeight(final int pHeight) {
+        mHeight = pHeight;
+    }
+
+    // public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
+    // mLogger.entering(mClassname, "setPixelChainDefaultThickness");
+    // final int shortLength = pTransform.getShortLineLength();
+    // final int mediumLength = pTransform.getMediumLineLength();
+    // final int longLength = pTransform.getLongLineLength();
+    //
+    // for (final PixelChain chain : getAllPixelChains()) {
+    // chain.setThickness(shortLength, mediumLength, longLength);
+    // }
+    // mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
+    // }
+    //
+    public void setValue(final int pX, final int pY, final byte pValue) {
+        // all the parameter bounds checking is doing in the saveValueNoUndo.
+        // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
+
+        if (mPixelUndoRedoAction != null) {
+            final byte before = getValue(pX, pY);
+            mPixelUndoRedoAction.addPixelBeforeAfter(pX, pY, before, pValue);
+        }
+
+        setValueNoUndo(pX, pY, pValue);
+    }
+
+    /**
+     * Sets the value of a pixel in the PixelMap BUT does not generate the Undo/Redo information. This is specifically intended to
+     * be called from the UndoRedo mechanism. All normal usage should be to the setValue(...) method.
+     *
+     * @param pX     the x
+     * @param pY     the y
+     * @param pValue the value
+     */
+    public void setValueNoUndo(final int pX, final int pY, final byte pValue) {
+
+        if (pX < 0) {
+            throw new IllegalArgumentException("pX must be > 0.");
+        }
+
+        if (pX > getWidth() - 1) {
+            throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth());
+        }
+
+        if (pY < 0) {
+            throw new IllegalArgumentException("pY must be > 0.");
+        }
+
+        if (pY > getHeight() - 1) {
+            throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
+        }
+
+        mData[pX][pY] = pValue;
+    }
+
+    private void setWidth(final int pWidth) {
+        mWidth = pWidth;
+    }
+
+    // /**
+    // * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
+    // * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
+    // * false.
+    // *
+    // * @param pPixel
+    // * the pixel
+    // * @return true, if the Pixel was thinned.
+    // */
+    // boolean thin(final Pixel pPixel) {
+    // if (!pPixel.isEdge()) { return false; }
+    //
+    // boolean canEliminate = false;
+    // for (final int[] set : eliminate) {
+    // canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
+    // !pPixel.getNeighbour(set[2]).isEdge();
+    // }
+    //
+    // if (canEliminate) {
+    // pPixel.setEdge(false);
+    // }
+    // return canEliminate;
+    // }
+    //
+    // //
+    // public Point toUHVW(final Point pIn) {
+    // return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
+    // }
+    //
+    // public Color transform(final Point pIn, final Color pColor) {
+    // Color color = getPixelColor(pIn, pColor);
+    // color = getMaxiLineShadowColor(pIn, color);
+    // color = getMaxiLineColor(pIn, color);
+    // color = getShortLineColor(pIn, color);
+    // return color;
+    // }
+    //
+    // private void validate() {
+    // for (final PixelChain pixelChain : mPixelChains) {
+    // pixelChain.validate();
+    // }
+    // }
+    //
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        // note that write/read does not preserve the mAllNodes values
+        mLogger.entering(mClassname, "write");
+        // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
+        ByteArrayOutputStream baos;
+        ObjectOutputStream oos;
+
+        // mData
+        {
+            mLogger.finest("About to wrtie mData");
+            baos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(baos);
+            for (int x = 0; x < getWidth(); x++) {
+                oos.write(mData[x]);
             }
+            oos.close();
 
-                // public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
-                // mLogger.entering(mClassname, "setPixelChainDefaultThickness");
-                // final int shortLength = pTransform.getShortLineLength();
-                // final int mediumLength = pTransform.getMediumLineLength();
-                // final int longLength = pTransform.getLongLineLength();
-                //
-                // for (final PixelChain chain : getAllPixelChains()) {
-                // chain.setThickness(shortLength, mediumLength, longLength);
-                // }
-                // mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
-                // }
-                //
-                public void setValue ( final int pX, final int pY, final byte pValue){
-                // all the parameter bounds checking is doing in the saveValueNoUndo.
-                // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
+            String pixelString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
+            pDB.write(pId + ".data", pixelString);
+            pixelString = null;
+        }
 
-                if (mPixelUndoRedoAction != null) {
-                    final byte before = getValue(pX, pY);
-                    mPixelUndoRedoAction.addPixelBeforeAfter(pX, pY, before, pValue);
-                }
-
-                setValueNoUndo(pX, pY, pValue);
-            }
-
-                /**
-                 * Sets the value of a pixel in the PixelMap BUT does not generate the Undo/Redo information. This is specifically intended to
-                 * be called from the UndoRedo mechanism. All normal usage should be to the setValue(...) method.
-                 *
-                 * @param pX     the x
-                 * @param pY     the y
-                 * @param pValue the value
-                 */
-                public void setValueNoUndo ( final int pX, final int pY, final byte pValue){
-
-                if (pX < 0) {
-                    throw new IllegalArgumentException("pX must be > 0.");
-                }
-
-                if (pX > getWidth() - 1) {
-                    throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth());
-                }
-
-                if (pY < 0) {
-                    throw new IllegalArgumentException("pY must be > 0.");
-                }
-
-                if (pY > getHeight() - 1) {
-                    throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
-                }
-
-                mData[pX][pY] = pValue;
-            }
-
-                private void setWidth ( final int pWidth){
-                mWidth = pWidth;
-            }
-
-                // /**
-                // * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
-                // * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
-                // * false.
-                // *
-                // * @param pPixel
-                // * the pixel
-                // * @return true, if the Pixel was thinned.
-                // */
-                // boolean thin(final Pixel pPixel) {
-                // if (!pPixel.isEdge()) { return false; }
-                //
-                // boolean canEliminate = false;
-                // for (final int[] set : eliminate) {
-                // canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
-                // !pPixel.getNeighbour(set[2]).isEdge();
-                // }
-                //
-                // if (canEliminate) {
-                // pPixel.setEdge(false);
-                // }
-                // return canEliminate;
-                // }
-                //
-                // //
-                // public Point toUHVW(final Point pIn) {
-                // return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
-                // }
-                //
-                // public Color transform(final Point pIn, final Color pColor) {
-                // Color color = getPixelColor(pIn, pColor);
-                // color = getMaxiLineShadowColor(pIn, color);
-                // color = getMaxiLineColor(pIn, color);
-                // color = getShortLineColor(pIn, color);
-                // return color;
-                // }
-                //
-                // private void validate() {
-                // for (final PixelChain pixelChain : mPixelChains) {
-                // pixelChain.validate();
-                // }
-                // }
-                //
-                @Override
-                public void write ( final IPersistDB pDB, final String pId) throws IOException {
-                // note that write/read does not preserve the mAllNodes values
-                mLogger.entering(mClassname, "write");
-                // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
-                ByteArrayOutputStream baos;
-                ObjectOutputStream oos;
-
-                // mData
-                {
-                    mLogger.finest("About to wrtie mData");
-                    baos = new ByteArrayOutputStream();
-                    oos = new ObjectOutputStream(baos);
-                    for (int x = 0; x < getWidth(); x++) {
-                        oos.write(mData[x]);
-                    }
-                    oos.close();
-
-                    String pixelString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
-                    pDB.write(pId + ".data", pixelString);
-                    pixelString = null;
-                }
-
-                // mData check
+        // mData check
 //        {
 //            int cnt = 0;
 //            for (int x = 0; x < getWidth(); x++) {
@@ -1433,12 +1442,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //            pDB.write(pId + ".objects", objectString);
 //            objectString = null;
 //        }
-                mLogger.info("mSegmentCount = " + mSegmentCount);
+        mLogger.info("mSegmentCount = " + mSegmentCount);
 
-                mLogger.exiting(mClassname, "write");
-            }
+        mLogger.exiting(mClassname, "write");
+    }
 
-                public void forEach (BiConsumer < Integer, Integer > pFunction){
-                Range2D.forEach(getWidth(), getHeight(), pFunction);
-            }
-            }
+    public void forEach(BiConsumer<Integer, Integer> pFunction) {
+        Range2D.forEach(getWidth(), getHeight(), pFunction);
+    }
+}

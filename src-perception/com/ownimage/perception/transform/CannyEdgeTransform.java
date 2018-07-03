@@ -55,9 +55,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new IntegerControl("Height", "height", getContainer(), 1000, 100, 50000, 500).setEnabled(false);
 
     private final ActionControl mGeneratePixelMapButton =
-            new ActionControl("Generate Edges", "generate", getContainer(), () -> generateEdges());
-    private final ActionControl mEditPixelMapPixelsButton =
-            new ActionControl("Edit Pixels", "editPixels", getContainer(), () -> editPixels())
+            new ActionControl("Generate Edges", "generate", getContainer(), this::generateEdges);
+    private final ActionControl mEditPixelMapButton =
+            new ActionControl("Edit Pixels", "editPixels", getContainer(), this::editPixels)
                     .setEnabled(false);
 
     // TODO private final EditPixelMapDialog mEditPixelMapSegmentsDialog;
@@ -155,7 +155,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         // TODO makePersistant(mEditPixelMapPixelsDialog);
         // TODO makePersistant(mEditPixelMapSegmentsDialog);
 
-        // setPopupMenuControls(mUseTransform, mGeneratePixelMapButton, mEditPixelMapPixelsButton);
+        // setPopupMenuControls(mUseTransform, mGeneratePixelMapButton, mEditPixelMapButton);
 
     }
 
@@ -173,7 +173,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // return;
     // }
     //
-    // if (pControl == mEditPixelMapPixelsButton) {
+    // if (pControl == mEditPixelMapButton) {
     // System.out.println("EditPixels");
     // mEditPixelMapPixelsDialog.showModalDialog();
     // return;
@@ -564,8 +564,12 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         super.read(pDB, pId);
 
         // TODO need to change the 360 value to one that is generated from something
-        mPixelMap = new PixelMap(getWidth(), getHeight(), false, this);
-        mPixelMap.read(pDB, pId);
+        // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
+        PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
+        if (pixelMap.canRead(pDB, pId)) {
+            pixelMap.read(pDB, pId);
+            setPixelMap(pixelMap);
+        }
         //System.out.println("mPixelMap linecount=" + mPixelMap.getLineCount());
     }
 
@@ -604,8 +608,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     @Override
     public void setValues() {
         super.setValues();
-        mEditPixelMapPixelsButton.setEnabled(mPixelMap != null);
-
         mPixelColor.setVisible(mShowPixels.getValue());
 
         final boolean showMaxiLines = mLinesShow.getValue();
@@ -635,6 +637,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mLineEndLengthPercent.setEnabled(!isSquare);
         mLineEndLengthPixels.setEnabled(!isSquare);
     }
+
     //
     // @Override
     // public Color transform(final Point pIn) {
@@ -669,9 +672,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
             if (detector.getKeepRunning()) {
                 // only set the mData if the detector was allowed to finish
-                mPixelMap = detector.getEdgeData();
-                mEditPixelMapDialog = null;
-                mEditPixelMapPixelsButton.setEnabled(true);
+                setPixelMap(detector.getEdgeData());
                 // mPreviewControl.getValue().setValue(mPreviewPicture);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
             }
@@ -681,6 +682,12 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             }
         }
 
+    }
+
+    public void setPixelMap(PixelMap pPixelMap) {
+        mPixelMap = pPixelMap;
+        mEditPixelMapDialog = null;
+        mEditPixelMapButton.setEnabled(mPixelMap != null);
     }
 
     public void setGenerateEdgesDialog(final GenerateEdgesDialog pGenerateEdgesDialog) {
