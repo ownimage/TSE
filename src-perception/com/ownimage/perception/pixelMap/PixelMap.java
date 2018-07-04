@@ -14,9 +14,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +51,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         private final HashMap<Pixel, Node> mNodes = new HashMap<Pixel, Node>();
 
         private Node add(final Pixel pPixel) {
-            pPixel.setNode(true);
+            pPixel.getPixelMap().setData(pPixel, true, NODE);
             final Node node = new Node(pPixel);
             mNodes.put(pPixel, node);
             return node;
@@ -69,7 +71,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
 
         public Node remove(final Pixel pPixel) {
-            pPixel.setNode(false);
+            pPixel.getPixelMap().setData(pPixel, false, NODE);
             return mNodes.remove(pPixel);
         }
 
@@ -88,37 +90,37 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
-        // TODO need to change this for the forall stream
-
-        int mX = 0;
-        int mY = 0;
-
-        @Override
-        public boolean hasNext() {
-            return mX < getWidth() && mY < getHeight();
-        }
-
-        @Override
-        public Iterator<Pixel> iterator() {
-            return this;
-        }
-
-        @Override
-        public Pixel next() {
-            final Pixel next = getPixelAt(mX, mY);
-            if (++mY == getHeight()) {
-                mY = 0;
-                mX++;
-            }
-            return next;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
+//        // TODO need to change this for the forall stream
+//
+//        int mX = 0;
+//        int mY = 0;
+//
+//        @Override
+//        public boolean hasNext() {
+//            return mX < getWidth() && mY < getHeight();
+//        }
+//
+//        @Override
+//        public Iterator<Pixel> iterator() {
+//            return this;
+//        }
+//
+//        @Override
+//        public Pixel next() {
+//            final Pixel next = getPixelAt(mX, mY);
+//            if (++mY == getHeight()) {
+//                mY = 0;
+//                mX++;
+//            }
+//            return next;
+//        }
+//
+//        @Override
+//        public void remove() {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 
     public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 06:49");
     public final static String mClassname = PixelMap.class.getName();
@@ -130,6 +132,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private int mWidth;
     private int mHeight;
 
+    // TODO should delete the following two values
     private final boolean m360;
     private final IPixelMapTransformSource mTransformSource;
 
@@ -194,9 +197,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // mLogger.exiting(mClassname, "addVertexes");
     // }
 
-    private AllPixels allPixels() {
-        return new AllPixels();
-    }
+//    private AllPixels allPixels() {
+//        return new AllPixels();
+    //  }
+
     //
     // private synchronized void calcSegmentIndex() {
     // if (!mSegmentIndexValid) {
@@ -387,7 +391,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     boolean getData(final Pixel pPixel, final byte pValue) {
-        if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
+        if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
             final int x = modWidth(pPixel.getX());
             final boolean b = (getValue(x, pPixel.getY()) & pValue) != 0;
             return b;
@@ -530,23 +534,23 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return mTransformSource.getMediumLineThickness();
     // }
     //
-    // /**
-    // * Gets the Node at the PixelPosition, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
-    // load,
-    // * only during the generate phase
-    // *
-    // * @param pPixel
-    // * the pixel
-    // * @return the node
-    // */
-    // private Node getNode(final Pixel pPixel) {
-    // Node node = mAllNodes.getNode(pPixel);
-    // if (node == null) {
-    // node = new Node(pPixel);
-    // }
-    // return node;
-    // }
-    //
+
+    /**
+     * Gets the Node at the PixelPosition, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
+     * load,
+     * only during the generate phase
+     *
+     * @param pPixel the pixel
+     * @return the node
+     */
+    private Node getNode(final Pixel pPixel) {
+        Node node = mAllNodes.getNode(pPixel);
+        if (node == null) {
+            node = new Node(pPixel);
+        }
+        return node;
+    }
+
     // public double getNormalWidth() {
     // return getMediumLineThickness() / 1000d;
     // }
@@ -876,8 +880,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process01_reset();
             process02_thin();
             process03_generateNodes();
-            // process04a_removeLoneNodes();
-            // process04b_removeBristles();
+            process04b_removeBristles();  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
+            process04a_removeLoneNodes();
             // process05_generateChains(pProgress);
             // process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             // validate();
@@ -988,105 +992,157 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
     public void process02_thin() {
-        int cnt = 0;
-        final int total = getHeight() * getWidth();
-        int thinned = 0;
+        //int cnt = 0;
+        //final int total = getHeight() * getWidth();
+        //int thinned = 0;
 
-        for (final Pixel pixel : allPixels()) {
-            if (thin(pixel)) {
-                thinned++;
-            }
-        }
-
-        mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
+        forEachPixel(pixel -> thin(pixel));
+//        for (final Pixel pixel : allPixels()) {
+//            if (thin(pixel)) {
+//                thinned++;
+//            }
+//        }
+//
+//        mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
     }
 
-     private void process03_generateNodes() {
-     mAllNodes = new AllNodes();
-     for (final Pixel pixel : allPixels()) {
-     if (pixel.calcIsNode()) {
-     mAllNodes.add(pixel);
-     }
-     }
+    public void process03_generateNodes() {
+//        mAllNodes = new AllNodes();
+//        for (final Pixel pixel : allPixels()) {
+//            if (pixel.calcIsNode()) {
+//                mAllNodes.add(pixel);
+//            }
+//        }
 
-     }
-    //
-    // public void process04a_removeLoneNodes() {
-    //
-    // // indexSegments();
-    // //
-    // // Vector<PixelChain> delete = new Vector<PixelChain>();
-    // // for (PixelChain pixelChain : mPixelChains) {
-    // // if (pixelChain.getSegmentCount() == 0) {
-    // // delete.add(pixelChain);
-    // // }
-    // // }
-    // //
-    // // for (PixelChain pixelChain : delete) {
-    // // pixelChain.setInChain(false);
-    // // pixelChain.setVisited(false);
-    // // removePixelChain(pixelChain);
-    // // }
-    // // System.out.println(delete.size() + " pixelchains removed");
-    // //
-    // // for (PixelChain pixelChain : mPixelChains) {
-    // // try {
-    // // ISegment first = pixelChain.getFirstSegment();
-    // // IVertex start = first.getStartVertex();
-    // // if (start.getStartSegment() != null) {
-    // // System.out.println("Invalid start segment");
-    // // }
-    // //
-    // // ISegment last = pixelChain.getLastSegment();
-    // // IVertex end = last.getEndVertex();
-    // // if (end.getEndSegment() != null) {
-    // // System.out.println("Invalid end segment");
-    // // }
-    // // } catch (Throwable pT) {
-    // // System.out.println(pT.getMessage());
-    // // }
-    // // }
-    // //
-    // // calcSegmentIndex();
-    //
-    // for (final Pixel pixel : allPixels()) {
-    // if (pixel.isNode()) {
-    // final Node node = getNode(pixel);
-    // if (node.countEdgeNeighbours() == 0) {
-    // pixel.setEdge(false);
-    // pixel.setNode(false);
-    // pixel.setVisited(false);
-    // }
-    // }
-    // }
-    //
-    // }
-    //
-    // private void process04b_removeBristles() {
-    // final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
-    //
-    // for (final Node node : mAllNodes) {
-    // for (final Pixel other : node.getNodeNeighbours()) {
-    // final Set<Pixel> nodeSet = node.allEdgeNeighbours();
-    // final Set<Pixel> otherSet = other.allEdgeNeighbours();
-    //
-    // nodeSet.remove(other);
-    // nodeSet.removeAll(otherSet);
-    //
-    // otherSet.remove(node);
-    // otherSet.removeAll(nodeSet);
-    //
-    // if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-    // // TODO should be a better check here to see whether it is better to remove the other node
-    // toBeRemoved.add(node);
-    // node.setEdge(false);
-    // }
-    // }
-    // }
-    // mAllNodes.removeAll(toBeRemoved);
-    //
-    // }
-    //
+        forEachPixel(pixel -> {
+            if (pixel.calcIsNode()) {
+                mAllNodes.add(pixel);
+            }
+        });
+    }
+
+    public void setNode(final Pixel pPixel, final boolean pValue) {
+        if (pPixel.isNode() && pValue == false) {
+            mAllNodes.remove(pPixel);
+        }
+        if (!pPixel.isNode() && pValue == true) {
+            mAllNodes.add(pPixel);
+        }
+        setData(pPixel, pValue, NODE);
+    }
+
+    public boolean calcIsNode(Pixel pPixel) {
+        boolean shouldBeNode = false;
+        if (pPixel.isEdge()) {
+            // here we use transitions to eliminate double counting connected neighbours
+            // also note the the number of transitions is twice the number of neighbours
+            final int transitionCount = pPixel.countEdgeNeighboursTransitions();
+            if (transitionCount != 4) {
+                shouldBeNode = true;
+            }
+        }
+        if (pPixel.isNode() && shouldBeNode == false) {
+            mAllNodes.remove(pPixel);
+        }
+
+        pPixel.setNode(shouldBeNode);
+        return shouldBeNode;
+    }
+
+
+    public void process04a_removeLoneNodes() {
+
+        // indexSegments();
+        //
+        // Vector<PixelChain> delete = new Vector<PixelChain>();
+        // for (PixelChain pixelChain : mPixelChains) {
+        // if (pixelChain.getSegmentCount() == 0) {
+        // delete.add(pixelChain);
+        // }
+        // }
+        //
+        // for (PixelChain pixelChain : delete) {
+        // pixelChain.setInChain(false);
+        // pixelChain.setVisited(false);
+        // removePixelChain(pixelChain);
+        // }
+        // System.out.println(delete.size() + " pixelchains removed");
+        //
+        // for (PixelChain pixelChain : mPixelChains) {
+        // try {
+        // ISegment first = pixelChain.getFirstSegment();
+        // IVertex start = first.getStartVertex();
+        // if (start.getStartSegment() != null) {
+        // System.out.println("Invalid start segment");
+        // }
+        //
+        // ISegment last = pixelChain.getLastSegment();
+        // IVertex end = last.getEndVertex();
+        // if (end.getEndSegment() != null) {
+        // System.out.println("Invalid end segment");
+        // }
+        // } catch (Throwable pT) {
+        // System.out.println(pT.getMessage());
+        // }
+        // }
+        //
+        // calcSegmentIndex();
+
+//        for (final Pixel pixel : allPixels()) {
+//            if (pixel.isNode()) {
+//                final Node node = getNode(pixel);
+//                if (node.countEdgeNeighbours() == 0) {
+//                    pixel.setEdge(false);
+//                    pixel.setNode(false);
+//                    pixel.setVisited(false);
+//                }
+//            }
+//        }
+
+        forEachPixel(pixel -> {
+            if (pixel.isNode()) {
+                final Node node = getNode(pixel);
+                if (node.countEdgeNeighbours() == 0) {
+                    pixel.setEdge(false);
+                    pixel.setNode(false);
+                    pixel.setVisited(false);
+                }
+            }
+        });
+
+    }
+
+    public void process04b_removeBristles() {
+        final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
+
+        for (final Node node : mAllNodes) {
+            for (final Pixel other : node.getNodeNeighbours()) {
+                final Set<Pixel> nodeSet = node.allEdgeNeighbours();
+                final Set<Pixel> otherSet = other.allEdgeNeighbours();
+
+                nodeSet.remove(other);
+                nodeSet.removeAll(otherSet);
+
+                otherSet.remove(node);
+                otherSet.removeAll(nodeSet);
+
+                if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                    // TODO should be a better check here to see whether it is better to remove the other node
+                    toBeRemoved.add(node);
+                    node.setEdge(false);
+                }
+            }
+        }
+        mAllNodes.removeAll(toBeRemoved);
+
+        toBeRemoved.stream()
+                .forEach(pixel -> {
+                    pixel.allEdgeNeighbours().stream()
+                            .forEach(pixelNeighbour -> pixelNeighbour.calcIsNode());
+                });
+
+    }
+
     // private void process05_generateChains(final IProgressBar pProgress) {
     // try {
     //
@@ -1284,7 +1340,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
-        if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
+        if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
             final int x = modWidth(pPixel.getX());
             byte newValue = (byte) (getValue(x, pPixel.getY()) & (ALL ^ pValue));
             if (pState) {
@@ -1331,7 +1387,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      * @param pValue the value
      */
     public void setValueNoUndo(final int pX, final int pY, final byte pValue) {
-
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
         }
@@ -1355,31 +1410,30 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mWidth = pWidth;
     }
 
-     /**
+    /**
      * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
      * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
      * false.
      *
-     * @param pPixel
-     * the pixel
+     * @param pPixel the pixel
      * @return true, if the Pixel was thinned.
      */
-     private   boolean thin ( final Pixel pPixel){
-            if (!pPixel.isEdge()) {
-                return false;
-            }
-
-            boolean canEliminate = false;
-            for (final int[] set : eliminate) {
-                canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
-                        !pPixel.getNeighbour(set[2]).isEdge();
-            }
-
-            if (canEliminate) {
-                pPixel.setEdge(false);
-            }
-            return canEliminate;
+    private boolean thin(final Pixel pPixel) {
+        if (!pPixel.isEdge()) {
+            return false;
         }
+
+        boolean canEliminate = false;
+        for (final int[] set : eliminate) {
+            canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
+                    !pPixel.getNeighbour(set[2]).isEdge();
+        }
+
+        if (canEliminate) {
+            pPixel.setEdge(false);
+        }
+        return canEliminate;
+    }
 
     // //
     // public Point toUHVW(final Point pIn) {
@@ -1455,5 +1509,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     public void forEach(BiConsumer<Integer, Integer> pFunction) {
         Range2D.forEach(getWidth(), getHeight(), pFunction);
+    }
+
+    public void forEachPixel(Consumer<Pixel> pFunction) {
+        Range2D.forEach(getWidth(), getHeight(), (x, y) -> {
+            pFunction.accept(getPixelAt(x, y));
+        });
     }
 }

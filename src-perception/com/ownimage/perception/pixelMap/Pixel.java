@@ -111,18 +111,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 	}
 
 	public boolean calcIsNode() {
-		boolean rv = false;
-
-		if (isEdge()) {
-			// here we use transitions to eliminate double counting connected neighbours
-			// also not the the number of transitions is twice the number of neighbours
-			final int transitionCount = countEdgeNeighboursTransitions();
-			if (transitionCount != 4) {
-				rv = true;
-			}
-		}
-		setNode(rv);
-		return rv;
+		return mPixelMap.calcIsNode(this);
 	}
 
 	protected synchronized void calcUHVWPoint() {
@@ -183,15 +172,15 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 		return getPixelMap().getHeight();
 	}
 
-	public int getNeigbourEdgeCount() {
-		int cnt = 0;
-		for (Pixel p : getNeighbours()) {
-			if (p.isEdge()) {
-				cnt++;
-			}
-		}
-		return cnt;
-	}
+//	public int getNeigbourEdgeCount() {
+//		int cnt = 0;
+//		for (Pixel p : getNeighbours()) {
+//			if (p.isEdge()) {
+//				cnt++;
+//			}
+//		}
+//		return cnt;
+//	}
 
 	public Pixel getNeighbour(final int pN) {
 		final Pixel pixel = add(mNeighbours[pN]);
@@ -320,7 +309,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 	}
 
 	public void setNode(final boolean pValue) {
-		getPixelMap().setData(this, pValue, NODE);
+		getPixelMap().setNode(this, pValue);
 	}
 
 	public void setPixelMap(final PixelMap pPixelMap) {
@@ -351,7 +340,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
 	@Override
 	public String toString() {
-		return "Point(" + getX() + ", " + getY() + ")";
+		return "Pixel(" + getX() + ", " + getY() + ")";
 	}
 
 }

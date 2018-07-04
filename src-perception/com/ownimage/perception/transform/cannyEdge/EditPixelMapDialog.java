@@ -10,6 +10,7 @@ import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IGrafitti;
@@ -22,7 +23,6 @@ import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -30,6 +30,7 @@ import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
+import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
@@ -62,9 +63,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mViewOriginY;
 
     // Pixel Container
-    private final IntegerControl mPCC1 = new IntegerControl("Pixel test 1", "pixelTest1", mPixelControlContainer, 2, 2, 15, 1);
-    private final IntegerControl mPCC2 = new IntegerControl("Pixel test 2", "pixelTest2", mPixelControlContainer, 2, 2, 15, 1);
-    private final IntegerControl mPCC3 = new IntegerControl("Pixel test 3", "pixelTest3", mPixelControlContainer, 2, 2, 15, 1);
+    private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, Color.GREEN);
+    private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, Color.RED);
 
     // Vertex Container
     private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
@@ -161,14 +161,19 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         System.out.println(xMin + " " + yMin + " " + xSize + " " + ySize);
 
-        Range2D.forEach(xMin, Math.min(mPixelMap.getWidth() - 1, xMin + xSize), yMin, Math.min(mPixelMap.getHeight() - 1, yMin + ySize), (x, y) -> {
+        mPixelMap.forEach((x, y) -> {
             if (mPixelMap.getValue(x, y) != 0) {
                 double x1 = (double) (x - xMin) * zoom / mPixelMap.getWidth();
                 double x2 = (double) (x + 1 - xMin) * zoom / mPixelMap.getWidth();
                 double y1 = (double) (y - yMin) * zoom / mPixelMap.getHeight();
                 double y2 = (double) (y + 1 - yMin) * zoom / mPixelMap.getHeight();
                 Rectangle r = new Rectangle(x1, y1, x2, y2);
-                pGrafittiHelper.drawFilledRectangle(r, Color.YELLOW);
+                Pixel pixel = mPixelMap.getPixelAt(x, y);
+                Color c =
+                        pixel.isNode() ? mNodeColor.getValue() :
+                                pixel.isEdge() ? mEdgeColor.getValue() :
+                                        Color.BLACK;
+                pGrafittiHelper.drawFilledRectangle(r, c);
             }
         });
     }
