@@ -664,6 +664,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void regeneratePixelMap(final PictureControl inputPicture) {
+        PixelMap pixelMap = null;
         SplitTimer.split("regeneratePixelMap() start");
         ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
         try {
@@ -672,7 +673,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
             if (detector.getKeepRunning()) {
                 // only set the mData if the detector was allowed to finish
-                setPixelMap(detector.getEdgeData());
+                pixelMap = detector.getEdgeData();
                 // mPreviewControl.getValue().setValue(mPreviewPicture);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
             }
@@ -680,6 +681,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             if (detector != null) {
                 detector.dispose();
             }
+        }
+
+        if (pixelMap != null){
+            pixelMap.process();
+            setPixelMap(pixelMap);
         }
 
     }

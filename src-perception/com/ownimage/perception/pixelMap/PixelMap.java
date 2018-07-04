@@ -88,36 +88,37 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    // private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
-    //
-    // int mX = 0;
-    // int mY = 0;
-    //
-    // @Override
-    // public boolean hasNext() {
-    // return mX < getWidth() && mY < getHeight();
-    // }
-    //
-    // @Override
-    // public Iterator<Pixel> iterator() {
-    // return this;
-    // }
-    //
-    // @Override
-    // public Pixel next() {
-    // final Pixel next = getPixelAt(mX, mY);
-    // if (++mY == getHeight()) {
-    // mY = 0;
-    // mX++;
-    // }
-    // return next;
-    // }
-    //
-    // @Override
-    // public void remove() {
-    // throw new UnsupportedOperationException();
-    // }
-    // }
+    private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
+        // TODO need to change this for the forall stream
+
+        int mX = 0;
+        int mY = 0;
+
+        @Override
+        public boolean hasNext() {
+            return mX < getWidth() && mY < getHeight();
+        }
+
+        @Override
+        public Iterator<Pixel> iterator() {
+            return this;
+        }
+
+        @Override
+        public Pixel next() {
+            final Pixel next = getPixelAt(mX, mY);
+            if (++mY == getHeight()) {
+                mY = 0;
+                mX++;
+            }
+            return next;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 06:49");
     public final static String mClassname = PixelMap.class.getName();
@@ -138,7 +139,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
     private final byte mData[][];
-    private final AllNodes mAllNodes = new AllNodes();
+    private AllNodes mAllNodes = new AllNodes();
     // private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
     // private LinkedList<ISegment>[][] mSegmentIndex;
@@ -192,10 +193,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // }
     // mLogger.exiting(mClassname, "addVertexes");
     // }
-    //
-    // private AllPixels allPixels() {
-    // return new AllPixels();
-    // }
+
+    private AllPixels allPixels() {
+        return new AllPixels();
+    }
     //
     // private synchronized void calcSegmentIndex() {
     // if (!mSegmentIndexValid) {
@@ -869,46 +870,47 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // }
     // }
     //
-    // public void process(final IProgressBar pProgress) {
-    // try {
-    // // pProgress.showProgressBar();
-    // process01_reset();
-    // process02_thin(pProgress);
-    // process03_generateNodes();
-    // process04a_removeLoneNodes();
-    // process04b_removeBristles();
-    // process05_generateChains(pProgress);
-    // process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-    // validate();
-    // process07_mergeChains();
-    // validate();
-    // process08_refine();
-    // validate();
-    // // reapproximate(null, mTransformSource.getLineTolerance());
-    // validate();
-    // process04a_removeLoneNodes();
-    // indexSegments();
+    public void process() {
+        try {
+            // // pProgress.showProgressBar();
+            process01_reset();
+            process02_thin();
+            process03_generateNodes();
+            // process04a_removeLoneNodes();
+            // process04b_removeBristles();
+            // process05_generateChains(pProgress);
+            // process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            // validate();
+            // process07_mergeChains();
+            // validate();
+            // process08_refine();
+            // validate();
+            // // reapproximate(null, mTransformSource.getLineTolerance());
+            // validate();
+            // process04a_removeLoneNodes();
+            // indexSegments();
+            //
+        } catch (final Exception pEx) {
+            System.out.println("pEx");
+            pEx.printStackTrace(System.err);
+        }
+        // } finally {
+        // pProgress.hideProgressBar();
+        // }
+    }
+
     //
-    // } catch (final Exception pEx) {
-    // System.out.println("pEx");
-    // pEx.printStackTrace(System.err);
-    // }
-    // // } finally {
-    // // pProgress.hideProgressBar();
-    // // }
-    // }
-    //
-    // // resets everything but the isEdgeData
-    // public void process01_reset() {
-    // resetVisited();
-    // resetInChain();
-    // resetNode();
-    //
-    // mAllNodes.removeAllElements();
-    // mPixelChains.removeAllElements();
-    // resetSegmentIndex();
-    // }
-    //
+    // resets everything but the isEdgeData
+    public void process01_reset() {
+        resetVisited();
+        resetInChain();
+        resetNode();
+
+        // mAllNodes.removeAllElements();
+        // mPixelChains.removeAllElements();
+        // resetSegmentIndex();
+    }
+
     // // public void process08_refine_old() {
     // // System.out.println("Refine");
     // //
@@ -982,34 +984,32 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // //
     // //
     // // }
-    //
-    // // chains need to have been thinned
-    // public void process02_thin(final IProgressBar pProgress) {
-    // int cnt = 0;
-    // final int total = getHeight() * getWidth();
-    // int thinned = 0;
-    //
-    // for (final Pixel pixel : allPixels()) {
-    // if (pProgress != null) {
-    // pProgress.showProgressBar("thin", 100 * cnt++ / total);
-    // }
-    // if (thin(pixel)) {
-    // thinned++;
-    // }
-    // }
-    //
-    // mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
-    // }
-    //
-    // private void process03_generateNodes() {
-    // mAllNodes = new AllNodes();
-    // for (final Pixel pixel : allPixels()) {
-    // if (pixel.calcIsNode()) {
-    // mAllNodes.add(pixel);
-    // }
-    // }
-    //
-    // }
+
+    // chains need to have been thinned
+    // TODO need to work out how to have a progress bar
+    public void process02_thin() {
+        int cnt = 0;
+        final int total = getHeight() * getWidth();
+        int thinned = 0;
+
+        for (final Pixel pixel : allPixels()) {
+            if (thin(pixel)) {
+                thinned++;
+            }
+        }
+
+        mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
+    }
+
+     private void process03_generateNodes() {
+     mAllNodes = new AllNodes();
+     for (final Pixel pixel : allPixels()) {
+     if (pixel.calcIsNode()) {
+     mAllNodes.add(pixel);
+     }
+     }
+
+     }
     //
     // public void process04a_removeLoneNodes() {
     //
@@ -1247,38 +1247,42 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // indexSegments();
     // }
     //
-    // private void resetInChain() {
-    // for (int x = 0; x < getWidth() - 1; x++) {
-    // for (int y = 0; y < getHeight() - 1; y++) {
-    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
-    // setValue(x, y, newValue);
-    // }
-    // }
-    // }
-    //
-    // private void resetNode() {
-    // for (int x = 0; x < getWidth() - 1; x++) {
-    // for (int y = 0; y < getHeight() - 1; y++) {
-    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
-    // setValue(x, y, newValue);
-    // }
-    // }
-    // }
+    private void resetInChain() {
+        //TODO ... change to for all ... and look at making forall parallel again
+        for (int x = 0; x < getWidth() - 1; x++) {
+            for (int y = 0; y < getHeight() - 1; y++) {
+                final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
+                setValue(x, y, newValue);
+            }
+        }
+    }
+
+    private void resetNode() {
+        //TODO ... change to for all ... and look at making forall parallel again
+        for (int x = 0; x < getWidth() - 1; x++) {
+            for (int y = 0; y < getHeight() - 1; y++) {
+                final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
+                setValue(x, y, newValue);
+            }
+        }
+    }
+
     //
     // private void resetSegmentIndex() {
     // mSegmentIndex = new LinkedList[getWidth()][getHeight()];
     // mSegmentCount = 0;
     // }
     //
-    // private void resetVisited() {
-    // for (int x = 0; x < getWidth() - 1; x++) {
-    // for (int y = 0; y < getHeight() - 1; y++) {
-    // final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
-    // setValue(x, y, newValue);
-    // }
-    // }
-    // }
-    //
+    private void resetVisited() {
+        //TODO ... change to for all ... and look at making forall parallel again
+        for (int x = 0; x < getWidth() - 1; x++) {
+            for (int y = 0; y < getHeight() - 1; y++) {
+                final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
+                setValue(x, y, newValue);
+            }
+        }
+    }
+
     void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
         if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
             final int x = modWidth(pPixel.getX());
@@ -1351,30 +1355,32 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mWidth = pWidth;
     }
 
-    // /**
-    // * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
-    // * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
-    // * false.
-    // *
-    // * @param pPixel
-    // * the pixel
-    // * @return true, if the Pixel was thinned.
-    // */
-    // boolean thin(final Pixel pPixel) {
-    // if (!pPixel.isEdge()) { return false; }
-    //
-    // boolean canEliminate = false;
-    // for (final int[] set : eliminate) {
-    // canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
-    // !pPixel.getNeighbour(set[2]).isEdge();
-    // }
-    //
-    // if (canEliminate) {
-    // pPixel.setEdge(false);
-    // }
-    // return canEliminate;
-    // }
-    //
+     /**
+     * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
+     * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
+     * false.
+     *
+     * @param pPixel
+     * the pixel
+     * @return true, if the Pixel was thinned.
+     */
+     private   boolean thin ( final Pixel pPixel){
+            if (!pPixel.isEdge()) {
+                return false;
+            }
+
+            boolean canEliminate = false;
+            for (final int[] set : eliminate) {
+                canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
+                        !pPixel.getNeighbour(set[2]).isEdge();
+            }
+
+            if (canEliminate) {
+                pPixel.setEdge(false);
+            }
+            return canEliminate;
+        }
+
     // //
     // public Point toUHVW(final Point pIn) {
     // return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
