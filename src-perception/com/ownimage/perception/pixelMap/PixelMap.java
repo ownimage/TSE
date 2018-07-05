@@ -891,7 +891,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process04b_removeBristles();  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
             process04a_removeLoneNodes();
             process05_generateChains();
-            // process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            process06_straightLinesRefineCorders( mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             // validate();
             // process07_mergeChains();
             // validate();
@@ -1178,23 +1178,27 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //            }
         }
     }
-    //
-    // private void process06_straightLinesRefineCorders(final IProgressBar pProgress, final double pMaxiLineTolerance) {
-    // System.out.println("process06_straightLinesRefineCorders");
-    //
-    // // final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
-    // // mPixelChains) {
-    // // @Override
-    // // public void process(final PixelChain pPixelChain) {
-    // // pPixelChain.approximate01_straightLines(pMaxiLineTolerance);
-    // // pPixelChain.approximate02_refineCorners();
-    // // }
-    // // };
-    // // job.runImmediate();
-    //
-    // indexSegments();
-    // }
-    //
+
+     private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
+         System.out.println("process06_straightLinesRefineCorders");
+
+//      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
+//      mPixelChains) {
+//      @Override
+         //public void process(final PixelChain pPixelChain) {
+         mPixelChains.stream().parallel()
+                 .forEach(pixelChain -> {
+                     pixelChain.approximate01_straightLines(pMaxiLineTolerance);
+                     pixelChain.approximate02_refineCorners();
+                 });
+         System.out.println("process06_straightLinesRefineCorders - done");
+//      }
+//      };
+//      job.runImmediate();
+
+         indexSegments();
+     }
+
     // private void process07_mergeChains() {
     // System.out.println("Segments: " + mSegmentCount);
     // for (final Node node : getAllNodes()) {
