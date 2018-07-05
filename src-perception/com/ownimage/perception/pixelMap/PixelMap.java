@@ -12,11 +12,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -30,6 +34,7 @@ import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.pixelMap.segment.ISegment;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed throught the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -143,10 +148,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final Point mUHVWHalfPixel;
     private final byte mData[][];
     private AllNodes mAllNodes = new AllNodes();
-    // private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+    private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
-    // private LinkedList<ISegment>[][] mSegmentIndex;
-    private final boolean mSegmentIndexValid = false;
+    private LinkedList<ISegment>[][] mSegmentIndex;
+    private boolean mSegmentIndexValid = false;
     private int mSegmentCount;
 
     // private final PixelAction mPixelAction = new PixelAction(this);
@@ -167,27 +172,27 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
     }
 
-    // public void addPixelChain(final PixelChain pPixelChain) {
-    // mLogger.entering(mClassname, "addPixelChain");
-    // indexSegments();
-    // mPixelChains.add(pPixelChain);
-    // mLogger.exiting(mClassname, "addPixelChain");
-    // }
+    public void addPixelChain(final PixelChain pPixelChain) {
+        mLogger.entering(mClassname, "addPixelChain");
+        indexSegments();
+        mPixelChains.add(pPixelChain);
+        mLogger.exiting(mClassname, "addPixelChain");
+    }
 
-    // public void addPixelChains(final Collection<PixelChain> pPixelChains) {
-    // mLogger.entering(mClassname, "addPixelChain");
-    // indexSegments();
-    // mPixelChains.addAll(pPixelChains);
-    // mLogger.exiting(mClassname, "addPixelChain");
-    // }
-    //
-    // public void addPixelChains(final PixelChain... pPixelChains) {
-    // mLogger.entering(mClassname, "addPixelChain");
-    // indexSegments();
-    // mPixelChains.addAll(Arrays.asList(pPixelChains));
-    // mLogger.exiting(mClassname, "addPixelChain");
-    // }
-    //
+    public void addPixelChains(final Collection<PixelChain> pPixelChains) {
+        mLogger.entering(mClassname, "addPixelChain");
+        indexSegments();
+        mPixelChains.addAll(pPixelChains);
+        mLogger.exiting(mClassname, "addPixelChain");
+    }
+
+    public void addPixelChains(final PixelChain... pPixelChains) {
+        mLogger.entering(mClassname, "addPixelChain");
+        indexSegments();
+        mPixelChains.addAll(Arrays.asList(pPixelChains));
+        mLogger.exiting(mClassname, "addPixelChain");
+    }
+
     // public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
     // mLogger.entering(mClassname, "addVertexes");
     // for (final PixelChain pixelChain : getAllPixelChains()) {
@@ -300,77 +305,77 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return result;
     // }
     //
-    // private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
-    // try {
-    // mLogger.entering(mClassname, "generateChain");
-    // if (mLogger.isLoggable(Level.FINEST)) {
-    // mLogger.finest("pStartNode: " + pStartNode);
-    // mLogger.finest("pCurrentPixel: " + pCurrentPixel);
-    // mLogger.finest("pChain: " + pChain);
-    // }
-    //
-    // if (pCurrentPixel.isNode()) {
-    // pChain.setEndNode(getNode(pCurrentPixel));
-    // mLogger.exiting(mClassname, "generateChain");
-    // return;
-    // }
-    //
-    // pChain.add(pCurrentPixel);
-    // pCurrentPixel.setInChain(true);
-    // pCurrentPixel.setVisited(true);
-    //
-    // // try to end quickly at a node to prevent bypassing
-    // for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours()) {
-    // // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-    // // going back to the staring node.
-    // // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
-    // // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-    // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 &&
-    // nodalNeighbour.equals(pChain.firstPixel()))) {
-    // generateChain(pStartNode, nodalNeighbour, pChain);
-    // mLogger.exiting(mClassname, "generateChain");
-    // return;
-    // }
-    // }
-    //
-    // // otherwise go to the next pixel normally
-    // for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
-    // // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-    // // going back to the staring node.
-    // // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
-    // // !neighbour.isNeighbour(pChain.firstPixel()))) {
-    // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode())))
-    // {
-    // generateChain(pStartNode, neighbour, pChain);
-    // mLogger.exiting(mClassname, "generateChain");
-    // return;
-    // }
-    // }
-    //
-    // } catch (final Throwable pT) {
-    // mLogger.log(Level.SEVERE, "Exception thrown", pT);
-    // mLogger.severe("pStartNode: " + pStartNode);
-    // mLogger.severe("pCurrentPixel: " + pCurrentPixel);
-    // mLogger.severe("pChain: " + pChain);
-    // }
-    // }
-    //
-    // Collection<PixelChain> generateChains(final Node pStartNode) {
-    // final Vector<PixelChain> chains = new Vector<PixelChain>();
-    // pStartNode.setVisited(true);
-    // pStartNode.setInChain(true);
-    // for (final Pixel neighbour : pStartNode.getNeighbours()) {
-    // if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
-    // final PixelChain chain = new PixelChain(pStartNode);
-    // generateChain(pStartNode, neighbour, chain);
-    // if (chain.length() > 2) {
-    // chains.add(chain);
-    // chain.addToNodes();
-    // }
-    // }
-    // }
-    // return chains;
-    // }
+    private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
+        try {
+            mLogger.entering(mClassname, "generateChain");
+            if (mLogger.isLoggable(Level.FINEST)) {
+                mLogger.finest("pStartNode: " + pStartNode);
+                mLogger.finest("pCurrentPixel: " + pCurrentPixel);
+                mLogger.finest("pChain: " + pChain);
+            }
+
+            if (pCurrentPixel.isNode()) {
+                pChain.setEndNode(getNode(pCurrentPixel));
+                mLogger.exiting(mClassname, "generateChain");
+                return;
+            }
+
+            pChain.add(pCurrentPixel);
+            pCurrentPixel.setInChain(true);
+            pCurrentPixel.setVisited(true);
+
+            // try to end quickly at a node to prevent bypassing
+            for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours()) {
+                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+                // going back to the staring node.
+                // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
+                // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
+                if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 &&
+                        nodalNeighbour.equals(pChain.firstPixel()))) {
+                    generateChain(pStartNode, nodalNeighbour, pChain);
+                    mLogger.exiting(mClassname, "generateChain");
+                    return;
+                }
+            }
+
+            // otherwise go to the next pixel normally
+            for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
+                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+                // going back to the staring node.
+                // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
+                // !neighbour.isNeighbour(pChain.firstPixel()))) {
+                if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
+                    generateChain(pStartNode, neighbour, pChain);
+                    mLogger.exiting(mClassname, "generateChain");
+                    return;
+                }
+            }
+
+        } catch (final Throwable pT) {
+            mLogger.log(Level.SEVERE, "Exception thrown", pT);
+            mLogger.severe("pStartNode: " + pStartNode);
+            mLogger.severe("pCurrentPixel: " + pCurrentPixel);
+            mLogger.severe("pChain: " + pChain);
+        }
+    }
+
+    Collection<PixelChain> generateChains(final Node pStartNode) {
+        final Vector<PixelChain> chains = new Vector<PixelChain>();
+        pStartNode.setVisited(true);
+        pStartNode.setInChain(true);
+        for (final Pixel neighbour : pStartNode.getNeighbours()) {
+            if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
+                final PixelChain chain = new PixelChain(pStartNode);
+                generateChain(pStartNode, neighbour, chain);
+                if (chain.length() > 2) {
+                    chains.add(chain);
+                    chain.addToNodes();
+                }
+            }
+        }
+        return chains;
+    }
+
     //
     // /**
     // * Gets all of the Nodes in the PixelMap, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
@@ -412,17 +417,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return mTransformSource.getLineOpacity();
     // }
     //
-    // public double getLineTolerance() {
-    // return mTransformSource.getLineTolerance();
-    // }
-    //
+    public double getLineTolerance() {
+        return mTransformSource.getLineTolerance();
+    }
+
     // public int getLongLineLength() {
     // return mTransformSource.getLongLineLength();
     // }
-    //
-    // public double getLongLineThickness() {
-    // return mTransformSource.getLongLineThickness();
-    // }
+
+    public double getLongLineThickness() {
+        return mTransformSource.getLongLineThickness();
+    }
+
     //
     // public Color getMaxiLineColor() {
     // return mTransformSource.getLineColor();
@@ -530,10 +536,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return mTransformSource.getMediumLineLength();
     // }
     //
-    // public double getMediumLineThickness() {
-    // return mTransformSource.getMediumLineThickness();
-    // }
-    //
+    public double getMediumLineThickness() {
+        return mTransformSource.getMediumLineThickness();
+    }
+
 
     /**
      * Gets the Node at the PixelPosition, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
@@ -551,10 +557,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return node;
     }
 
-    // public double getNormalWidth() {
-    // return getMediumLineThickness() / 1000d;
-    // }
-    //
+    public double getNormalWidth() {
+        return getMediumLineThickness() / 1000d;
+    }
+
     public Pixel getPixelAt(final double pX, final double pY) {
         mLogger.entering(mClassname, "getPixelAt");
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
@@ -628,20 +634,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return null;
     }
 
-    // AbstractCollection<ISegment> getSegments(final int pX, final int pY) {
-    //
-    // if (pX < 0 || pX >= getWidth()) { throw new IllegalArgumentException("pX out of range. pX = " + pX + ". It needs to be
-    // greater than 0 and less than " + getWidth()); }
-    //
-    // if (pY < 0 || pY >= getHeight()) { throw new IllegalArgumentException("pY out of range. pY = " + pY + ". It needs to be
-    // greater than 0 and less than " + getHeight()); }
-    //
-    // if (mSegmentIndex[pX][pY] == null) { //
-    // mSegmentIndex[pX][pY] = new LinkedList<ISegment>();
-    // }
-    // return mSegmentIndex[pX][pY];
-    // }
-    //
+    AbstractCollection<ISegment> getSegments(final int pX, final int pY) {
+
+        if (pX < 0 || pX >= getWidth()) {
+            throw new IllegalArgumentException("pX out of range. pX = " + pX + ". It needs to be greater than 0 and less than" + getWidth());
+        }
+
+        if (pY < 0 || pY >= getHeight()) {
+            throw new IllegalArgumentException("pY out of range. pY = " + pY + ". It needs to be greater than 0 and less than" + getHeight());
+        }
+
+        if (mSegmentIndex[pX][pY] == null) { //
+            mSegmentIndex[pX][pY] = new LinkedList<ISegment>();
+        }
+        return mSegmentIndex[pX][pY];
+    }
+
     // private AbstractCollection<ISegment> getSegments(final Pixel pPixel) {
     // return getSegments(pPixel.getX(), pPixel.getY());
     // }
@@ -697,15 +705,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // //
     // return pColor;
     // }
-    //
-    // public int getShortLineLength() {
-    // return mTransformSource.getShortLineLength();
-    // }
-    //
-    // public double getShortLineThickness() {
-    // return mTransformSource.getShortLineThickness();
-    // }
-    //
+
+    public int getShortLineLength() {
+        return mTransformSource.getShortLineLength();
+    }
+
+    public double getShortLineThickness() {
+        return mTransformSource.getShortLineThickness();
+    }
+
     // public boolean getShowPixels() {
     // return mTransformSource.getShowPixels();
     // }
@@ -714,22 +722,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return mTransformSource.getShowShadow();
     // }
     //
-    // public double getThickWidth() {
-    // return getLongLineThickness() / 1000d;
-    // }
-    //
-    // public double getThinWidth() {
-    // return getShortLineThickness() / 1000d;
-    // }
-    //
-    // public IPixelMapTransformSource getTransformSource() {
-    // return mTransformSource;
-    // }
-    //
-    // public Point getUHVWHalfPixel() {
-    // return mUHVWHalfPixel;
-    // }
-    //
+    public double getThickWidth() {
+        return getLongLineThickness() / 1000d;
+    }
+
+    public double getThinWidth() {
+        return getShortLineThickness() / 1000d;
+    }
+
+    public IPixelMapTransformSource getTransformSource() {
+        return mTransformSource;
+    }
+
+    public Point getUHVWHalfPixel() {
+        return mUHVWHalfPixel;
+    }
+
     // public IUndoRedoBuffer getUndoRedoBuffer() {
     // return mUndoRedoBuffer;
     // }
@@ -768,43 +776,43 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mWidth;
     }
 
-    // void index(final ISegment pSegment) {
-    // mSegmentCount++;
-    // // // TODO make assumption that this is 360
-    // // // mSegmentIndex.add(pLineSegment);
-    // //
-    // int minX = (int) Math.floor(pSegment.getMinX() * getWidth() / mAspectRatio) - 1;
-    // minX = minX < 0 ? 0 : minX;
-    // minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
-    //
-    // int maxX = (int) Math.ceil(pSegment.getMaxX() * getWidth() / mAspectRatio) + 1;
-    // maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
-    //
-    // int minY = (int) Math.floor(pSegment.getMinY() * getHeight()) - 1;
-    // minY = minY < 0 ? 0 : minY;
-    // minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
-    //
-    // int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
-    // maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
-    //
-    // for (int x = minX; x <= maxX; x++) {
-    // for (int y = minY; y <= maxY; y++) {
-    // final Pixel pixel = getPixelAt(x, y);
-    // final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
-    // if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
-    // getSegments(x, y).add(pSegment);
-    // }
-    // }
-    // }
-    //
-    // }
-    //
-    // public synchronized void indexSegments() {
-    // mLogger.entering(mClassname, "indexSegments");
-    // mSegmentIndexValid = false;
-    // mLogger.exiting(mClassname, "indexSegments");
-    // }
-    //
+    void index(final ISegment pSegment) {
+        mSegmentCount++;
+        // // TODO make assumption that this is 360
+        // // mSegmentIndex.add(pLineSegment);
+        //
+        int minX = (int) Math.floor(pSegment.getMinX() * getWidth() / mAspectRatio) - 1;
+        minX = minX < 0 ? 0 : minX;
+        minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
+
+        int maxX = (int) Math.ceil(pSegment.getMaxX() * getWidth() / mAspectRatio) + 1;
+        maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
+
+        int minY = (int) Math.floor(pSegment.getMinY() * getHeight()) - 1;
+        minY = minY < 0 ? 0 : minY;
+        minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
+
+        int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
+        maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                final Pixel pixel = getPixelAt(x, y);
+                final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
+                if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
+                    getSegments(x, y).add(pSegment);
+                }
+            }
+        }
+
+    }
+
+    public synchronized void indexSegments() {
+        mLogger.entering(mClassname, "indexSegments");
+        mSegmentIndexValid = false;
+        mLogger.exiting(mClassname, "indexSegments");
+    }
+
     // private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
     // pThickWidth) {
     // calcSegmentIndex();
@@ -882,7 +890,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process03_generateNodes();
             process04b_removeBristles();  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
             process04a_removeLoneNodes();
-            // process05_generateChains(pProgress);
+            process05_generateChains();
             // process06_straightLinesRefineCorders(pProgress, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             // validate();
             // process07_mergeChains();
@@ -1041,11 +1049,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 shouldBeNode = true;
             }
         }
-        if (pPixel.isNode() && shouldBeNode == false) {
-            mAllNodes.remove(pPixel);
-        }
 
-        pPixel.setNode(shouldBeNode);
+        setNode(pPixel, shouldBeNode);
         return shouldBeNode;
     }
 
@@ -1143,30 +1148,36 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     }
 
-    // private void process05_generateChains(final IProgressBar pProgress) {
-    // try {
-    //
-    // process03_generateNodes();
-    //
-    // for (final Node node : mAllNodes.allNodes()) {
-    // mPixelChains.addAll(generateChains(node));
-    // }
-    //
-    // // this captures all the simple loops (i.e. connected sets of pixels with no nodes).
-    // for (final Pixel pixel : allPixels()) {
-    // if (pixel.isUnVisitedEdge()) {
-    // final Node node = mAllNodes.add(pixel);
-    // mPixelChains.addAll(generateChains(node));
-    // }
-    // }
-    //
-    // System.out.println("Number of chains: " + mPixelChains.size());
-    // } finally {
-    // if (pProgress != null) {
-    // pProgress.hideProgressBar();
-    // }
-    // }
-    // }
+    private void process05_generateChains() {
+        try {
+
+            //process03_generateNodes();
+
+            for (final Node node : mAllNodes.allNodes()) {
+                mPixelChains.addAll(generateChains(node));
+            }
+
+            // this captures all the simple loops (i.e. connected sets of pixels with no nodes).
+//            for (final Pixel pixel : allPixels()) { // COMMENTED OUT AS REPLICATED BELOW WITH FOR EACH PIXEL
+//                if (pixel.isUnVisitedEdge()) {
+//                    final Node node = mAllNodes.add(pixel);
+//                    mPixelChains.addAll(generateChains(node));
+//                }
+//            }
+            forEachPixel(pixel -> {
+                if (pixel.isUnVisitedEdge()) {
+                    final Node node = mAllNodes.add(pixel);
+                    mPixelChains.addAll(generateChains(node));
+                }
+            });
+
+            //System.out.println("Number of chains: " + mPixelChains.size());
+        } finally {
+//            if (pProgress != null) {
+//                pProgress.hideProgressBar();
+//            }
+        }
+    }
     //
     // private void process06_straightLinesRefineCorders(final IProgressBar pProgress, final double pMaxiLineTolerance) {
     // System.out.println("process06_straightLinesRefineCorders");
@@ -1298,11 +1309,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "read");
     }
 
-    // public synchronized void removePixelChain(final PixelChain pPixelChain) {
-    // mPixelChains.remove(pPixelChain);
-    // indexSegments();
-    // }
-    //
+    public synchronized void removePixelChain(final PixelChain pPixelChain) {
+        mPixelChains.remove(pPixelChain);
+        indexSegments();
+    }
+
     private void resetInChain() {
         //TODO ... change to for all ... and look at making forall parallel again
         for (int x = 0; x < getWidth() - 1; x++) {
@@ -1435,11 +1446,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return canEliminate;
     }
 
-    // //
-    // public Point toUHVW(final Point pIn) {
-    // return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
-    // }
-    //
+
+    public Point toUHVW(final Point pIn) {
+        return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
+    }
+
     // public Color transform(final Point pIn, final Color pColor) {
     // Color color = getPixelColor(pIn, pColor);
     // color = getMaxiLineShadowColor(pIn, color);
