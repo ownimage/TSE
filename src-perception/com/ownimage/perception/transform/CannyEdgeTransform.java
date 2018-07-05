@@ -232,7 +232,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void generateEdges() {
-        ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
+        ActionControl ok = ActionControl.create("OK", NullContainer, () -> new Thread(this::generateEdgesOK).start()); // TODO should this be put into the UI so it does it for all actions
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         getGenerateEdgesDialog().showDialog(cancel, ok);
     }
@@ -322,8 +322,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public double getLineTolerance() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineTolerance.getValue();
     }
 
     //
@@ -683,7 +682,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             }
         }
 
-        if (pixelMap != null){
+        if (pixelMap != null) {
             pixelMap.process();
             setPixelMap(pixelMap);
         }

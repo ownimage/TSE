@@ -266,6 +266,12 @@ public class CurveSegment extends SegmentBase {
     }
 
     private void init() {
+//        final Point p0 = getP0();
+//        final Point p1 = getP1();
+//        final Point p1x2 = p1.multiply(2.0d);
+//        final Point p2 = getP2();
+//        final Point p0ap2 = p0.add(p2);
+//        mA= p0ap2.minus(p1x2);
         mA = getP0().add(getP2()).minus(getP1().multiply(2.0d));
         mB = getP1().minus(getP0()).multiply(2.0d);
     }

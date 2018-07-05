@@ -898,14 +898,21 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process05_generateChains();
             process06_straightLinesRefineCorders(mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             validate();
+            System.out.println("validate done");
             process07_mergeChains();
+            System.out.println("process07_mergeChains done");
             validate();
-            // process08_refine();
+            System.out.println("validate done");
+            process08_refine();
+            System.out.println("process08_refine done");
             validate();
+            System.out.println("validate done");
             // // reapproximate(null, mTransformSource.getLineTolerance());
             validate();
+            System.out.println("validate done");
             //process04a_removeLoneNodes();
             indexSegments();
+            System.out.println("indexSegments done");
             //
         } catch (final Exception pEx) {
             System.out.println("pEx");
@@ -1185,13 +1192,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
-        System.out.println("process06_straightLinesRefineCorders");
+        System.out.println("process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
 //      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
 //      mPixelChains) {
 //      @Override
         //public void process(final PixelChain pPixelChain) {
-        mPixelChains.stream().parallel()
+        mPixelChains.stream()
                 .forEach(pixelChain -> {
                     pixelChain.approximate01_straightLines(pMaxiLineTolerance);
                     pixelChain.approximate02_refineCorners();
@@ -1228,16 +1235,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         System.out.println("number of PixelChains: " + mPixelChains.size());
     }
 
-    // public void process08_refine() {
-    // // final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
-    // // @Override
-    // // public void process(final PixelChain pPixelChain) {
-    // // pPixelChain.approximate();
-    // // }
-    // // };
-    // // job.runImmediate();
-    // }
-    //
+    public void process08_refine() {
+//        final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
+//            @Override
+//            public void process(final PixelChain pPixelChain)
+        mPixelChains.stream().forEach(pixelChain -> {
+            pixelChain.approximate();
+        });
+//
+        //job.runImmediate();
+    }
 
 
     @Override

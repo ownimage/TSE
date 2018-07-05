@@ -248,12 +248,19 @@ public class PixelChain implements Serializable {
     }
 
     public void approximate() {
+        //System.out.println("PixelChain::approximate");
         double tolerance = mPixelMap.getLineTolerance() / mPixelMap.getHeight();
+        //System.out.println("tolerance " + tolerance);
         mSegments = new Vector<ISegment>();
         approximate01_straightLines(tolerance);
+        //System.out.println("approximate01_straightLines - done");
         approximate02_refineCorners();
+        //System.out.println("approximate02_refineCorners - done");
         refine();
+        //System.out.println("refine - done");
         checkAllVertexesAttached();
+        //System.out.println("checkAllVertexesAttached - done");
+        //System.out.println("PixelChain::approximate - end");
     }
 
     public void approximate01_straightLines(final double pTolerance) {
@@ -695,6 +702,7 @@ public class PixelChain implements Serializable {
     }
 
     private boolean isValid(final ISegment pSegment) { // need to maks sure that not only the pixels are close to the line but the line is close to the pixels
+        if (pSegment == null) return false;
         if (pSegment.getPixelLength() < 4) return true;
 
         final int startIndexPlus = pSegment.getStartIndex() + 1;
@@ -800,7 +808,7 @@ public class PixelChain implements Serializable {
                                 final double lambda = (double) i / currentSegment.getPixelLength();
                                 final Point p1 = tangentRuler.getPoint(lambda);
                                 final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(currentSegment.getStartVertex(), currentSegment.getEndVertex(), p1);
-                                final double candidateError = candidateCurve.calcError();
+                                final double candidateError = candidateCurve != null ? candidateCurve.calcError() : 0.0d;
 
                                 if (isValid(candidateCurve) && candidateError < lowestError) {
                                     lowestError = candidateError;
@@ -838,7 +846,7 @@ public class PixelChain implements Serializable {
                                 final double lambda = (double) i / currentSegment.getPixelLength();
                                 final Point p1 = tangentRuler.getPoint(lambda);
                                 final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(currentSegment.getStartVertex(), currentSegment.getEndVertex(), p1);
-                                final double candidateError = candidateCurve.calcError();
+                                final double candidateError = candidateCurve != null ? candidateCurve.calcError() : 0.0d;
 
                                 if (isValid(candidateCurve) && candidateError < lowestError) {
                                     lowestError = candidateError;
@@ -867,7 +875,7 @@ public class PixelChain implements Serializable {
 
                             if (startTangent != null && endTangent != null) {
                                 Point p1 = startTangent.intersect(endTangent);
-                                if (startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
+                                if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
                                     Line newStartTangent = new Line(p1, currentSegment.getStartVertex().getUHVWPoint());
                                     Line newEndTangent = new Line(p1, currentSegment.getEndVertex().getUHVWPoint());
                                     p1 = newStartTangent.intersect(newEndTangent);
@@ -1035,7 +1043,7 @@ public class PixelChain implements Serializable {
                                 p1 = new Line(p2, midVertex.getUHVWPoint()).intersect(startLine);
                                 double closestLambda = startLine.closestLambda(p2);
 
-                                if (closestLambda > 0.1d && closestLambda < 1.2d) {
+                                if (p1 != null &&  0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
 
                                     candidateCurve = SegmentFactory.createTempDoubleCurveSegment(startVertex, p1, midVertex, p2, endVertex);
 
