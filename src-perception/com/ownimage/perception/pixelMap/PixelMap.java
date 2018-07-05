@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
@@ -53,7 +54,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private static class AllNodes implements Iterable<Node>, Serializable {
         // note made this static so that when it is serlaized there is not the attempt to serialize the parent.
 
-        private final HashMap<Pixel, Node> mNodes = new HashMap<Pixel, Node>();
+        private final HashMap<Pixel, Node> mNodes = new HashMap();
 
         private Node add(final Pixel pPixel) {
             pPixel.getPixelMap().setData(pPixel, true, NODE);
@@ -84,6 +85,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             for (final Pixel pixel : pPixels) {
                 remove(pixel);
             }
+        }
+
+        public Stream<Node> stream() {
+            return mNodes.values().stream();
         }
 
         public void removeAllElements() {
@@ -891,16 +896,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process04b_removeBristles();  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
             process04a_removeLoneNodes();
             process05_generateChains();
-            process06_straightLinesRefineCorders( mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-            // validate();
-            // process07_mergeChains();
-            // validate();
+            process06_straightLinesRefineCorders(mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            validate();
+            process07_mergeChains();
+            validate();
             // process08_refine();
-            // validate();
+            validate();
             // // reapproximate(null, mTransformSource.getLineTolerance());
-            // validate();
-            // process04a_removeLoneNodes();
-            // indexSegments();
+            validate();
+            //process04a_removeLoneNodes();
+            indexSegments();
             //
         } catch (final Exception pEx) {
             System.out.println("pEx");
@@ -1179,48 +1184,50 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-     private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
-         System.out.println("process06_straightLinesRefineCorders");
+    private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
+        System.out.println("process06_straightLinesRefineCorders");
 
 //      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
 //      mPixelChains) {
 //      @Override
-         //public void process(final PixelChain pPixelChain) {
-         mPixelChains.stream().parallel()
-                 .forEach(pixelChain -> {
-                     pixelChain.approximate01_straightLines(pMaxiLineTolerance);
-                     pixelChain.approximate02_refineCorners();
-                 });
-         System.out.println("process06_straightLinesRefineCorders - done");
+        //public void process(final PixelChain pPixelChain) {
+        mPixelChains.stream().parallel()
+                .forEach(pixelChain -> {
+                    pixelChain.approximate01_straightLines(pMaxiLineTolerance);
+                    pixelChain.approximate02_refineCorners();
+                });
+        System.out.println("process06_straightLinesRefineCorders - done");
 //      }
 //      };
 //      job.runImmediate();
 
-         indexSegments();
-     }
+        indexSegments();
+    }
 
-    // private void process07_mergeChains() {
-    // System.out.println("Segments: " + mSegmentCount);
-    // for (final Node node : getAllNodes()) {
-    // switch (node.countPixelChains()) {
-    // case 2:
-    // final PixelChain chain0 = node.getPixelChain(0);
-    // final PixelChain chain1 = node.getPixelChain(1);
-    // if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-    // chain0.merge(chain1, node);
-    // }
-    // break;
-    // case 3:
-    // break;
-    // case 4:
-    // break;
-    // }
-    // }
-    // mSegmentCount = 0;
-    // indexSegments();
-    // System.out.println("Segments: " + mSegmentCount);
-    // }
-    //
+    private void process07_mergeChains() {
+        System.out.println("number of PixelChains: " + mPixelChains.size());
+        //for (final Node node : getAllNodes()) {
+        mAllNodes.stream().forEach(node -> {
+            switch (node.countPixelChains()) {
+                case 2:
+                    final PixelChain chain0 = node.getPixelChain(0);
+                    final PixelChain chain1 = node.getPixelChain(1);
+                    if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
+                        chain0.merge(chain1, node);
+                    }
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+            }
+        });
+        mSegmentCount = 0;
+
+        indexSegments();
+        System.out.println("number of PixelChains: " + mPixelChains.size());
+    }
+
     // public void process08_refine() {
     // // final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
     // // @Override
@@ -1463,12 +1470,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return color;
     // }
     //
-    // private void validate() {
-    // for (final PixelChain pixelChain : mPixelChains) {
-    // pixelChain.validate();
-    // }
-    // }
-    //
+    private void validate() {
+        for (final PixelChain pixelChain : mPixelChains) {
+            pixelChain.validate();
+        }
+    }
+
     @Override
     public void write(final IPersistDB pDB, final String pId) throws IOException {
         // note that write/read does not preserve the mAllNodes values

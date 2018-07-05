@@ -81,16 +81,17 @@ public class Node extends Pixel {
     /**
      * Gets the pixel chain.
      *
-     * @param pN
-     *            the p n
+     * @param pN the p n
      * @return the pixel chain
      */
-    // public PixelChain getPixelChain(final int pN) {
-    // if (pN > countPixelChains()) { throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
-    // countPixelChains() + " chains."); }
-    //
-    // return mPixelChains.get(pN);
-    // }
+    public PixelChain getPixelChain(final int pN) {
+        if (pN > countPixelChains()) {
+            throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
+                                                       countPixelChains() + " chains.");
+        }
+
+        return mPixelChains.get(pN);
+    }
     //
     // public List<PixelChain> getPixelChains() {
     // return mPixelChains;
