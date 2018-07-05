@@ -100,6 +100,11 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
         return true;
     }
 
+    @Override
+    public boolean isPersistent() {
+        return false;
+    }
+
     public void uiEvent(final IUIEvent pEvent) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");

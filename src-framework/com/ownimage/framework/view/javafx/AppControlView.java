@@ -257,7 +257,7 @@ public class AppControlView extends Application implements IAppControlView {
             }
         });
 
-        dialog.showAndWait().ifPresent(actionControl -> new Thread(actionControl::performAction).start());
+        dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {

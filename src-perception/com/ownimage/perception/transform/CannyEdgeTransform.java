@@ -565,11 +565,13 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         // TODO need to change the 360 value to one that is generated from something
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
         PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
-        if (pixelMap.canRead(pDB, pId)) {
-            pixelMap.read(pDB, pId);
+        if (pixelMap.canRead(pDB, pId + "." + getPropertyName())) {
+            pixelMap.read(pDB, pId + "." + getPropertyName());
             setPixelMap(pixelMap);
         }
-        //System.out.println("mPixelMap linecount=" + mPixelMap.getLineCount());
+
+        getGenerateEdgesDialog().read(pDB, pId + "." + getPropertyName());
+        getEditPixelMapDialog().read(pDB, pId + "." + getPropertyName());
     }
 
     //
@@ -652,7 +654,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         super.write(pDB, pId);
 
         if (mPixelMap != null) {
-            mPixelMap.write(pDB, pId);
+            mPixelMap.write(pDB, pId +"." + getPropertyName());
+        }
+
+        if (mGenerateEdgesDialog != null) {
+            mGenerateEdgesDialog.write(pDB, pId + "." + getPropertyName());
+        }
+
+        if (mEditPixelMapDialog != null) {
+            mEditPixelMapDialog.write(pDB, pId + "." + getPropertyName());
         }
     }
 
@@ -693,10 +703,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mPixelMap = pPixelMap;
         mEditPixelMapDialog = null;
         mEditPixelMapButton.setEnabled(mPixelMap != null);
-    }
-
-    public void setGenerateEdgesDialog(final GenerateEdgesDialog pGenerateEdgesDialog) {
-        mGenerateEdgesDialog = pGenerateEdgesDialog;
     }
 
     @Override
