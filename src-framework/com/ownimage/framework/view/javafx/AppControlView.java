@@ -30,7 +30,6 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -258,7 +257,7 @@ public class AppControlView extends Application implements IAppControlView {
             }
         });
 
-        dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
+        dialog.showAndWait().ifPresent(actionControl -> new Thread(actionControl::performAction).start());
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {
