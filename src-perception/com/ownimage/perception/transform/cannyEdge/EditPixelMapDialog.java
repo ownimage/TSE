@@ -1,6 +1,7 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
@@ -58,6 +60,19 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mPixelMapWidth;
     private final IntegerControl mPixelMapHeight;
     private final IntegerControl mPreviewSize;
+
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        super.read(pDB, pId);
+        mContainerList.setSelectedIndex(pDB.read(pId + ".selectedContainer"));
+    }
+
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        super.write(pDB, pId);
+        pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
+    }
+
     private final IntegerControl mZoom;
     private final IntegerControl mViewOriginX;
     private final IntegerControl mViewOriginY;

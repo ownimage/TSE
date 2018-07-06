@@ -264,6 +264,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 				transform.setValues();
 			}
 
+			setSelectedIndex(pDB.read(pId + ".selectedContainer"));
+
 		} catch (Throwable pT) {
 			mTransforms = save;
 			throw new RuntimeException("Transform->Open failed.", pT);
@@ -397,5 +399,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		for (int i = 0; i < transforms.length; i++) {
 			transforms[i].write(pDB, pId + "." + i);
 		}
+		pDB.write(pId + ".selectedContainer", String.valueOf(getSelectedIndex()));
 	}
+
 }
