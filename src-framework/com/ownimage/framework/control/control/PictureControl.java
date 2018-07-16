@@ -70,8 +70,12 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
         mViews.invokeAll(view -> view.redrawGrafitti());
     }
 
-    public void redrawGrafitti(Consumer<IGrafittiImp> pGrafittiDrawer) {
-        mViews.invokeAll(view -> view.redrawGrafitti(pGrafittiDrawer));
+    public void redrawGrafitti(IGrafitti pIGrafitti) {
+        mViews.invokeAll(view -> {
+            IGrafittiImp grafittiImp = view.updateGrafitti();
+            GrafittiHelper grafittiHelper = new GrafittiHelper(grafittiImp);
+            pIGrafitti.grafitti(grafittiHelper);
+        });
     }
 
     public void setGrafitti(final IGrafitti pGrafitti) {

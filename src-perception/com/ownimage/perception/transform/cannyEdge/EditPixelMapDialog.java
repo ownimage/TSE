@@ -208,8 +208,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
-        Consumer<IGrafittiImp> g = i -> {
-            GrafittiHelper grafittiHelper = new GrafittiHelper(i);
+        IGrafitti g = grafittiHelper-> {
             double x = pEvent.getNormalizedX();
             double y = pEvent.getNormalizedY();
             grafittiHelper.drawLine(0,
