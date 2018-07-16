@@ -66,7 +66,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		if (pControl == mControl) {
 			Platform.runLater(() -> {
 				updatePicture();
-				redrawGrafitti();
+				mControl.redrawGrafitti();
 				resizeTopParent();
 			});
 		}
@@ -126,9 +126,9 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 	}
 
 	@Override
-	public void redrawGrafitti() {
+	public IGrafittiImp redrawGrafitti() {
 		mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
-		mControl.drawGrafitti(mGrafittiImp);
+		return mGrafittiImp;
 	}
 
 	@Override
