@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -27,6 +28,7 @@ import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
+import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -206,7 +208,18 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
-        System.out.println("mouseClickEvent");
+        Consumer<IGrafittiImp> g = i -> {
+            GrafittiHelper grafittiHelper = new GrafittiHelper(i);
+            double x = pEvent.getNormalizedX();
+            double y = pEvent.getNormalizedY();
+            grafittiHelper.drawLine(0,
+                                    0,
+                                    x, //(mViewOriginX.getValue() + (int)(x * mPixelMapWidth.getValue() / mZoom.getValue()))/mPixelMapWidth.getValue(),
+                                    y, //(mViewOriginY.getValue() + (int)(y * mPixelMapWidth.getValue() / mZoom.getValue()))/mPixelMapHeight.getValue(),
+                                    Color.RED,
+                                    false);
+        };
+        mPictureControl.redrawGrafitti(g);
     }
 
     @Override
@@ -244,7 +257,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void keyPressed(final IUIEvent pEvent) {
         System.out.println("keyPressed " + pEvent.getKey());
-        Optional.of(mKeyToContainerMap.get(pEvent.getKey()))
+        Optional.ofNullable(mKeyToContainerMap.get(pEvent.getKey()))
                 .ifPresent(c -> mContainerList.setSelectedIndex(c));
     }
 

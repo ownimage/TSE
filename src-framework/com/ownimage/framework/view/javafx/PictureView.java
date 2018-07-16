@@ -1,12 +1,15 @@
 package com.ownimage.framework.view.javafx;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IGrafitti;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
+import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
@@ -127,6 +130,12 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
 		mControl.drawGrafitti(mGrafittiImp);
 	}
+
+	@Override
+	public void redrawGrafitti(Consumer<IGrafittiImp> pGrafittiDrawer) {
+		pGrafittiDrawer.accept(mGrafittiImp);
+	}
+
 
 	private void resizeTopParent() {
 		Parent parent = mUI;

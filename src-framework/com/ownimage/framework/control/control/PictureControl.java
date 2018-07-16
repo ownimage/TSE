@@ -4,6 +4,7 @@
  */
 package com.ownimage.framework.control.control;
 
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.IContainer;
@@ -16,6 +17,7 @@ import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
+import com.ownimage.framework.view.javafx.GrafittiImp;
 
 public class PictureControl extends ControlBase<PictureControl, PictureType, NullMetaType<PictureType>, PictureType, IPictureView> {
 
@@ -66,7 +68,10 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
 
     public void redrawGrafitti() {
         mViews.invokeAll(view -> view.redrawGrafitti());
-        System.out.println("redraw grafitti");
+    }
+
+    public void redrawGrafitti(Consumer<IGrafittiImp> pGrafittiDrawer) {
+        mViews.invokeAll(view -> view.redrawGrafitti(pGrafittiDrawer));
     }
 
     public void setGrafitti(final IGrafitti pGrafitti) {
