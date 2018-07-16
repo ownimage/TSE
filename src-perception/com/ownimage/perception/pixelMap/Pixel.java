@@ -79,8 +79,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     protected synchronized void calcUHVWPoint() {
-        final double y = ((double) getY() + 0.5d) / getHeight();
-        final double x = getAspectRatio() * (getX() + 0.5d) / getWidth();
+        final double y = (getY() + 0.5d) / getHeight();
+        final double x = (getX() + 0.5d) / getHeight();
         m_UHVW = new Point(x, y);
     }
 
@@ -128,10 +128,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         }
         return false;
 
-    }
-
-    private double getAspectRatio() {
-        return getPixelMap().getAspectRatio();
     }
 
     private int getHeight() {
