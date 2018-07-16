@@ -33,9 +33,12 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
 
@@ -193,6 +196,29 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 pGrafittiHelper.drawFilledRectangle(r, c);
             }
         });
+
+        mPixelMap.forEachPixelChain(pc -> drawPixelChain(pc, pGrafittiHelper));
+    }
+
+    private void drawPixelChain(PixelChain pPixelChain, GrafittiHelper pGrafittiHelper) {
+        pPixelChain.getAllSegments().forEach(s -> drawSegment(s, pGrafittiHelper));
+    }
+
+    private void drawSegment(ISegment pSegment, GrafittiHelper pGrafittiHelper) {
+        final Point start = UHVWtoView(pSegment.getStartPixel().getUHVWPoint());
+        final Point end = UHVWtoView(pSegment.getEndPixel().getUHVWPoint());
+        pGrafittiHelper.drawLine(start, end, Color.YELLOW);
+    }
+
+    private Point UHVWtoView(Point pUHVW) {
+        int zoom = mZoom.getValue();
+        int xMin = mViewOriginX.getValue();
+        int yMin = mViewOriginY.getValue();
+        int width = mPixelMap.getWidth();
+        int height = mPixelMap.getHeight();
+        double x = (double) (width * pUHVW.getX() - xMin) * zoom / width;
+        double y = (double) (height * pUHVW.getY() - yMin) * zoom / mPixelMap.getHeight();
+        return new Point(x, y);
     }
 
     private void setCrop() {

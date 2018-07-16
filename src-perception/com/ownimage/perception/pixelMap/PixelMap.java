@@ -152,8 +152,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
     private final byte mData[][];
-    private AllNodes mAllNodes = new AllNodes();
-    private Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+    private final AllNodes mAllNodes = new AllNodes();
+    private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
     private LinkedList<ISegment>[][] mSegmentIndex;
     private boolean mSegmentIndexValid = false;
@@ -1478,6 +1478,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // }
     //
     private void validate() {
+        System.out.println("Number of chains: " + mPixelChains.size());
         for (final PixelChain pixelChain : mPixelChains) {
             pixelChain.validate();
         }
@@ -1544,5 +1545,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Range2D.forEach(getWidth(), getHeight(), (x, y) -> {
             pFunction.accept(getPixelAt(x, y));
         });
+    }
+
+    public void forEachPixelChain(Consumer<PixelChain> pFunction) {
+        mPixelChains.stream().forEach(pFunction);
     }
 }

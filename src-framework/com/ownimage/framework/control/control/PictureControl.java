@@ -70,19 +70,17 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
         mViews.invokeAll(view -> view.redrawGrafitti());
     }
 
-    public void redrawGrafitti(IGrafitti pIGrafitti) {
+    public void redrawGrafitti(IGrafitti pGrafitti) {
+        Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
         mViews.invokeAll(view -> {
             IGrafittiImp grafittiImp = view.updateGrafitti();
             GrafittiHelper grafittiHelper = new GrafittiHelper(grafittiImp);
-            pIGrafitti.grafitti(grafittiHelper);
+            pGrafitti.grafitti(grafittiHelper);
         });
     }
 
     public void setGrafitti(final IGrafitti pGrafitti) {
-        if (mGrafitti != null) {
-            throw new IllegalStateException("Cannot setSetGrafitti once it has been set");
-        }
-
+        Framework.checkStateNoChangeOnceSet(mLogger, mGrafitti, "mGrafitti");
         mGrafitti = pGrafitti;
     }
 
