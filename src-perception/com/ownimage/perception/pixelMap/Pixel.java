@@ -79,8 +79,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     protected synchronized void calcUHVWPoint() {
-        final double y = (double) getY() / getHeight();
-        final double x = getAspectRatio() * getX() / getWidth();
+        final double y = ((double) getY() + 0.5d) / getHeight();
+        final double x = getAspectRatio() * (getX() + 0.5d) / getWidth();
         m_UHVW = new Point(x, y);
     }
 
