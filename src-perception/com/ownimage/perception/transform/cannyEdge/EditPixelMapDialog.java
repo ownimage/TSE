@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IControl;
@@ -28,7 +28,6 @@ import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
-import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -65,19 +64,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mPixelMapWidth;
     private final IntegerControl mPixelMapHeight;
     private final IntegerControl mPreviewSize;
-
-    @Override
-    public void read(final IPersistDB pDB, final String pId) {
-        super.read(pDB, pId);
-        mContainerList.setSelectedIndex(pDB.read(pId + ".selectedContainer"));
-    }
-
-    @Override
-    public void write(final IPersistDB pDB, final String pId) throws IOException {
-        super.write(pDB, pId);
-        pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
-    }
-
     private final IntegerControl mZoom;
     private final IntegerControl mViewOriginX;
     private final IntegerControl mViewOriginY;
@@ -85,6 +71,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     // Pixel Container
     private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, Color.GREEN);
     private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, Color.RED);
+    private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true);
 
     // Vertex Container
     private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
@@ -197,7 +184,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             }
         });
 
-        mPixelMap.forEachPixelChain(pc -> drawPixelChain(pc, pGrafittiHelper));
+        if (mShowGrafitti.getValue()) {
+            mPixelMap.forEachPixelChain(pc -> drawPixelChain(pc, pGrafittiHelper));
+        }
     }
 
     private void drawPixelChain(PixelChain pPixelChain, GrafittiHelper pGrafittiHelper) {
@@ -236,7 +225,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
-        IGrafitti g = grafittiHelper-> {
+        IGrafitti g = grafittiHelper -> {
             double x = pEvent.getNormalizedX();
             double y = pEvent.getNormalizedY();
             grafittiHelper.drawLine(0,
@@ -296,5 +285,18 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void keyTyped(final IUIEvent pEvent) {
         System.out.println("keyTyped " + pEvent.getKey());
+    }
+
+
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        super.read(pDB, pId);
+        mContainerList.setSelectedIndex(pDB.read(pId + ".selectedContainer"));
+    }
+
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        super.write(pDB, pId);
+        pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
     }
 }
