@@ -18,8 +18,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
@@ -36,8 +35,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
@@ -54,8 +52,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(0, 0);
 
         // WHEN
@@ -72,8 +69,7 @@ public class PixelTest {
                 "   ",
                 " E "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
@@ -90,8 +86,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
@@ -108,8 +103,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
@@ -126,8 +120,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
@@ -144,8 +137,7 @@ public class PixelTest {
                 "    ",
                 "N N "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
@@ -163,8 +155,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
@@ -181,8 +172,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
@@ -199,8 +189,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
@@ -217,8 +206,7 @@ public class PixelTest {
                 "E  ",
                 "EE "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
@@ -235,8 +223,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN

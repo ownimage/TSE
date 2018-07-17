@@ -274,50 +274,42 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public Color getLineColor() {
-        // TODO Auto-generated method stub
-        return null;
+        return mLineColor.getValue();
     }
 
     @Override
     public double getLineCurvePreference() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineCurvePreference.getValue();
     }
 
     @Override
     public int getLineEndLengthPercent() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineEndLengthPercent.getValue();
     }
 
     @Override
     public int getLineEndLengthPixel() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineEndLengthPercent.getValue();
     }
 
     @Override
     public LineEndLengthType getLineEndLengthType() {
-        // TODO Auto-generated method stub
-        return null;
+        return mLineEndLengthType.getValue();
     }
 
     @Override
     public LineEndShape getLineEndShape() {
-        // TODO Auto-generated method stub
-        return null;
+        return mLineEndShape.getValue();
     }
 
     @Override
     public double getLineEndThickness() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineEndThickness.getValue();
     }
 
     @Override
     public double getLineOpacity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLineOpacity.getValue();
     }
 
     @Override
@@ -325,61 +317,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mLineTolerance.getValue();
     }
 
-    //
-    // @Override
-    // public Color getLineColor() {
-    // return mLineColor.getColor();
-    // }
-    //
-    // @Override
-    // public double getLineCurvePreference() {
-    // return mLineCurvePreference.getDouble();
-    // }
-    //
-    // public DoubleControl getLineCurvePreferenceControl() {
-    // return mLineCurvePreference;
-    // }
-    //
-    // @Override
-    // public int getLineEndLengthPercent() {
-    // return mLineEndLengthPercent.getInt();
-    // }
-    //
-    // @Override
-    // public int getLineEndLengthPixel() {
-    // return mLineEndLengthPixels.getInt();
-    // }
-    //
-    // @Override
-    // public LineEndLengthType getLineEndLengthType() {
-    // return (LineEndLengthType) mLineEndLengthType.getEnum();
-    // }
-    //
-    // @Override
-    // public LineEndShape getLineEndShape() {
-    // return (LineEndShape) mLineEndShape.getEnum();
-    // }
-    //
-    // @Override
-    // public double getLineEndThickness() {
-    // return mLineEndThickness.getDouble();
-    // }
-    //
-    // @Override
-    // public double getLineOpacity() {
-    // return mLineOpacity.getDouble();
-    // }
-    //
-    // @Override
-    // public double getLineTolerance() {
-    // return mLineTolerance.getDouble();
-    // }
-    //
-    // public DoubleControl getLineToleranceControl() {
-    // return mLineTolerance;
-    // }
-    //
-    // @Override
+
     @Override
     public int getLongLineLength() {
         return mLongLineLength.getValue();
@@ -387,17 +325,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public double getLongLineThickness() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mLongLineThickness.getValue();
     }
 
-    //
-    // @Override
-    // public double getLongLineThickness() {
-    // return mLongLineThickness.getDouble();
-    // }
-    //
-    // @Override
     @Override
     public int getMediumLineLength() {
         return mMediumLineLength.getValue();
@@ -405,89 +335,39 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public double getMediumLineThickness() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mMediumLineThickness.getValue();
     }
 
     @Override
     public Color getPixelColor() {
-        // TODO Auto-generated method stub
-        return null;
+        return mPixelColor.getValue();
     }
 
     @Override
     public Color getShadowColor() {
-        // TODO Auto-generated method stub
-        return null;
+        return mShadowColor.getValue();
     }
 
     @Override
     public double getShadowOpacity() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mShadowOpacity.getValue();
     }
 
     @Override
     public double getShadowThickness() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mShadowThickness.getValue();
     }
 
     @Override
     public double getShadowXOffset() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mShadowXOffset.getValue();
     }
 
     @Override
     public double getShadowYOffset() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mShadowYOffset.getValue();
     }
 
-    //
-    // @Override
-    // public double getMediumLineThickness() {
-    // return mMediumLineThickness.getDouble();
-    // }
-    //
-    // @Override
-    // public Color getPixelColor() {
-    // return mPixelColor.getColor();
-    // }
-    //
-    // public synchronized PixelMap getPixelMap() {
-    // if (mPixelMap == null) {
-    // mPixelMap = new PixelMap(getWidth(), getHeight(), m360, this); // TODO this needs to come from the m360 variable
-    // }
-    // return mPixelMap;
-    // }
-    //
-    // @Override
-    // public Color getShadowColor() {
-    // return mShadowColor.getColor();
-    // }
-    //
-    // @Override
-    // public double getShadowOpacity() {
-    // return mShadowOpacity.getDouble();
-    // }
-    //
-    // @Override
-    // public double getShadowThickness() {
-    // return mShadowThickness.getDouble();
-    // }
-    //
-    // @Override
-    // public double getShadowXOffset() {
-    // return mShadowXOffset.getDouble();
-    // }
-    //
-    // @Override
-    // public double getShadowYOffset() {
-    // return mShadowYOffset.getDouble();
-    // }
-    //
     @Override
     public int getShortLineLength() {
         return mShortLineLength.getValue();
@@ -495,38 +375,20 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public double getShortLineThickness() {
-        // TODO Auto-generated method stub
-        return 0;
+        return mShortLineThickness.getValue();
     }
 
     @Override
     public boolean getShowPixels() {
-        // TODO Auto-generated method stub
-        return false;
+        return mShowPixels.getValue();
     }
 
     @Override
     public boolean getShowShadow() {
-        // TODO Auto-generated method stub
-        return false;
+        return mShowShadow.getValue();
     }
 
-    //
-    // @Override
-    // public double getShortLineThickness() {
-    // return mShortLineThickness.getDouble();
-    // }
-    //
-    // @Override
-    // public boolean getShowPixels() {
-    // return mShowPixels.getBoolean();
-    // }
-    //
-    // @Override
-    // public boolean getShowShadow() {
-    // return mShowShadow.getBoolean();
-    // }
-    //
+
     // @Override
     // public ICUI getUIDynamic(final IControlPrimative<IPicture> pPreviewPictureControl) {
     //

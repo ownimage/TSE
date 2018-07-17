@@ -811,7 +811,6 @@ public class PixelChain implements Serializable {
                                 final double candidateError = candidateCurve != null ? candidateCurve.calcError() : 0.0d;
 
                                 if (isValid(candidateCurve) && candidateError < lowestError) {
-                                    System.out.println("~####################  curve added");
                                     lowestError = candidateError;
                                     bestSegment = candidateCurve;
                                 }
@@ -847,7 +846,7 @@ public class PixelChain implements Serializable {
                                 final double lambda = (double) i / currentSegment.getPixelLength();
                                 final Point p1 = tangentRuler.getPoint(lambda);
                                 final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(currentSegment.getStartVertex(), currentSegment.getEndVertex(), p1);
-                                final double candidateError = candidateCurve != null ? candidateCurve.calcError() : 0.0d;
+                                final double candidateError = candidateCurve.calcError();
 
                                 if (isValid(candidateCurve) && candidateError < lowestError) {
                                     lowestError = candidateError;
@@ -1084,64 +1083,64 @@ public class PixelChain implements Serializable {
         validate();
     }
 
-    private void refine03_matchDoubleCurves_original() {
-
-        if (mSegments.size() == 1) {
-            return;
-        }
-
-        final Vector<ISegment> segments = new Vector<ISegment>();
-
-        for (final ISegment currentSegment : mSegments) {
-            final IVertex startVertex = currentSegment.getStartVertex();
-            final IVertex endVertex = currentSegment.getEndVertex();
-            final Line startTangent = startVertex.getTangent();
-            final Line endTangent = endVertex.getTangent();
-
-            // get error values from straight line to start the compare
-            ISegment bestSegment = currentSegment;
-            double lowestError = currentSegment.calcError();
-            if (currentSegment instanceof StraightSegment) {
-                lowestError *= getTransformSource().getLineCurvePreference();
-            }
-
-            try {
-                try {
-
-                    for (int i = 1; i < currentSegment.getPixelLength() - 1; i++) { // first and last pixel will throw an error and are equivalent to the straight line
-                        try {
-                            final Vertex through = Vertex.createVertex(this, startVertex.getIndex() + i);
-                            final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(startVertex, startTangent, endVertex, endTangent, through);
-                            if (candidateCurve != null) {
-                                final double candidateError = candidateCurve.calcError();
-
-                                if (isValid(candidateCurve) && candidateError < lowestError) {
-                                    lowestError = candidateError;
-                                    bestSegment = candidateCurve;
-                                }
-                            }
-                        } catch (final Throwable pT) {
-                            System.err.println(pT);
-                        }
-                    }
-                } catch (final Throwable pT) {
-                    mLogger.log(Level.INFO, "Error: ", pT);
-                } finally {
-                    if (bestSegment instanceof DoubleCurveSegment) {
-                        // final LineSegment lineSegment = new LineSegment(currentSegment.getStartUHVWPoint(), currentSegment.getEndUHVWPoint());
-                        // currentSegment.getEndVertex().setTangent(lineSegment);
-                        mLogger.info("DoubleCurve added");
-                    }
-                }
-
-            } finally {
-                bestSegment.attachToVertexes(false);
-                segments.add(bestSegment);
-            }
-        } // end loop
-        mSegments = segments;
-        validate();
-    }
+//    private void refine03_matchDoubleCurves_original() {
+//
+//        if (mSegments.size() == 1) {
+//            return;
+//        }
+//
+//        final Vector<ISegment> segments = new Vector<ISegment>();
+//
+//        for (final ISegment currentSegment : mSegments) {
+//            final IVertex startVertex = currentSegment.getStartVertex();
+//            final IVertex endVertex = currentSegment.getEndVertex();
+//            final Line startTangent = startVertex.getTangent();
+//            final Line endTangent = endVertex.getTangent();
+//
+//            // get error values from straight line to start the compare
+//            ISegment bestSegment = currentSegment;
+//            double lowestError = currentSegment.calcError();
+//            if (currentSegment instanceof StraightSegment) {
+//                lowestError *= getTransformSource().getLineCurvePreference();
+//            }
+//
+//            try {
+//                try {
+//
+//                    for (int i = 1; i < currentSegment.getPixelLength() - 1; i++) { // first and last pixel will throw an error and are equivalent to the straight line
+//                        try {
+//                            final Vertex through = Vertex.createVertex(this, startVertex.getIndex() + i);
+//                            final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(startVertex, startTangent, endVertex, endTangent, through);
+//                            if (candidateCurve != null) {
+//                                final double candidateError = candidateCurve.calcError();
+//
+//                                if (isValid(candidateCurve) && candidateError < lowestError) {
+//                                    lowestError = candidateError;
+//                                    bestSegment = candidateCurve;
+//                                }
+//                            }
+//                        } catch (final Throwable pT) {
+//                            System.err.println(pT);
+//                        }
+//                    }
+//                } catch (final Throwable pT) {
+//                    mLogger.log(Level.INFO, "Error: ", pT);
+//                } finally {
+//                    if (bestSegment instanceof DoubleCurveSegment) {
+//                        // final LineSegment lineSegment = new LineSegment(currentSegment.getStartUHVWPoint(), currentSegment.getEndUHVWPoint());
+//                        // currentSegment.getEndVertex().setTangent(lineSegment);
+//                        mLogger.info("DoubleCurve added");
+//                    }
+//                }
+//
+//            } finally {
+//                bestSegment.attachToVertexes(false);
+//                segments.add(bestSegment);
+//            }
+//        } // end loop
+//        mSegments = segments;
+//        validate();
+//    }
 
     public void restoreFrom(final PixelChain pCopy) {
         // setStartNode(pCopy.getStartNode());

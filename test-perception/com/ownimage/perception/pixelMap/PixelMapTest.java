@@ -31,8 +31,7 @@ public class PixelMapTest {
         };
 
         // WHEN
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -52,8 +51,7 @@ public class PixelMapTest {
                 "   EE EE  ",
                 "E    E    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process02_thin();
@@ -76,8 +74,7 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes();
 
         // WHEN
@@ -101,8 +98,7 @@ public class PixelMapTest {
                 "  NEEEEN  ",
                 "E    N    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process04a_removeLoneNodes();
@@ -125,8 +121,7 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process01_reset();
         pixelMap.process02_thin();
         pixelMap.process03_generateNodes();
@@ -153,8 +148,7 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N N  E    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process03_generateNodes();
@@ -178,8 +172,7 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N    E    "
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes();
 
         // WHEN
@@ -207,8 +200,7 @@ public class PixelMapTest {
                 " N    E    ",
                 "           ",
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes();
 
         // WHEN
@@ -236,8 +228,7 @@ public class PixelMapTest {
                 "     EEEN  ",
                 "           ",
         };
-        PixelMap pixelMap = new PixelMap(input[0].length(), input.length, true, null);
-        Utility.setMap(pixelMap, input);
+        PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes();
 
         // WHEN

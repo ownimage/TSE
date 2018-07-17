@@ -5,6 +5,16 @@ import static org.junit.Assert.fail;
 
 public class Utility {
 
+    public static PixelMap createMap(final String[] map) {
+        return createMap(map, null);
+    }
+
+    public static PixelMap createMap(final String[] map, IPixelMapTransformSource transformSource) {
+        PixelMap pixelMap = new PixelMap(map[0].length(), map.length, true, transformSource);
+        setMap(pixelMap, map);
+        return pixelMap;
+    }
+
     public static String[] getMap(final PixelMap pixelMap) {
         String[] map = new String[pixelMap.getHeight()];
         for (int y = 0; y < pixelMap.getHeight(); y++) {
@@ -20,7 +30,7 @@ public class Utility {
         return map;
     }
 
-    public static void setMap(final PixelMap pixelMap, final String[] map) {
+    private static void setMap(final PixelMap pixelMap, final String[] map) {
         if (map.length != pixelMap.getHeight())
             throw new IllegalArgumentException("map.length != pixelMap.getHeight()");
         int y = 0;

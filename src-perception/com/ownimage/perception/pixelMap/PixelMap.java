@@ -1164,7 +1164,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     }
 
-    private void process05_generateChains() {
+    Vector<PixelChain> process05_generateChains() {
         try {
 
             //process03_generateNodes();
@@ -1193,9 +1193,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //                pProgress.hideProgressBar();
 //            }
         }
+        return mPixelChains;
     }
 
-    private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
+    public void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
         System.out.println("process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
 //      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
@@ -1215,7 +1216,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         indexSegments();
     }
 
-    private void process07_mergeChains() {
+    public void process07_mergeChains() {
         System.out.println("number of PixelChains: " + mPixelChains.size());
         //for (final Node node : getAllNodes()) {
         mAllNodes.stream().forEach(node -> {
