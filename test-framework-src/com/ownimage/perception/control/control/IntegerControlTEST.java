@@ -39,6 +39,11 @@ public class IntegerControlTEST {
 		}
 
 		@Override
+		public void addContainer(final IContainer pChild, final boolean pListenForEvents) {
+
+		}
+
+		@Override
 		public IContainer addControl(final IControl pControl) {
 			return null;
 		}
@@ -87,6 +92,16 @@ public class IntegerControlTEST {
 		@Override
 		public String getPropertyName() {
 			return null;
+		}
+
+		@Override
+		public boolean isPersistent() {
+			return true;
+		}
+
+		@Override
+		public boolean canRead(final IPersistDB pDB, final String pId) {
+			return false;
 		}
 
 		@Override

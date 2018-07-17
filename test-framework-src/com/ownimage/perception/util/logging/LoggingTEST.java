@@ -29,6 +29,7 @@ public class LoggingTEST {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		FrameworkLogger.getInstance().init("logging.proerties", "junit.log");
+		FrameworkLogger.getInstance().clearLog();
 	}
 
 	@AfterClass

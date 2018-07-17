@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.io.IOException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -93,7 +94,7 @@ public class ColorControlTEST {
 	}
 
 	@Test
-	public void ColorControl_read_0_00() {
+	public void ColorControl_read_0_00() throws IOException {
 		IPersistDB db = new PersistDBImpl();
 		mContainer.write(db, "container");
 		mColorControl.setValue(Color.RED);

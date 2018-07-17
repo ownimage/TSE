@@ -178,9 +178,9 @@ public class JobTEST {
 	public void test02a_cancel() {
 		System.out.println("test02a_cancel");
 		String name = "test02a_cancel";
-		IJob job1 = new JobTest(name, Priority.LOW);
-		IJob job2 = new JobTest(name, Priority.LOW, this);
-		IJob job3 = new JobTest(name, Priority.LOW, this);
+		JobTest job1 = new JobTest(name, Priority.LOW);
+		JobTest job2 = new JobTest(name, Priority.LOW, this);
+		JobTest job3 = new JobTest(name, Priority.LOW, this);
 
 		assertEquals(Status.CREATED, job2.getStatus());
 
@@ -216,7 +216,7 @@ public class JobTEST {
 		System.out.println("test03a_complete");
 
 		String name = "test03a_complete";
-		IJob job1 = new JobTest(name, Priority.LOW);
+		JobTest job1 = new JobTest(name, Priority.LOW);
 
 		assertEquals(Status.CREATED, job1.getStatus());
 

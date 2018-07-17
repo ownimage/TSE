@@ -7,6 +7,8 @@ package com.ownimage.perception.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +58,7 @@ public class IPersistDBTest {
 	}
 
 	@Test
-	public void Container_read_TEST1() {
+	public void Container_read_TEST1() throws IOException {
 		final double testValue = 0.811d;
 		final PersistDBImpl db = new PersistDBImpl();
 		final Container containerWrite = new Container("display", "container", mIGetUndoRedoAssistant);
@@ -73,7 +75,7 @@ public class IPersistDBTest {
 	}
 
 	@Test
-	public void Container_write_TEST1() {
+	public void Container_write_TEST1() throws IOException {
 		final PersistDBImpl db = new PersistDBImpl();
 		final Container container = new Container("display", "container", mIGetUndoRedoAssistant);
 		final DoubleControl control = new DoubleControl("display", "control", container, 0.3d);
@@ -199,7 +201,7 @@ public class IPersistDBTest {
 	}
 
 	@Test
-	public void NestedContainer_write_TEST1() {
+	public void NestedContainer_write_TEST1() throws IOException {
 		final PersistDBImpl db = new PersistDBImpl();
 		final Container parent = new Container("display", "parent", mIGetUndoRedoAssistant);
 		final Container container = new Container("display", "container", mIGetUndoRedoAssistant, parent);

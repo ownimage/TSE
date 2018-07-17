@@ -87,12 +87,6 @@ public class ViewFactoryASSISTANT implements IViewFactory {
 	}
 
 	@Override
-	public IAppControlView createView(final IAppControl pAppControl) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public IView createView(final IContainer pContainer) {
 		// TODO Auto-generated method stub
 		return null;
