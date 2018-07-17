@@ -231,7 +231,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void graffiti(final GrafittiHelper pGraphics) {
+    public void graffiti(final ISegmentGrafittiHelper pGraphics) {
     }
 
     @Override
@@ -302,7 +302,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public String toString() {
-        return "ApproximationBase[" + mStart + "," + mEnd + "]";
+        return "SegmentBase[" + mStart + "," + mEnd + "]";
     }
 
     @Override

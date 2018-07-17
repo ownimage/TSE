@@ -35,7 +35,10 @@ import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.pixelMap.segment.CurveSegment;
+import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.segment.StraightSegment;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed throught the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -913,6 +916,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             //process04a_removeLoneNodes();
             indexSegments();
             System.out.println("indexSegments done");
+            printCount();
             //
         } catch (final Exception pEx) {
             System.out.println("pEx");
@@ -1482,6 +1486,49 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         for (final PixelChain pixelChain : mPixelChains) {
             pixelChain.validate();
         }
+    }
+
+
+    private void printCount() {
+        class Counter {
+            public int straight = 0;
+            public int curve = 0;
+            public int doubleCurve = 0;
+            public int other = 0;
+
+            public void incStraight() {
+                straight++;
+            }
+
+            public void incCurve() {
+                curve++;
+            }
+
+            public void incDoubleCurve() {
+                doubleCurve++;
+            }
+
+            public void incOther() {
+                other++;
+            }
+
+            public void print() {
+                System.out.format("straight %d, curve %d, doubleCurve %d, other %d\n", straight, curve, doubleCurve, other);
+            }
+        }
+
+        final Counter counter = new Counter();
+
+        mPixelChains.stream().forEach(pc -> {
+            pc.getAllSegments().forEach(s -> {
+                if (s instanceof StraightSegment) {
+                } else if (s instanceof CurveSegment) {
+                } else if (s instanceof DoubleCurveSegment) {
+                } else counter.incOther();
+            });
+        });
+
+        counter.print();
     }
 
     @Override

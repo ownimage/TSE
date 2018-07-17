@@ -258,11 +258,12 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public void graffiti(final GrafittiHelper pGraphics) {
-//        pGraphics.graffiitControlLine(getP0(), getP1());
-//        pGraphics.graffiitControlLine(getP1(), getP2());
-//        pGraphics.graffiitControlLine(getP2(), getP0());
-//        pGraphics.graffitiControlPoint(getP1());
+    public void graffiti(final ISegmentGrafittiHelper pGraphics) {
+        pGraphics.graffiitControlLine(getStartUHVWPoint(), getEndUHVWPoint());
+        pGraphics.graffiitControlLine(getP0(), getP1());
+        pGraphics.graffiitControlLine(getP1(), getP2());
+        pGraphics.graffiitControlLine(getP2(), getP0());
+        pGraphics.graffitiControlPoint(getP1());
     }
 
     private void init() {
@@ -294,4 +295,8 @@ public class CurveSegment extends SegmentBase {
         super.vertexChange(pVertex);
     }
 
+    @Override
+    public String toString() {
+        return "CurveSegment[" + super.toString() + "]";
+    }
 }

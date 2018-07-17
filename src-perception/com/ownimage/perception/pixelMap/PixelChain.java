@@ -811,6 +811,7 @@ public class PixelChain implements Serializable {
                                 final double candidateError = candidateCurve != null ? candidateCurve.calcError() : 0.0d;
 
                                 if (isValid(candidateCurve) && candidateError < lowestError) {
+                                    System.out.println("~####################  curve added");
                                     lowestError = candidateError;
                                     bestSegment = candidateCurve;
                                 }

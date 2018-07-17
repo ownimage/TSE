@@ -159,7 +159,7 @@ public interface ISegment extends ITestableLine, Serializable {
      */
     public IVertex getStartVertex();
 
-    public void graffiti(GrafittiHelper pGraphics);
+    public void graffiti(ISegmentGrafittiHelper pGraphics);
 
     public Intersect3D intersect3D(Point pUhvw);
 

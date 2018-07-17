@@ -205,9 +205,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void drawSegment(ISegment pSegment, GrafittiHelper pGrafittiHelper) {
-        final Point start = UHVWtoView(pSegment.getStartPixel().getUHVWPoint());
-        final Point end = UHVWtoView(pSegment.getEndPixel().getUHVWPoint());
-        pGrafittiHelper.drawLine(start, end, Color.YELLOW);
+        //final Point start = UHVWtoView(pSegment.getStartPixel().getUHVWPoint());
+        //final Point end = UHVWtoView(pSegment.getEndPixel().getUHVWPoint());
+        //pGrafittiHelper.drawLine(start, end, Color.YELLOW);
+        SegmentGrafittiHelper segmentGrafittiHelper = new SegmentGrafittiHelper(pGrafittiHelper, this::UHVWtoView);
+        pSegment.graffiti(segmentGrafittiHelper);
     }
 
     private Point UHVWtoView(Point pUHVW) {
