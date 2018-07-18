@@ -196,28 +196,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
-        int zoom = mZoom.getValue();
 
-        // going to scan over pixelMap
+        int zoom = mZoom.getValue();
         int xMin = mViewOriginX.getValue();
         int yMin = mViewOriginY.getValue();
-        int xSize = 1 + Math.floorDiv(mPixelMap.getWidth(), zoom);
-        int ySize = 1 + Math.floorDiv(mPixelMap.getHeight(), zoom);
-
-        System.out.println(xMin + " " + yMin + " " + xSize + " " + ySize);
 
         mPixelMap.forEach((x, y) -> {
-            if (mPixelMap.getValue(x, y) != 0) {
-                double x1 = (double) (x - xMin) * zoom / mPixelMap.getWidth();
-                double x2 = (double) (x + 1 - xMin) * zoom / mPixelMap.getWidth();
-                double y1 = (double) (y - yMin) * zoom / mPixelMap.getHeight();
-                double y2 = (double) (y + 1 - yMin) * zoom / mPixelMap.getHeight();
-                Rectangle r = new Rectangle(x1, y1, x2, y2);
-                Pixel pixel = mPixelMap.getPixelAt(x, y);
-                Color c =
-                        pixel.isNode() ? mNodeColor.getValue() :
-                                pixel.isEdge() ? mEdgeColor.getValue() :
-                                        Color.BLACK;
+            Pixel pixel = mPixelMap.getPixelAt(x, y);
+            if (pixel.isNode() || pixel.isEdge()) {
+                Rectangle r = pixelToRectangle(pixel, xMin, yMin, zoom);
+                Color c = pixel.isNode() ? mNodeColor.getValue() : mEdgeColor.getValue();
                 pGrafittiHelper.drawFilledRectangle(r, c);
             }
         });
@@ -225,6 +213,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (mShowGrafitti.getValue()) {
             mPixelMap.forEachPixelChain(pc -> drawPixelChain(pc, pGrafittiHelper));
         }
+    }
+
+    private Rectangle pixelToRectangle(Pixel pPixel, int xMin, int yMin, int zoom) {
+        int x = pPixel.getX();
+        int y = pPixel.getY();
+        double x1 = (double) (x - xMin) * zoom / mPixelMap.getWidth();
+        double x2 = (double) (x + 1 - xMin) * zoom / mPixelMap.getWidth();
+        double y1 = (double) (y - yMin) * zoom / mPixelMap.getHeight();
+        double y2 = (double) (y + 1 - yMin) * zoom / mPixelMap.getHeight();
+        Rectangle r = new Rectangle(x1, y1, x2, y2);
+        return r;
     }
 
     private void drawPixelChain(PixelChain pPixelChain, GrafittiHelper pGrafittiHelper) {
