@@ -1044,6 +1044,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         });
     }
+    public void setEdge(final Pixel pPixel, final boolean pValue) {
+        if (pPixel.isNode() && pValue == false) {
+            setNode(pPixel, false);
+        }
+        setData(pPixel, pValue, EDGE);
+        calcIsNode(pPixel);
+        pPixel.getNeighbours().forEach(p -> {
+            thin(p);
+            calcIsNode(p);
+        });
+        thin(pPixel);
+    }
 
     public void setNode(final Pixel pPixel, final boolean pValue) {
         if (pPixel.isNode() && pValue == false) {

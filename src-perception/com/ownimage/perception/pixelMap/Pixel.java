@@ -230,7 +230,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public void setEdge(final boolean pValue) {
-        getPixelMap().setData(this, pValue, EDGE);
+        getPixelMap().setEdge(this, pValue);
     }
 
     public boolean isFixed() {
