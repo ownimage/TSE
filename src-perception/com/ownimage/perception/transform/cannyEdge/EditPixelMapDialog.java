@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -18,6 +19,7 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IGrafitti;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
@@ -47,6 +49,28 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
+    private enum PixelAction {
+        On("On"),
+        Off("Off"),
+        OffWide("Off Wide"),
+        OffVeryWide("Off Very Wide"),
+        Toggle("Toggle"),
+        DeletePixelChain("Delete Pixel Chain");
+
+        private final String mName;
+
+        private PixelAction(String pName) {
+            mName = pName;
+        }
+
+        public String toString() {
+            return mName;
+        }
+
+    }
+
+    private Map<PixelAction, Consumer<Pixel>> mActionMap = new HashMap<>();
+
     private final PixelMap mPixelMap;
 
     private final ITransform mTransform;
@@ -72,6 +96,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, Color.GREEN);
     private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, Color.RED);
     private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true);
+    private final ObjectControl<PixelAction> mPixelAction =
+            new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
 
     // Vertex Container
     private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
@@ -99,10 +125,22 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.setUIListener(this);
         updatePreview();
 
+        setupKeyToContainerMap();
+        setupActionMap();
+    }
+
+    private void setupKeyToContainerMap() {
         mKeyToContainerMap.put("G", mGeneralContainer);
         mKeyToContainerMap.put("P", mPixelControlContainer);
         mKeyToContainerMap.put("V", mVertexControlContainer);
     }
+
+    private void setupActionMap() {
+        mActionMap.put(PixelAction.On, this::mouseClickEventPixelViewOn);
+        mActionMap.put(PixelAction.Off, this::mouseClickEventPixelViewOff);
+        mActionMap.put(PixelAction.Toggle, this::mouseClickEventPixelViewToggle);
+    }
+
 
     private void updatePreview() {
         if (mPreviewSize.getValue() != mPictureControl.getWidth()) {
@@ -208,8 +246,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         int width = mPixelMap.getWidth();
         int height = mPixelMap.getHeight();
         double x = (double) (width * pUHVW.getX() - xMin) * zoom / width;
-        double y = (double) (height * pUHVW.getY() - yMin) * zoom / mPixelMap.getHeight();
+        double y = (double) (height * pUHVW.getY() - yMin) * zoom / height;
         return new Point(x, y);
+    }
+
+    private Pixel eventToPixel(IUIEvent pEvent) {
+        int zoom = mZoom.getValue();
+        int size = mPreviewSize.getValue();
+        int xMin = mViewOriginX.getValue();
+        int yMin = mViewOriginY.getValue();
+        int width = mPixelMap.getWidth();
+        int height = mPixelMap.getHeight();
+        int x = xMin + (pEvent.getX() * width / (zoom * size));
+        int y = yMin + (pEvent.getY() * height / (zoom * size));
+        System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pEvent.getX(), pEvent.getY(), x, y);
+        return mPixelMap.getPixelAt(x, y);
     }
 
     private void setCrop() {
@@ -225,9 +276,38 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
+        if (isPixelView()) mouseClickEventPixelView(eventToPixel(pEvent));
+    }
+
+    private void mouseClickEventPixelView(final Pixel pPixel) {
+        final Optional<Consumer<Pixel>> action = Optional.ofNullable(mActionMap.get(mPixelAction.getValue()));
+        action.ifPresent(a -> a.accept(pPixel));
+    }
+
+    private void mouseClickEventPixelViewOn(final Pixel pPixel) {
+        pPixel.setEdge(true);
+        cleanPixel(pPixel);
+        mPictureControl.redrawGrafitti();
+    }
+
+    private void cleanPixel(final Pixel pPixel) { // TODO should this be a member of the Pixel
+        pPixel.setInChain(false);
+        pPixel.setVisited(false);
+    }
+
+    private void mouseClickEventPixelViewOff(final Pixel pPixel) {
+        pPixel.setEdge(false);
+        cleanPixel(pPixel);
+        mPictureControl.redrawGrafitti();
+    }
+
+    private void mouseClickEventPixelViewOffWide(final Pixel pPixel) {
+    }
+
+    private void mouseClickEventPixelViewOffVeryWide(final Pixel pPixel) {
         IGrafitti g = grafittiHelper -> {
-            double x = pEvent.getNormalizedX();
-            double y = pEvent.getNormalizedY();
+            double x = 0.5;//pEvent.getNormalizedX();
+            double y = 0.5;//pEvent.getNormalizedY();
             grafittiHelper.drawLine(0,
                                     0,
                                     x, //(mViewOriginX.getValue() + (int)(x * mPixelMapWidth.getValue() / mZoom.getValue()))/mPixelMapWidth.getValue(),
@@ -236,6 +316,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                                     false);
         };
         mPictureControl.redrawGrafitti(g);
+    }
+
+    private void mouseClickEventPixelViewToggle(final Pixel pPixel) {
+        pPixel.setEdge(!pPixel.isEdge());
+        cleanPixel(pPixel);
+        mPictureControl.redrawGrafitti();
+    }
+
+    private void mouseClickEventPixelViewDeletePixelChain(final Pixel pPixel) {
     }
 
     @Override
@@ -298,5 +387,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void write(final IPersistDB pDB, final String pId) throws IOException {
         super.write(pDB, pId);
         pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
+    }
+
+    private boolean isGeneralView() {
+        return mContainerList.getSelectedContainer() == mGeneralContainer;
+    }
+
+    private boolean isPixelView() {
+        return mContainerList.getSelectedContainer() == mPixelControlContainer;
+    }
+
+    private boolean isVertexView() {
+        return mContainerList.getSelectedContainer() == mVertexControlContainer;
     }
 }
