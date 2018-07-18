@@ -19,18 +19,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBuffer;
 import com.ownimage.framework.undo.UndoRedoBuffer;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
@@ -199,6 +202,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         indexSegments();
         mPixelChains.addAll(Arrays.asList(pPixelChains));
         mLogger.exiting(mClassname, "addPixelChain");
+    }
+
+    public List<PixelChain> getPixelChain(final Pixel pPixel) {
+        Framework.checkParameterNotNull(mLogger, pPixel, "pPixel");
+        mLogger.entering(mClassname, "getPixelChain");
+        final List<PixelChain> pixelChains = mPixelChains.stream().filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
+        mLogger.exiting(mClassname, "getPixelChain");
+        return pixelChains;
     }
 
     // public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
@@ -1044,6 +1055,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         });
     }
+
     public void setEdge(final Pixel pPixel, final boolean pValue) {
         if (pPixel.isNode() && pValue == false) {
             setNode(pPixel, false);
@@ -1148,7 +1160,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void process04b_removeBristles() {
         final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
 
-        for (final Node node : mAllNodes) {
+        mAllNodes.forEach(node -> {
             for (final Pixel other : node.getNodeNeighbours()) {
                 final Set<Pixel> nodeSet = node.allEdgeNeighbours();
                 final Set<Pixel> otherSet = other.allEdgeNeighbours();
@@ -1162,18 +1174,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
                     // TODO should be a better check here to see whether it is better to remove the other node
                     toBeRemoved.add(node);
-                    node.setEdge(false);
                 }
             }
-        }
-        mAllNodes.removeAll(toBeRemoved);
+        });
 
+        mAllNodes.removeAll(toBeRemoved);
         toBeRemoved.stream()
                 .forEach(pixel -> {
+                    pixel.setEdge(false);
                     pixel.allEdgeNeighbours().stream()
                             .forEach(pixelNeighbour -> pixelNeighbour.calcIsNode());
                 });
-
     }
 
     Vector<PixelChain> process05_generateChains() {

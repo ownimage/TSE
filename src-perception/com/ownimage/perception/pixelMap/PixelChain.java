@@ -1412,7 +1412,6 @@ public class PixelChain implements Serializable {
         setInChain(false);
         setVisited(false);
         setEdge(false);
-
     }
 }
 //package com.ownimage.perception.pixelMap;

@@ -139,6 +139,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mActionMap.put(PixelAction.On, this::mouseClickEventPixelViewOn);
         mActionMap.put(PixelAction.Off, this::mouseClickEventPixelViewOff);
         mActionMap.put(PixelAction.Toggle, this::mouseClickEventPixelViewToggle);
+        mActionMap.put(PixelAction.DeletePixelChain, this::mouseClickEventPixelViewDeletePixelChain);
     }
 
 
@@ -275,6 +276,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
+        new Thread(() -> mouseClickEventAsync(pEvent)).start();
+    }
+
+    public void mouseClickEventAsync(final IUIEvent pEvent) {
         if (isPixelView()) mouseClickEventPixelView(eventToPixel(pEvent));
     }
 
@@ -324,6 +329,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseClickEventPixelViewDeletePixelChain(final Pixel pPixel) {
+        mPixelMap.getPixelChain(pPixel).stream().forEach(pc -> pc.delete());
+        cleanPixel(pPixel);
+        mPictureControl.redrawGrafitti();
     }
 
     @Override
