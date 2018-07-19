@@ -126,9 +126,11 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 	}
 
 	@Override
-	public IGrafittiImp redrawGrafitti() {
-		mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
-		return mGrafittiImp;
+	public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
+		Platform.runLater(() -> {
+			mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
+			pGrafitti.accept(mGrafittiImp);
+		});
 	}
 
 	@Override

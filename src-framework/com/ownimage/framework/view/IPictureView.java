@@ -8,7 +8,7 @@ import com.ownimage.framework.view.javafx.GrafittiImp;
 
 public interface IPictureView extends IView {
 
-	public IGrafittiImp redrawGrafitti();
+	public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti);
 
 	public IGrafittiImp updateGrafitti();
 

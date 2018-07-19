@@ -68,8 +68,7 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
 
     public void redrawGrafitti() {
         mViews.invokeAll(view -> {
-            IGrafittiImp grafittiImp = view.redrawGrafitti();
-            drawGrafitti(grafittiImp);
+            view.redrawGrafitti(this::drawGrafitti);
         });
     }
 
