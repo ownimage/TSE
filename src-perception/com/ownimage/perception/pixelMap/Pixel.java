@@ -153,7 +153,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Neighbours();
     }
 
-    public Iterable<Pixel> getNodeNeighbours() {
+    public Vector<Pixel> getNodeNeighbours() {
         mLogger.entering(mClassname, "getNodeNeighbours");
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("Pixel = " + this);
@@ -172,6 +172,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         mLogger.exiting(mClassname, "getNodeNeighbours");
 
         return allNeighbours;
+    }
+
+    public int countNodeNeighbours() {
+        return getNodeNeighbours().size();
     }
 
     PixelMap getPixelMap() {
@@ -262,6 +266,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public void setNode(final boolean pValue) {
         getPixelMap().setNode(this, pValue);
+    }
+
+    public byte getValue() {
+        return mPixelMap.getValue(getX(), getY());
     }
 
     public boolean isUnVisitedEdge() {

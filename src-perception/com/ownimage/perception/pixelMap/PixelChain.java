@@ -679,7 +679,7 @@ public class PixelChain implements Serializable {
     }
 
     // TODO can remove the pSelectedVertex from this as this is drawn separately .. The reason for this is that the selected Vertex might be behind a non=selected one.
- //   public void grafittiVertexsAndControlLines(final EPMDGraphicsHelper pEPMD) {
+    //   public void grafittiVertexsAndControlLines(final EPMDGraphicsHelper pEPMD) {
 //        mLogger.entering(mClassname, "grafittiVertexsAndControlLines");
 //
 //        // the vertexes are drawn on afterwards so they appear on top
@@ -689,7 +689,7 @@ public class PixelChain implements Serializable {
 //        }
 //
 //        mLogger.exiting(mClassname, "grafittiVertexsAndControlLines");
- //   }
+    //   }
 
     public void indexSegments() {
         double startPosition = 0.0d;
@@ -1043,7 +1043,7 @@ public class PixelChain implements Serializable {
                                 p1 = new Line(p2, midVertex.getUHVWPoint()).intersect(startLine);
                                 double closestLambda = startLine.closestLambda(p2);
 
-                                if (p1 != null &&  0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
+                                if (p1 != null && 0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
 
                                     candidateCurve = SegmentFactory.createTempDoubleCurveSegment(startVertex, p1, midVertex, p2, endVertex);
 
@@ -1395,10 +1395,17 @@ public class PixelChain implements Serializable {
         }
     }
 
-    public void setEdge(boolean pValue) {
-        for (Pixel pixel : mPixels) {
-            pixel.setEdge(pValue);
-        }
+    private void setEdge() {
+        mPixels.stream()
+                .filter(p -> p != mPixels.firstElement())
+                .filter(p -> p != mPixels.lastElement())
+                .forEach(p -> {
+                    p.setEdge(false);
+                });
+        mPixels.stream()
+                .filter(p -> p.isNode())
+                .filter(p -> p.countEdgeNeighbours() < 2 || p.countNodeNeighbours() == 2)
+                .forEach(p -> p.setEdge(false));
     }
 
     public void setVisited(boolean pValue) {
@@ -1411,8 +1418,9 @@ public class PixelChain implements Serializable {
         getPixelMap().removePixelChain(this);
         setInChain(false);
         setVisited(false);
-        setEdge(false);
+        setEdge();
     }
+
 }
 //package com.ownimage.perception.pixelMap;
 //
