@@ -120,8 +120,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     public boolean equals(final Object pObj) {
         if (pObj instanceof Pixel) {
             final Pixel pixel = (Pixel) pObj;
-            if (getPixelMap() == pixel.getPixelMap() //
-                    && getX() == pixel.getX() // )
+            if (getPixelMap() == pixel.getPixelMap()
+                    && getX() == pixel.getX()
                     && getY() == pixel.getY()) {
                 return true;
             }

@@ -104,6 +104,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         public int size() {
             return mNodes.size();
         }
+
+        public void setPixelMap(final PixelMap pPixelMap) {
+            mNodes.values().parallelStream().forEach(n -> n.setPixelMap(pPixelMap));
+        }
+
+        public void putAll(final AllNodes allNodes) {
+            mNodes.putAll(allNodes.mNodes);
+        }
     }
 
 //    private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
@@ -1320,32 +1328,40 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
 
             // mPixelChains
-//            {
-//                String objectString = pProperites.getProperty(pId + ".objects");
-//                byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
-//
-//                ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
-//                ObjectInputStream ois = new ObjectInputStream(bais);
-//                final Object o = ois.readObject();
-//                mPixelChains = (Vector<PixelChain>) o;
-//
-//                bais = null;
-//                ois = null;
-//                objectString = null;
-//                objectBytes = null;
-//
-//                mLogger.info("mPixelChains size() = " + mPixelChains.size());
-//
-//                for (final PixelChain chain : mPixelChains) {
-//                    chain.setPixelMap(this);
-//                }
-//
-//                for (final PixelChain chain : mPixelChains) {
-//                    chain.indexSegments();
-//                }
-//
-//                mLogger.info("mSegmentCount = " + mSegmentCount);
-//            }
+            {
+                String objectString = pDB.read(pId + ".objects");
+                byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+
+                final Vector<PixelChain> pixelChains = (Vector<PixelChain>) ois.readObject();
+                mPixelChains.removeAllElements();
+                mPixelChains.addAll(pixelChains);
+                mPixelChains.parallelStream().forEach(pc ->pc.setPixelMap(this));
+
+                final AllNodes allNodes = (AllNodes) ois.readObject();
+                mAllNodes.removeAllElements();
+                mAllNodes.putAll(allNodes);
+                mAllNodes.setPixelMap(this);
+
+                bais = null;
+                ois = null;
+                objectString = null;
+                objectBytes = null;
+
+                mLogger.info("mPixelChains size() = " + mPixelChains.size());
+
+                for (final PixelChain chain : mPixelChains) {
+                    chain.setPixelMap(this);
+                }
+
+                for (final PixelChain chain : mPixelChains) {
+                    chain.indexSegments();
+                }
+
+                mLogger.info("mSegmentCount = " + mSegmentCount);
+            }
 
         } catch (final EOFException pEx) {
             mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
@@ -1578,31 +1594,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             pixelString = null;
         }
 
-        // mData check
-//        {
-//            int cnt = 0;
-//            for (int x = 0; x < getWidth(); x++) {
-//                for (int y = 0; y < getHeight(); y++) {
-//                    if (getValue(x, y) != 0) {
-//                        cnt++;
-//                    }
-//                }
-//            }
-//            mLogger.info("mData cnt = " + cnt);
-//
-//            // mAllNodes & mPixelChains
-//            mLogger.finest("About to wrtie mAllNodes and mPixelChains");
-//            mLogger.info("mAllNodes size() = " + mAllNodes.size());
-//            //mLogger.info("mPixelChains size() = " + mPixelChains.size());
-//            baos = new ByteArrayOutputStream();
-//            oos = new ObjectOutputStream(baos);
-//            //oos.writeObject(mPixelChains);
-//            oos.close();
-//
-//            String objectString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
-//            pDB.write(pId + ".objects", objectString);
-//            objectString = null;
-//        }
+        // mAllNodes & mPixelChains
+        mLogger.finest("About to write mAllNodes and mPixelChains");
+        mLogger.info("mAllNodes size() = " + mAllNodes.size());
+        mLogger.info("mPixelChains size() = " + mPixelChains.size());
+        baos = new ByteArrayOutputStream();
+        oos = new ObjectOutputStream(baos);
+        oos.writeObject(mPixelChains);
+        oos.writeObject(mAllNodes);
+        oos.close();
+
+        String objectString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
+        pDB.write(pId + ".objects", objectString);
+        objectString = null;
         mLogger.info("mSegmentCount = " + mSegmentCount);
 
         mLogger.exiting(mClassname, "write");
