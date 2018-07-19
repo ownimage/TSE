@@ -140,6 +140,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mActionMap.put(PixelAction.Off, this::mouseClickEventPixelViewOff);
         mActionMap.put(PixelAction.Toggle, this::mouseClickEventPixelViewToggle);
         mActionMap.put(PixelAction.DeletePixelChain, this::mouseClickEventPixelViewDeletePixelChain);
+        mActionMap.put(PixelAction.OffVeryWide, this::mouseClickEventPixelViewOffVeryWide);
     }
 
 

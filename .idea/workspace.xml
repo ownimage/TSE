@@ -29,10 +29,10 @@
     <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/NY2.transform" afterPath="$PROJECT_DIR$/NY2.transform" />
-      <change beforePath="$PROJECT_DIR$/Perception.log.lck" afterPath="" />
       <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java" />
       <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java" />
       <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -54,12 +54,9 @@
       <file leaf-file-name="PictureView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-              <folding>
-                <element signature="e#4353#4354#0" expanded="true" />
-                <element signature="e#4379#4380#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="432">
+              <caret line="142" column="0" lean-forward="true" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -77,24 +74,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IPictureView.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="IPictureView.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+            <state relative-caret-position="200">
+              <caret line="12" column="63" lean-forward="false" selection-start-line="12" selection-start-column="63" selection-end-line="12" selection-end-column="63" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EditPixelMapDialog.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="EditPixelMapDialog.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321">
-              <caret line="205" column="53" lean-forward="true" selection-start-line="205" selection-start-column="53" selection-end-line="205" selection-end-column="53" />
+            <state relative-caret-position="462">
+              <caret line="134" column="61" lean-forward="true" selection-start-line="134" selection-start-column="61" selection-end-line="134" selection-end-column="61" />
               <folding>
-                <element signature="e#13275#13276#0" expanded="true" />
-                <element signature="e#13345#13346#0" expanded="true" />
+                <element signature="e#13367#13368#0" expanded="true" />
+                <element signature="e#13437#13438#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -174,8 +171,8 @@
       <file leaf-file-name="PictureControl.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="52" column="16" lean-forward="false" selection-start-line="52" selection-start-column="16" selection-end-line="52" selection-end-column="16" />
+            <state relative-caret-position="381">
+              <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -243,8 +240,8 @@
       <find>LineEndSh</find>
       <find>LineEndShape</find>
       <find>getPixelChain</find>
-      <find>redr</find>
       <find>run</find>
+      <find>redr</find>
     </findStrings>
     <replaceStrings>
       <replace>this::</replace>
@@ -316,10 +313,10 @@
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelChain.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Pixel.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
+        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java" />
+        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java" />
       </list>
     </option>
   </component>
@@ -778,7 +775,7 @@
       <workItem from="1531744260288" duration="14272000" />
       <workItem from="1531836339823" duration="27797000" />
       <workItem from="1532009497628" duration="912000" />
-      <workItem from="1532014229554" duration="6831000" />
+      <workItem from="1532014229554" duration="7382000" />
     </task>
     <servers />
   </component>
@@ -815,7 +812,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="170161000" />
+    <option name="totallyTimeSpent" value="170712000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="140" y="0" width="3448" height="1922" extended-state="0" />
@@ -866,13 +863,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java</url>
-          <line>277</line>
+          <line>278</line>
           <properties />
           <option name="timeStamp" value="100" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java</url>
-          <line>331</line>
+          <line>332</line>
           <properties>
             <option name="lambda-ordinal" value="-1" />
           </properties>
@@ -918,7 +915,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java</url>
-          <line>293</line>
+          <line>294</line>
           <properties />
           <option name="timeStamp" value="109" />
         </line-breakpoint>
@@ -1559,41 +1556,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="12" column="63" lean-forward="false" selection-start-line="12" selection-start-column="63" selection-end-line="12" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="142" column="0" lean-forward="true" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="52" column="16" lean-forward="false" selection-start-line="52" selection-start-column="16" selection-end-line="52" selection-end-column="16" />
+        <state relative-caret-position="381">
+          <caret line="78" column="0" lean-forward="false" selection-start-line="78" selection-start-column="0" selection-end-line="78" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="205" column="53" lean-forward="true" selection-start-line="205" selection-start-column="53" selection-end-line="205" selection-end-column="53" />
+        <state relative-caret-position="462">
+          <caret line="134" column="61" lean-forward="true" selection-start-line="134" selection-start-column="61" selection-end-line="134" selection-end-column="61" />
           <folding>
-            <element signature="e#13275#13276#0" expanded="true" />
-            <element signature="e#13345#13346#0" expanded="true" />
+            <element signature="e#13367#13368#0" expanded="true" />
+            <element signature="e#13437#13438#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-          <folding>
-            <element signature="e#4353#4354#0" expanded="true" />
-            <element signature="e#4379#4380#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>

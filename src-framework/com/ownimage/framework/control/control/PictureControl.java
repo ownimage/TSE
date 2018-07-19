@@ -75,9 +75,7 @@ public class PictureControl extends ControlBase<PictureControl, PictureType, Nul
     public void redrawGrafitti(IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
         mViews.invokeAll(view -> {
-            IGrafittiImp grafittiImp = view.updateGrafitti();
-            GrafittiHelper grafittiHelper = new GrafittiHelper(grafittiImp);
-            pGrafitti.grafitti(grafittiHelper);
+            view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp)));
         });
     }
 
