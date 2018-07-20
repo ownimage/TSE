@@ -293,9 +293,7 @@ public class Perception extends AppControlBase {
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction::performAction);
         mRenderService.transform(previewControl, mTransformSequence.getLastTransform(), //
-                                 () -> {
-                                     showDialog(displayContainer, new DialogOptions(), ok, cancel);
-                                 } //
+                                 () -> showDialog(displayContainer, DialogOptions.NONE, ok, cancel)
         );
 
         Framework.logExit(mLogger);
@@ -520,7 +518,7 @@ public class Perception extends AppControlBase {
 
             ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
             ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mProperties.read(db, ""));
-            showDialog(mProperties, new DialogOptions(), mProperties.getUndoRedoBuffer(), cancel, ok);
+            showDialog(mProperties, DialogOptions.NONE, mProperties.getUndoRedoBuffer(), cancel, ok);
         } catch (IOException pIOE) {
             // default
         }

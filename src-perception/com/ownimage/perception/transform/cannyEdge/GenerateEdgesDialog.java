@@ -202,7 +202,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
-        Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
+        Perception.getPerception().showDialog(this, DialogOptions.NONE, getUndoRedoBuffer(), pCancel, pOk);
         updatePreview();
     }
 

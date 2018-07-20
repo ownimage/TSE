@@ -110,7 +110,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
 		ObjectControl<ITransform> transformControl = new ObjectControl<>("Select Transform", "transform", NullContainer, getAvailableTransforms().get(0), getAvailableTransforms());
 		ActionControl okAction = ActionControl.create("OK", NullContainer, () -> addTransform(transformControl.getValue()));
-		mPerception.showDialog(transformControl, new DialogOptions(), okAction);
+		mPerception.showDialog(transformControl, DialogOptions.NONE, okAction);
 		Framework.logExit(mLogger);
 	}
 

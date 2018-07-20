@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -110,6 +111,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private BlockingQueue<IUIEvent> mMouseEventQueue = new LinkedBlockingQueue();
 
+    private boolean mDialogIsAlive = false;
+
     private int mMouseDragStartX;
     private int mMouseDragStartY;
 
@@ -132,8 +135,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         setupKeyToContainerMap();
         setupActionMap();
-
-        startMouseEventQueue();
     }
 
     private void setupKeyToContainerMap() {
@@ -197,9 +198,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
+        mDialogIsAlive = true;
+        startMouseEventQueue();
+
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         updatePreview();
-        Perception.getPerception().showDialog(this, new DialogOptions(), getUndoRedoBuffer(), pCancel, pOk);
+        Perception
+                .getPerception()
+                .showDialog(this,
+                            DialogOptions.builder().withCompleteFunction(this::closeDialog).build(),
+                            getUndoRedoBuffer(),
+                            pCancel, pOk);
+    }
+
+    private void closeDialog(Optional<ActionControl> pActionControl) {
+        mDialogIsAlive = false;
     }
 
     @Override
@@ -292,10 +305,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void processMouseEventQueue() {
-        while (true) {
+        while (mDialogIsAlive) {
             try {
-                IUIEvent event = mMouseEventQueue.take();
-                mouseClickEventAsync(event);
+                IUIEvent event = mMouseEventQueue.poll(1, TimeUnit.SECONDS);
+                System.out.println("Loop " + Thread.currentThread());
+                if (event != null) mouseClickEventAsync(event);
             } catch (InterruptedException e) {
                 // do nothing handled by loop retry
             }

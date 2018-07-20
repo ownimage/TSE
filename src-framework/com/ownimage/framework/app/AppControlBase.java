@@ -95,7 +95,7 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
 		ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
 		ActionControl cancel = ActionControl.create("Cancel", NullContainer, pCancelAction);
 
-		showDialog(dialogContainer, new DialogOptions(), cancel, ok);
+		showDialog(dialogContainer, DialogOptions.NONE, cancel, ok);
 
 		Framework.logExit(mLogger);
 	}

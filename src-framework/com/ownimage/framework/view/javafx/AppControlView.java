@@ -2,6 +2,7 @@ package com.ownimage.framework.view.javafx;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.app.IAppControl;
@@ -192,6 +193,9 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     private void showDialogLater(final IViewable pViewable, final DialogOptions pDialogOptions, final IUndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
+        Framework.checkParameterNotNull(mLogger, pViewable, "pViewable");
+        Framework.checkParameterNotNull(mLogger, pDialogOptions, "pDialogOptions");
+
         HashMap<ButtonType, ActionControl> buttonMap = new HashMap<ButtonType, ActionControl>();
         FXView content = (FXView) (pViewable.createView());
         Node contentUI = content.getUI();
@@ -257,8 +261,15 @@ public class AppControlView extends Application implements IAppControlView {
             }
         });
 
-        dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
-        System.out.println("On Close #################################");
+        final Optional<ActionControl> dialogResult = dialog.showAndWait();
+
+        new Thread(() -> {
+            // this needs to be done here as the complete function might not be specified.
+            dialogResult.ifPresent(actionControl -> actionControl.performAction());
+
+            // the value is passed into the completeFunction only to indicate how the dialog ended.
+            pDialogOptions.getCompleteFunction().ifPresent(f -> f.accept(dialogResult));
+        }).start();
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {

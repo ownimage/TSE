@@ -264,7 +264,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 
 		ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed"));
 
-		mAppView.showDialog(tabs, new DialogOptions(), ok);
+		mAppView.showDialog(tabs, DialogOptions.NONE, ok);
 
 		Framework.logExit(mLogger);
 	}
