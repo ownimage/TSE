@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -105,6 +107,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
 
     private Map<String, IContainer> mKeyToContainerMap = new HashMap();
+
+    private BlockingQueue<IUIEvent> mMouseEventQueue = new LinkedBlockingQueue();
+
     private int mMouseDragStartX;
     private int mMouseDragStartY;
 
@@ -127,6 +132,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         setupKeyToContainerMap();
         setupActionMap();
+
+        startMouseEventQueue();
     }
 
     private void setupKeyToContainerMap() {
@@ -277,10 +284,25 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
-        new Thread(() -> mouseClickEventAsync(pEvent)).start();
+        mMouseEventQueue.offer(pEvent);
     }
 
-    public void mouseClickEventAsync(final IUIEvent pEvent) {
+    private void startMouseEventQueue() {
+        new Thread(this::processMouseEventQueue, "EditPixelMapDialog mouseEventQueue processor").start();
+    }
+
+    private void processMouseEventQueue() {
+        while (true) {
+            try {
+                IUIEvent event = mMouseEventQueue.take();
+                mouseClickEventAsync(event);
+            } catch (InterruptedException e) {
+                // do nothing handled by loop retry
+            }
+        }
+    }
+
+    private void mouseClickEventAsync(final IUIEvent pEvent) {
         if (isPixelView()) mouseClickEventPixelView(eventToPixel(pEvent));
     }
 

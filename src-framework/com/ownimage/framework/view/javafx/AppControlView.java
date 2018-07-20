@@ -258,6 +258,7 @@ public class AppControlView extends Application implements IAppControlView {
         });
 
         dialog.showAndWait().ifPresent(actionControl -> actionControl.performAction());
+        System.out.println("On Close #################################");
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {
