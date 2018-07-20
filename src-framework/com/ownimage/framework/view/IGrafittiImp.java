@@ -14,7 +14,9 @@ public interface IGrafittiImp {
 
 	public void drawCircle(double pX, double pY, double pRadius, Color pColor, boolean pDashed);
 
-	public void drawFilledRectangle(double pX1, double pY1, double pX2, double pY2, Color pColor);
+    void clearRectangle(double pX1, double pY1, double pX2, double pY2);
+
+    public void drawFilledRectangle(double pX1, double pY1, double pX2, double pY2, Color pColor);
 
 	public void drawLine(double pX1, double pY1, double pX2, double pY2, Color pColor, boolean pDashed);
 

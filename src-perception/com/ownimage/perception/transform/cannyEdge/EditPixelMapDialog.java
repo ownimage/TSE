@@ -347,14 +347,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void mouseClickEventPixelViewOffVeryWide(final Pixel pPixel) {
         IGrafitti g = grafittiHelper -> {
-            double x = 0.5;//pEvent.getNormalizedX();
-            double y = 0.5;//pEvent.getNormalizedY();
-            grafittiHelper.drawLine(0,
-                                    0,
-                                    x, //(mViewOriginX.getValue() + (int)(x * mPixelMapWidth.getValue() / mZoom.getValue()))/mPixelMapWidth.getValue(),
-                                    y, //(mViewOriginY.getValue() + (int)(y * mPixelMapWidth.getValue() / mZoom.getValue()))/mPixelMapHeight.getValue(),
-                                    Color.RED,
-                                    false);
+            grafittiHelper.clearRectangle(0.0d, 0.0d, 0.5d, 0.5d);
+            grafittiHelper.drawFilledRectangle(0.25, 0.25, 0.75, 0.75, Color.red);
         };
         mPictureControl.redrawGrafitti(g);
     }
