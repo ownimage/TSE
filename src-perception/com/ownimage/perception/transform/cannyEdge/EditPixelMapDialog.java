@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -109,8 +106,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private Map<String, IContainer> mKeyToContainerMap = new HashMap();
 
-    private BlockingQueue<IUIEvent> mMouseEventQueue = new LinkedBlockingQueue();
-
     private boolean mDialogIsAlive = false;
 
     private int mMouseDragStartX;
@@ -199,7 +194,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
         mDialogIsAlive = true;
-        startMouseEventQueue();
 
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         updatePreview();
@@ -297,26 +291,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseClickEvent(final IUIEvent pEvent) {
-        mMouseEventQueue.offer(pEvent);
-    }
-
-    private void startMouseEventQueue() {
-        new Thread(this::processMouseEventQueue, "EditPixelMapDialog mouseEventQueue processor").start();
-    }
-
-    private void processMouseEventQueue() {
-        while (mDialogIsAlive) {
-            try {
-                IUIEvent event = mMouseEventQueue.poll(1, TimeUnit.SECONDS);
-                System.out.println("Loop " + Thread.currentThread());
-                if (event != null) mouseClickEventAsync(event);
-            } catch (InterruptedException e) {
-                // do nothing handled by loop retry
-            }
-        }
-    }
-
-    private void mouseClickEventAsync(final IUIEvent pEvent) {
         if (isPixelView()) mouseClickEventPixelView(eventToPixel(pEvent));
     }
 
@@ -378,9 +352,18 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragEvent(final IUIEvent pEvent) {
         System.out.println("mouseDragEvent " + pEvent.getDeltaX());
-        if (mContainerList.getSelectedContainer() == mGeneralContainer) {
+
+        if (isGeneralView()) {
             mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / mZoom.getValue()));
             mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / mZoom.getValue()));
+        }
+
+        if (isPixelView()) {
+            double radius = 2.5 * mZoom.getValue() / mPixelMapHeight.getValue();
+            IGrafitti g = grafittiHelper -> {
+                grafittiHelper.drawCircle(pEvent.getNormalizedX(), pEvent.getNormalizedY(), radius, Color.red, false);
+            };
+            mPictureControl.redrawGrafitti(g);
         }
     }
 
@@ -388,8 +371,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
         System.out.println("mouseDragStartEvent");
-        mMouseDragStartX = mViewOriginX.getValue();
-        mMouseDragStartY = mViewOriginY.getValue();
+        if (isGeneralView()) {
+            mMouseDragStartX = mViewOriginX.getValue();
+            mMouseDragStartY = mViewOriginY.getValue();
+        }
     }
 
     @Override

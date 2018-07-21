@@ -106,23 +106,23 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 			if (pME.getClickCount() == 2) {
 				event = createMouseEvent(EventType.DoubleClick, pME);
 			}
-			mControl.uiEvent(event);
+			UIEventQueue.getInstance().queueEvent(event, mControl);
 		}
 	}
 
 	private void mouseDraggedEvent(final MouseEvent pME) {
 		UIEvent event = createMouseEvent(EventType.Drag, pME);
-		mControl.uiEvent(event);
+		UIEventQueue.getInstance().queueEvent(event, mControl);
 	}
 
 	private void mousePressedEvent(final MouseEvent pME) {
 		UIEvent event = createMouseEvent(EventType.MouseDown, pME);
-		mControl.uiEvent(event);
+		UIEventQueue.getInstance().queueEvent(event, mControl);
 	}
 
 	private void mouseReleasedEvent(final MouseEvent pME) {
 		UIEvent event = createMouseEvent(EventType.MouseUp, pME);
-		mControl.uiEvent(event);
+		UIEventQueue.getInstance().queueEvent(event, mControl);
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 	private void scrollEvent(final ScrollEvent pSE) {
 		Framework.logEntry(mLogger);
 		UIEvent event = createScrollEvent(pSE);
-		mControl.uiEvent(event);
+		UIEventQueue.getInstance().queueEvent(event, mControl);
 		Framework.logExit(mLogger);
 	}
 
