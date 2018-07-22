@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.BiConsumer;
@@ -602,8 +603,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return pixel;
     }
 
+    @Deprecated
     public Pixel getPixelAt(final int pX, final int pY) {
         return new Pixel(this, pX, pY);
+    }
+
+    public Optional<Pixel> getOptionalPixelAt(final int pX, final int pY) {
+        if (0 > pY || pY >= getHeight()) return Optional.empty();
+        if (!m360 && (0 > pX || pX >= getWidth())) return Optional.empty();
+        int x = modWidth(pX);
+        return Optional.of(new Pixel(this, x, pY));
     }
 
     // public Pixel getPixelAt(final Point pPoint) {
@@ -1338,7 +1347,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 final Vector<PixelChain> pixelChains = (Vector<PixelChain>) ois.readObject();
                 mPixelChains.removeAllElements();
                 mPixelChains.addAll(pixelChains);
-                mPixelChains.parallelStream().forEach(pc ->pc.setPixelMap(this));
+                mPixelChains.parallelStream().forEach(pc -> pc.setPixelMap(this));
 
                 final AllNodes allNodes = (AllNodes) ois.readObject();
                 mAllNodes.removeAllElements();

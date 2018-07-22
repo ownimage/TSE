@@ -56,6 +56,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		mUI.setOnMouseDragged(this::mouseDraggedEvent);
 		mUI.setOnMousePressed(this::mousePressedEvent);
 		mUI.setOnMouseReleased(this::mouseReleasedEvent);
+		mUI.setOnMouseMoved(this::mouseMovedEvent);
 		mUI.setOnScroll(this::scrollEvent);
 
 		updatePicture();
@@ -125,7 +126,12 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 		UIEventQueue.getInstance().queueEvent(event, mControl);
 	}
 
-	@Override
+    private void mouseMovedEvent(final MouseEvent pME) {
+        UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
+        UIEventQueue.getInstance().queueEvent(event, mControl);
+    }
+
+    @Override
 	public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
 		Platform.runLater(() -> {
 			mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());

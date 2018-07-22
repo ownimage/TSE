@@ -12,7 +12,7 @@ import com.ownimage.framework.util.Version;
 public class UIEvent implements IUIEvent {
 
 	public enum EventType {
-		Click, DoubleClick, Drag, MouseDown, MouseUp, Scroll, KeyPressed, KeyReleased, KeyTyped
+		Click, DoubleClick, Drag, MouseDown, MouseUp, MouseMoved, Scroll, KeyPressed, KeyReleased, KeyTyped
 	}
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
@@ -64,7 +64,9 @@ public class UIEvent implements IUIEvent {
 										   final boolean pShift) {
 		Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
 		if (pEventType != EventType.Click && pEventType != EventType.DoubleClick && pEventType != EventType.Drag && pEventType != EventType.MouseDown
-				&& pEventType != EventType.MouseUp) { throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of Click, DoubleClick, Drag, MouseDown, MouseUp."); }
+				&& pEventType != EventType.MouseUp && pEventType != EventType.MouseMoved) {
+			throw new IllegalArgumentException("pEventType = " + pEventType + ", it needs to be one of Click, DoubleClick, Drag, MouseDown, MouseUp, MouseMoved.");
+		}
 
 		UIEvent uiEvent = new UIEvent();
 

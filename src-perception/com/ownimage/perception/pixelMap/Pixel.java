@@ -118,6 +118,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     @Override
     public boolean equals(final Object pObj) {
+        if (pObj == null) return false;
         if (pObj instanceof Pixel) {
             final Pixel pixel = (Pixel) pObj;
             if (getPixelMap() == pixel.getPixelMap()

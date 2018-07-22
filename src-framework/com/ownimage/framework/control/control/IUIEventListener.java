@@ -19,6 +19,9 @@ public interface IUIEventListener {
     default void mouseDragStartEvent(final IUIEvent pEvent) {
     }
 
+    default void mouseMoveEvent(final IUIEvent pEvent) {
+    }
+
     default void scrollEvent(final IUIEvent pEvent) {
     }
 

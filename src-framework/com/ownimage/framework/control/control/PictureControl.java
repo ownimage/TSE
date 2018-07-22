@@ -151,6 +151,12 @@ public class PictureControl
                         mUIEventListener.mouseDragEndEvent(pEvent);
                     }
                     break;
+                case MouseMoved:
+                    if (!mIsDragging) {
+                        pEvent.setDelta(mDragStartEvent);
+                        mUIEventListener.mouseMoveEvent(pEvent);
+                    }
+                    break;
                 case Scroll:
                     mUIEventListener.scrollEvent(pEvent);
                     break;
