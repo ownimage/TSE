@@ -102,8 +102,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
     private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
 
-    private Map<String, IContainer> mKeyToContainerMap = new HashMap();
-
     private boolean mDialogIsAlive = false;
 
     private int mMouseDragStartX;
@@ -127,14 +125,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updatePreview();
-
-        setupKeyToContainerMap();
-    }
-
-    private void setupKeyToContainerMap() {
-        mKeyToContainerMap.put("G", mGeneralContainer);
-        mKeyToContainerMap.put("P", mPixelControlContainer);
-        mKeyToContainerMap.put("V", mVertexControlContainer);
     }
 
     private void updatePreview() {
@@ -531,8 +521,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void keyPressed(final IUIEvent pEvent) {
         System.out.println("keyPressed " + pEvent.getKey());
-        Optional.ofNullable(mKeyToContainerMap.get(pEvent.getKey()))
-                .ifPresent(c -> mContainerList.setSelectedIndex(c));
+        if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
+        if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
+        if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
     }
 
     @Override
