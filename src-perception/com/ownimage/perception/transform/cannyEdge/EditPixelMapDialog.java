@@ -156,12 +156,30 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return true;
     }
 
-    private int getWidth() { return mPixelMap.getWidth();}
-    private int getHeight() { return mPixelMap.getHeight();}
-    private int getPreviewSize() { return mPreviewSize .getValue();}
-    private int getZoom() { return mZoom.getValue();}
-    private int getViewOriginX() { return mViewOriginX.getValue();}
-    private int getViewOriginY() { return mViewOriginY.getValue();}
+    private int getWidth() {
+        return mPixelMap.getWidth();
+    }
+
+    private int getHeight() {
+        return mPixelMap.getHeight();
+    }
+
+    private int getPreviewSize() {
+        return mPreviewSize.getValue();
+    }
+
+    private int getZoom() {
+        return mZoom.getValue();
+    }
+
+    private int getViewOriginX() {
+        return mViewOriginX.getValue();
+    }
+
+    private int getViewOriginY() {
+        return mViewOriginY.getValue();
+    }
+
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
         System.out.println("controlChanteEvent for " + pControl.getDisplayName());
@@ -197,13 +215,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
 
-        int zoom = getZoom();
-        int xSize = Math.floorDiv(getWidth(), zoom) + 1;
-        int ySize = Math.floorDiv(getHeight(), zoom) + 1;
-        int xMin = getViewOriginX();
-        int yMin = getViewOriginY();
+        int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;
+        int ySize = Math.floorDiv(getHeight(), getZoom()) + 1;
 
-        grafitti(pGrafittiHelper, xMin, yMin, xMin + xSize, yMin + ySize);
+        grafitti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
 
         if (mShowGrafitti.getValue()) {
             mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
@@ -221,10 +236,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void grafittiPixel(GrafittiHelper pGrafittiHelper, final Pixel pPixel) {
-        Rectangle r = pixelToGrafittiRectangle(pPixel, getViewOriginX(), getViewOriginY(), getWidth(), getHeight(), getZoom());
-            Color c = getPixelColor(pPixel);
-            pGrafittiHelper.clearRectangle(r);
-            pGrafittiHelper.drawFilledRectangle(r, c);
+        Rectangle r = pixelToGrafittiRectangle(pPixel);
+        Color c = getPixelColor(pPixel);
+        pGrafittiHelper.clearRectangle(r);
+        pGrafittiHelper.drawFilledRectangle(r, c);
     }
 
     private Color getPixelColor(Pixel pPixel) {
@@ -232,13 +247,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return c;
     }
 
-    private Rectangle pixelToGrafittiRectangle(Pixel pPixel, int xMin, int yMin, int pWidth, int pHeight, int zoom) { // TODO shouldnt really pass all the other info in
+    private Rectangle pixelToGrafittiRectangle(Pixel pPixel) {
         int x = pPixel.getX();
         int y = pPixel.getY();
-        double x1 = pixelXToGrafittiX(x, xMin, pWidth, zoom);
-        double x2 = pixelXToGrafittiX(x + 1, xMin, pWidth, zoom);
-        double y1 = pixelYToGrafittiY(y, yMin, pHeight, zoom);
-        double y2 = pixelYToGrafittiY(y + 1, yMin, pHeight, zoom);
+        double x1 = pixelXToGrafittiX(x, getViewOriginX(), getWidth(), getZoom());
+        double x2 = pixelXToGrafittiX(x + 1, getViewOriginX(), getWidth(), getZoom());
+        double y1 = pixelYToGrafittiY(y, getViewOriginY(), getHeight(), getZoom());
+        double y2 = pixelYToGrafittiY(y + 1, getViewOriginY(), getHeight(), getZoom());
         Rectangle r = new Rectangle(x1, y1, x2, y2);
         return r;
     }
@@ -266,25 +281,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Point UHVWtoView(Point pUHVW) {
-        int zoom = getZoom(); // TODO tidy these up
-        int xMin = getViewOriginX();
-        int yMin = getViewOriginY();
-        int width = getWidth();
-        int height = getHeight();
-        double x = (double) (width * pUHVW.getX() - xMin) * zoom / width;
-        double y = (double) (height * pUHVW.getY() - yMin) * zoom / height;
+        double x = (double) (getWidth() * pUHVW.getX() - getViewOriginX()) * getZoom() / getWidth();
+        double y = (double) (getHeight() * pUHVW.getY() - getViewOriginY()) * getZoom() / getHeight();
         return new Point(x, y);
     }
 
     private Optional<Pixel> eventToPixel(IUIEvent pEvent) {
-        int zoom = getZoom(); // todo tody these up
-        int size = getPreviewSize();
-        int xMin = getViewOriginX();
-        int yMin = getViewOriginY();
-        int width = getWidth();
-        int height = getHeight();
-        int x = xMin + (pEvent.getX() * width / (zoom * size));
-        int y = yMin + (pEvent.getY() * height / (zoom * size));
+
+        int x = getViewOriginX() + (pEvent.getX() * getWidth() / (getZoom() * getPreviewSize()));
+        int y = getViewOriginY() + (pEvent.getY() * getHeight() / (getZoom() * getPreviewSize()));
         System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pEvent.getX(), pEvent.getY(), x, y);
         return mPixelMap.getOptionalPixelAt(x, y);
     }
@@ -412,7 +417,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                                 p.setEdge(false);
                             });
                 });
-        mPictureControl.redrawGrafitti(g -> grafitti(g, pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size));
+        //TODO mPictureControl.redrawGrafitti(g -> grafitti(g, pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size));
+        grafittiRepairPreviousCursor();
     }
 
     private void grafittiCursor(IUIEvent pEvent, Optional<Pixel> pixel) {
