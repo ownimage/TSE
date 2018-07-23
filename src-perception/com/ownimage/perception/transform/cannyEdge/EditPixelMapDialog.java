@@ -57,7 +57,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         private final String mName;
 
-        private PixelAction(String pName) {
+        PixelAction(String pName) {
             mName = pName;
         }
 
@@ -113,12 +113,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
         mTransform = pTransform;
         mPixelMap = pPixelMap;
-        mPixelMapWidth = new IntegerControl("PixelMap Height", "pixelMapWidth", mGeneralContainer, mPixelMap.getWidth(), 0, mPixelMap.getWidth(), 50).setEnabled(false);
-        mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, mPixelMap.getHeight(), 0, mPixelMap.getHeight(), 50).setEnabled(false);
+        mPixelMapWidth = new IntegerControl("PixelMap Height", "pixelMapWidth", mGeneralContainer, getWidth(), 0, getWidth(), 50).setEnabled(false);
+        mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, getHeight(), 50).setEnabled(false);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
-        mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, mPixelMap.getWidth(), 50);
-        mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, mPixelMap.getHeight(), 50);
+        mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, getWidth(), 50);
+        mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, getHeight(), 50);
         mCropTransform = new CropTransform(Perception.getPerception(), true);
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
@@ -126,8 +126,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void updatePreview() {
-        if (mPreviewSize.getValue() != mPictureControl.getWidth()) {
-            final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), mPreviewSize.getValue(), mPreviewSize.getValue());
+        if (getPreviewSize() != mPictureControl.getWidth()) {
+            final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
             mPictureControl.setValue(pictureType);
         }
         setCrop();
@@ -137,25 +137,31 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public boolean validateControl(final Object pControl) {
         if (pControl == mViewOriginX) {
-            boolean valid = mPixelMap.getWidth() > mViewOriginX.getValidateValue() + mPixelMap.getWidth() / mZoom.getValue();
+            boolean valid = getWidth() > getViewOriginX() + getWidth() / getZoom();
             return valid;
         }
         if (pControl == mViewOriginY) {
-            boolean valid = mPixelMap.getHeight() > mViewOriginY.getValidateValue() + mPixelMap.getHeight() / mZoom.getValue();
+            boolean valid = getHeight() > getViewOriginY() + getHeight() / getZoom();
             return valid;
         }
         if (pControl == mZoom) {
-            if (mViewOriginX.getValue() + mPixelMap.getWidth() / mZoom.getValidateValue() > mPixelMap.getWidth()) {
-                mViewOriginX.setValue(mPixelMap.getWidth() - Math.floorDiv(mPixelMap.getWidth(), mZoom.getValidateValue()));
+            if (getViewOriginX() + getWidth() / getZoom() > getWidth()) {
+                mViewOriginX.setValue(getWidth() - Math.floorDiv(getWidth(), getZoom()));
             }
-            if (mViewOriginY.getValue() + mPixelMap.getHeight() / mZoom.getValidateValue() > mPixelMap.getHeight()) {
-                mViewOriginY.setValue(mPixelMap.getHeight() - Math.floorDiv(mPixelMap.getHeight(), mZoom.getValidateValue()));
+            if (getViewOriginY() + getHeight() / getZoom() > getHeight()) {
+                mViewOriginY.setValue(getHeight() - Math.floorDiv(getHeight(), getZoom()));
             }
             return true;
         }
         return true;
     }
 
+    private int getWidth() { return mPixelMap.getWidth();}
+    private int getHeight() { return mPixelMap.getHeight();}
+    private int getPreviewSize() { return mPreviewSize .getValue();}
+    private int getZoom() { return mZoom.getValue();}
+    private int getViewOriginX() { return mViewOriginX.getValue();}
+    private int getViewOriginY() { return mViewOriginY.getValue();}
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
         System.out.println("controlChanteEvent for " + pControl.getDisplayName());
@@ -191,32 +197,42 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
 
-        int zoom = mZoom.getValue();
-        int xSize = Math.floorDiv(mPixelMap.getWidth(), zoom) + 1;
-        int ySize = Math.floorDiv(mPixelMap.getHeight(), zoom) + 1;
-        int xMin = mViewOriginX.getValue();
-        int yMin = mViewOriginY.getValue();
+        int zoom = getZoom();
+        int xSize = Math.floorDiv(getWidth(), zoom) + 1;
+        int ySize = Math.floorDiv(getHeight(), zoom) + 1;
+        int xMin = getViewOriginX();
+        int yMin = getViewOriginY();
 
-        grafitti(pGrafittiHelper, xMin, yMin, xMin + xSize, yMin + ySize, zoom);
+        grafitti(pGrafittiHelper, xMin, yMin, xMin + xSize, yMin + ySize);
 
         if (mShowGrafitti.getValue()) {
             mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
         }
     }
 
-    private void grafitti(final GrafittiHelper pGrafittiHelper, int xMin, int yMin, int xMax, int yMax, int mZoom) {
+    private void grafitti(final GrafittiHelper pGrafittiHelper, int xMin, int yMin, int xMax, int yMax) {
         Range2D range = new Range2D(xMin, xMax, yMin, yMax);
         range.forEach((x, y) -> {
             Pixel pixel = mPixelMap.getPixelAt(x, y);
             if (pixel.isNode() || pixel.isEdge()) {
-                Rectangle r = pixelToGrafittiRectangle(pixel, xMin, yMin, mPixelMap.getWidth(), mPixelMap.getHeight(), mZoom);
-                Color c = pixel.isNode() ? mNodeColor.getValue() : mEdgeColor.getValue();
-                pGrafittiHelper.drawFilledRectangle(r, c);
+                grafittiPixel(pGrafittiHelper, pixel);
             }
         });
     }
 
-    private Rectangle pixelToGrafittiRectangle(Pixel pPixel, int xMin, int yMin, int pWidth, int pHeight, int zoom) {
+    private void grafittiPixel(GrafittiHelper pGrafittiHelper, final Pixel pPixel) {
+        Rectangle r = pixelToGrafittiRectangle(pPixel, getViewOriginX(), getViewOriginY(), getWidth(), getHeight(), getZoom());
+            Color c = getPixelColor(pPixel);
+            pGrafittiHelper.clearRectangle(r);
+            pGrafittiHelper.drawFilledRectangle(r, c);
+    }
+
+    private Color getPixelColor(Pixel pPixel) {
+        Color c = pPixel.isNode() ? mNodeColor.getValue() : mEdgeColor.getValue();
+        return c;
+    }
+
+    private Rectangle pixelToGrafittiRectangle(Pixel pPixel, int xMin, int yMin, int pWidth, int pHeight, int zoom) { // TODO shouldnt really pass all the other info in
         int x = pPixel.getX();
         int y = pPixel.getY();
         double x1 = pixelXToGrafittiX(x, xMin, pWidth, zoom);
@@ -250,23 +266,23 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Point UHVWtoView(Point pUHVW) {
-        int zoom = mZoom.getValue();
-        int xMin = mViewOriginX.getValue();
-        int yMin = mViewOriginY.getValue();
-        int width = mPixelMap.getWidth();
-        int height = mPixelMap.getHeight();
+        int zoom = getZoom(); // TODO tidy these up
+        int xMin = getViewOriginX();
+        int yMin = getViewOriginY();
+        int width = getWidth();
+        int height = getHeight();
         double x = (double) (width * pUHVW.getX() - xMin) * zoom / width;
         double y = (double) (height * pUHVW.getY() - yMin) * zoom / height;
         return new Point(x, y);
     }
 
     private Optional<Pixel> eventToPixel(IUIEvent pEvent) {
-        int zoom = mZoom.getValue();
-        int size = mPreviewSize.getValue();
-        int xMin = mViewOriginX.getValue();
-        int yMin = mViewOriginY.getValue();
-        int width = mPixelMap.getWidth();
-        int height = mPixelMap.getHeight();
+        int zoom = getZoom(); // todo tody these up
+        int size = getPreviewSize();
+        int xMin = getViewOriginX();
+        int yMin = getViewOriginY();
+        int width = getWidth();
+        int height = getHeight();
         int x = xMin + (pEvent.getX() * width / (zoom * size));
         int y = yMin + (pEvent.getY() * height / (zoom * size));
         System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pEvent.getX(), pEvent.getY(), x, y);
@@ -275,10 +291,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void setCrop() {
         if (mPixelMap != null) {
-            double left = (double) mViewOriginX.getValue() / mPixelMap.getWidth();
-            double right = left + 1.0d / mZoom.getValue();
-            double bottom = (double) mViewOriginY.getValue() / mPixelMap.getHeight();
-            double top = bottom + 1.0d / mZoom.getValue();
+            double left = (double) getViewOriginX() / getWidth();
+            double right = left + 1.0d / getZoom();
+            double bottom = (double) getViewOriginY() / getHeight();
+            double top = bottom + 1.0d / getZoom();
             System.out.print("lrbt " + left + " " + right + " " + bottom + " " + top);
             mCropTransform.setCrop(left, bottom, right, top);
         }
@@ -299,6 +315,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionToggle()) actionPixelToggle(pixel);
             if (isPixelActionDeletePixelChain()) actionPixelChainDelete(pixel);
         });
+        grafittiCursor(pEvent, pPixel);
     }
 
     private boolean isPixelActionOn() {
@@ -327,37 +344,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void actionPixelOn(final Pixel pPixel) {
         pPixel.setEdge(true);
-        cleanPixel(pPixel);
         mPictureControl.redrawGrafitti();
     }
 
-    private void cleanPixel(final Pixel pPixel) { // TODO should this be a member of the Pixel or part of the setEdge.setNode??
-        pPixel.setInChain(false);
-        pPixel.setVisited(false);
-    }
-
-//TODO    private void actionPixelOff(final Pixel pPixel) {
-//        pPixel.setEdge(false);
-//        cleanPixel(pPixel);
-//        mPictureControl.redrawGrafitti();
-//    }
-
-//TODO      private void mouseClickEventPixelViewOffWide(final Optional<Pixel> pPixel) {
-//    }
-//
-//    private void mouseClickEventPixelViewOffVeryWide(final Optional<Pixel> pPixel) {
-//        //mouseEventPixelViewOff();
-//    }
-
     private void actionPixelToggle(final Pixel pPixel) {
         pPixel.setEdge(!pPixel.isEdge());
-        cleanPixel(pPixel);
         mPictureControl.redrawGrafitti();
     }
 
     private void actionPixelChainDelete(final Pixel pPixel) {
         mPixelMap.getPixelChain(pPixel).stream().forEach(pc -> pc.delete());
-        cleanPixel(pPixel);
         mPictureControl.redrawGrafitti();
     }
 
@@ -387,8 +383,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEventGeneralView(final IUIEvent pEvent, Optional<Pixel> pPixel) {
-        mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / mZoom.getValue()));
-        mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / mZoom.getValue()));
+        mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / getZoom()));
+        mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / getZoom()));
     }
 
     private void mouseDragEventPixelView(final IUIEvent pEvent, Optional<Pixel> pPixel) {
@@ -405,7 +401,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void actionPixelOff(final Pixel pPixel) {
         int size = getCursorSize();
-        double radius = (double) size * mZoom.getValue() / mPixelMapHeight.getValue();
+        double radius = (double) size * getZoom() / mPixelMapHeight.getValue();
 
         new Range2D(pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size)
                 .forEach((x, y) -> {
@@ -414,9 +410,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                             .filter(p -> p.isEdge())
                             .ifPresent(p -> {
                                 p.setEdge(false);
-                                cleanPixel(p);
                             });
                 });
+        mPictureControl.redrawGrafitti(g -> grafitti(g, pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size));
     }
 
     private void grafittiCursor(IUIEvent pEvent, Optional<Pixel> pixel) {
@@ -433,7 +429,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private double getRadius() {
-        double radius = (double) getCursorSize() * mZoom.getValue() / mPixelMapHeight.getValue();
+        double radius = (double) getCursorSize() * getZoom() / mPixelMapHeight.getValue();
         return radius;
     }
 
@@ -447,10 +443,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         // this is to remove the cursor that has been drawn on the previous mouseDrag operation
         mMouseDragLastPixel.ifPresent(p -> {
             IGrafitti g = grafittiHelper -> {
-                double x1 = pixelXToGrafittiX(p.getX() - mMouseLastSize - 1, mViewOriginX.getValue(), mPixelMap.getWidth(), mZoom.getValue());
-                double y1 = pixelYToGrafittiY(p.getY() - mMouseLastSize - 1, mViewOriginY.getValue(), mPixelMap.getHeight(), mZoom.getValue());
-                double x2 = pixelXToGrafittiX(p.getX() + mMouseLastSize + 1, mViewOriginX.getValue(), mPixelMap.getWidth(), mZoom.getValue());
-                double y2 = pixelYToGrafittiY(p.getY() + mMouseLastSize + 1, mViewOriginY.getValue(), mPixelMap.getHeight(), mZoom.getValue());
+                double x1 = pixelXToGrafittiX(p.getX() - mMouseLastSize - 1, getViewOriginX(), getWidth(), getZoom());
+                double y1 = pixelYToGrafittiY(p.getY() - mMouseLastSize - 1, getViewOriginY(), getHeight(), getZoom());
+                double x2 = pixelXToGrafittiX(p.getX() + mMouseLastSize + 1, getViewOriginX(), getWidth(), getZoom());
+                double y2 = pixelYToGrafittiY(p.getY() + mMouseLastSize + 1, getViewOriginY(), getHeight(), getZoom());
                 grafittiHelper.clearRectangle(x1, y1, x2, y2);
                 grafitti(grafittiHelper);
             };
@@ -463,7 +459,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 .ifPresent(p -> {
                     actionPixelToggle(p);
                     mMouseDragLastPixel = pPixel;
-                    //mPictureControl.redrawGrafitti(); // TODO might be able to tighten this up
                 });
     }
 
@@ -472,7 +467,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 .filter(p -> p.isEdge())
                 .ifPresent(p -> {
                     mPixelMap.getPixelChain(p).stream().forEach(pc -> pc.delete());
-                    cleanPixel(p);
                 });
         mPictureControl.redrawGrafitti();
     }
@@ -491,8 +485,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void mouseDragStartEventGeneralView(final IUIEvent pEvent) {
         System.out.println("mouseDragStartEventGeneralView");
-        mMouseDragStartX = mViewOriginX.getValue();
-        mMouseDragStartY = mViewOriginY.getValue();
+        mMouseDragStartX = getViewOriginX();
+        mMouseDragStartY = getViewOriginY();
     }
 
     private void mouseDragStartEventPixelView(final IUIEvent pEvent) {
