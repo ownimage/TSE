@@ -9,6 +9,34 @@ public interface IUndoRedoBuffer {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
+	public interface Undo {
+		public void undo();
+	}
+
+	public interface Redo {
+		public void redo();
+	}
+
+	default void add(String pDescription, Undo pUndo, Redo pRedo) {
+		IUndoRedoAction undoRedoAction = new IUndoRedoAction() {
+			@Override
+			public String getDescription() {
+				return pDescription;
+			}
+
+			@Override
+			public void redo() {
+				pRedo.redo();
+			}
+
+			@Override
+			public void undo() {
+				pUndo.undo();
+			}
+		};
+		add(undoRedoAction);
+	}
+
 	public void add(IUndoRedoAction pAction);
 
 	/**

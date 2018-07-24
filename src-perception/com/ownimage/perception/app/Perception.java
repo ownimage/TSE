@@ -388,6 +388,7 @@ public class Perception extends AppControlBase {
         return filename;
     }
 
+    @Deprecated
     @Override
     public UndoRedoBuffer getUndoRedoBuffer() {
         return mUndoRedoBuffer;

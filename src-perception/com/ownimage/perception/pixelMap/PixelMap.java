@@ -38,6 +38,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
+import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
@@ -177,7 +178,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // private final PixelAction mPixelAction = new PixelAction(this);
 
     private final IUndoRedoBuffer mUndoRedoBuffer = new UndoRedoBuffer(30);
-    private PixelUndoRedoAction mPixelUndoRedoAction;
+    private PixelUndoRedoAction mPixelUndoRedoAction = new PixelUndoRedoAction(this);
 
     public PixelMap(final int pWidth, final int pHeight, final boolean p360, final IPixelMapTransformSource pTransformSource) {
         setWidth(pWidth);
@@ -1452,12 +1453,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // all the parameter bounds checking is doing in the saveValueNoUndo.
         // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
 
-        if (mPixelUndoRedoAction != null) {
-            final byte before = getValue(pX, pY);
-            mPixelUndoRedoAction.addPixelBeforeAfter(pX, pY, before, pValue);
-        }
-
+        final byte before = getValue(pX, pY);
+        getOptionalUndoRedoBuffer()
+                .filter(undoRedoBuffer -> before != pValue)
+                .ifPresent(undoRedoBuffer ->
+                                   undoRedoBuffer.add("Pixel::setValue",
+                                                      () -> setValueNoUndo(pX, pY, before),
+                                                      () -> setValueNoUndo(pX, pY, pValue)
+                                   )
+                );
         setValueNoUndo(pX, pY, pValue);
+    }
+
+    private Optional<UndoRedoBuffer> getOptionalUndoRedoBuffer() {
+        return Perception.getPerception().getOptionalUndoRedoBuffer();
     }
 
     /**

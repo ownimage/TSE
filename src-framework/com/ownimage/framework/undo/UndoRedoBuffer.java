@@ -38,7 +38,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
 		if (pAction == null) { throw new IllegalArgumentException("You must not add a null pAction"); }
 
 		if (mSavePoint == null) {
-			addHere(pAction);
+			addToMainBuffer(pAction);
 		} else {
 			mSavePoint.add(pAction);
 		}
@@ -46,7 +46,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
 		Framework.logExit(mLogger);
 	}
 
-	private synchronized void addHere(final IUndoRedoAction pAction) {
+	private synchronized void addToMainBuffer(final IUndoRedoAction pAction) {
 		Framework.logEntry(mLogger);
 
 		if (mPointer == mSize) { // need to discard the oldest element
@@ -74,7 +74,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
 			if (mSavePointIds.size() != 0) { throw new IllegalArgumentException("other savepoints are active"); }
 
 			mSavePoint.lock();
-			addHere(mSavePoint);
+			addToMainBuffer(mSavePoint);
 			mSavePoint = null;
 			mSavePointIds = null;
 
@@ -118,10 +118,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
 	}
 
 	public Id startSavepoint(final String pString) {
-
-		if (pString == null) { throw new IllegalArgumentException("pString must not be null"); }
-
-		if (pString.length() == 0) { throw new IllegalArgumentException("pString must not be zero length"); }
+		Framework.checkParameterNotNullOrEmpty(mLogger, pString, "pString");
 
 		Id id = new Id(pString);
 		if (mSavePoint == null) {

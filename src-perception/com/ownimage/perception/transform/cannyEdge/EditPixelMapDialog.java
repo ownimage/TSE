@@ -24,7 +24,9 @@ import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
+import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
@@ -106,6 +108,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private int mMouseDragStartY;
     private Optional<Pixel> mMouseLastPixelPosition = Optional.empty();
     private int mMouseLastSize;
+    private Id mSavepointId;
 
     public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
         super(pDisplayName, pPropertyName, undoRedoBufferProvider);
@@ -209,6 +212,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void closeDialog(Optional<ActionControl> pActionControl) {
         mDialogIsAlive = false;
+    }
+
+    public UndoRedoBuffer getUndoRedoBuffer() {
+        return Perception.getPerception().getUndoRedoBuffer();
     }
 
     @Override
@@ -372,6 +379,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEndEventPixelView(final IUIEvent pEvent, Optional<Pixel> pPixel) {
+        getOptionalUndoRedoBuffer().ifPresent(u -> {
+            u.endSavepoint(mSavepointId);
+            mSavepointId = null;
+        });
         grafittiCursorRemovePrevious();
     }
 
@@ -499,7 +510,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragStartEventPixelView(final IUIEvent pEvent) {
+        getOptionalUndoRedoBuffer().ifPresent(u -> mSavepointId = u.startSavepoint("mouseDrag"));
         grafittiCursor(pEvent, eventToPixel(pEvent));
+    }
+
+    public Optional<UndoRedoBuffer> getOptionalUndoRedoBuffer() { // TODO not sure that this is needed
+        return Perception.getPerception().getOptionalUndoRedoBuffer();
     }
 
     @Override
@@ -513,6 +529,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
         if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
+        mPictureControl.redrawGrafitti(); // TODO should only be for the undo redo events
     }
 
     @Override
