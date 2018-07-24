@@ -243,16 +243,16 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         // TODO need to fix this getPixelMap().getData(this, FIXED);
     }
 
-    public void setFixed(final boolean pValue) {
-        getPixelMap().setData(this, pValue, FIXED);
-    }
+//    public void setFixed(final boolean pValue) {
+//        getPixelMap().setData(this, pValue, FIXED);
+//    }
 
     public boolean isInChain() {
         return getPixelMap().getData(this, IN_CHAIN);
     }
 
     public void setInChain(final boolean pValue) {
-        getPixelMap().setData(this, pValue, IN_CHAIN);
+        getPixelMap().setInChain(this, pValue);
     }
 
     public boolean isNeighbour(final Pixel pPixel) {
@@ -282,7 +282,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public void setVisited(final boolean pValue) {
-        getPixelMap().setData(this, pValue, VISITED);
+        getPixelMap().setVisited(this, pValue);
     }
 
 //    public void printNeighbours(final int pSize) {

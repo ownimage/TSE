@@ -178,7 +178,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // private final PixelAction mPixelAction = new PixelAction(this);
 
     private final IUndoRedoBuffer mUndoRedoBuffer = new UndoRedoBuffer(30);
-    private PixelUndoRedoAction mPixelUndoRedoAction = new PixelUndoRedoAction(this);
+    //private PixelUndoRedoAction mPixelUndoRedoAction = new PixelUndoRedoAction(this);
 
     public PixelMap(final int pWidth, final int pHeight, final boolean p360, final IPixelMapTransformSource pTransformSource) {
         setWidth(pWidth);
@@ -1074,6 +1074,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         });
     }
 
+    public void setVisited(final Pixel pPixel, final boolean pValue) {
+        setData(pPixel, pValue, VISITED);
+    }
+
+    public void setInChain(final Pixel pPixel, final boolean pValue) {
+        setData(pPixel, pValue, IN_CHAIN);
+    }
+
+
     public void setEdge(final Pixel pPixel, final boolean pValue) {
         if (pPixel.isNode() && pValue == false) {
             setNode(pPixel, false);
@@ -1422,7 +1431,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
+    private void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
         if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
             final int x = modWidth(pPixel.getX());
             byte newValue = (byte) (getValue(x, pPixel.getY()) & (ALL ^ pValue));
@@ -1449,7 +1458,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
     // }
     //
-    public void setValue(final int pX, final int pY, final byte pValue) {
+    private void setValue(final int pX, final int pY, final byte pValue) {
         // all the parameter bounds checking is doing in the saveValueNoUndo.
         // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
 
@@ -1477,7 +1486,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      * @param pY     the y
      * @param pValue the value
      */
-    public void setValueNoUndo(final int pX, final int pY, final byte pValue) {
+    void setValueNoUndo(final int pX, final int pY, final byte pValue) {
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
         }
@@ -1527,9 +1536,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-    public Point toUHVW(final Point pIn) {
-        return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
-    }
+//    public Point toUHVW(final Point pIn) {
+//        return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());
+//    }
 
     // public Color transform(final Point pIn, final Color pColor) {
     // Color color = getPixelColor(pIn, pColor);

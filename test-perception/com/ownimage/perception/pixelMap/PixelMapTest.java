@@ -12,9 +12,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ownimage.framework.view.javafx.FXViewFactory;
+
 public class PixelMapTest {
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        FXViewFactory.setAsViewFactory();
     }
 
     @AfterClass
@@ -47,7 +51,7 @@ public class PixelMapTest {
                 "E    E    "
         };
         String[] expected = {
-                "E E       ",
+                "E N       ",
                 "   EE EE  ",
                 "E    E    "
         };

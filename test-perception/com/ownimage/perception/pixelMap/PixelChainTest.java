@@ -13,11 +13,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ownimage.framework.view.factory.ViewFactory;
+import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
 public class PixelChainTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        FXViewFactory.setAsViewFactory();
     }
 
     @AfterClass

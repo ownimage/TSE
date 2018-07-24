@@ -296,7 +296,7 @@ public class Vertex implements IVertex {
 
     @Override
     public void setFixed(final boolean pFixed) {
-        mPixel.setFixed(pFixed);
+        //mPixel.setFixed(pFixed);
     }
 
     @Override

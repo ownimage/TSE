@@ -6,9 +6,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ownimage.framework.view.javafx.FXViewFactory;
+
 public class PixelTest {
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+        FXViewFactory.setAsViewFactory();
+    }
 
     @Test
     public void isEdge_00() {
