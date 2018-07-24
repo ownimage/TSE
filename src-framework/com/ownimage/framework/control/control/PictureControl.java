@@ -4,6 +4,8 @@
  */
 package com.ownimage.framework.control.control;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.IContainer;
@@ -117,6 +119,9 @@ public class PictureControl
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
 
+        mLogger.fine(() -> String.format("uiEvent type=%s, isDragging=%s", pEvent.getEventType(), mIsDragging));
+        LocalTime start = LocalTime.now();
+
         if (mUIEventListener != null) {
             switch (pEvent.getEventType()) {
                 case Click:
@@ -149,11 +154,11 @@ public class PictureControl
                     if (mIsDragging) {
                         pEvent.setDelta(mDragStartEvent);
                         mUIEventListener.mouseDragEndEvent(pEvent);
+                        mIsDragging = false;
                     }
                     break;
                 case MouseMoved:
                     if (!mIsDragging) {
-                        pEvent.setDelta(mDragStartEvent);
                         mUIEventListener.mouseMoveEvent(pEvent);
                     }
                     break;
@@ -162,6 +167,10 @@ public class PictureControl
                     break;
             }
 
+
+            LocalTime end = LocalTime.now();
+            long elapsed = ChronoUnit.MICROS.between(start, end);
+            mLogger.fine(String.format("%s took %s ms", pEvent.getEventType(), elapsed));
         }
 
         Framework.logExit(mLogger);
