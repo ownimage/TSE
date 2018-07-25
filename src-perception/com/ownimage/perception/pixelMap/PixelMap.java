@@ -965,7 +965,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     //
     // resets everything but the isEdgeData
-    public void process01_reset() {
+    void process01_reset() {
         resetVisited();
         resetInChain();
         resetNode();
@@ -1051,29 +1051,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
-    public void process02_thin() {
-        //int cnt = 0;
-        //final int total = getHeight() * getWidth();
-        //int thinned = 0;
-
+    void process02_thin() {
         forEachPixel(pixel -> thin(pixel));
-//        for (final Pixel pixel : allPixels()) {
-//            if (thin(pixel)) {
-//                thinned++;
-//            }
-//        }
-//
-//        mLogger.info("Thinned: " + thinned + " of " + total + " is " + 100f * thinned / total + "%");
     }
 
-    public void process03_generateNodes() {
-//        mAllNodes = new AllNodes();
-//        for (final Pixel pixel : allPixels()) {
-//            if (pixel.calcIsNode()) {
-//                mAllNodes.add(pixel);
-//            }
-//        }
-
+    void process03_generateNodes() {
         forEachPixel(pixel -> {
             if (pixel.calcIsNode()) {
                 mAllNodes.add(pixel);
@@ -1154,7 +1136,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-    public void process04a_removeLoneNodes() {
+    void process04a_removeLoneNodes() {
 
         // indexSegments();
         //
@@ -1216,7 +1198,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     }
 
-    public void process04b_removeBristles() {
+    void process04b_removeBristles() {
         final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
 
         mAllNodes.forEach(node -> {
@@ -1278,7 +1260,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains;
     }
 
-    public void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
+    void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
         System.out.println("process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
 //      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
@@ -1298,7 +1280,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         indexSegments();
     }
 
-    public void process07_mergeChains() {
+    void process07_mergeChains() {
         System.out.println("number of PixelChains: " + mPixelChains.size());
         //for (final Node node : getAllNodes()) {
         mAllNodes.stream().forEach(node -> {
@@ -1310,15 +1292,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         System.out.println("number of PixelChains: " + mPixelChains.size());
     }
 
-    public void process08_refine() {
-//        final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process08_refine", mPixelChains) {
-//            @Override
-//            public void process(final PixelChain pPixelChain)
+    void process08_refine() {
         mPixelChains.stream().forEach(pixelChain -> {
             pixelChain.approximate();
         });
-//
-        //job.runImmediate();
     }
 
 
