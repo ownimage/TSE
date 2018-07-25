@@ -112,6 +112,22 @@ public class Node extends Pixel {
         }
     }
 
+    public void mergePixelChains() {
+        switch (countPixelChains()) {
+            case 2:
+                final PixelChain chain0 = getPixelChain(0);
+                final PixelChain chain1 = getPixelChain(1);
+                if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
+                    chain0.merge(chain1, this);
+                }
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+        }
+    }
+
     @Override
     public String toString() {
         return "Node(" + getX() + ", " + getY() + ")";

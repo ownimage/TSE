@@ -362,7 +362,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionPixelChainDelete(final Pixel pPixel) {
-        mPixelMap.getPixelChain(pPixel).stream().forEach(pc -> pc.delete());
+        mPixelMap.getPixelChains(pPixel).stream().forEach(pc -> pc.delete());
         mPictureControl.redrawGrafitti();
     }
 
@@ -480,7 +480,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         pPixel
                 .filter(p -> p.isEdge())
                 .ifPresent(p -> {
-                    mPixelMap.getPixelChain(p).stream().forEach(pc -> pc.delete());
+                    mPixelMap.getPixelChains(p).stream().forEach(pc -> pc.delete());
                 });
         mPictureControl.redrawGrafitti();
     }

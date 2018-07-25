@@ -9,8 +9,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
@@ -84,6 +86,14 @@ public class PixelChain implements Serializable {
         mThickness = Thickness.Normal;
         mPixelMap = pStartNode.getPixelMap();
         setStartNode(pStartNode);
+    }
+
+    public void forEachPixel(final Consumer<? super Pixel> pLambda) {
+        mPixels.forEach(pLambda);
+    }
+
+    public Stream<Pixel> streamPixels() {
+        return mPixels.stream();
     }
 
     // @Deprecated

@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -265,8 +266,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return getPixelMap().getData(this, NODE);
     }
 
-    public void setNode(final boolean pValue) {
-        getPixelMap().setNode(this, pValue);
+    public Optional<Node> getNode() {
+        return  isNode() ? Optional.of(new Node(this)) : Optional.empty();
     }
 
     public byte getValue() {
