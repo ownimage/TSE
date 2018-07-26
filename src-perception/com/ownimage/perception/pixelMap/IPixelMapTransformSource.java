@@ -64,6 +64,8 @@ public interface IPixelMapTransformSource {
 
 	public boolean getShowPixels();
 
+	public boolean getShowLines();
+
 	public boolean getShowShadow();
 
 }

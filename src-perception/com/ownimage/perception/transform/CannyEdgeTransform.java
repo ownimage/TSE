@@ -80,7 +80,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mLineCurvePreference =
             new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2d, 0.1d, 100.0d);
 
-    private final BooleanControl mLinesShow =
+    private final BooleanControl mShowLines =
             new BooleanControl("Show Lines", "showLines", getContainer(), false);
     private final ObjectControl<LineEndShape> mLineEndShape =
             new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
@@ -393,6 +393,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mShowShadow.getValue();
     }
 
+    @Override
+    public boolean getShowLines() {
+        return mShowLines.getValue();
+    }
 
     // @Override
     // public ICUI getUIDynamic(final IControlPrimative<IPicture> pPreviewPictureControl) {
@@ -478,7 +482,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         super.setValues();
         mPixelColor.setVisible(mShowPixels.getValue());
 
-        final boolean showLines = mLinesShow.getValue();
+        final boolean showLines = mShowLines.getValue();
         mLineEndShape.setVisible(showLines);
         mLineEndLengthType.setVisible(showLines);
         mLineEndLengthPixels.setVisible(showLines);
@@ -494,7 +498,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mShortLineThickness.setVisible(showLines);
         mShowShadow.setVisible(showLines);
 
-        final boolean showShadow = mShowShadow.getValue() && mLinesShow.getValue();
+        final boolean showShadow = mShowShadow.getValue() && mShowLines.getValue();
         mShadowColor.setVisible(showShadow);
         mShadowOpacity.setVisible(showShadow);
         mShadowThickness.setVisible(showShadow);
@@ -516,7 +520,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // @Override
     // public Color transform(final Point pIn) {
     // Color color = getBackgroundColor(pIn);
-    // if (mLinesShow.getBoolean()) {
+    // if (mShowLines.getBoolean()) {
     // color = mPixelMap.transform(pIn, color);
     // }
     // return color;

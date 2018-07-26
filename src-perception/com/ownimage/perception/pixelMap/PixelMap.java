@@ -482,14 +482,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-    private Color getMaxiLineColor(final Point pIn, final Color pColor) {
-        return getMaxiLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d);
-        // return getMaxiLineColor3D(pIn, pColor, getMaxiLineColor(), getLineOpacity());
+    public boolean getShowLines() {
+        return mTransformSource.getShowLines();
     }
 
-    private Color getMaxiLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
+    private Color transformGetLineColor(final Point pIn, final Color pColor) {
+        return getShowLines() ?
+                transformGetLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d) :
+                pColor;
+    }
+
+    private Color transformGetLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
     double pThicknessMuliplier) {
-        final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d; // TODO should this be 1000 or getHeight?
+        final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d;
         final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
         final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
         if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) {
@@ -1582,7 +1587,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Point pIn = pRenderResult.getPoint();
         Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
         //color = getMaxiLineShadowColor(pIn, color);
-        color = getMaxiLineColor(pIn, color);
+        color = transformGetLineColor(pIn, color);
         // color = getShortLineColor(pIn, color);
         // return color;
         // }

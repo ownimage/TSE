@@ -32,7 +32,9 @@
     <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/NY2.transform" afterPath="$PROJECT_DIR$/NY2.transform" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" />
       <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -51,11 +53,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="PixelMap.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PixelMap.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="398">
-              <caret line="697" column="59" lean-forward="false" selection-start-line="697" selection-start-column="59" selection-end-line="697" selection-end-column="59" />
+            <state relative-caret-position="23">
+              <caret line="166" column="43" lean-forward="false" selection-start-line="166" selection-start-column="43" selection-end-line="166" selection-end-column="43" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="e#5620#5632#0" expanded="true" />
@@ -76,41 +78,43 @@
                 <element signature="e#16925#16926#0" expanded="true" />
                 <element signature="e#16965#16966#0" expanded="true" />
                 <element signature="e#17019#17020#0" expanded="true" />
-                <element signature="e#21796#21797#0" expanded="true" />
-                <element signature="e#21860#21861#0" expanded="true" />
-                <element signature="e#22352#22353#0" expanded="true" />
-                <element signature="e#22407#22408#0" expanded="true" />
-                <element signature="e#23477#23478#0" expanded="true" />
-                <element signature="e#23523#23524#0" expanded="true" />
-                <element signature="e#28382#28383#0" expanded="true" />
-                <element signature="e#28442#28443#0" expanded="true" />
-                <element signature="e#28487#28488#0" expanded="true" />
-                <element signature="e#28550#28551#0" expanded="true" />
-                <element signature="e#28795#28796#0" expanded="true" />
-                <element signature="e#28848#28849#0" expanded="true" />
-                <element signature="e#28884#28885#0" expanded="true" />
-                <element signature="e#28938#28939#0" expanded="true" />
-                <element signature="e#28998#28999#0" expanded="true" />
-                <element signature="e#29037#29038#0" expanded="true" />
-                <element signature="e#29076#29077#0" expanded="true" />
-                <element signature="e#29113#29114#0" expanded="true" />
-                <element signature="e#30156#30157#0" expanded="true" />
-                <element signature="e#30185#30186#0" expanded="true" />
-                <element signature="e#38475#38476#0" expanded="true" />
-                <element signature="e#38525#38526#0" expanded="true" />
-                <element signature="e#38775#38776#0" expanded="true" />
-                <element signature="e#38823#38824#0" expanded="true" />
-                <element signature="e#38895#38896#0" expanded="true" />
-                <element signature="e#38944#38945#0" expanded="true" />
-                <element signature="e#43304#43311#0" expanded="true" />
-                <element signature="e#52048#52049#0" expanded="true" />
+                <element signature="e#17057#17058#0" expanded="true" />
+                <element signature="e#17111#17112#0" expanded="true" />
+                <element signature="e#21829#21830#0" expanded="true" />
+                <element signature="e#21893#21894#0" expanded="true" />
+                <element signature="e#22385#22386#0" expanded="true" />
+                <element signature="e#22440#22441#0" expanded="true" />
+                <element signature="e#23510#23511#0" expanded="true" />
+                <element signature="e#23556#23557#0" expanded="true" />
+                <element signature="e#28415#28416#0" expanded="true" />
+                <element signature="e#28475#28476#0" expanded="true" />
+                <element signature="e#28520#28521#0" expanded="true" />
+                <element signature="e#28583#28584#0" expanded="true" />
+                <element signature="e#28828#28829#0" expanded="true" />
+                <element signature="e#28881#28882#0" expanded="true" />
+                <element signature="e#28917#28918#0" expanded="true" />
+                <element signature="e#28971#28972#0" expanded="true" />
+                <element signature="e#29031#29032#0" expanded="true" />
+                <element signature="e#29070#29071#0" expanded="true" />
+                <element signature="e#29109#29110#0" expanded="true" />
+                <element signature="e#29146#29147#0" expanded="true" />
+                <element signature="e#30189#30190#0" expanded="true" />
+                <element signature="e#30218#30219#0" expanded="true" />
+                <element signature="e#38508#38509#0" expanded="true" />
+                <element signature="e#38558#38559#0" expanded="true" />
+                <element signature="e#38808#38809#0" expanded="true" />
+                <element signature="e#38856#38857#0" expanded="true" />
+                <element signature="e#38928#38929#0" expanded="true" />
+                <element signature="e#38977#38978#0" expanded="true" />
+                <element signature="e#43337#43344#0" expanded="true" />
                 <element signature="e#52081#52082#0" expanded="true" />
-                <element signature="e#54639#54640#0" expanded="true" />
-                <element signature="e#54670#54671#0" expanded="true" />
-                <element signature="e#59200#59201#0" expanded="true" />
-                <element signature="e#59267#59268#0" expanded="true" />
-                <element signature="e#59522#59523#0" expanded="true" />
-                <element signature="e#59578#59579#0" expanded="true" />
+                <element signature="e#52114#52115#0" expanded="true" />
+                <element signature="e#54672#54673#0" expanded="true" />
+                <element signature="e#54703#54704#0" expanded="true" />
+                <element signature="e#59238#59239#0" expanded="true" />
+                <element signature="e#59305#59306#0" expanded="true" />
+                <element signature="e#59560#59561#0" expanded="true" />
+                <element signature="e#59616#59617#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -119,8 +123,8 @@
       <file leaf-file-name="IPixelMapTransformSource.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="48" column="17" lean-forward="false" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
+            <state relative-caret-position="746">
+              <caret line="66" column="31" lean-forward="false" selection-start-line="66" selection-start-column="31" selection-end-line="66" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -136,11 +140,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CannyEdgeTransform.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CannyEdgeTransform.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="506" column="64" lean-forward="false" selection-start-line="506" selection-start-column="64" selection-end-line="506" selection-end-column="64" />
+            <state relative-caret-position="774">
+              <caret line="410" column="19" lean-forward="true" selection-start-line="410" selection-start-column="19" selection-end-line="410" selection-end-column="19" />
               <folding>
                 <element signature="e#12406#12407#0" expanded="true" />
                 <element signature="e#12447#12448#0" expanded="true" />
@@ -190,8 +194,10 @@
                 <element signature="e#14760#14761#0" expanded="true" />
                 <element signature="e#14812#14813#0" expanded="true" />
                 <element signature="e#14857#14858#0" expanded="true" />
-                <element signature="e#15375#15376#0" expanded="true" />
-                <element signature="e#15415#15416#0" expanded="true" />
+                <element signature="e#14908#14909#0" expanded="true" />
+                <element signature="e#14952#14953#0" expanded="true" />
+                <element signature="e#15469#15470#0" expanded="true" />
+                <element signature="e#15509#15510#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -209,8 +215,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>mUIEventListener</find>
-      <find>mControl</find>
       <find>circle</find>
       <find>mAct</find>
       <find>keyTo</find>
@@ -237,8 +241,10 @@
       <find>calcSegmentIndex</find>
       <find>resetSegmentIndex</find>
       <find>toUHVW</find>
-      <find>50</find>
       <find>transform</find>
+      <find>Show</find>
+      <find>50</find>
+      <find>showLines</find>
     </findStrings>
     <replaceStrings>
       <replace>this::</replace>
@@ -264,7 +270,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/perception/util/FrameworkTEST.java" />
         <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/perception/control/control/IntegerControlTEST.java" />
         <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/perception/view/factory/ViewFactoryDELEGATOR.java" />
         <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/perception/view/factory/ViewFactoryASSISTANT.java" />
@@ -313,8 +318,9 @@
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
+        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
+        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
       </list>
     </option>
   </component>
@@ -759,7 +765,8 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="StructureViewFactory">
-    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR,SHOW_PROPERTIES" />
+    <option name="AUTOSCROLL_MODE" value="false" />
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -786,7 +793,7 @@
       <workItem from="1532014229554" duration="12120000" />
       <workItem from="1532077374774" duration="42823000" />
       <workItem from="1532524665734" duration="647000" />
-      <workItem from="1532530009508" duration="8850000" />
+      <workItem from="1532530009508" duration="9826000" />
     </task>
     <servers />
   </component>
@@ -823,7 +830,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="246058000" />
+    <option name="totallyTimeSpent" value="247034000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="140" y="0" width="3579" height="2160" extended-state="0" />
@@ -874,19 +881,19 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java</url>
-          <line>1128</line>
+          <line>1133</line>
           <properties />
           <option name="timeStamp" value="135" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java</url>
-          <line>968</line>
+          <line>973</line>
           <properties />
           <option name="timeStamp" value="137" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java</url>
-          <line>1000</line>
+          <line>1005</line>
           <properties />
           <option name="timeStamp" value="138" />
         </line-breakpoint>
@@ -1410,18 +1417,83 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="166" column="43" lean-forward="false" selection-start-line="166" selection-start-column="43" selection-end-line="166" selection-end-column="43" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#5620#5632#0" expanded="true" />
+            <element signature="e#6881#6882#0" expanded="true" />
+            <element signature="e#6936#6937#0" expanded="true" />
+            <element signature="e#6972#6973#0" expanded="true" />
+            <element signature="e#7027#7028#0" expanded="true" />
+            <element signature="e#14981#14993#0" expanded="true" />
+            <element signature="e#16017#16018#0" expanded="true" />
+            <element signature="e#16052#16053#0" expanded="true" />
+            <element signature="e#16415#16416#0" expanded="true" />
+            <element signature="e#16445#16446#0" expanded="true" />
+            <element signature="e#16563#16564#0" expanded="true" />
+            <element signature="e#16619#16620#0" expanded="true" />
+            <element signature="e#16659#16660#0" expanded="true" />
+            <element signature="e#16717#16718#0" expanded="true" />
+            <element signature="e#16863#16864#0" expanded="true" />
+            <element signature="e#16925#16926#0" expanded="true" />
+            <element signature="e#16965#16966#0" expanded="true" />
+            <element signature="e#17019#17020#0" expanded="true" />
+            <element signature="e#17057#17058#0" expanded="true" />
+            <element signature="e#17111#17112#0" expanded="true" />
+            <element signature="e#21829#21830#0" expanded="true" />
+            <element signature="e#21893#21894#0" expanded="true" />
+            <element signature="e#22385#22386#0" expanded="true" />
+            <element signature="e#22440#22441#0" expanded="true" />
+            <element signature="e#23510#23511#0" expanded="true" />
+            <element signature="e#23556#23557#0" expanded="true" />
+            <element signature="e#28415#28416#0" expanded="true" />
+            <element signature="e#28475#28476#0" expanded="true" />
+            <element signature="e#28520#28521#0" expanded="true" />
+            <element signature="e#28583#28584#0" expanded="true" />
+            <element signature="e#28828#28829#0" expanded="true" />
+            <element signature="e#28881#28882#0" expanded="true" />
+            <element signature="e#28917#28918#0" expanded="true" />
+            <element signature="e#28971#28972#0" expanded="true" />
+            <element signature="e#29031#29032#0" expanded="true" />
+            <element signature="e#29070#29071#0" expanded="true" />
+            <element signature="e#29109#29110#0" expanded="true" />
+            <element signature="e#29146#29147#0" expanded="true" />
+            <element signature="e#30189#30190#0" expanded="true" />
+            <element signature="e#30218#30219#0" expanded="true" />
+            <element signature="e#38508#38509#0" expanded="true" />
+            <element signature="e#38558#38559#0" expanded="true" />
+            <element signature="e#38808#38809#0" expanded="true" />
+            <element signature="e#38856#38857#0" expanded="true" />
+            <element signature="e#38928#38929#0" expanded="true" />
+            <element signature="e#38977#38978#0" expanded="true" />
+            <element signature="e#43337#43344#0" expanded="true" />
+            <element signature="e#52081#52082#0" expanded="true" />
+            <element signature="e#52114#52115#0" expanded="true" />
+            <element signature="e#54672#54673#0" expanded="true" />
+            <element signature="e#54703#54704#0" expanded="true" />
+            <element signature="e#59238#59239#0" expanded="true" />
+            <element signature="e#59305#59306#0" expanded="true" />
+            <element signature="e#59560#59561#0" expanded="true" />
+            <element signature="e#59616#59617#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="48" column="17" lean-forward="false" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
+        <state relative-caret-position="746">
+          <caret line="66" column="31" lean-forward="false" selection-start-line="66" selection-start-column="31" selection-end-line="66" selection-end-column="31" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="506" column="64" lean-forward="false" selection-start-line="506" selection-start-column="64" selection-end-line="506" selection-end-column="64" />
+        <state relative-caret-position="774">
+          <caret line="410" column="19" lean-forward="true" selection-start-line="410" selection-start-column="19" selection-end-line="410" selection-end-column="19" />
           <folding>
             <element signature="e#12406#12407#0" expanded="true" />
             <element signature="e#12447#12448#0" expanded="true" />
@@ -1471,71 +1543,10 @@
             <element signature="e#14760#14761#0" expanded="true" />
             <element signature="e#14812#14813#0" expanded="true" />
             <element signature="e#14857#14858#0" expanded="true" />
-            <element signature="e#15375#15376#0" expanded="true" />
-            <element signature="e#15415#15416#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="398">
-          <caret line="697" column="59" lean-forward="false" selection-start-line="697" selection-start-column="59" selection-end-line="697" selection-end-column="59" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#5620#5632#0" expanded="true" />
-            <element signature="e#6881#6882#0" expanded="true" />
-            <element signature="e#6936#6937#0" expanded="true" />
-            <element signature="e#6972#6973#0" expanded="true" />
-            <element signature="e#7027#7028#0" expanded="true" />
-            <element signature="e#14981#14993#0" expanded="true" />
-            <element signature="e#16017#16018#0" expanded="true" />
-            <element signature="e#16052#16053#0" expanded="true" />
-            <element signature="e#16415#16416#0" expanded="true" />
-            <element signature="e#16445#16446#0" expanded="true" />
-            <element signature="e#16563#16564#0" expanded="true" />
-            <element signature="e#16619#16620#0" expanded="true" />
-            <element signature="e#16659#16660#0" expanded="true" />
-            <element signature="e#16717#16718#0" expanded="true" />
-            <element signature="e#16863#16864#0" expanded="true" />
-            <element signature="e#16925#16926#0" expanded="true" />
-            <element signature="e#16965#16966#0" expanded="true" />
-            <element signature="e#17019#17020#0" expanded="true" />
-            <element signature="e#21796#21797#0" expanded="true" />
-            <element signature="e#21860#21861#0" expanded="true" />
-            <element signature="e#22352#22353#0" expanded="true" />
-            <element signature="e#22407#22408#0" expanded="true" />
-            <element signature="e#23477#23478#0" expanded="true" />
-            <element signature="e#23523#23524#0" expanded="true" />
-            <element signature="e#28382#28383#0" expanded="true" />
-            <element signature="e#28442#28443#0" expanded="true" />
-            <element signature="e#28487#28488#0" expanded="true" />
-            <element signature="e#28550#28551#0" expanded="true" />
-            <element signature="e#28795#28796#0" expanded="true" />
-            <element signature="e#28848#28849#0" expanded="true" />
-            <element signature="e#28884#28885#0" expanded="true" />
-            <element signature="e#28938#28939#0" expanded="true" />
-            <element signature="e#28998#28999#0" expanded="true" />
-            <element signature="e#29037#29038#0" expanded="true" />
-            <element signature="e#29076#29077#0" expanded="true" />
-            <element signature="e#29113#29114#0" expanded="true" />
-            <element signature="e#30156#30157#0" expanded="true" />
-            <element signature="e#30185#30186#0" expanded="true" />
-            <element signature="e#38475#38476#0" expanded="true" />
-            <element signature="e#38525#38526#0" expanded="true" />
-            <element signature="e#38775#38776#0" expanded="true" />
-            <element signature="e#38823#38824#0" expanded="true" />
-            <element signature="e#38895#38896#0" expanded="true" />
-            <element signature="e#38944#38945#0" expanded="true" />
-            <element signature="e#43304#43311#0" expanded="true" />
-            <element signature="e#52048#52049#0" expanded="true" />
-            <element signature="e#52081#52082#0" expanded="true" />
-            <element signature="e#54639#54640#0" expanded="true" />
-            <element signature="e#54670#54671#0" expanded="true" />
-            <element signature="e#59200#59201#0" expanded="true" />
-            <element signature="e#59267#59268#0" expanded="true" />
-            <element signature="e#59522#59523#0" expanded="true" />
-            <element signature="e#59578#59579#0" expanded="true" />
+            <element signature="e#14908#14909#0" expanded="true" />
+            <element signature="e#14952#14953#0" expanded="true" />
+            <element signature="e#15469#15470#0" expanded="true" />
+            <element signature="e#15509#15510#0" expanded="true" />
           </folding>
         </state>
       </provider>
