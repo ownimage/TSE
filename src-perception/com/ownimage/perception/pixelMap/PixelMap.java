@@ -203,6 +203,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
     }
 
+    public boolean getShowPixels() {
+        return mTransformSource.getShowPixels();
+    }
+
+    public Color getPixelColor() {
+        return mTransformSource.getPixelColor();
+    }
+
     public void addPixelChain(final PixelChain pPixelChain) {
         mLogger.entering(mClassname, "addPixelChain");
         indexSegments();
@@ -246,20 +254,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     //  }
 
 
-     private synchronized void calcSegmentIndex() {
-     if (!mSegmentIndexValid) {
-     mLogger.entering(mClassname, "indexSegmentsValidate");
-     resetSegmentIndex();
+    private synchronized void calcSegmentIndex() {
+        if (!mSegmentIndexValid) {
+            mLogger.entering(mClassname, "indexSegmentsValidate");
+            resetSegmentIndex();
 
-     for (final PixelChain pixelChain : mPixelChains) {
-     pixelChain.indexSegments();
-     }
+            for (final PixelChain pixelChain : mPixelChains) {
+                pixelChain.indexSegments();
+            }
 
-         //printNodeCounts();
-         mSegmentIndexValid = true;
-     }
-         mLogger.exiting(mClassname, "indexSegmentsValidate");
-     }
+            //printNodeCounts();
+            mSegmentIndexValid = true;
+        }
+        mLogger.exiting(mClassname, "indexSegmentsValidate");
+    }
 
     // public void equalizeValues(final EqualizeValues pValues) {
     //
@@ -474,20 +482,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-     private Color getMaxiLineColor(final Point pIn, final Color pColor) {
-     return getMaxiLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d);
-     // return getMaxiLineColor3D(pIn, pColor, getMaxiLineColor(), getLineOpacity());
-     }
+    private Color getMaxiLineColor(final Point pIn, final Color pColor) {
+        return getMaxiLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d);
+        // return getMaxiLineColor3D(pIn, pColor, getMaxiLineColor(), getLineOpacity());
+    }
 
-     private Color getMaxiLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
-     double pThicknessMuliplier) {
-     final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d; // TODO should this be 1000 or getHeight?
-     final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
-     final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
-     if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) { return KColor.fade(pColorIn, pLineColor,
-                                                                                                        pOpacity); }
-     return pColorIn;
-     }
+    private Color getMaxiLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
+    double pThicknessMuliplier) {
+        final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d; // TODO should this be 1000 or getHeight?
+        final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
+        final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
+        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) {
+            return KColor.fade(pColorIn, pLineColor,
+                               pOpacity);
+        }
+        return pColorIn;
+    }
 
     // private Color getMaxiLineColor3D(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity) {
     // final double shortThickness = getMediumLineThickness() / 1000d;
@@ -601,6 +611,21 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return getMediumLineThickness() / 1000d;
     }
 
+    public Optional<Pixel> getOptionalPixelAt(final double pX, final double pY) {
+        mLogger.entering(mClassname, "getPixelAt");
+        // Framework.logParams(mLogger, "pX, pY", pX, pY);
+
+        int x = (int) (pX * getWidth());
+        int y = (int) (pY * getHeight());
+        y = y == getHeight() ? getHeight() - 1 : y;
+        x = modWidth(x);
+        final Pixel pixel = getPixelAt(x, y);
+
+        mLogger.exiting(mClassname, "getPixelAt", pixel);
+        return Optional.ofNullable(pixel);
+    }
+
+    @Deprecated
     public Pixel getPixelAt(final double pX, final double pY) {
         mLogger.entering(mClassname, "getPixelAt");
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
@@ -627,6 +652,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return Optional.of(new Pixel(this, x, pY));
     }
 
+    public Optional<Pixel> getOptionalPixelAt(final Point pPoint) {
+        return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
+    }
+
+    @Deprecated
     public Pixel getPixelAt(final Point pPoint) {
         mLogger.entering(mClassname, "getPixelAt");
         Framework.logParams(mLogger, "pPoint", pPoint);
@@ -661,20 +691,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return mTransformSource.getPixelColor();
     // }
     //
-    private Color getPixelColor(final Point pIn, final Color pColor) {
-        //if (getShowPixels()) {
-        final Pixel pixelIn = getPixelAt(pIn);
-        // if (pixelIn.isInChain())
-        // return Color.YELLOW;
-        if (pixelIn.isNode()) {
-            return Color.RED;
-        } // TODO could do something here about being in chain
-        if (pixelIn.isEdge() && pixelIn.isVisited()) {
-            return Color.BLUE;
-        } // TODO could do something here about being in chain
-        //}
-
-        return pColor;
+    private Color transformGetPixelColor(final Point pIn, final Color pColor) {
+        Color result = pColor;
+        if (getShowPixels()) {
+            Optional<Pixel> pixel = getOptionalPixelAt(pIn);
+            if (pixel.isPresent() && pixel.get().isEdge()) {
+                result = getPixelColor();
+            }
+        }
+        return result;
     }
 
     //
@@ -867,8 +892,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "indexSegments");
     }
 
-    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
-            pThickWidth) {
+    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth,
+                                        final double
+                                                pThickWidth) {
         calcSegmentIndex();
 
         final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
@@ -1554,7 +1580,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void transform(final ITransformResult pRenderResult) {
         // public Color transform(final Point pIn, final Color pColor) {
         Point pIn = pRenderResult.getPoint();
-        Color color = getPixelColor(pIn, pRenderResult.getColor());
+        Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
         //color = getMaxiLineShadowColor(pIn, color);
         color = getMaxiLineColor(pIn, color);
         // color = getShortLineColor(pIn, color);
