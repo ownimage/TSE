@@ -8,6 +8,7 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.ActionControl;
@@ -571,9 +572,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mEditPixelMapButton.setEnabled(mPixelMap != null);
     }
 
+    private Optional<PixelMap> getPixelMap() {
+        return Optional.ofNullable(mPixelMap);
+        // TODO need to make all type of mPixelMap Optional<PixelMap>
+    }
+
     @Override
     public void transform(final ITransformResult pRenderResult) {
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
+        getPixelMap().ifPresent(pixelMap -> pixelMap.transform(pRenderResult));
 //        int x = (int) Math.floor(getWidth() * pRenderResult.getX());
 //        int y = (int) Math.floor(getHeight() * pRenderResult.getY());
 //        if (mPixelMap != null && mPixelMap.getPixelAt(x, y).isEdge()) {
