@@ -32,7 +32,6 @@
     <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/NY2.transform" afterPath="$PROJECT_DIR$/NY2.transform" />
-      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
       <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -52,7 +51,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="PixelMap.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PixelMap.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="426">
@@ -123,11 +122,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CannyEdgeTransform.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CannyEdgeTransform.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13775">
-              <caret line="582" column="76" lean-forward="false" selection-start-line="582" selection-start-column="76" selection-end-line="582" selection-end-column="76" />
+            <state relative-caret-position="483">
+              <caret line="506" column="64" lean-forward="false" selection-start-line="506" selection-start-column="64" selection-end-line="506" selection-end-column="64" />
               <folding>
                 <element signature="e#12406#12407#0" expanded="true" />
                 <element signature="e#12447#12448#0" expanded="true" />
@@ -196,7 +195,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>showDia</find>
       <find>Rectangle</find>
       <find>mUIEventListener</find>
       <find>mControl</find>
@@ -226,6 +224,7 @@
       <find>calcSegmentIndex</find>
       <find>resetSegmentIndex</find>
       <find>toUHVW</find>
+      <find>50</find>
     </findStrings>
     <replaceStrings>
       <replace>this::</replace>
@@ -300,8 +299,8 @@
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
+        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
       </list>
     </option>
   </component>
@@ -773,7 +772,7 @@
       <workItem from="1532014229554" duration="12120000" />
       <workItem from="1532077374774" duration="42823000" />
       <workItem from="1532524665734" duration="647000" />
-      <workItem from="1532530009508" duration="5944000" />
+      <workItem from="1532530009508" duration="7226000" />
     </task>
     <servers />
   </component>
@@ -810,7 +809,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="243152000" />
+    <option name="totallyTimeSpent" value="244434000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="140" y="0" width="3579" height="2160" extended-state="0" />
@@ -1465,8 +1464,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13775">
-          <caret line="582" column="76" lean-forward="false" selection-start-line="582" selection-start-column="76" selection-end-line="582" selection-end-column="76" />
+        <state relative-caret-position="483">
+          <caret line="506" column="64" lean-forward="false" selection-start-line="506" selection-start-column="64" selection-end-line="506" selection-end-column="64" />
           <folding>
             <element signature="e#12406#12407#0" expanded="true" />
             <element signature="e#12447#12448#0" expanded="true" />

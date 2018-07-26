@@ -478,16 +478,21 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         super.setValues();
         mPixelColor.setVisible(mShowPixels.getValue());
 
-        final boolean showMaxiLines = mLinesShow.getValue();
-        mLongLineLength.setVisible(showMaxiLines);
-        mLongLineThickness.setVisible(showMaxiLines);
-        mMediumLineLength.setVisible(showMaxiLines);
-        mMediumLineThickness.setVisible(showMaxiLines);
-        mShortLineLength.setVisible(showMaxiLines);
-        mShortLineThickness.setVisible(showMaxiLines);
-        mLineOpacity.setVisible(showMaxiLines);
-        mLineColor.setVisible(showMaxiLines);
-        mShowShadow.setVisible(showMaxiLines);
+        final boolean showLines = mLinesShow.getValue();
+        mLineEndShape.setVisible(showLines);
+        mLineEndLengthType.setVisible(showLines);
+        mLineEndLengthPixels.setVisible(showLines);
+        mLineEndLengthPercent.setEnabled(showLines);
+        mLineEndThickness.setVisible(showLines);
+        mLineColor.setVisible(showLines);
+        mLineOpacity.setVisible(showLines);
+        mLongLineLength.setVisible(showLines);
+        mLongLineThickness.setVisible(showLines);
+        mMediumLineLength.setVisible(showLines);
+        mMediumLineThickness.setVisible(showLines);
+        mShortLineLength.setVisible(showLines);
+        mShortLineThickness.setVisible(showLines);
+        mShowShadow.setVisible(showLines);
 
         final boolean showShadow = mShowShadow.getValue() && mLinesShow.getValue();
         mShadowColor.setVisible(showShadow);
@@ -497,8 +502,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mShadowYOffset.setVisible(showShadow);
 
         final boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
-        mLineEndLengthPercent.setVisible(isPercent);
-        mLineEndLengthPixels.setVisible(!isPercent);
+        mLineEndLengthPercent.setVisible(isPercent && showLines);
+        mLineEndLengthPixels.setVisible(!isPercent && showLines);
+        mLineEndLengthPercent.setVisible(!isPercent && showLines);
 
         final boolean isSquare = mLineEndShape.getValue() == LineEndShape.Square;
         mLineEndLengthType.setEnabled(!isSquare);
