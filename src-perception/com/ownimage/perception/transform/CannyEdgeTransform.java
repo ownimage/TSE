@@ -505,15 +505,14 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mShadowXOffset.setVisible(showShadow);
         mShadowYOffset.setVisible(showShadow);
 
-        final boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
-        mLineEndLengthPercent.setVisible(isPercent && showLines);
-        mLineEndLengthPixels.setVisible(!isPercent && showLines);
-        mLineEndLengthPercent.setVisible(!isPercent && showLines);
-
         final boolean isSquare = mLineEndShape.getValue() == LineEndShape.Square;
         mLineEndLengthType.setEnabled(!isSquare);
         mLineEndLengthPercent.setEnabled(!isSquare);
         mLineEndLengthPixels.setEnabled(!isSquare);
+
+        final boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
+        mLineEndLengthPercent.setVisible(isPercent && showLines);
+        mLineEndLengthPixels.setVisible(!isPercent && showLines);
     }
 
     //
