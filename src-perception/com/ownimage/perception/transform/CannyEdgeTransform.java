@@ -25,6 +25,7 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
+import com.ownimage.framework.view.IDialogView;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
@@ -229,9 +230,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // }
     //
     private void editPixels() {
-        ActionControl ok = ActionControl.create("OK", NullContainer, () -> System.out.println("edit pixelmap OK"));
-        ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-        getEditPixelMapDialog().showDialog(cancel, ok);
+        getEditPixelMapDialog().showDialog();
     }
 
     private void generateEdges() {
@@ -261,7 +260,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     public synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", this);
+            ActionControl ok = ActionControl.create("OK", NullContainer, () -> System.out.println("edit pixelmap OK"));
+            ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
+            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor",  ok, cancel);
         }
         return mEditPixelMapDialog;
     }

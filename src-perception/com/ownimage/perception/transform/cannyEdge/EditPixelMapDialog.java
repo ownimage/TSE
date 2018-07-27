@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import javax.swing.text.View;
+
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.container.NullContainer;
@@ -31,6 +33,7 @@ import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
+import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -71,6 +74,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private final PixelMap mPixelMap;
+    private final ActionControl mOkAction;
+    private final ActionControl mCancelAction;
+    private IDialogView mEditPixelMapDialogView;
 
     private final ITransform mTransform;
     private final CropTransform mCropTransform;
@@ -111,12 +117,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private int mMouseLastSize;
     private Id mSavepointId;
 
-    public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, IUndoRedoBufferProvider undoRedoBufferProvider) {
-        super(pDisplayName, pPropertyName, undoRedoBufferProvider);
+    public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, final ActionControl pOkAction, final ActionControl pCancelAction) {
+        super(pDisplayName, pPropertyName, Perception.getPerception().getUndoRedoBuffer()); // TODO need to remove the @Deprecated call
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+
         mTransform = pTransform;
         mPixelMap = pPixelMap;
+        mOkAction = pOkAction;
+        mCancelAction = pCancelAction;
+
         mPixelMapWidth = new IntegerControl("PixelMap Height", "pixelMapWidth", mGeneralContainer, getWidth(), 0, getWidth(), 50).setEnabled(false);
         mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, getHeight(), 50).setEnabled(false);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
@@ -198,17 +208,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return view;
     }
 
-    public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
-        mDialogIsAlive = true;
+    private IDialogView getDialogView() {
+        if (mEditPixelMapDialogView == null) {
+            mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
+                 DialogOptions.builder().withCompleteFunction(this::closeDialog).build(),
+                 getUndoRedoBuffer(),
+                 mCancelAction, mOkAction);
+        }
+        return mEditPixelMapDialogView;
+    }
 
+    public void showDialog() {
+        mDialogIsAlive = true;
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         updatePreview();
-        Perception
-                .getPerception()
-                .showDialog(this,
-                            DialogOptions.builder().withCompleteFunction(this::closeDialog).build(),
-                            getUndoRedoBuffer(),
-                            pCancel, pOk);
+        getDialogView().showModal();
     }
 
     private void closeDialog(Optional<ActionControl> pActionControl) {

@@ -21,10 +21,13 @@ import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.HSplitLayout;
 import com.ownimage.framework.control.layout.IContainerList;
 import com.ownimage.framework.control.layout.INamedTabs;
+import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.undo.UndoRedoBuffer;
+import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IBorderView;
+import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IDoubleView;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.ISingleSelectView;
@@ -206,5 +209,10 @@ public class FXViewFactory implements IViewFactory {
 	public void showDialog(final FileControl pFileControl) {
 		AppControlView app = AppControlView.getInstance();
 		app.showDialog(pFileControl);
+	}
+
+	@Override
+	public IDialogView createDialog(final IViewable pViewable, final IAppControlView.DialogOptions pDialogOptions, final UndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
+		return new DialogView(pViewable, pDialogOptions, pUndoRedo, pButtons);
 	}
 }

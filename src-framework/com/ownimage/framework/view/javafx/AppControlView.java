@@ -202,8 +202,8 @@ public class AppControlView extends Application implements IAppControlView {
         Node contentUI = content.getUI();
         Dialog<ActionControl> dialog = new Dialog<>();
 
-        // the width listener is needed in case the dialog is showing the UI controls that affect the width of the controls
-        // themselves which would mean that the dialog would need to change size as the controls change value.
+        // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
+        // themselves which would mean that the mDialog would need to change size as the controls change value.
         mWidthListener = (observable, oldValue, newValue) -> {
             dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
         };
@@ -268,7 +268,7 @@ public class AppControlView extends Application implements IAppControlView {
             // this needs to be done here as the complete function might not be specified.
             dialogResult.ifPresent(actionControl -> actionControl.performAction());
 
-            // the value is passed into the completeFunction only to indicate how the dialog ended.
+            // the value is passed into the completeFunction only to indicate how the mDialog ended.
             pDialogOptions.getCompleteFunction().ifPresent(f -> f.accept(dialogResult));
         }).start();
     }
