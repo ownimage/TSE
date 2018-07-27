@@ -234,7 +234,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    synchronized public void  grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
 
         int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;
@@ -242,9 +242,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         grafitti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
 
-        if (mShowGrafitti.getValue()) {
-            mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
-        }
+            if (mShowGrafitti.getValue()) {
+                mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
+            }
     }
 
     private void grafitti(final GrafittiHelper pGrafittiHelper, int xMin, int yMin, int xMax, int yMax) {
@@ -366,17 +366,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mPixelAction.getValue() == PixelAction.DeletePixelChain;
     }
 
-    private void actionPixelOn(final Pixel pPixel) {
+    synchronized private void actionPixelOn(final Pixel pPixel) {
         pPixel.setEdge(true);
         mPictureControl.redrawGrafitti();
     }
 
-    private void actionPixelToggle(final Pixel pPixel) {
+    synchronized  private void actionPixelToggle(final Pixel pPixel) {
         pPixel.setEdge(!pPixel.isEdge());
         mPictureControl.redrawGrafitti();
     }
 
-    private void actionPixelChainDelete(final Pixel pPixel) {
+    synchronized private void actionPixelChainDelete(final Pixel pPixel) {
         mPixelMap.getPixelChains(pPixel).stream().forEach(pc -> pc.delete());
         mPictureControl.redrawGrafitti();
     }
@@ -427,7 +427,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         });
     }
 
-    private void actionPixelOff(final Pixel pPixel) {
+    synchronized private void actionPixelOff(final Pixel pPixel) {
         int size = getCursorSize();
         double radius = (double) size * getZoom() / mPixelMapHeight.getValue();
 
