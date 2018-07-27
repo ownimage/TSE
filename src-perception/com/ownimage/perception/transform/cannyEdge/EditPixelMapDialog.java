@@ -11,6 +11,7 @@ import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl;
+import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IGrafitti;
@@ -98,7 +99,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
 
     // Vertex Container
-    private final IntegerControl mVCC1 = new IntegerControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 2, 2, 15, 1);
+    private final DoubleControl mVCC1 = new DoubleControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 0.5);
     private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
     private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
 

@@ -1,9 +1,11 @@
 package com.ownimage.perception.control.view;
 
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.type.DoubleMetaType;
+import com.ownimage.framework.view.IDoubleView;
 import com.ownimage.framework.view.IView;
 
-public class ViewASSISTANT implements IView {
+public class ViewASSISTANT implements IDoubleView {
 
 	private boolean mHasFired = false;
 	private IControl mControl = null;
@@ -73,4 +75,8 @@ public class ViewASSISTANT implements IView {
 		mVisible = pVisible;
 	}
 
+	@Override
+	public void setDisplayType(final DoubleMetaType.DisplayType pDisplayType) {
+
+	}
 }

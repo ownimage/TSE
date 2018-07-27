@@ -20,6 +20,7 @@ import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.IBorderView;
+import com.ownimage.framework.view.IDoubleView;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.IView;
@@ -38,7 +39,7 @@ public interface IViewFactory {
 
 	public IView createView(ColorControl pColorControl);
 
-	public IView createView(DoubleControl pDoubleControl);
+	public IDoubleView createView(DoubleControl pDoubleControl);
 
 	public IView createView(FileControl pFileControl);
 

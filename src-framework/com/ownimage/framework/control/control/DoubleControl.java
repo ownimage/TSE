@@ -9,31 +9,41 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.DoubleType;
+import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
+import com.ownimage.framework.view.IDoubleView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
-public class DoubleControl extends ControlBase<DoubleControl, DoubleType, DoubleMetaType, Double, IView> {
+public class DoubleControl extends ControlBase<DoubleControl, DoubleType, DoubleMetaType, Double, IDoubleView> {
 
     public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
     public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Logger.getLogger(mClassname);
     public final static long serialVersionUID = 1L;
 
+    private DoubleMetaType.DisplayType mDisplayType;
+
     public DoubleControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final double pValue) {
-        super(pDisplayName, pPropertyName, pContainer, new DoubleType(pValue));
+        this(pDisplayName, pPropertyName, pContainer, new DoubleType(pValue));
     }
 
     public DoubleControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final double pValue, final double pMin, final double pMax) {
         this(pDisplayName, pPropertyName, pContainer, pValue, new DoubleMetaType(pMin, pMax));
     }
 
+    public DoubleMetaType.DisplayType getDisplayType() {
+        return mDisplayType;
+    }
+
     public DoubleControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final double pValue, final DoubleMetaType pMetaType) {
-        super(pDisplayName, pPropertyName, pContainer, new DoubleType(pValue, pMetaType));
+        this(pDisplayName, pPropertyName, pContainer, new DoubleType(pValue, pMetaType));
     }
 
     public DoubleControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final DoubleType pValue) {
         super(pDisplayName, pPropertyName, pContainer, pValue.clone());
+        mDisplayType = pValue.getMetaModel().getDisplayType();
     }
 
     @Override
@@ -47,7 +57,7 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
 
     @Override
     public IView createView() {
-        IView view = ViewFactory.getInstance().createView(this);
+        IDoubleView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -75,4 +85,32 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
         return String.format("DoubleControl:(value=%s, min=%s, max=%s)", getValue(), getMetaType().getMin(), getMetaType().getMax());
     }
 
+     public void setDisplayType(final DoubleMetaType.DisplayType pDisplayType, final IDoubleView pFromView) {
+        mDisplayType = pDisplayType;
+        mViews.invokeAllExcept(pFromView, v -> v.setDisplayType(pDisplayType));
+     }
+
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        super.read(pDB, pId);
+        String value = null;
+        try {
+            if (isPersistent()) {
+                value = pDB.read(getPrefix(pId) + "_displayType");
+                if (value != null) {
+                    mDisplayType = DoubleMetaType.DisplayType.valueOf(value);
+                }
+            }
+        } catch (RuntimeException pRE) {
+            mLogger.severe(String.format("ERROR in getting displayType for %s, value read is %s", pId, value));
+        }
+    }
+
+    @Override
+    public void write(final IPersistDB pDB, final String pId) {
+        super.write(pDB, pId);
+        if (isPersistent()) {
+            pDB.write(getPrefix(pId) + "_displayType", mDisplayType.name());
+        }
+    }
 }

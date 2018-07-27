@@ -19,6 +19,7 @@ import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
@@ -77,8 +78,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
     private final DoubleControl mLineTolerance =
             new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
+    DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
     private final DoubleControl mLineCurvePreference =
-            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2d, 0.1d, 100.0d);
+            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2,  meta);//1.2d, 0.1d, 100.0d);
 
     private final BooleanControl mShowLines =
             new BooleanControl("Show Lines", "showLines", getContainer(), false);

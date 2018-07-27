@@ -33,9 +33,11 @@ import com.ownimage.framework.control.layout.IContainerList;
 import com.ownimage.framework.control.layout.INamedTabs;
 import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
+import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IBorderView;
+import com.ownimage.framework.view.IDoubleView;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.IView;
@@ -45,7 +47,7 @@ import com.ownimage.perception.view.factory.ViewFactoryDELEGATOR;
 
 public class DoubleControlViewTEST {
 
-	private static class TestDoubleView implements IView {
+	private static class TestDoubleView implements IDoubleView {
 
 		private String mName;
 		private final DoubleControl mDoubleControl;
@@ -111,6 +113,10 @@ public class DoubleControlViewTEST {
 		public void setVisible(final boolean pVisible) {
 		}
 
+		@Override
+		public void setDisplayType(final DoubleMetaType.DisplayType pDisplayType) {
+
+		}
 	}
 
 	private static class TestViewFactory implements IViewFactory {
@@ -149,7 +155,7 @@ public class DoubleControlViewTEST {
 		}
 
 		@Override
-		public IView createView(final DoubleControl pDoubleControl) {
+		public IDoubleView createView(final DoubleControl pDoubleControl) {
 			return new TestDoubleView(pDoubleControl);
 		}
 

@@ -301,8 +301,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 		if (pId == null) { throw new IllegalArgumentException("pId must not be null"); }
 
 		if (isPersistent()) {
-			final String prefix = pId == null || pId.length() == 0 ? "" : pId + ".";
-			final String value = pDB.read(prefix + mPropertyName);
+			final String value = pDB.read(getPrefix(pId) + mPropertyName);
 			if (value != null) {
 				mValue.setString(value);
 			}
@@ -430,8 +429,11 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 		if (mPropertyName == null || mPropertyName.length() == 0) { throw new RuntimeException("Cannot write a property that has no mPropertyName"); }
 
 		if (isPersistent()) {
-			final String prefix = pId == null || pId.length() == 0 ? "" : pId + ".";
-			pDB.write(prefix + mPropertyName, mValue.getString());
+		    pDB.write(getPrefix(pId) + mPropertyName, mValue.getString());
 		}
 	}
+
+    protected String getPrefix(String pId) {
+        return pId == null || pId.length() == 0 ? "" : pId + ".";
+    }
 }
