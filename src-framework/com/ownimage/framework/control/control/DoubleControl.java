@@ -96,7 +96,7 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
         String value = null;
         try {
             if (isPersistent()) {
-                value = pDB.read(getPrefix(pId) + "_displayType");
+                value = pDB.read(getPrefix(pId) + getPropertyName() + "_displayType");
                 if (value != null) {
                     mDisplayType = DoubleMetaType.DisplayType.valueOf(value);
                 }
@@ -110,7 +110,7 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
     public void write(final IPersistDB pDB, final String pId) {
         super.write(pDB, pId);
         if (isPersistent()) {
-            pDB.write(getPrefix(pId) + "_displayType", mDisplayType.name());
+            pDB.write(getPrefix(pId) + getPropertyName() + "_displayType", mDisplayType.name());
         }
     }
 }
