@@ -7,6 +7,7 @@ import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.layout.IContainerList;
 import com.ownimage.framework.view.ISingleSelectView;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -20,14 +21,15 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 	private final BorderPane mUI = new BorderPane();
 	private final ScrollPane mScroller = new ScrollPane();
-	private Accordion mAccordion;
-	private boolean mIsMutating = false;
 
+	private Accordion mAccordion;
 	/**
 	 * The Panes list. This is used to support the setSelectedIndex as Accordion does not support setExpandedPane(int) only
 	 * setExpandedPane(TitledPane). This is used to convert from one to the other.
 	 */
 	private List<TitledPane> mPanes;
+
+	private boolean mIsMutating = false;
 
 	public AccordionView(final IContainerList pContainerList) {
 		super(pContainerList);
@@ -35,6 +37,10 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	}
 
 	private void createView() {
+		runOnFXApplicationThread(this::createViewAsync);
+	}
+
+	private void createViewAsync() {
 		// mUI.getChildren().remove(mScroller);
 		mAccordion = new Accordion();
 		mPanes = new Vector<TitledPane>();
@@ -81,13 +87,19 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 	@Override
 	public void setSelectedIndex(final int pInt) {
+		runOnFXApplicationThread(() -> setSelectedIndexAsync(pInt));
+	}
+
+	public void setSelectedIndexAsync(final int pInt) {
 		try {
 			mIsMutating = true;
 
 			if (pInt < -1) { throw new IllegalArgumentException("pInt = " + pInt + ".  pInt must be >= -1."); }
 
 			int numberOfPanes = mPanes.size();
-			if (pInt >= numberOfPanes) { throw new IllegalArgumentException("pInt = " + pInt + ".   mPanes.size() = " + numberOfPanes + " pInt must be < mPanes.size()."); }
+			if (pInt >= numberOfPanes) {
+				throw new IllegalArgumentException("pInt = " + pInt + ".   mPanes.size() = " + numberOfPanes + " pInt must be < mPanes.size().");
+			}
 
 			if (pInt >= 0) {
 				TitledPane selected = mPanes.get(pInt);

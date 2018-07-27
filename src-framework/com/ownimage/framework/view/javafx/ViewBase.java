@@ -11,6 +11,7 @@ import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -34,6 +35,12 @@ public class ViewBase<C extends IViewable> implements FXView {
 			mLabel.minWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
 			mLabel.maxWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
 		}
+	}
+
+
+	protected void runOnFXApplicationThread(Runnable pRunnable) {
+		if (Platform.isFxApplicationThread()) pRunnable.run();
+		else Platform.runLater(pRunnable);
 	}
 
 	public static Image getImage(final String pName) {

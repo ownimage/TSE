@@ -15,7 +15,7 @@ public interface IAppControlView {
 
     public class DialogOptions {
 
-        public static DialogOptions NONE = new DialogOptions();
+        public static DialogOptions NONE = new DialogOptions.Builder().build();
 
         public static Builder builder() {
             return new Builder();
