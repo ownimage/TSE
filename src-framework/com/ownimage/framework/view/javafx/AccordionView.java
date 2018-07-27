@@ -37,10 +37,6 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	}
 
 	private void createView() {
-		runOnFXApplicationThread(this::createViewAsync);
-	}
-
-	private void createViewAsync() {
 		// mUI.getChildren().remove(mScroller);
 		mAccordion = new Accordion();
 		mPanes = new Vector<TitledPane>();
@@ -82,7 +78,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 	@Override
 	public void redraw() {
-		createView();
+			runOnFXApplicationThread(this::createView);
 	}
 
 	@Override
@@ -90,7 +86,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 		runOnFXApplicationThread(() -> setSelectedIndexAsync(pInt));
 	}
 
-	public void setSelectedIndexAsync(final int pInt) {
+	private void setSelectedIndexAsync(final int pInt) {
 		try {
 			mIsMutating = true;
 

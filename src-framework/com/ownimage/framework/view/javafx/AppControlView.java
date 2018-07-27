@@ -129,38 +129,39 @@ public class AppControlView extends Application implements IAppControlView {
 
     @Override
     public void redraw() {
-        MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
+        Platform.runLater(() -> {
+            MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
 
-        IView content = mAppControl.getContent();
-        BorderPane border = new BorderPane();
-        border.setTop(menuBar);
-        border.setCenter(((FXView) (content)).getUI());
+            IView content = mAppControl.getContent();
+            BorderPane border = new BorderPane();
+            border.setTop(menuBar);
+            border.setCenter(((FXView) (content)).getUI());
 
-        ScrollPane scroll = new ScrollPane(border);
-        scroll.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+            ScrollPane scroll = new ScrollPane(border);
+            scroll.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+            scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-        mScene = new Scene(border, mAppControl.getWidth(), mAppControl.getHeight());
-        menuBar.prefWidthProperty().bind(mScene.widthProperty());
-        //
-        mPrimaryStage.setTitle(mAppControl.getTitle());
-        // mPrimaryStage.setScene(mScene);
-        // mPrimaryStage.sizeToScene();
-        // mPrimaryStage.show();
-        // MenuBar menuBar = new MenuBar();
-        // Menu menu = new Menu("File");
-        // MenuItem quit = new MenuItem("Quit");
-        // quit.setOnAction(e -> Platform.exit());
-        // menu.getItems().add(quit);
-        // menuBar.getMenus().add(menu);
-        menuBar.setUseSystemMenuBar(true);
+            mScene = new Scene(border, mAppControl.getWidth(), mAppControl.getHeight());
+            menuBar.prefWidthProperty().bind(mScene.widthProperty());
+            //
+            mPrimaryStage.setTitle(mAppControl.getTitle());
+            // mPrimaryStage.setScene(mScene);
+            // mPrimaryStage.sizeToScene();
+            // mPrimaryStage.show();
+            // MenuBar menuBar = new MenuBar();
+            // Menu menu = new Menu("File");
+            // MenuItem quit = new MenuItem("Quit");
+            // quit.setOnAction(e -> Platform.exit());
+            // menu.getItems().add(quit);
+            // menuBar.getMenus().add(menu);
+            menuBar.setUseSystemMenuBar(true);
 
-        BorderPane root = new BorderPane();
-        // root.setTop(menuBar);
-        // Scene scene = new Scene(root, 600, 600);
-        mPrimaryStage.setScene(mScene);
-        mPrimaryStage.show();
-
+            BorderPane root = new BorderPane();
+            // root.setTop(menuBar);
+            // Scene scene = new Scene(root, 600, 600);
+            mPrimaryStage.setScene(mScene);
+            mPrimaryStage.show();
+        });
     }
 
     public void setApplicationIcon(final Image pApplicationIcon) {

@@ -3,6 +3,7 @@ package com.ownimage.framework.view.javafx;
 import com.ownimage.framework.control.layout.INamedTabs;
 import com.ownimage.framework.view.ISingleSelectView;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -50,7 +51,7 @@ public class NamedTabsView extends ViewBase<INamedTabs> implements ISingleSelect
 
 	@Override
 	public void setSelectedIndex(final int pInt) {
-		mUI.getSelectionModel().select(pInt);
+		Platform.runLater(() ->mUI.getSelectionModel().select(pInt));
 	}
 
 }

@@ -132,7 +132,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     @Override
     public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
-        Platform.runLater(() -> {
+        runOnFXApplicationThread(() -> {
             mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
             pGrafitti.accept(mGrafittiImp);
         });
@@ -140,7 +140,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     @Override
     public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti) {
-        Platform.runLater(() -> {
+        runOnFXApplicationThread(() -> {
             pGrafitti.accept(mGrafittiImp);
         });
     }

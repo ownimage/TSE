@@ -133,7 +133,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
     }
 
     public void setDisplayType(DoubleMetaType.DisplayType pDisplayType) {
-        Platform.runLater(() -> {
+        runOnFXApplicationThread(() -> {
             if (pDisplayType == DoubleMetaType.DisplayType.SLIDER) {
                 mDisplayType = DoubleMetaType.DisplayType.SLIDER;
                 mDisplayOption.setGraphic(new ImageView(mSliderImage));

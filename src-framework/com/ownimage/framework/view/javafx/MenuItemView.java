@@ -4,6 +4,7 @@ import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.view.IView;
 
+import javafx.application.Platform;
 import javafx.scene.control.MenuItem;
 
 public class MenuItemView implements IView {
@@ -44,12 +45,12 @@ public class MenuItemView implements IView {
 
 	@Override
 	public void setEnabled(final boolean pEnabled) {
-		mUI.setDisable(!pEnabled);
+		Platform.runLater(()->mUI.setDisable(!pEnabled));
 	}
 
 	@Override
 	public void setVisible(final boolean pVisible) {
-		mUI.setVisible(pVisible);
+		Platform.runLater(()->mUI.setVisible(pVisible));
 	}
 
 }

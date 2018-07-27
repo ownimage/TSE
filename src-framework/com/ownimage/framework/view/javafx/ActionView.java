@@ -15,78 +15,81 @@ import javafx.scene.layout.HBox;
 
 public class ActionView extends ViewBase<ActionControl> {
 
-	private final HBox mUI;;
-	private final Button mButton;
+    private final HBox mUI;
+    ;
+    private final Button mButton;
 
-	public ActionView(final ActionControl pActionControl) {
-		super(pActionControl);
+    public ActionView(final ActionControl pActionControl) {
+        super(pActionControl);
 
-		mUI = new HBox();
-		mUI.setAlignment(Pos.TOP_LEFT);
+        mUI = new HBox();
+        mUI.setAlignment(Pos.TOP_LEFT);
 
-		mButton = new Button();
-		mButton.setOnAction((e) -> performAction());
-		mButton.setDisable(!pActionControl.isEnabled());
+        mButton = new Button();
+        mButton.setOnAction((e) -> performAction());
+        mButton.setDisable(!pActionControl.isEnabled());
 
-		if (mControl.isFullSize()) {
-			createButton();
+        if (mControl.isFullSize()) {
+            createButton();
 
-		} else if (mControl.hasImage()) {
-			createImageButton();
+        } else if (mControl.hasImage()) {
+            createImageButton();
 
-		} else {
-			createSmallButton();
-		}
+        } else {
+            createSmallButton();
+        }
 
-	}
+    }
 
-	private void createButton() {
-		mLabel = new Label();
-		mButton.setText(mControl.getDisplayName());
-		mButton.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+    private void createButton() {
+        mLabel = new Label();
+        mButton.setText(mControl.getDisplayName());
+        mButton.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 
-		mUI.getChildren().addAll(mLabel, mButton);
-	}
+        mUI.getChildren().addAll(mLabel, mButton);
+    }
 
-	private void createImageButton() {
-		mButton.prefWidthProperty().bind(FXViewFactory.getInstance().smallButtonWidthProperty);
+    private void createImageButton() {
+        mButton.prefWidthProperty().bind(FXViewFactory.getInstance().smallButtonWidthProperty);
 
-		try {
-			URL url = getClass().getResource(mControl.getImageName());
-			InputStream stream = url.openStream();
-			Image image = new Image(stream);
-			mButton.setGraphic(new javafx.scene.image.ImageView(image));
+        try {
+            URL url = getClass().getResource(mControl.getImageName());
+            InputStream stream = url.openStream();
+            Image image = new Image(stream);
+            mButton.setGraphic(new javafx.scene.image.ImageView(image));
 
-		} catch (IOException pEx) {
-			System.out.println(pEx.getMessage());
-		}
+        } catch (IOException pEx) {
+            System.out.println(pEx.getMessage());
+        }
 
-		Tooltip tooltip = new Tooltip(mControl.getDisplayName());
-		Tooltip.install(mButton, tooltip);
+        Tooltip tooltip = new Tooltip(mControl.getDisplayName());
+        Tooltip.install(mButton, tooltip);
 
-		mUI.getChildren().addAll(mButton);
-	}
+        mUI.getChildren().addAll(mButton);
+    }
 
-	private void createSmallButton() {
-		mButton.prefWidthProperty().bind(FXViewFactory.getInstance().smallButtonWidthProperty);
-		mButton.setText(mControl.getDisplayName());
+    private void createSmallButton() {
+        mButton.prefWidthProperty().bind(FXViewFactory.getInstance().smallButtonWidthProperty);
+        mButton.setText(mControl.getDisplayName());
 
-		mUI.getChildren().addAll(mButton);
-	}
+        mUI.getChildren().addAll(mButton);
+    }
 
-	@Override
-	public Node getUI() {
-		return mUI;
-	}
+    @Override
+    public Node getUI() {
+        return mUI;
+    }
 
-	private void performAction() {
-		mControl.performAction();
-	}
+    private void performAction() {
+        mControl.performAction();
+    }
 
-	@Override
-	public void setEnabled(final boolean pEnabled) {
-		getUI().setDisable(!pEnabled);
-		mButton.setDisable(!pEnabled);
-	}
+    @Override
+    public void setEnabled(final boolean pEnabled) {
+        runOnFXApplicationThread(() -> {
+            getUI().setDisable(!pEnabled);
+            mButton.setDisable(!pEnabled);
+        });
+    }
 
 }

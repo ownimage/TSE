@@ -19,73 +19,75 @@ import javafx.scene.layout.Region;
 
 public class ViewBase<C extends IViewable> implements FXView {
 
-	public final static Version mVersion = new Version(2017, 0, 0, "2017/11/07 16:30");
-	private final static Logger mLogger = Framework.getLogger();
+    public final static Version mVersion = new Version(2017, 0, 0, "2017/11/07 16:30");
+    private final static Logger mLogger = Framework.getLogger();
 
-	protected C mControl;
-	protected Label mLabel;
+    protected C mControl;
+    protected Label mLabel;
 
-	public ViewBase(final C pControl) {
-		mControl = pControl;
+    public ViewBase(final C pControl) {
+        mControl = pControl;
 
-		if (pControl instanceof IControl) {
-			((IControl) pControl).addControlChangeListener(this);
-			mLabel = new Label(((IControl) pControl).getDisplayName());
-			mLabel.prefWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
-			mLabel.minWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
-			mLabel.maxWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
-		}
-	}
+        if (pControl instanceof IControl) {
+            ((IControl) pControl).addControlChangeListener(this);
+            mLabel = new Label(((IControl) pControl).getDisplayName());
+            mLabel.prefWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
+            mLabel.minWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
+            mLabel.maxWidthProperty().bind(FXViewFactory.getInstance().labelWidthProperty);
+        }
+    }
 
 
-	protected void runOnFXApplicationThread(Runnable pRunnable) {
-		if (Platform.isFxApplicationThread()) pRunnable.run();
-		else Platform.runLater(pRunnable);
-	}
+    protected void runOnFXApplicationThread(Runnable pRunnable) {
+        if (Platform.isFxApplicationThread()) pRunnable.run();
+        else Platform.runLater(pRunnable);
+    }
 
-	public static Image getImage(final String pName) {
-		URL url = pName.getClass().getResource(pName);
-		try (InputStream stream = url.openStream();) {
-			Image image = new Image(stream);
-			return image;
-		} catch (IOException ioe) {
-			mLogger.severe("Unable to getImage for " + pName);
-			Framework.logThrowable(mLogger, Level.SEVERE, ioe);
-		}
-		return null;
-	}
+    public static Image getImage(final String pName) {
+        URL url = pName.getClass().getResource(pName);
+        try (InputStream stream = url.openStream();) {
+            Image image = new Image(stream);
+            return image;
+        } catch (IOException ioe) {
+            mLogger.severe("Unable to getImage for " + pName);
+            Framework.logThrowable(mLogger, Level.SEVERE, ioe);
+        }
+        return null;
+    }
 
-	protected void bindWidth(final Region pRegion, final SimpleIntegerProperty pWidthProperty) {
-		pRegion.prefWidthProperty().bind(pWidthProperty);
-		pRegion.maxWidthProperty().bind(pWidthProperty);
-		pRegion.minWidthProperty().bind(pWidthProperty);
-	}
+    protected void bindWidth(final Region pRegion, final SimpleIntegerProperty pWidthProperty) {
+        pRegion.prefWidthProperty().bind(pWidthProperty);
+        pRegion.maxWidthProperty().bind(pWidthProperty);
+        pRegion.minWidthProperty().bind(pWidthProperty);
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-	}
+    @Override
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+    }
 
-	public FXViewFactory getFactory() {
-		return FXViewFactory.getInstance();
-	}
+    public FXViewFactory getFactory() {
+        return FXViewFactory.getInstance();
+    }
 
-	@Override
-	public Node getUI() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Node getUI() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void redraw() {
-	}
+    @Override
+    public void redraw() {
+    }
 
-	@Override
-	public void setEnabled(final boolean pEnabled) {
-		getUI().setDisable(!pEnabled);
-	}
+    @Override
+    public void setEnabled(final boolean pEnabled) {
+        runOnFXApplicationThread(() -> getUI().setDisable(!pEnabled));
+    }
 
-	@Override
-	public void setVisible(final boolean pVisible) {
-		getUI().setManaged(pVisible);
-		getUI().setVisible(pVisible);
-	}
+    @Override
+    public void setVisible(final boolean pVisible) {
+        runOnFXApplicationThread(() -> {
+            getUI().setManaged(pVisible);
+            getUI().setVisible(pVisible);
+        });
+    }
 }
