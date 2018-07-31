@@ -489,18 +489,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mTransformSource.getShowLines();
     }
 
-    private Color transformGetLineColor(final Point pIn, final Color pColor) {
+    private Color transformGetLineColor(final Point pIn, final Color pColor, final boolean pThickOnly) {
         return getShowLines() ?
-                transformGetLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d) :
+                transformGetLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d, pThickOnly) :
                 pColor;
     }
 
     private Color transformGetLineColor(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity, final
-    double pThicknessMuliplier) {
+    double pThicknessMuliplier, final boolean pThickOnly) {
         final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d;
         final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
         final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
-        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness)) {
+        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness, pThickOnly)) {
             return KColor.fade(pColorIn, pLineColor,
                                pOpacity);
         }
@@ -546,19 +546,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return pColorIn;
     // }
     //
-    // private Color getMaxiLineShadowColor(final Point pIn, final Color pColor) {
-    // if (getShowShadow()) {
-    // double x = pIn.getX() - getShadowXOffset() / 1000d;
-    // x = x < 0 ? 0 : x > getWidth() - 1 ? x - getWidth() : x;
-    //
-    // double y = pIn.getY() - getShadowYOffset() / 1000d;
-    // y = y < 0 ? 0 : y > getHeight() - 1 ? y - (getHeight() - 1) : y;
-    //
-    // final Point uhvw = new Point(x, y);
-    // return getMaxiLineColor(uhvw, pColor, getShadowColor(), getShadowOpacity(), getShadowThickness());
-    // }
-    // return pColor;
-    // }
+    private Color getMaxiLineShadowColor(final Point pIn, final Color pColor) {
+        if (getShowShadow()) {
+            double x = pIn.getX() - getShadowXOffset() / 1000d;
+            x = x < 0 ? 0 : x > getWidth() - 1 ? x - getWidth() : x;
+
+            double y = pIn.getY() - getShadowYOffset() / 1000d;
+            y = y < 0 ? 0 : y > getHeight() - 1 ? y - (getHeight() - 1) : y;
+
+            final Point uhvw = new Point(x, y);
+            return transformGetLineColor(uhvw, pColor, getShadowColor(), getShadowOpacity(), getShadowThickness(), true);
+        }
+        return pColor;
+    }
     //
     // private Intersect3D getMaxIntersect3d(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
     // pThickWidth) {
@@ -727,27 +727,27 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // private AbstractCollection<ISegment> getSegments(final Pixel pPixel) {
     // return getSegments(pPixel.getX(), pPixel.getY());
     // }
-    //
-    // public Color getShadowColor() {
-    // return mTransformSource.getShadowColor();
-    // }
-    //
-    // public double getShadowOpacity() {
-    // return mTransformSource.getShadowOpacity();
-    // }
-    //
-    // public double getShadowThickness() {
-    // return mTransformSource.getShadowThickness();
-    // }
-    //
-    // public double getShadowXOffset() {
-    // return mTransformSource.getShadowXOffset();
-    // }
-    //
-    // public double getShadowYOffset() {
-    // return mTransformSource.getShadowYOffset();
-    // }
-    //
+
+    public Color getShadowColor() {
+        return mTransformSource.getShadowColor();
+    }
+
+    public double getShadowOpacity() {
+        return mTransformSource.getShadowOpacity();
+    }
+
+    public double getShadowThickness() {
+        return mTransformSource.getShadowThickness();
+    }
+
+    public double getShadowXOffset() {
+        return mTransformSource.getShadowXOffset();
+    }
+
+    public double getShadowYOffset() {
+        return mTransformSource.getShadowYOffset();
+    }
+
     // private Color getShortLineColor(final Point pIn, final Color pColor) {
     // // if (mShowShortLines.getBoolean()) {
     // // Pixel pixelIn = getEdgeData().getPixelAt(pIn);
@@ -791,11 +791,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // public boolean getShowPixels() {
     // return mTransformSource.getShowPixels();
     // }
-    //
-    // public boolean getShowShadow() {
-    // return mTransformSource.getShowShadow();
-    // }
-    //
+
+    public boolean getShowShadow() {
+        return mTransformSource.getShowShadow();
+    }
+
     public double getThickWidth() {
         return getLongLineThickness() / 1000d;
     }
@@ -887,7 +887,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "indexSegments");
     }
 
-    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth) {
+    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final boolean pThickOnly) {
         calcSegmentIndex();
 
         final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
@@ -897,7 +897,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
                     for (final ISegment segment : getSegments(x, y)) {
-                        if (segment.getPixelChain().getThickness() == PixelChain.Thickness.None) { //TODO this needs to be restored
+                        if (segment.getPixelChain().getThickness() == PixelChain.Thickness.None) {
+                            break;
+                        }
+                        if (pThickOnly && segment.getPixelChain().getThickness() != PixelChain.Thickness.Thick) {
                             break;
                         }
                         if (segment.closerThan(uhvw)) {
@@ -1570,8 +1573,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // public Color transform(final Point pIn, final Color pColor) {
         Point pIn = pRenderResult.getPoint();
         Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
-        //color = getMaxiLineShadowColor(pIn, color);
-        color = transformGetLineColor(pIn, color);
+        color = transformGetLineColor(pIn, color, false);
+        color = getMaxiLineShadowColor(pIn, color);
         // color = getShortLineColor(pIn, color);
         // return color;
         // }
