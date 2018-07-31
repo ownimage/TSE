@@ -35,6 +35,7 @@ import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
+import com.ownimage.perception.util.KColor;
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
@@ -608,5 +609,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 //        if (mPixelMap != null && mPixelMap.getPixelAt(x, y).isEdge()) {
 //            pRenderResult.setColor(Color.RED);
 //        }
+        float whiteFade = mWhiteFade.getValue().floatValue();
+        if (whiteFade != 0.0f) {
+            Color color = pRenderResult.getColor();
+            Color actual = KColor.fade(color, Color.WHITE, whiteFade);
+            pRenderResult.setColor(actual);
+        }
     }
 }
