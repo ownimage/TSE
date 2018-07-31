@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
+import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.util.KColor;
 
 /*
@@ -269,44 +271,45 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "indexSegmentsValidate");
     }
 
-    // public void equalizeValues(final EqualizeValues pValues) {
-    //
-    // int totalLength = 0;
-    // for (final PixelChain chain : mPixelChains) {
-    // totalLength += chain.getPixelLength();
-    // }
-    //
-    // final Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
-    //
-    // final int shortThreshold = (int) (totalLength * pValues.getIgnoreFraction());
-    // final int mediumThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
-    // final int longThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction() +
-    // pValues.getMediumFraction()));
-    //
-    // Integer shortLength = null;
-    // Integer mediumLength = null;
-    // Integer longLength = null;
-    //
-    // int currentLength = 0;
-    // for (final PixelChain chain : sortedChains) {
-    // currentLength += chain.getPixelLength();
-    //
-    // if (shortLength == null && currentLength > shortThreshold) {
-    // shortLength = chain.getPixelLength();
-    // }
-    //
-    // if (mediumLength == null && currentLength > mediumThreshold) {
-    // mediumLength = chain.getPixelLength();
-    // }
-    //
-    // if (longLength == null && currentLength > longThreshold) {
-    // longLength = chain.getPixelLength();
-    // break;
-    // }
-    // }
-    //
-    // pValues.setReturnValues(shortLength, mediumLength, longLength);
-    // }
+    public void equalizeValues(final EqualizeValues pValues) {
+        // TODO do not like this mutable parameter
+
+        int totalLength = 0;
+        for (final PixelChain chain : mPixelChains) {
+            totalLength += chain.getPixelLength();
+        }
+
+        final Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
+
+        final int shortThreshold = (int) (totalLength * pValues.getIgnoreFraction());
+        final int mediumThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
+        final int longThreshold = (int) (totalLength * (pValues.getIgnoreFraction() + pValues.getShortFraction() +
+                pValues.getMediumFraction()));
+
+        Integer shortLength = null;
+        Integer mediumLength = null;
+        Integer longLength = null;
+
+        int currentLength = 0;
+        for (final PixelChain chain : sortedChains) {
+            currentLength += chain.getPixelLength();
+
+            if (shortLength == null && currentLength > shortThreshold) {
+                shortLength = chain.getPixelLength();
+            }
+
+            if (mediumLength == null && currentLength > mediumThreshold) {
+                mediumLength = chain.getPixelLength();
+            }
+
+            if (longLength == null && currentLength > longThreshold) {
+                longLength = chain.getPixelLength();
+                break;
+            }
+        }
+
+        pValues.setReturnValues(shortLength, mediumLength, longLength);
+    }
     //
     // public Node findNodeInPixelChains(final Pixel pPixel) {
     // Node result = null;
@@ -433,11 +436,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // private Iterable<Node> getAllNodes() {
     // return mAllNodes;
     // }
-    //
-    // public Iterable<PixelChain> getAllPixelChains() {
-    // return mPixelChains;
-    // }
-    //
+
+//    public Iterable<PixelChain> getAllPixelChains() {
+//        return mPixelChains;
+//    }
+
     public double getAspectRatio() {
         return mAspectRatio;
     }
@@ -672,26 +675,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return pixel;
     }
 
-    //
-    // private Vector<PixelChain> getPixelChainsSortedByLength() {
-    // final Vector<PixelChain> chains = new Vector<PixelChain>(); // this will be the sorted collection
-    //
-    // for (final PixelChain chain : mPixelChains) {
-    // chains.add(chain);
-    // }
-    //
-    // final Comparator<PixelChain> comparator = new Comparator<PixelChain>() {
-    //
-    // @Override
-    // public int compare(final PixelChain pChain1, final PixelChain pChain2) {
-    // return pChain1.getPixelLength() - pChain2.getPixelLength();
-    // }
-    // };
-    // Collections.sort(chains, comparator);
-    //
-    // return chains;
-    // }
-    //
+
+    private Vector<PixelChain> getPixelChainsSortedByLength() {
+        final Vector<PixelChain> chains = new Vector<PixelChain>(mPixelChains); // this will be the sorted collection
+        Collections.sort(chains, (pChain1, pChain2) -> {return pChain1.getPixelLength() - pChain2.getPixelLength();});
+        return chains;
+    }
+
     // public Color getPixelColor() {
     // return mTransformSource.getPixelColor();
     // }
@@ -897,23 +887,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.exiting(mClassname, "indexSegments");
     }
 
-    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth,
-                                        final double
-                                                pThickWidth) {
+    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth) {
         calcSegmentIndex();
 
         final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
         final Point uhvw = toUHVW(pPoint);
 
-        for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() +
-                maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
-            for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() +
-                                                                                                              maxWidth) + 1; y++) {
+        for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
+            for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
                     for (final ISegment segment : getSegments(x, y)) {
-//                        if (segment.getPixelChains().getThickness() == Thickness.None) { //TODO this needs to be restored
-//                            break;
-//                        }
+                        if (segment.getPixelChain().getThickness() == PixelChain.Thickness.None) { //TODO this needs to be restored
+                            break;
+                        }
                         if (segment.closerThan(uhvw)) {
                             return true;
                         }
@@ -1488,18 +1474,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mHeight = pHeight;
     }
 
-    // public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
-    // mLogger.entering(mClassname, "setPixelChainDefaultThickness");
-    // final int shortLength = pTransform.getShortLineLength();
-    // final int mediumLength = pTransform.getMediumLineLength();
-    // final int longLength = pTransform.getLongLineLength();
-    //
-    // for (final PixelChain chain : getAllPixelChains()) {
-    // chain.setThickness(shortLength, mediumLength, longLength);
-    // }
-    // mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
-    // }
-    //
+    public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
+        mLogger.entering(mClassname, "setPixelChainDefaultThickness");
+        final int shortLength = pTransform.getShortLineLength();
+        final int mediumLength = pTransform.getMediumLineLength();
+        final int longLength = pTransform.getLongLineLength();
+
+        mPixelChains.stream().forEach(chain -> chain.setThickness(shortLength, mediumLength, longLength));
+        mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
+    }
+
     private void setValue(final int pX, final int pY, final byte pValue) {
         // all the parameter bounds checking is doing in the saveValueNoUndo.
         // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);

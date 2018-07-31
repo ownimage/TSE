@@ -1,7 +1,5 @@
 package com.ownimage.perception.pixelMap;
 
-import java.util.Map;
-
 public class EqualizeValues {
 
 	private static final EqualizeValues[] mOptions = { //
@@ -10,7 +8,7 @@ public class EqualizeValues {
 			, new EqualizeValues(0.2d, 0.3d, 0.25d) //
 			, new EqualizeValues(0.1d, 0.3d, 0.3d) //
 	};
-	public static Map<String, EqualizeValues> mOptionsMap;
+	//public static Map<String, EqualizeValues> mOptionsMap;
 	// in variables
 	private final double mIgnoreFraction;
 	private final double mShortFraction;
@@ -35,16 +33,20 @@ public class EqualizeValues {
 		mLongFraction = 1.0d - mIgnoreFraction - mShortFraction - mMediumFraction;
 	}
 
-	public static String[] getAllValues() {
-		String[] values = new String[mOptions.length];
-		for (int i = 0; i < mOptions.length; i++) {
-			values[i] = mOptions.toString();
-		}
-		return values;
+//	public static String[] getAllValues() {
+//		String[] values = new String[mOptions.length];
+//		for (int i = 0; i < mOptions.length; i++) {
+//			values[i] = mOptions.toString();
+//		}
+//		return values;
+//	}
+
+	public static EqualizeValues[] getAllValues() {
+		return mOptions;
 	}
 
-	public static String getDefaultValue() {
-		return mOptions[0].toString();
+	public static EqualizeValues getDefaultValue() {
+		return mOptions[0];
 	}
 
 	public double getIgnoreFraction() {

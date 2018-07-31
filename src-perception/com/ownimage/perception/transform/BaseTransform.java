@@ -50,6 +50,8 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	private ITransform mPreviousTransform;
 	private ControlSelector mControlSelector;
 
+	private boolean mIsMutating = false;
+
 	public BaseTransform(final String pDisplayName, final String pPropertyName) {
 		Framework.logEntry(mLogger);
 
@@ -346,5 +348,14 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	public void write(final IPersistDB pDB, final String pId) throws IOException {
 		pDB.write(pId + ".name", getPropertyName());
 		mContainer.write(pDB, pId);
+	}
+
+
+	public boolean isMutating() {
+		return mIsMutating;
+	}
+
+	public void setMutating(final boolean pIsMutating) {
+		this.mIsMutating = pIsMutating;
 	}
 }

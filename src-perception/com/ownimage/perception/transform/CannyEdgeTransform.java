@@ -25,9 +25,9 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
-import com.ownimage.framework.view.IDialogView;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
+import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.render.ITransformResult;
@@ -81,7 +81,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
     DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
     private final DoubleControl mLineCurvePreference =
-            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2,  meta);//1.2d, 0.1d, 100.0d);
+            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2, meta);//1.2d, 0.1d, 100.0d);
 
     private final BooleanControl mShowLines =
             new BooleanControl("Show Lines", "showLines", getContainer(), false);
@@ -119,6 +119,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new IntegerControl("Short Line Length", "shortLineLength", getContainer(), 0, 0, 1000, 20);
     private final DoubleControl mShortLineThickness =
             new DoubleControl("Short Line Thickness", "shortLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+
+    private final ObjectControl<EqualizeValues> mEqualize =
+            new ObjectControl<>(
+                    "Equalize",
+                    "equalize",
+                    getContainer(),
+                    EqualizeValues.getDefaultValue(),
+                    EqualizeValues.getAllValues());
+
     // shadow
     private final BooleanControl mShowShadow =
             new BooleanControl("Show Shadow", "showShadow", getContainer(), false);
@@ -163,66 +172,67 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     }
 
-    // @Override
-    // public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-    // mLogger.fine("CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " +
-    // pIsMutating);
-    //
-    // if (!isMutating()) {
-    // try {
-    // if (!isInitialized()) { return; }
-    //
-    // if (pControl == mGeneratePixelMapButton) {
-    // mGenerateEdgesDialog.showModalDialog();
-    // return;
-    // }
-    //
-    // if (pControl == mEditPixelMapButton) {
-    // System.out.println("EditPixels");
-    // mEditPixelMapPixelsDialog.showModalDialog();
-    // return;
-    // }
-    //
-    // if (mGenerateEdgesDialog.contains(pControl)) { return; }
-    //
-    // if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
-    // try {
-    // setMutating(true);
-    //
-    // getPixelMap().setPixelChainDefaultThickness(this);
-    // mEqualize.setValue(EqualizeValues.getDefaultValue());
-    // } finally {
-    // setMutating(false);
-    // }
-    // }
-    //
-    // if (pControl.isOneOf(mLineTolerance, mLineCurvePreference) && !pIsMutating) {
-    // reapproximate();
-    // }
-    //
-    // if (pControl == mEqualize) {
-    // try {
-    // setMutating(true);
-    //
-    // System.out.println("Equalize");
-    // if (mPixelMap != null) {
-    // final EqualizeValues values = (EqualizeValues) mEqualize.getObjectValue();
-    // mPixelMap.equalizeValues(values);
-    // mShortLineLength.setValue(values.getShortLineLength());
-    // mMediumLineLength.setValue(values.getMediumLineLength());
-    // mLongLineLength.setValue(values.getLongLineLength());
-    // getPixelMap().setPixelChainDefaultThickness(this);
-    // }
-    // } finally {
-    // setMutating(false);
-    // }
-    // }
-    // } finally {
-    // CannyEdgeTransform.super.controlChangeEvent(pControl, pIsMutating);
-    // }
-    // }
-    //
-    // }
+    @Override
+    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+        // mLogger.fine("CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " +
+        // pIsMutating);
+        //
+        if (!isMutating()) {
+            try {
+                // if (!isInitialized()) { return; }
+                //
+                // if (pControl == mGeneratePixelMapButton) {
+                // mGenerateEdgesDialog.showModalDialog();
+                // return;
+                // }
+                //
+                // if (pControl == mEditPixelMapButton) {
+                // System.out.println("EditPixels");
+                // mEditPixelMapPixelsDialog.showModalDialog();
+                // return;
+                // }
+                //
+                // if (mGenerateEdgesDialog.contains(pControl)) { return; }
+                //
+                // if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
+                // try {
+                // setMutating(true);
+                //
+                // getPixelMap().setPixelChainDefaultThickness(this);
+                // mEqualize.setValue(EqualizeValues.getDefaultValue());
+                // } finally {
+                // setMutating(false);
+                // }
+                // }
+                //
+                // if (pControl.isOneOf(mLineTolerance, mLineCurvePreference) && !pIsMutating) {
+                // reapproximate();
+                // }
+                //
+                if (pControl == mEqualize) {
+                    try {
+                        setMutating(true);
+
+                        mLogger.info("Equalize");
+                        if (mPixelMap != null) {
+                            final EqualizeValues values = (EqualizeValues) mEqualize.getValue();
+                            mPixelMap.equalizeValues(values);
+                            mShortLineLength.setValue(values.getShortLineLength());
+                            mMediumLineLength.setValue(values.getMediumLineLength());
+                            mLongLineLength.setValue(values.getLongLineLength());
+                            // TODO would be better to pass these three values in ... or pass the EqualizeValues in
+                            getPixelMap().ifPresent(pm -> pm.setPixelChainDefaultThickness(this));
+                        }
+                    } finally {
+                        setMutating(false);
+                    }
+                }
+            } finally {
+                CannyEdgeTransform.super.controlChangeEvent(pControl, pIsMutating);
+            }
+        }
+    }
+
     //
     // @Override
     // public ITransformUI createUI() {
@@ -262,7 +272,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         if (mEditPixelMapDialog == null) {
             ActionControl ok = ActionControl.create("OK", NullContainer, () -> System.out.println("edit pixelmap OK"));
             ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor",  ok, cancel);
+            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
         }
         return mEditPixelMapDialog;
     }
