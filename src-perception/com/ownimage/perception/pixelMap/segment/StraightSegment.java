@@ -37,7 +37,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(getStartUHVWPoint(), getEndUHVWPoint());
+        pGraphics.graffiitLine(getStartUHVWPoint(), getEndUHVWPoint());
     }
 
     @Override

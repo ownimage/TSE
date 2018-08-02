@@ -18,8 +18,13 @@ public class SegmentGrafittiHelper implements ISegmentGrafittiHelper {
     }
 
     @Override
-    public void graffiitControlLine(final Point p1, final Point p2) {
+    public void graffiitLine(final Point p1, final Point p2) {
         mGrafittiHelper.drawLine(mTranslate.apply(p1), mTranslate.apply(p2), Color.white);
+    }
+
+    @Override
+    public void graffiitControlLine(final Point p1, final Point p2) {
+        mGrafittiHelper.drawLine(mTranslate.apply(p1), mTranslate.apply(p2), Color.yellow);
     }
 
     @Override

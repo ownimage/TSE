@@ -1121,7 +1121,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         thin(pPixel);
 
         if (mAutoTrackChanges) {
-            if (!pValue) {
+            if (!pValue) { // turning pixel off
                 getPixelChains(pPixel).stream().forEach(pc -> {
                     mPixelChains.remove(pc);
                     pc.setInChain(false);
@@ -1138,6 +1138,28 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                                         });
 
                             });
+                });
+            }
+            else { // turning pixel on
+                Set<Node> nodes = new HashSet();
+                resetInChain();
+                resetVisited();
+                pPixel.getNode().ifPresent(n -> nodes.add(n));
+                pPixel.getNeighbours()
+                        .forEach(pixel -> {
+                            getPixelChains(pixel).stream()
+                                    .forEach( pc -> {
+                                        nodes.add(pc.getStartNode());
+                                        nodes.add(pc.getEndNode());
+                                        removePixelChain(pc);
+                                    });
+                            pixel.getNode().ifPresent(n -> nodes.add(n)); // this is the case where is is not in a chain
+                        });
+                nodes.stream().filter( n -> n.isNode()).forEach( n -> {
+                    final Collection<PixelChain> chains = generateChains(n);
+                    addPixelChains(chains);
+                    chains.parallelStream()
+                            .forEach(chain -> chain.approximate());
                 });
             }
         }
