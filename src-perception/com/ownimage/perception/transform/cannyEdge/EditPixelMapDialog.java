@@ -419,28 +419,30 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
      **/
     private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, Optional<Pixel> pPixel) {
         System.out.println(String.format("############## mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
-        if (mMouseDragLastPixel.isPresent() && pPixel.isPresent() && !mMouseDragLastPixel.get().equals(pPixel.get())) {
-            System.out.println(String.format("############## mouseDragEventPixelViewFillIn ..."));
-            int dX = pPixel.get().getX() - mMouseDragLastPixel.get().getX();
-            int dY = pPixel.get().getY() - mMouseDragLastPixel.get().getY();
-            if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
-                int from = Math.min(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
-                int to = Math.max(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
-                IntStream.range(from, to).forEach(x -> {
-                    int y = (int) Math.round(mMouseDragLastPixel.get().getY() + (((double) x - mMouseDragLastPixel.get().getX()) / dX) * dY);
-                    final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                    System.out.println(String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
-                    pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
-                });
-            } else { // fill in missing y
-                int from = Math.min(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
-                int to = Math.max(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
-                IntStream.range(from, to).forEach(y -> {
-                    int x = (int) Math.round(mMouseDragLastPixel.get().getX() + (((double) y - mMouseDragLastPixel.get().getY()) / dY) * dX);
-                    final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                    System.out.println(String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
-                    pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
-                });
+        if (isPixelActionOn() || isPixelActionOff()) {
+            if (mMouseDragLastPixel.isPresent() && pPixel.isPresent() && !mMouseDragLastPixel.get().equals(pPixel.get())) {
+                System.out.println(String.format("############## mouseDragEventPixelViewFillIn ..."));
+                int dX = pPixel.get().getX() - mMouseDragLastPixel.get().getX();
+                int dY = pPixel.get().getY() - mMouseDragLastPixel.get().getY();
+                if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
+                    int from = Math.min(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
+                    int to = Math.max(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
+                    IntStream.range(from, to).forEach(x -> {
+                        int y = (int) Math.round(mMouseDragLastPixel.get().getY() + (((double) x - mMouseDragLastPixel.get().getX()) / dX) * dY);
+                        final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
+                        System.out.println(String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
+                        pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
+                    });
+                } else { // fill in missing y
+                    int from = Math.min(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
+                    int to = Math.max(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
+                    IntStream.range(from, to).forEach(y -> {
+                        int x = (int) Math.round(mMouseDragLastPixel.get().getX() + (((double) y - mMouseDragLastPixel.get().getY()) / dY) * dX);
+                        final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
+                        System.out.println(String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
+                        pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
+                    });
+                }
             }
         }
         mouseDragEventPixelView(pEvent, pPixel);
