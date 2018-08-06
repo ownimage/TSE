@@ -4,8 +4,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Logger;
-
-import javax.swing.text.View;
+import java.util.stream.IntStream;
 
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
@@ -26,7 +25,6 @@ import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
@@ -36,6 +34,7 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Point;
@@ -114,6 +113,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private int mMouseDragStartX;
     private int mMouseDragStartY;
     private Optional<Pixel> mMouseLastPixelPosition = Optional.empty();
+    private Optional<Pixel> mMouseDragLastPixel = Optional.empty();
     private int mMouseLastSize;
     private Id mSavepointId;
 
@@ -211,9 +211,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private IDialogView getDialogView() {
         if (mEditPixelMapDialogView == null) {
             mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
-                 DialogOptions.builder().withCompleteFunction(this::closeDialog).build(),
-                 getUndoRedoBuffer(),
-                 mCancelAction, mOkAction);
+                                                                             DialogOptions.builder().withCompleteFunction(this::closeDialog).build(),
+                                                                             getUndoRedoBuffer(),
+                                                                             mCancelAction, mOkAction);
         }
         return mEditPixelMapDialogView;
     }
@@ -234,7 +234,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    synchronized public void  grafitti(final GrafittiHelper pGrafittiHelper) {
+    synchronized public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
 
         int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;
@@ -242,9 +242,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         grafitti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
 
-            if (mShowGrafitti.getValue()) {
-                mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
-            }
+        if (mShowGrafitti.getValue()) {
+            mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
+        }
     }
 
     private void grafitti(final GrafittiHelper pGrafittiHelper, int xMin, int yMin, int xMax, int yMax) {
@@ -306,10 +306,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Optional<Pixel> eventToPixel(IUIEvent pEvent) {
+        return eventXYToPixel(pEvent.getX(), pEvent.getY());
+    }
 
-        int x = getViewOriginX() + (pEvent.getX() * getWidth() / (getZoom() * getPreviewSize()));
-        int y = getViewOriginY() + (pEvent.getY() * getHeight() / (getZoom() * getPreviewSize()));
-        System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pEvent.getX(), pEvent.getY(), x, y);
+    private Optional<Pixel> eventXYToPixel(int pX, int pY) {
+        int x = getViewOriginX() + (pX * getWidth() / (getZoom() * getPreviewSize()));
+        int y = getViewOriginY() + (pY * getHeight() / (getZoom() * getPreviewSize()));
+        System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pX, pY, x, y);
         return mPixelMap.getOptionalPixelAt(x, y);
     }
 
@@ -371,7 +374,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.redrawGrafitti();
     }
 
-    synchronized  private void actionPixelToggle(final Pixel pPixel) {
+    synchronized private void actionPixelToggle(final Pixel pPixel) {
         pPixel.setEdge(!pPixel.isEdge());
         mPictureControl.redrawGrafitti();
     }
@@ -399,6 +402,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             mSavepointId = null;
         });
         grafittiCursorRemovePrevious();
+        mMouseDragLastPixel = Optional.empty();
     }
 
 
@@ -407,7 +411,40 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         Framework.logEntry(Framework.mLogger);
         final Optional<Pixel> pixel = eventToPixel(pEvent);
         if (isGeneralView()) mouseDragEventGeneralView(pEvent, pixel);
-        if (isPixelView()) mouseDragEventPixelView(pEvent, pixel);
+        if (isPixelView()) mouseDragEventPixelViewFillIn(pEvent, pixel);
+    }
+
+    /**
+     * Fills in the gaps in the drag event so that all the pixels are connected.
+     **/
+    private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, Optional<Pixel> pPixel) {
+        System.out.println(String.format("############## mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
+        if (mMouseDragLastPixel.isPresent() && pPixel.isPresent() && !mMouseDragLastPixel.get().equals(pPixel.get())) {
+            System.out.println(String.format("############## mouseDragEventPixelViewFillIn ..."));
+            int dX = pPixel.get().getX() - mMouseDragLastPixel.get().getX();
+            int dY = pPixel.get().getY() - mMouseDragLastPixel.get().getY();
+            if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
+                int from = Math.min(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
+                int to = Math.max(mMouseDragLastPixel.get().getX(), pPixel.get().getX());
+                IntStream.range(from, to).forEach(x -> {
+                    int y = (int) Math.round(mMouseDragLastPixel.get().getY() + (((double) x - mMouseDragLastPixel.get().getX()) / dX) * dY);
+                    final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
+                    System.out.println(String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
+                    pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
+                });
+            } else { // fill in missing y
+                int from = Math.min(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
+                int to = Math.max(mMouseDragLastPixel.get().getY(), pPixel.get().getY());
+                IntStream.range(from, to).forEach(y -> {
+                    int x = (int) Math.round(mMouseDragLastPixel.get().getX() + (((double) y - mMouseDragLastPixel.get().getY()) / dY) * dX);
+                    final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
+                    System.out.println(String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
+                    pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
+                });
+            }
+        }
+        mouseDragEventPixelView(pEvent, pPixel);
+        mMouseDragLastPixel = pPixel;
     }
 
     private void mouseDragEventGeneralView(final IUIEvent pEvent, Optional<Pixel> pPixel) {
