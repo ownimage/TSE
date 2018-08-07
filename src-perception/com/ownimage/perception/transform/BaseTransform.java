@@ -4,7 +4,7 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
@@ -13,6 +13,7 @@ import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
+import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IGrafitti;
 import com.ownimage.framework.control.control.IMouseControl;
@@ -350,6 +351,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 		mContainer.write(pDB, pId);
 	}
 
+	@Override
+	public void grafitti(final GrafittiHelper pGrafittiHelper) {
+	}
 
 	public boolean isMutating() {
 		return mIsMutating;
@@ -357,5 +361,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
 	public void setMutating(final boolean pIsMutating) {
 		this.mIsMutating = pIsMutating;
+	}
+
+	@Override
+	public int getOversample() {
+		return 1;
 	}
 }

@@ -57,7 +57,6 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 				});
 			}
 		});
-
 		mCombobox.setConverter(new StringConverter<Object>() {
 
 			@Override
@@ -95,6 +94,7 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 		mUI = new HBox();
 		mUI.setAlignment(Pos.CENTER);
 		mUI.getChildren().addAll(mLabel, mCombobox);
+		mUI.setDisable(!mControl.isEnabled());
 	}
 
 	@Override

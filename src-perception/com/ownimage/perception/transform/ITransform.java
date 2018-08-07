@@ -11,35 +11,37 @@ import com.ownimage.framework.util.Version;
 import com.ownimage.perception.render.IBatchTransform;
 
 public interface ITransform extends IBatchTransform, IPersist { // extends , IGrafitti, ITransformColor, IProgressBar,
-	// IPictureReadOnly {
+    // IPictureReadOnly {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public ITransform duplicate();
+    public ITransform duplicate();
 
-	public IViewable<?> getContent();
+    public IViewable<?> getContent();
 
-	// TODO why do I need get Content and getControls
+    // TODO why do I need get Content and getControls
 
-	public IContainer getControls();
+    public IContainer getControls();
 
-	@Override
-	public String getDisplayName();
+    @Override
+    public String getDisplayName();
 
-	public int getHeight();
+    public int getHeight();
 
-	@Override
-	public ITransform getPreviousTransform();
+    @Override
+    public ITransform getPreviousTransform();
 
-	public int getWidth();
+    public int getWidth();
 
-	public void setPreviousTransform(ITransform pPreviousTransform);
+    public int getOversample();
 
-	public void setValues();
+    public void setPreviousTransform(ITransform pPreviousTransform);
 
-	/**
-	 * Update the input preview image.
-	 */
-	public void updatePreview();
+    public void setValues();
+
+    /**
+     * Update the input preview image.
+     */
+    public void updatePreview();
 
 }

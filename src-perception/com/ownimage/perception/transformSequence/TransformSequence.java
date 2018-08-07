@@ -38,6 +38,7 @@ import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
 import com.ownimage.perception.transform.ImageLoadTransform;
 import com.ownimage.perception.transform.LayerCakeTransform;
+import com.ownimage.perception.transform.OutputTransform;
 import com.ownimage.perception.transform.PolarTransform;
 import com.ownimage.perception.transform.QuadSpaceTransform;
 import com.ownimage.perception.transform.RotateTransform;
@@ -309,6 +310,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		addAvailableTransform(new CircleMaskTransform(mPerception));
 		addAvailableTransform(new CropTransform(mPerception));
 		addAvailableTransform(new LayerCakeTransform(mPerception));
+		addAvailableTransform(new OutputTransform(mPerception));
 		addAvailableTransform(new PolarTransform(mPerception));
 		addAvailableTransform(new RuleOfThirdsTransform(mPerception));
 		addAvailableTransform(new RotateTransform(mPerception));
