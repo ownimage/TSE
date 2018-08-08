@@ -26,7 +26,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	}
 
 	private void createView() {
-		// mUI.getChildren().remove(mScroller);
+        mUI.getChildren().remove(mScroller);
 		mAccordion.getPanes().clear();
 
 		for (int i = 0, max = mControl.getCount(); i < max; i++) {
