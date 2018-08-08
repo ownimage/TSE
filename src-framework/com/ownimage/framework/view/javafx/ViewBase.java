@@ -25,6 +25,8 @@ public class ViewBase<C extends IViewable> implements FXView {
     protected C mControl;
     protected Label mLabel;
 
+    private boolean mIsMutating = false;
+
     public ViewBase(final C pControl) {
         mControl = pControl;
 
@@ -89,5 +91,13 @@ public class ViewBase<C extends IViewable> implements FXView {
             getUI().setManaged(pVisible);
             getUI().setVisible(pVisible);
         });
+    }
+
+    protected boolean isMutating() {
+        return mIsMutating;
+    }
+
+    protected void setMutating(final boolean mIsMutating) {
+        this.mIsMutating = mIsMutating;
     }
 }

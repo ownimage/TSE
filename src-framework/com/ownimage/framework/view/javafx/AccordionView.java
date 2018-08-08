@@ -28,8 +28,6 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	 */
 	private List<TitledPane> mPanes;
 
-	private boolean mIsMutating = false;
-
 	public AccordionView(final IContainerList pContainerList) {
 		super(pContainerList);
 		createView();
@@ -54,7 +52,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 		mAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
 			@Override
 			public void changed(final ObservableValue<? extends TitledPane> pOV, final TitledPane pOldValue, final TitledPane pNewValue) {
-				if (!mIsMutating) {
+                if (!isMutating()) {
 					int index = getIndex(pNewValue);
 					mControl.setSelectedIndex(index, AccordionView.this);
 				}
@@ -88,7 +86,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 	private void setSelectedIndexAsync(final int pInt) {
 		try {
-			mIsMutating = true;
+            setMutating(true);
 
 			if (pInt < -1) { throw new IllegalArgumentException("pInt = " + pInt + ".  pInt must be >= -1."); }
 
@@ -104,15 +102,9 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 				mAccordion.setExpandedPane(null);
 			}
 		} finally {
-			mIsMutating = false;
+            setMutating(false);
 		}
 	}
 
-	public boolean isIsMutating() {
-		return mIsMutating;
-	}
 
-	public void setIsMutating(final boolean mIsMutating) {
-		this.mIsMutating = mIsMutating;
-	}
 }

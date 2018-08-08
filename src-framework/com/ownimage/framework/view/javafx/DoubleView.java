@@ -36,7 +36,6 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
     private final Button mDisplayOption;
     private boolean mAllowUpdates = true;
     private DoubleMetaType.DisplayType mDisplayType;
-    private boolean mIsMutating = false;
 
     public DoubleView(final DoubleControl pDoubleControl) {
         super(pDoubleControl);
@@ -158,11 +157,4 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         mDisplayedValue.setText(String.format(getFactory().doubleFormat.get(), mControl.getValue()));
     }
 
-    public boolean isMutating() {
-        return mIsMutating;
-    }
-
-    public void setMutating(final boolean mIsMutating) {
-        this.mIsMutating = mIsMutating;
-    }
 }
