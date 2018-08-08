@@ -30,13 +30,11 @@
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="Issue #94 Limit the types for the inbetweening of Pixels for drag operations in EditPixelMapDialog to Pixel on and off">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/OutputTransform.java" />
+    <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/NY2.transform" afterPath="$PROJECT_DIR$/NY2.transform" />
-      <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java" />
-      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java" />
-      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java" />
+      <change beforePath="$PROJECT_DIR$/Perception.log.2.lck" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java" />
+      <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
       <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" afterPath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -70,41 +68,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file leaf-file-name="ObjectView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java">
+      <file leaf-file-name="ContainerView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1219">
-              <caret line="96" column="11" lean-forward="false" selection-start-line="96" selection-start-column="11" selection-end-line="96" selection-end-column="11" />
+            <state relative-caret-position="775">
+              <caret line="41" column="9" lean-forward="false" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ITransform.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="23" column="4" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="4" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BaseTransform.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="447">
-              <caret line="143" column="15" lean-forward="false" selection-start-line="143" selection-start-column="15" selection-end-line="143" selection-end-column="15" />
-              <folding>
-                <element signature="e#4779#4780#0" expanded="true" />
-                <element signature="e#4824#4825#0" expanded="true" />
-                <element signature="e#4871#4872#0" expanded="true" />
-                <element signature="e#4895#4896#0" expanded="true" />
-                <element signature="e#5321#5322#0" expanded="true" />
-                <element signature="e#5369#5370#0" expanded="true" />
-                <element signature="e#9578#9579#0" expanded="true" />
-                <element signature="e#9602#9603#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -112,49 +81,40 @@
       <file leaf-file-name="TransformSequence.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="397">
-              <caret line="170" column="28" lean-forward="false" selection-start-line="170" selection-start-column="28" selection-end-line="170" selection-end-column="28" />
+            <state relative-caret-position="937">
+              <caret line="293" column="21" lean-forward="false" selection-start-line="293" selection-start-column="21" selection-end-line="293" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ViewBase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java">
+      <file leaf-file-name="ViewableBase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/layout/ViewableBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="19" column="58" lean-forward="false" selection-start-line="19" selection-start-column="58" selection-end-line="19" selection-end-column="58" />
-              <folding />
+            <state relative-caret-position="975">
+              <caret line="46" column="0" lean-forward="true" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+              <folding>
+                <element signature="e#349#355#0" expanded="true" />
+                <element signature="e#474#475#0" expanded="true" />
+                <element signature="e#506#507#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FXView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/FXView.java">
+      <file leaf-file-name="AccordionView.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="6" column="33" lean-forward="false" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ObjectControl.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ObjectControl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="18" column="43" lean-forward="false" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ControlBase.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="518">
-              <caret line="342" column="37" lean-forward="false" selection-start-line="342" selection-start-column="37" selection-end-line="342" selection-end-column="37" />
-              <folding />
+            <state relative-caret-position="-1239">
+              <caret line="19" column="38" lean-forward="true" selection-start-line="19" selection-start-column="38" selection-end-line="19" selection-end-column="38" />
+              <folding>
+                <element signature="e#2544#2545#0" expanded="true" />
+                <element signature="e#2594#2595#0" expanded="true" />
+                <element signature="e#3361#3362#0" expanded="true" />
+                <element signature="e#3386#3387#0" expanded="true" />
+                <element signature="e#3443#3444#0" expanded="true" />
+                <element signature="e#3480#3481#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -169,11 +129,56 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ContainerView.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java">
+      <file leaf-file-name="DoubleView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="500">
-              <caret line="30" column="17" lean-forward="false" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
+            <state relative-caret-position="1975">
+              <caret line="97" column="0" lean-forward="true" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+              <folding>
+                <element signature="e#6272#6273#0" expanded="true" />
+                <element signature="e#6306#6307#0" expanded="true" />
+                <element signature="e#6364#6365#0" expanded="true" />
+                <element signature="e#6410#6411#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ViewBase.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FXView.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/FXView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EventDispatcher.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/event/EventDispatcher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1075">
+              <caret line="56" column="0" lean-forward="false" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DoubleControl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/DoubleControl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1131">
+              <caret line="89" column="47" lean-forward="false" selection-start-line="89" selection-start-column="47" selection-end-line="89" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -191,7 +196,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Show</find>
       <find>50</find>
       <find>showLines</find>
       <find>Show L</find>
@@ -219,8 +223,9 @@
       <find>Fillin</find>
       <find>Save</find>
       <find>CannyEdgeTransform</find>
-      <find>isVisible</find>
       <find>setE</find>
+      <find>red</find>
+      <find>isVisible</find>
     </findStrings>
     <replaceStrings>
       <replace>this::</replace>
@@ -237,7 +242,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Issue#70_draw_vector_lines_on_output" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
   </component>
@@ -249,7 +254,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/undo/IUndoRedoBufferProvider.java" />
         <option value="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/Utility.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Vertex.java" />
         <option value="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelChainTest.java" />
@@ -261,12 +265,10 @@
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/util/KColor.java" />
         <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/perception/util/KColorTEST.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ActionView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AppControlView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/BorderView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/MenuBarView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/MenuItemView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IView.java" />
@@ -293,13 +295,16 @@
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/event/UIEvent.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/DoubleControl.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java" />
         <option value="$PROJECT_DIR$/NY2.transform" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/OutputTransform.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java" />
         <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java" />
         <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java" />
+        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/layout/ViewableBase.java" />
+        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" />
+        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java" />
+        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
       </list>
     </option>
   </component>
@@ -315,7 +320,7 @@
     <option name="height" value="2160" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -328,230 +333,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-              <item name="type" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-              <item name="factory" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-              <item name="javafx" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
-              <item name="segment" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="transform" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="transform" type="462c0819:PsiDirectoryNode" />
-              <item name="cannyEdge" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="transformSequence" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="factory" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (1) &gt;" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (1) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="jfxrt.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (1) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="jfxrt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="javafx" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (1) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="jfxrt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="javafx" type="462c0819:PsiDirectoryNode" />
-              <item name="scene" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (1) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="jfxrt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="javafx" type="462c0819:PsiDirectoryNode" />
-              <item name="scene" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -919,7 +701,10 @@
       <workItem from="1532933170005" duration="1987000" />
       <workItem from="1532944981192" duration="20012000" />
       <workItem from="1533534001732" duration="8825000" />
-      <workItem from="1533551017414" duration="9157000" />
+      <workItem from="1533551017414" duration="11985000" />
+      <workItem from="1533645143679" duration="25000" />
+      <workItem from="1533664299117" duration="3409000" />
+      <workItem from="1533710138398" duration="1555000" />
     </task>
     <task id="LOCAL-00001" summary="Issue #93 In DoubleControl read/write using _displayType instead of .displayType">
       <created>1533554387668</created>
@@ -935,7 +720,14 @@
       <option name="project" value="LOCAL" />
       <updated>1533554982079</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Issue #4 Add Output Transform">
+      <created>1533626415110</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1533626415110</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -971,36 +763,35 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="301372000" />
+    <option name="totallyTimeSpent" value="309189000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="129" y="-11" width="3722" height="2182" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.08319559" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25482094" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36924633" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="DB Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.41045606" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28730398" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30399597" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30753666" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16528925" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32878098" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16528925" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07741047" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24380165" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36924633" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1009,6 +800,7 @@
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" x="3161" y="1824" width="666" height="249" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16082542" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32878098" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1023,30 +815,40 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="Issue #93 In DoubleControl read/write using _displayType instead of .displayType" />
     <MESSAGE value="Issue #94 Limit the types for the inbetweening of Pixels for drag operations in EditPixelMapDialog to Pixel on and off" />
-    <option name="LAST_COMMIT_MESSAGE" value="Issue #94 Limit the types for the inbetweening of Pixels for drag operations in EditPixelMapDialog to Pixel on and off" />
+    <MESSAGE value="Issue #4 Add Output Transform" />
+    <option name="LAST_COMMIT_MESSAGE" value="Issue #4 Add Output Transform" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java</url>
-          <line>1161</line>
+          <url>file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java</url>
+          <line>81</line>
           <properties />
-          <option name="timeStamp" value="151" />
+          <option name="timeStamp" value="159" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java</url>
-          <line>421</line>
+          <url>file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java</url>
+          <line>40</line>
           <properties />
-          <option name="timeStamp" value="158" />
+          <option name="timeStamp" value="160" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java</url>
+          <line>140</line>
+          <properties />
+          <option name="timeStamp" value="161" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="159" />
+      <option name="time" value="162" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -1095,50 +897,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/factory/ViewFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1647">
-          <caret line="192" column="0" lean-forward="true" selection-start-line="192" selection-start-column="0" selection-end-line="192" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test-framework-src/com/ownimage/perception/view/factory/ViewFactoryDELEGATOR.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1275">
-          <caret line="178" column="8" lean-forward="false" selection-start-line="178" selection-start-column="8" selection-end-line="178" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test-framework-src/com/ownimage/perception/control/view/DoubleControlViewTEST.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1275">
-          <caret line="261" column="12" lean-forward="false" selection-start-line="261" selection-start-column="12" selection-end-line="261" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test-framework-src/com/ownimage/perception/view/factory/ViewFactoryASSISTANT.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1639">
-          <caret line="169" column="8" lean-forward="false" selection-start-line="169" selection-start-column="8" selection-end-line="169" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2900">
-          <caret line="143" column="0" lean-forward="false" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/container/Container.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="49" column="11" lean-forward="false" selection-start-line="49" selection-start-column="11" selection-end-line="49" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/factory/IViewFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1300">
@@ -1150,7 +908,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1375">
           <caret line="62" column="18" lean-forward="false" selection-start-line="62" selection-start-column="18" selection-end-line="62" selection-end-column="18" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1214,62 +971,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7625">
           <caret line="375" column="18" lean-forward="false" selection-start-line="375" selection-start-column="18" selection-end-line="375" selection-end-column="18" />
-          <folding>
-            <element signature="e#11622#11623#0" expanded="false" />
-            <element signature="e#11674#11675#0" expanded="false" />
-            <element signature="e#13745#13746#0" expanded="false" />
-            <element signature="e#13786#13787#0" expanded="false" />
-            <element signature="e#13835#13836#0" expanded="false" />
-            <element signature="e#13879#13880#0" expanded="false" />
-            <element signature="e#13939#13940#0" expanded="false" />
-            <element signature="e#13993#13994#0" expanded="false" />
-            <element signature="e#14051#14052#0" expanded="false" />
-            <element signature="e#14106#14107#0" expanded="false" />
-            <element signature="e#14162#14163#0" expanded="false" />
-            <element signature="e#14217#14218#0" expanded="false" />
-            <element signature="e#14286#14287#0" expanded="false" />
-            <element signature="e#14338#14339#0" expanded="false" />
-            <element signature="e#14397#14398#0" expanded="false" />
-            <element signature="e#14444#14445#0" expanded="false" />
-            <element signature="e#14501#14502#0" expanded="false" />
-            <element signature="e#14552#14553#0" expanded="false" />
-            <element signature="e#14604#14605#0" expanded="false" />
-            <element signature="e#14650#14651#0" expanded="false" />
-            <element signature="e#14704#14705#0" expanded="false" />
-            <element signature="e#14752#14753#0" expanded="false" />
-            <element signature="e#14805#14806#0" expanded="false" />
-            <element signature="e#14854#14855#0" expanded="false" />
-            <element signature="e#14912#14913#0" expanded="false" />
-            <element signature="e#14964#14965#0" expanded="false" />
-            <element signature="e#15018#15019#0" expanded="false" />
-            <element signature="e#15069#15070#0" expanded="false" />
-            <element signature="e#15129#15130#0" expanded="false" />
-            <element signature="e#15183#15184#0" expanded="false" />
-            <element signature="e#15233#15234#0" expanded="false" />
-            <element signature="e#15278#15279#0" expanded="false" />
-            <element signature="e#15329#15330#0" expanded="false" />
-            <element signature="e#15375#15376#0" expanded="false" />
-            <element signature="e#15429#15430#0" expanded="false" />
-            <element signature="e#15477#15478#0" expanded="false" />
-            <element signature="e#15533#15534#0" expanded="false" />
-            <element signature="e#15583#15584#0" expanded="false" />
-            <element signature="e#15637#15638#0" expanded="false" />
-            <element signature="e#15685#15686#0" expanded="false" />
-            <element signature="e#15739#15740#0" expanded="false" />
-            <element signature="e#15787#15788#0" expanded="false" />
-            <element signature="e#15840#15841#0" expanded="false" />
-            <element signature="e#15890#15891#0" expanded="false" />
-            <element signature="e#15949#15950#0" expanded="false" />
-            <element signature="e#16002#16003#0" expanded="false" />
-            <element signature="e#16054#16055#0" expanded="false" />
-            <element signature="e#16099#16100#0" expanded="false" />
-            <element signature="e#16151#16152#0" expanded="false" />
-            <element signature="e#16196#16197#0" expanded="false" />
-            <element signature="e#16247#16248#0" expanded="false" />
-            <element signature="e#16291#16292#0" expanded="false" />
-            <element signature="e#16808#16809#0" expanded="false" />
-            <element signature="e#16848#16849#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1277,7 +978,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2425">
           <caret line="114" column="64" lean-forward="false" selection-start-line="114" selection-start-column="64" selection-end-line="114" selection-end-column="64" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1285,7 +985,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5750">
           <caret line="259" column="16" lean-forward="false" selection-start-line="259" selection-start-column="16" selection-end-line="259" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1293,7 +992,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="700">
           <caret line="46" column="19" lean-forward="false" selection-start-line="46" selection-start-column="19" selection-end-line="46" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1301,7 +999,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="4" column="31" lean-forward="false" selection-start-line="4" selection-start-column="31" selection-end-line="4" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1309,7 +1006,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="775">
           <caret line="36" column="1" lean-forward="false" selection-start-line="36" selection-start-column="1" selection-end-line="36" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1317,7 +1013,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="700">
           <caret line="39" column="26" lean-forward="false" selection-start-line="39" selection-start-column="26" selection-end-line="39" selection-end-column="26" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1325,9 +1020,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
           <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-          <folding>
-            <marker date="1533544206165" expanded="true" signature="1606:1607" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1335,7 +1027,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="7" column="17" lean-forward="false" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1343,7 +1034,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
           <caret line="23" column="11" lean-forward="false" selection-start-line="23" selection-start-column="11" selection-end-line="23" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1351,14 +1041,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
           <caret line="47" column="10" lean-forward="false" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
-          <folding>
-            <element signature="e#4804#4805#0" expanded="false" />
-            <element signature="e#4843#4844#0" expanded="false" />
-            <element signature="e#7012#7013#0" expanded="false" />
-            <element signature="e#7063#7064#0" expanded="false" />
-            <element signature="e#7452#7453#0" expanded="false" />
-            <element signature="e#7506#7507#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1366,9 +1048,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5350">
           <caret line="253" column="19" lean-forward="false" selection-start-line="253" selection-start-column="19" selection-end-line="253" selection-end-column="19" />
-          <folding>
-            <marker date="1533544201147" expanded="true" signature="8012:8018" ph="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1376,7 +1055,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3050">
           <caret line="144" column="27" lean-forward="false" selection-start-line="144" selection-start-column="27" selection-end-line="144" selection-end-column="27" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1384,10 +1062,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="26100">
           <caret line="1161" column="46" lean-forward="false" selection-start-line="1161" selection-start-column="46" selection-end-line="1161" selection-end-column="46" />
-          <folding>
-            <element signature="e#60527#60528#0" expanded="false" />
-            <element signature="e#60583#60584#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1395,15 +1069,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="750">
           <caret line="72" column="17" lean-forward="false" selection-start-line="72" selection-start-column="17" selection-end-line="72" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/DoubleControl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="586">
-          <caret line="77" column="77" lean-forward="false" selection-start-line="77" selection-start-column="77" selection-end-line="77" selection-end-column="77" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1411,7 +1076,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="910">
           <caret line="161" column="0" lean-forward="false" selection-start-line="161" selection-start-column="0" selection-end-line="168" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1419,22 +1083,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="572">
           <caret line="102" column="31" lean-forward="false" selection-start-line="102" selection-start-column="18" selection-end-line="102" selection-end-column="31" />
-          <folding>
-            <element signature="e#15230#15231#0" expanded="false" />
-            <element signature="e#15294#15295#0" expanded="false" />
-            <element signature="e#25516#25517#0" expanded="false" />
-            <element signature="e#25565#25566#0" expanded="false" />
-            <element signature="e#26147#26148#0" expanded="false" />
-            <element signature="e#26215#26216#0" expanded="false" />
-            <element signature="e#26280#26281#0" expanded="false" />
-            <element signature="e#26345#26346#0" expanded="false" />
-            <element signature="e#26811#26812#0" expanded="false" />
-            <element signature="e#26892#26893#0" expanded="false" />
-            <element signature="e#26929#26930#0" expanded="false" />
-            <element signature="e#27015#27016#0" expanded="false" />
-            <element signature="e#27053#27054#0" expanded="false" />
-            <element signature="e#27140#27141#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1442,7 +1090,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
           <caret line="21" column="13" lean-forward="false" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1450,7 +1097,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="325">
           <caret line="13" column="22" lean-forward="false" selection-start-line="13" selection-start-column="22" selection-end-line="13" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1458,7 +1104,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="50">
           <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1466,7 +1111,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="50">
           <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1474,7 +1118,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="18" column="55" lean-forward="false" selection-start-line="18" selection-start-column="55" selection-end-line="18" selection-end-column="55" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1482,7 +1125,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="229">
           <caret line="86" column="44" lean-forward="true" selection-start-line="86" selection-start-column="44" selection-end-line="86" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1490,19 +1132,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="83" column="17" lean-forward="true" selection-start-line="83" selection-start-column="17" selection-end-line="83" selection-end-column="17" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#602#629#0" expanded="false" />
-            <element signature="e#2142#2143#0" expanded="false" />
-            <element signature="e#2178#2179#0" expanded="false" />
-            <element signature="e#2220#2221#0" expanded="false" />
-            <element signature="e#2273#2274#0" expanded="false" />
-            <element signature="e#2314#2315#0" expanded="false" />
-            <element signature="e#2366#2367#0" expanded="false" />
-            <element signature="e#2815#2816#0" expanded="false" />
-            <element signature="e#2851#2852#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1510,7 +1139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
           <caret line="18" column="43" lean-forward="false" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1518,14 +1146,49 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="518">
           <caret line="342" column="37" lean-forward="false" selection-start-line="342" selection-start-column="37" selection-end-line="342" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="447">
+          <caret line="143" column="15" lean-forward="false" selection-start-line="143" selection-start-column="15" selection-end-line="143" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="23" column="4" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1525">
+          <caret line="91" column="20" lean-forward="false" selection-start-line="91" selection-start-column="20" selection-end-line="91" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java">
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="19" column="58" lean-forward="false" selection-start-line="19" selection-start-column="58" selection-end-line="19" selection-end-column="58" />
+        <state relative-caret-position="1950">
+          <caret line="96" column="11" lean-forward="false" selection-start-line="96" selection-start-column="11" selection-end-line="96" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/ISingleSelectView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="50">
+          <caret line="2" column="47" lean-forward="false" selection-start-line="2" selection-start-column="47" selection-end-line="2" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="775">
+          <caret line="41" column="9" lean-forward="false" selection-start-line="41" selection-start-column="9" selection-end-line="41" selection-end-column="9" />
           <folding />
         </state>
       </provider>
@@ -1533,7 +1196,7 @@
     <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/FXView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
-          <caret line="6" column="33" lean-forward="false" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
+          <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
           <folding />
         </state>
       </provider>
@@ -1546,52 +1209,75 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ContainerView.java">
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/layout/ViewableBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="30" column="17" lean-forward="false" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ObjectView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1219">
-          <caret line="96" column="11" lean-forward="false" selection-start-line="96" selection-start-column="11" selection-end-line="96" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="143" column="15" lean-forward="false" selection-start-line="143" selection-start-column="15" selection-end-line="143" selection-end-column="15" />
+        <state relative-caret-position="975">
+          <caret line="46" column="0" lean-forward="true" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
           <folding>
-            <element signature="e#4779#4780#0" expanded="true" />
-            <element signature="e#4824#4825#0" expanded="true" />
-            <element signature="e#4871#4872#0" expanded="true" />
-            <element signature="e#4895#4896#0" expanded="true" />
-            <element signature="e#5321#5322#0" expanded="true" />
-            <element signature="e#5369#5370#0" expanded="true" />
-            <element signature="e#9578#9579#0" expanded="true" />
-            <element signature="e#9602#9603#0" expanded="true" />
+            <element signature="e#349#355#0" expanded="true" />
+            <element signature="e#474#475#0" expanded="true" />
+            <element signature="e#506#507#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="170" column="28" lean-forward="false" selection-start-line="170" selection-start-column="28" selection-end-line="170" selection-end-column="28" />
+        <state relative-caret-position="937">
+          <caret line="293" column="21" lean-forward="false" selection-start-line="293" selection-start-column="21" selection-end-line="293" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java">
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/DoubleControl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="23" column="4" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="4" />
+        <state relative-caret-position="1131">
+          <caret line="89" column="47" lean-forward="false" selection-start-line="89" selection-start-column="47" selection-end-line="89" selection-end-column="47" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/event/EventDispatcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1075">
+          <caret line="56" column="0" lean-forward="false" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1975">
+          <caret line="97" column="0" lean-forward="true" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+          <folding>
+            <element signature="e#6272#6273#0" expanded="true" />
+            <element signature="e#6306#6307#0" expanded="true" />
+            <element signature="e#6364#6365#0" expanded="true" />
+            <element signature="e#6410#6411#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AccordionView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1239">
+          <caret line="19" column="38" lean-forward="true" selection-start-line="19" selection-start-column="38" selection-end-line="19" selection-end-column="38" />
+          <folding>
+            <element signature="e#2544#2545#0" expanded="true" />
+            <element signature="e#2594#2595#0" expanded="true" />
+            <element signature="e#3361#3362#0" expanded="true" />
+            <element signature="e#3386#3387#0" expanded="true" />
+            <element signature="e#3443#3444#0" expanded="true" />
+            <element signature="e#3480#3481#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

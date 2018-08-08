@@ -10,7 +10,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IDoubleView;
 
-import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -37,9 +36,11 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
     private final Button mDisplayOption;
     private boolean mAllowUpdates = true;
     private DoubleMetaType.DisplayType mDisplayType;
+    private boolean mIsMutating = false;
 
     public DoubleView(final DoubleControl pDoubleControl) {
         super(pDoubleControl);
+        setMutating(true);
 
         double min = mControl.getMetaType().getMin();
         double max = mControl.getMetaType().getMax();
@@ -83,6 +84,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         mUI.setAlignment(Pos.CENTER);
         mUI.getChildren().addAll(mLabel, mControlPanel, mDisplayOption);
         setDisplayType(mControl.getDisplayType());
+        setMutating(false);
     }
 
     @Override
@@ -145,7 +147,10 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
                 mControlPanel.getChildren().clear();
                 mControlPanel.getChildren().add(mSpinner);
             }
-            mControl.setDisplayType(pDisplayType, this);
+
+            if (!isMutating()) {
+                mControl.setDisplayType(pDisplayType, this);
+            }
         });
     }
 
@@ -153,4 +158,11 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         mDisplayedValue.setText(String.format(getFactory().doubleFormat.get(), mControl.getValue()));
     }
 
+    public boolean isMutating() {
+        return mIsMutating;
+    }
+
+    public void setMutating(final boolean mIsMutating) {
+        this.mIsMutating = mIsMutating;
+    }
 }

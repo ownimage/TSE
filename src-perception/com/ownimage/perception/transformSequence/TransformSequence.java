@@ -273,7 +273,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
 		} finally {
 			setPreviousTransforms();
-			redraw();
 			mPerception.refreshPreview();
 		}
 
@@ -291,7 +290,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 			if (index >= mTransforms.size()) {
 				index = mTransforms.size() - 1;
 			}
-			setSelectedIndex(index); // this is to force the button enables to refresh
+			setSelectedIndex(index); // this is to force the button enabled to refresh
 			redraw();
 			mPerception.refreshPreview();
 		}

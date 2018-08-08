@@ -7,7 +7,6 @@ import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.layout.IContainerList;
 import com.ownimage.framework.view.ISingleSelectView;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -22,7 +21,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 	private final BorderPane mUI = new BorderPane();
 	private final ScrollPane mScroller = new ScrollPane();
 
-	private Accordion mAccordion;
+	private Accordion mAccordion = new Accordion();
 	/**
 	 * The Panes list. This is used to support the setSelectedIndex as Accordion does not support setExpandedPane(int) only
 	 * setExpandedPane(TitledPane). This is used to convert from one to the other.
@@ -38,7 +37,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 	private void createView() {
 		// mUI.getChildren().remove(mScroller);
-		mAccordion = new Accordion();
+		mAccordion.getPanes().clear();
 		mPanes = new Vector<TitledPane>();
 
 		for (int i = 0, max = mControl.getCount(); i < max; i++) {
@@ -64,6 +63,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 
 		mScroller.setContent(mAccordion);
 		mScroller.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		mUI.setCenter(null);
 		mUI.setCenter(mScroller);
 	}
 
@@ -108,4 +108,11 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 		}
 	}
 
+	public boolean isIsMutating() {
+		return mIsMutating;
+	}
+
+	public void setIsMutating(final boolean mIsMutating) {
+		this.mIsMutating = mIsMutating;
+	}
 }
