@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -287,7 +288,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         Container displayContainer = new Container("File Save", "fileSave", this);
-        PictureType preview = new PictureType(mProperties.getColorOOBProperty(), 500, 500);
+        PictureType preview = getResizedPictureTypeIfNeeded(500, null).get();
         PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
@@ -302,7 +303,7 @@ public class Perception extends AppControlBase {
         return mFilename;
     }
 
-    public String getFilenameStem() {
+    private String getFilenameStem() {
         Framework.logEntry(mLogger);
 
         if (mFilename == null) {
@@ -671,20 +672,33 @@ public class Perception extends AppControlBase {
     }
 
     /**
-     * creates a blank picture of the correct ratio based on the getHeight()/getWidth of the last transform, with a max height and width from getPreviewSize().
+     * Creates a blank picture of the correct ratio based on the getHeight()/getWidth of the last transform, with a max height and width from getPreviewSize().
      */
     private void resizePreviewControlIfNeeded() {
         int size = getPreviewSize();
         if (mTransformSequence == null || mTransformSequence.getLastTransform() == null) {
             mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), size, size));
         } else {
-            RectangleSize requiredRatio = mTransformSequence.getLastTransform().getSize();
-            RectangleSize requiredSize = requiredRatio.scaleToSquare(size);
-            RectangleSize currentSize = mPreviewControl.getSize();
-            if (!requiredSize.equals(currentSize)) {
-                mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), requiredSize));
-            }
+            getResizedPictureTypeIfNeeded(getPreviewSize(), mPreviewControl.getValue()).ifPresent(mPreviewControl::setValue);
         }
+    }
+
+    /**
+     * Gets a PictureType of max square size pNewSize but in the aspect ratio needed for the TransformSequence IF NEEDED.
+     * If the pCurrent is supplied and is the same as the size that would have been returned then
+     * this returns Optional.empty().
+     *
+     * @param pNewSize the size of the square that the new PictureType needs to be constrained by
+     * @param pCurrent if supplied specifies the size of the current PictureType
+     * @return Optional representing the correctly sized PictureType
+     */
+    private Optional<PictureType> getResizedPictureTypeIfNeeded(int pNewSize, final PictureType pCurrent) {
+        RectangleSize requiredRatio = mTransformSequence.getLastTransform().getSize();
+        RectangleSize requiredSize = requiredRatio.scaleToSquare(pNewSize);
+        if (pCurrent == null || !requiredSize.equals(pCurrent.getSize())) {
+            return Optional.of(new PictureType(getProperties().getColorOOBProperty(), requiredSize));
+        }
+        return Optional.empty();
     }
 
     @Override
