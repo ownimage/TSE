@@ -29,6 +29,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
+import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
 
@@ -73,9 +74,7 @@ public class Perception extends AppControlBase {
         mContainer = new Container("Container", "container", this);
         mFileControl = new FileControl("File Name", "fileName", mContainer, "", FileControlType.FILEOPEN);
 
-        int size = getPreviewSize();
-        PictureType preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
-
+        final PictureType preview = new PictureType(getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
         mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
 
         Framework.logExit(mLogger);
@@ -252,7 +251,7 @@ public class Perception extends AppControlBase {
         outputFile.addControlChangeListener((c, m) -> fileSaveUnchecked(outputFile.getFile()));
         // fileSaveUnchecked is ok here as the file chooser save will have the confirm overwrite dialog.
 
-        fileShowPreview(() -> outputFile.showDialog());
+        fileShowPreview(outputFile::showDialog);
 
         Framework.logExit(mLogger);
     }
@@ -265,7 +264,7 @@ public class Perception extends AppControlBase {
     private void fileSaveUnchecked(final File pFile) {
         Framework.logEntry(mLogger);
 
-        PictureType output = new PictureType(mProperties.getColorOOBProperty(), "c:\\temp\\ny2.jpg"); // TODO
+        PictureType output = new PictureType(mProperties.getColorOOBProperty(), pFile.getAbsolutePath());
         PictureControl outputControl = new PictureControl("Preview", "preview", NullContainer, output);
         mRenderService.transform(outputControl, mTransformSequence.getLastTransform(), //
                                  () -> {
@@ -291,7 +290,7 @@ public class Perception extends AppControlBase {
         PictureType preview = new PictureType(mProperties.getColorOOBProperty(), 500, 500);
         PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-        ActionControl ok = ActionControl.create("OK", NullContainer, pAction::performAction);
+        ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
         mRenderService.transform(previewControl, mTransformSequence.getLastTransform(), //
                                  () -> showDialog(displayContainer, DialogOptions.NONE, ok, cancel)
         );
@@ -424,7 +423,7 @@ public class Perception extends AppControlBase {
         fileControl.showDialog();
         File file = fileControl.getFile();
 
-        try (FileInputStream fstream = new FileInputStream(file);) {
+        try (FileInputStream fstream = new FileInputStream(file)) {
             PersistDB props = new PersistDB();
             props.load(fstream);
             FrameworkLogger.getInstance().read(props, "");
@@ -439,7 +438,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         String filename = getLoggingDefaultFilename();
-        try (FileInputStream fstream = new FileInputStream(filename);) {
+        try (FileInputStream fstream = new FileInputStream(filename)) {
             PersistDB props = new PersistDB();
             props.load(fstream);
             FrameworkLogger.getInstance().read(props, "");
@@ -484,7 +483,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        try (FileOutputStream fstream = new FileOutputStream(pFile);) {
+        try (FileOutputStream fstream = new FileOutputStream(pFile)) {
             PersistDB props = new PersistDB();
             FrameworkLogger.getInstance().write(props, "");
             props.store(fstream, "Perception Logging");
@@ -665,9 +664,27 @@ public class Perception extends AppControlBase {
     public void refreshPreview() {
         Framework.logEntry(mLogger);
 
+        resizePreviewControlIfNeeded();
         mRenderService.transform(mPreviewControl, mTransformSequence.getLastTransform(), null);
 
         Framework.logExit(mLogger);
+    }
+
+    /**
+     * creates a blank picture of the correct ratio based on the getHeight()/getWidth of the last transform, with a max height and width from getPreviewSize().
+     */
+    private void resizePreviewControlIfNeeded() {
+        int size = getPreviewSize();
+        if (mTransformSequence == null || mTransformSequence.getLastTransform() == null) {
+            mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), size, size));
+        } else {
+            RectangleSize requiredRatio = mTransformSequence.getLastTransform().getSize();
+            RectangleSize requiredSize = requiredRatio.scaleToSquare(size);
+            RectangleSize currentSize = mPreviewControl.getSize();
+            if (!requiredSize.equals(currentSize)) {
+                mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), requiredSize));
+            }
+        }
     }
 
     @Override

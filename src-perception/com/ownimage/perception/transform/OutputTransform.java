@@ -24,7 +24,6 @@ public class OutputTransform extends BaseTransform {
     private ObjectControl<Size> mOutputSize;
     private IntegerControl mDPI;
     private IntegerControl mOversample;
-    private boolean mIsMutating;
 
     private enum Size {
         A4Portrait("A4-Portrait", 210.0d, 297.0d, Unit.MM),
@@ -49,7 +48,7 @@ public class OutputTransform extends BaseTransform {
             MM, INCH, PIXEL
         }
 
-        private Size(String pName, double pWidth, double pHeight, Unit pUnit) {
+        Size(String pName, double pWidth, double pHeight, Unit pUnit) {
             mName = pName;
             mHeight = pHeight;
             mWidth = pWidth;
@@ -97,24 +96,35 @@ public class OutputTransform extends BaseTransform {
         mUseCustomSize = new BooleanControl("Use custom size", "useCustomSize", getContainer(), false);
         mWidth = new IntegerControl("Image out width", "imageOutWidth", getContainer(), 1000, outputMetaModel).setEnabled(false);
         mHeight = new IntegerControl("Image out height", "imageOutHeight", getContainer(), 1000, outputMetaModel).setEnabled(false);
-        mOutputSize = new ObjectControl<Size>("Size", "size", getContainer(), Size.A4Portrait, Size.values());
+        mOutputSize = new ObjectControl<>("Size", "size", getContainer(), Size.A4Portrait, Size.values());
         mDPI = new IntegerControl("DPI", "dpi", getContainer(), 30, dpiMetaModel);
         mOversample = new IntegerControl("Oversample", "oversample", getContainer(), 1, oversampleMetaModel);
+        setValues();
     }
 
     @Override
     public void setValues() {
-        if (!mIsMutating) {
+        if (!isMutating()) {
             if (!mUseCustomSize.getValue()) {
-                mIsMutating = true;
-                String sizeString = mOutputSize.getString();
-                int dpi = mDPI.getValue();
-                mHeight.setValue(mOutputSize.getValue().getHeight(dpi));
-                mWidth.setValue(mOutputSize.getValue().getWidth(dpi));
-                mIsMutating = false;
+                try {
+                    setMutating(true);
+                    String sizeString = mOutputSize.getString();
+                    int dpi = mDPI.getValue();
+                    mHeight.setValue(mOutputSize.getValue().getHeight(dpi));
+                    mWidth.setValue(mOutputSize.getValue().getWidth(dpi));
+                } finally {
+                    setMutating(false);
+                }
             }
         }
         setUIState();
+    }
+
+    @Override
+    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+        if (!isMutating()) {
+            super.controlChangeEvent(pControl, pIsMutating);
+        }
     }
 
     private void setUIState() {
@@ -127,31 +137,20 @@ public class OutputTransform extends BaseTransform {
 
     @Override
     public int getWidth() {
-        if (getUseTransform()) {
-            return mWidth.getValue();
-        }
-        return getPreviousTransform().getWidth();
+        return getUseTransform() ? mWidth.getValue() : getPreviousTransform().getWidth();
     }
 
     @Override
     public int getHeight() {
-        if (getUseTransform()) {
-            return mHeight.getValue();
-        }
-        return getPreviousTransform().getHeight();
+        return getUseTransform() ? mHeight.getValue() : getPreviousTransform().getHeight();
     }
 
     @Override
     public int getOversample() {
-        if (getUseTransform()) {
-            return mOversample.getValue();
-        }
-        return getPreviousTransform().getOversample();
+        return getUseTransform() ? mOversample.getValue() : getPreviousTransform().getOversample();
     }
 
     @Override
     public void transform(final ITransformResult pRenderResult) {
     }
-
-
 }

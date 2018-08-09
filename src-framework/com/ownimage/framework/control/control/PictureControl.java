@@ -18,6 +18,7 @@ import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
+import com.ownimage.perception.math.RectangleSize;
 
 public class PictureControl
         extends ControlBase<PictureControl, PictureType, NullMetaType<PictureType>, PictureType, IPictureView>
@@ -69,16 +70,12 @@ public class PictureControl
     }
 
     public void redrawGrafitti() {
-        mViews.invokeAll(view -> {
-            view.redrawGrafitti(this::drawGrafitti);
-        });
+        mViews.invokeAll(view -> view.redrawGrafitti(this::drawGrafitti));
     }
 
     public void redrawGrafitti(IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
-        mViews.invokeAll(view -> {
-            view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp)));
-        });
+        mViews.invokeAll(view -> view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
     }
 
     public void setGrafitti(final IGrafitti pGrafitti) {
@@ -174,6 +171,10 @@ public class PictureControl
         }
 
         Framework.logExit(mLogger);
+    }
+
+    public RectangleSize getSize() {
+        return mValue.getSize();
     }
 
 }

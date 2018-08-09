@@ -24,6 +24,7 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
+import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.transform.IPictureSource;
 
 /**
@@ -58,7 +59,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * The Lock value. Null indicates that the value is unlocked and hence write operations can be supported. If this contains an
      * Integer the object can only be unlocked with that int.
      */
-    private Integer mLock ;
+    private Integer mLock;
 
     /**
      * The Height of the picture.
@@ -104,6 +105,16 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         }
 
         Framework.logExit(mLogger);
+    }
+
+    /**
+     * Instantiates a new picture type based on the height and width given. The image will be filled with black..
+     *
+     * @param pColorProperty the color for out of range requests
+     * @param pSize          the size of the new PictureType
+     */
+    public PictureType(final ColorProperty pColorProperty, final RectangleSize pSize) {
+        this(pColorProperty, pSize.getWidth(), pSize.getHeight());
     }
 
     /**
@@ -605,5 +616,9 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 
     public void setColor(BiFunction<Integer, Integer, Color> pFunction) {
         Range2D.forEach(getWidth(), getHeight(), (x, y) -> setColor(x, y, pFunction.apply(x, y)));
+    }
+
+    public RectangleSize getSize() {
+        return new RectangleSize(getWidth(), getHeight());
     }
 }

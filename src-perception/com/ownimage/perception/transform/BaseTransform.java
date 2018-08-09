@@ -32,6 +32,7 @@ import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.math.KMath;
+import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.IBatchEngine;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.ITransformResultBatch;
@@ -216,6 +217,11 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 	public int getWidth() {
 		return getPreviousTransform().getWidth();
 	}
+
+    @Override
+    public RectangleSize getSize() {
+        return new RectangleSize(getWidth(), getHeight());
+    }
 
 	public boolean isControlSelected(final IControl pControl) {
 		ControlSelector cs = getControlSelector();
