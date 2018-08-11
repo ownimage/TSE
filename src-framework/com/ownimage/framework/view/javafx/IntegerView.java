@@ -5,6 +5,8 @@ import com.ownimage.framework.control.control.IntegerControl;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
@@ -21,13 +23,21 @@ public class IntegerView extends ViewBase<IntegerControl> {
 		int min = mControl.getMetaType().getMin();
 		int max = mControl.getMetaType().getMax();
 		int step = mControl.getMetaType().getStep();
+
+		// lost focus commiting value from
+		// https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
+		SpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue());
+		TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
 		mIntegerSpinner = new Spinner<Integer>(min, max, mControl.getValue(), step);
+		mIntegerSpinner.setValueFactory(factory);
 		mIntegerSpinner.setEditable(true);
 		mIntegerSpinner.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // TODO need to fix this
 		mIntegerSpinner.valueProperty().addListener((observable, oldValue, newValue) -> setControlValue(newValue));
 		mIntegerSpinner.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 		mIntegerSpinner.minWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 		mIntegerSpinner.maxWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+		mIntegerSpinner.getEditor().setTextFormatter(formatter);
+		factory.valueProperty().bindBidirectional(formatter.valueProperty());
 
 		mUI = new HBox();
 		mUI.setAlignment(Pos.CENTER);
