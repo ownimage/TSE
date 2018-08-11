@@ -52,8 +52,8 @@ public class JTPBatchEngine extends BaseBatchEngine {
 	}
 
 	@Override
-	public synchronized void next(final TransformResultBatch pBatch) {
-		super.next(pBatch);
+    public synchronized void next(final TransformResultBatch pBatch, int pOverSample) {
+        super.next(pBatch, pOverSample);
 	}
 
 	public void setThreadPoolSize(final int pThreadPoolSize, final int pThreadBatchSize) {

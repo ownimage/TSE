@@ -147,7 +147,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         mColorProperty = pOrig.mColorProperty;
         mWidth = pOrig.getWidth();
         mHeight = pOrig.getHeight();
-        mImage = new BufferedImage(mWidth, mHeight, BufferedImage.TYPE_INT_RGB);
+        mImage = new BufferedImage(mWidth, mHeight, BufferedImage.TYPE_INT_ARGB);
 
         Framework.logExit(mLogger);
     }
@@ -424,19 +424,40 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         final ImageWriteParam iwp = writer.getDefaultWriteParam();
 
         if ("jpg".equals(extension)) {
-            float quality = 0.99f;
+            float quality = 1.00f;
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             iwp.setCompressionQuality(quality);
         }
 
+        BufferedImage imRGB = toBufferedImageOfType(mImage, BufferedImage.TYPE_INT_RGB);
+
         final FileImageOutputStream outputFile = new FileImageOutputStream(pFile);
         writer.setOutput(outputFile);
-        final IIOImage imageX = new IIOImage(mImage, null, null);
+        final IIOImage imageX = new IIOImage(imRGB, null, null);
         writer.write(null, imageX, iwp);
         writer.dispose();
         outputFile.close();
 
         Framework.logExit(mLogger);
+    }
+
+    // from https://stackoverflow.com/questions/44182400/how-to-convert-bufferedimage-rgba-to-bufferedimage-rgb
+    public static BufferedImage toBufferedImageOfType(BufferedImage original, int type) {
+        if (original == null) {
+            throw new IllegalArgumentException("original == null");
+        }
+        if (original.getType() == type) {
+            return original;
+        }
+        BufferedImage image = new BufferedImage(original.getWidth(), original.getHeight(), type);
+        Graphics2D g = image.createGraphics();
+        try {
+            g.setComposite(AlphaComposite.Src);
+            g.drawImage(original, 0, 0, null);
+        } finally {
+            g.dispose();
+        }
+        return image;
     }
 
     /**

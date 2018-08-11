@@ -11,48 +11,48 @@ import javafx.scene.layout.Pane;
 
 public class FileView extends ViewBase {
 
-	private final FileControl mFileControl;
-	private final HBox mUI;
-	private final TextField mTextField;
-	private final Button mButton;
+    private final FileControl mFileControl;
+    private final HBox mUI;
+    private final TextField mTextField;
+    private final Button mButton;
 
-	public FileView(final FileControl pFileControl) {
-		super(pFileControl);
+    public FileView(final FileControl pFileControl) {
+        super(pFileControl);
 
-		mFileControl = pFileControl;
-		mFileControl.addControlChangeListener(this);
+        mFileControl = pFileControl;
+        mFileControl.addControlChangeListener(this);
 
-		mTextField = new TextField(mFileControl.getValue());
-		mTextField.setDisable(true);
-		mTextField.maxWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
-		mTextField.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+        mTextField = new TextField(mFileControl.getValue());
+        mTextField.setDisable(true);
+        mTextField.maxWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+        mTextField.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 
-		mButton = new Button();
-		mButton.setOnAction((e) -> performAction());
+        mButton = new Button();
+        mButton.setOnAction((e) -> performAction());
 
-		HBox box = new HBox();
-		box.getChildren().addAll(mTextField, mButton);
-		box.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+        HBox box = new HBox();
+        box.getChildren().addAll(mTextField, mButton);
+        box.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 
-		mUI = new HBox();
-		mUI.setAlignment(Pos.TOP_LEFT);
-		mUI.getChildren().addAll(mLabel, box);
-	}
+        mUI = new HBox();
+        mUI.setAlignment(Pos.TOP_LEFT);
+        mUI.getChildren().addAll(mLabel, box);
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-		if (pControl == mFileControl) {
-			mTextField.setText(mFileControl.getValue());
-		}
-	}
+    @Override
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+        if (pControl == mFileControl) {
+            mTextField.setText(mFileControl.getValue());
+        }
+    }
 
-	@Override
-	public Pane getUI() {
-		return mUI;
-	}
+    @Override
+    public Pane getUI() {
+        return mUI;
+    }
 
-	private void performAction() {
-		AppControlView.getInstance().showDialog(mFileControl);
-	}
+    private void performAction() {
+        AppControlView.getInstance().showDialog(mFileControl);
+    }
 
 }

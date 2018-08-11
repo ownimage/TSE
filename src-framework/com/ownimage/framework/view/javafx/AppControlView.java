@@ -169,18 +169,19 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     public void showDialog(final FileControl pFileControl) {
-        switch (pFileControl.getFileControlType()) {
-            case FILEOPEN:
-                showFileOpenChooserDialog(pFileControl);
-                break;
-            case DIRECTORY:
-                showDirectoryChooserDialog(pFileControl);
-                break;
-            case FILESAVE:
-                showFileSaveChooserDialog(pFileControl);
-                break;
-        }
-
+        Platform.runLater(() -> {
+            switch (pFileControl.getFileControlType()) {
+                case FILEOPEN:
+                    showFileOpenChooserDialog(pFileControl);
+                    break;
+                case DIRECTORY:
+                    showDirectoryChooserDialog(pFileControl);
+                    break;
+                case FILESAVE:
+                    showFileSaveChooserDialog(pFileControl);
+                    break;
+            }
+        });
     }
 
     @Override
@@ -303,6 +304,9 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     public void showFileSaveChooserDialog(final FileControl pFileControl) {
+        Framework.checkParameterNotNull(mLogger, pFileControl, "pFileControl");
+
+        String originalAbsolutePath = pFileControl.getFile().getAbsolutePath();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pFileControl.getDisplayName());
         fileChooser.getExtensionFilters().addAll(
@@ -316,7 +320,11 @@ public class AppControlView extends Application implements IAppControlView {
         File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
         // System.out.println("File:" + selectedFile == null ? selectedFile : selectedFile.getAbsolutePath());
         if (selectedFile != null) {
-            pFileControl.setValue(selectedFile.getAbsolutePath());
+            System.out.println("setValue");
+            if (!selectedFile.getAbsolutePath().equals(originalAbsolutePath))
+                pFileControl.setValue(selectedFile.getAbsolutePath());
+            else
+                pFileControl.fireControlChangeEvent();
         }
     }
 

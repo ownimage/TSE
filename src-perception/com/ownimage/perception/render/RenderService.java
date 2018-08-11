@@ -54,7 +54,7 @@ public class RenderService {
 		return mBaseBatchEngine;
 	}
 
-	private synchronized TransformResultBatch getBatch() {
+    private synchronized TransformResultBatch getBatch(String pName) {
 		Framework.logEntry(mLogger);
 
 		if (mBatch == null) {
@@ -62,6 +62,7 @@ public class RenderService {
 			mLogger.fine(String.format("Creating new TransformResultBatch with maxBatchSize = %d.", maxBatchSize));
 			mBatch = new TransformResultBatch(this, maxBatchSize);
 		}
+        mBatch.setName(pName);
 
 		Framework.logExit(mLogger);
 		return mBatch;
@@ -97,62 +98,76 @@ public class RenderService {
 		Framework.logExit(mLogger);
 	}
 
-	public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
-		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
+    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
+        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
-		ExecuteQueue eq = ExecuteQueue.getInstance();
-		String name = pTransform.getClass().getSimpleName();
-		mLogger.info("transform " + pPictureControl + " " + name);
+        PictureType picture = pPictureControl.getValue().createCompatible();
+        transform(picture, pTransform, () -> {
+            pPictureControl.setValue(picture);
+            if (pCompleteAction != null) {
+                pCompleteAction.performAction();
+            }
+        }, 1);
 
-		class TransformJob extends Job {
+        Framework.logExit(mLogger);
+    }
 
-			public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
-				super(pName, pPriority, pControlObject);
-			}
+    public void transform(final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, int pOverSample) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
+        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
+        Framework.checkParameterGreaterThanEqual(mLogger, pOverSample, 1, "pOverSample should be between 1 and 4");
+        Framework.checkParameterLessThanEqual(mLogger, pOverSample, 4, "pOverSample should be between 1 and 4");
+        mLogger.severe(() -> "RenderService.transform for:" + pTransform.getDisplayName());
 
-			@Override
-			public void doJob() {
-				super.doJob();
+        ExecuteQueue eq = ExecuteQueue.getInstance();
+        String name = pTransform.getClass().getSimpleName();
 
-				PictureType picture = pPictureControl.getValue().createCompatible();
+        class TransformJob extends Job {
 
-				mJTPBatchEngine.setThreadPoolSize(
-						getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
+            public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
+                super(pName, pPriority, pControlObject);
+            }
 
-				IBatchEngine preferredBatchEngine = pTransform.getPreferredBatchEngine();
-				IBatchEngine actualEngine = getActualBatchEngine(preferredBatchEngine);
+            @Override
+            public void doJob() {
+                super.doJob();
 
-				int maxBatchSize = getProperties().getRenderBatchSize();
-				TransformResultBatch batch = getBatch();
-				batch.initialize(picture, actualEngine, maxBatchSize);
+                mJTPBatchEngine.setThreadPoolSize(
+                        getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
 
-				while (batch.hasNext()) {
-					batch.next();
-					transform(batch, pTransform);
-					batch.render(picture);
-				}
+                IBatchEngine preferredBatchEngine = pTransform.getPreferredBatchEngine();
+                IBatchEngine actualEngine = getActualBatchEngine(preferredBatchEngine);
 
-				pPictureControl.setValue(picture);
+                int maxBatchSize = getProperties().getRenderBatchSize();
+                TransformResultBatch batch = getBatch(pTransform.getDisplayName());
+                batch.initialize(pPictureType, actualEngine, maxBatchSize);
 
-				if (pCompleteAction != null) {
-					pCompleteAction.performAction();
-				}
-			}
+                while (batch.hasNext()) {
+                    batch.next(pOverSample);
+                    transform(batch, pTransform);
+                    batch.render(pPictureType, pOverSample);
+                }
 
-			@Override
-			public void terminate() {
-				// currently dont support terminate
-			}
+                if (pCompleteAction != null) {
+                    pCompleteAction.performAction();
+                }
+            }
 
-		}
+            @Override
+            public void terminate() {
+                // currently dont support terminate
+            }
 
-		TransformJob job = new TransformJob(name, Priority.NORMAL, pPictureControl);
-		job.submit();
+        }
 
-		Framework.logExit(mLogger);
-	}
+        TransformJob job = new TransformJob(name, Priority.NORMAL, pPictureType);
+        job.submit();
+
+        Framework.logExit(mLogger);
+    }
 
 	synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
 		Framework.logEntry(mLogger);

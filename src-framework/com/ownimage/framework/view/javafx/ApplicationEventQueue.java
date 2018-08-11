@@ -11,7 +11,7 @@ import com.ownimage.framework.control.control.IRawUIEventListener;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.event.IUIEvent;
 
-public class UIEventQueue {
+public class ApplicationEventQueue {
 
     public final static Logger mLogger = Framework.getLogger();
 
@@ -35,13 +35,13 @@ public class UIEventQueue {
 
     private BlockingQueue<EventItem> mUIEventQueue = new LinkedBlockingQueue();
 
-    private static UIEventQueue mInstance = new UIEventQueue();
+    private static ApplicationEventQueue mInstance = new ApplicationEventQueue();
 
-    public UIEventQueue() {
+    public ApplicationEventQueue() {
         startEventQueue();
     }
 
-    public static UIEventQueue getInstance() {
+    public static ApplicationEventQueue getInstance() {
         return mInstance;
     }
 
@@ -49,7 +49,7 @@ public class UIEventQueue {
         mUIEventQueue.offer(new EventItem(pEvent, pListener));
     }
 
-    private void processMouseEventQueue() {
+    private void processEventQueue() {
         while (true) {
             try {
                 LocalTime start = LocalTime.now();
@@ -58,7 +58,7 @@ public class UIEventQueue {
                     eventItem.getListener().uiEvent(eventItem.getEvent());
                     LocalTime end = LocalTime.now();
                     long elapsed = ChronoUnit.MICROS.between(start, end);
-                    System.out.println( String.format("%s took %s ms", eventItem.getEvent().getEventType(), elapsed));
+                    //System.out.println( String.format("%s took %s ms", eventItem.getEvent().getEventType(), elapsed));
                 } else {
                     mLogger.fine(() -> "is alive: " + Thread.currentThread());
                 }
@@ -69,7 +69,7 @@ public class UIEventQueue {
     }
 
     private void startEventQueue() {
-        new Thread(this::processMouseEventQueue, "UIEventQueue processor").start();
+        new Thread(this::processEventQueue, "ApplicationEventQueue processor").start();
     }
 
     public int getQueueSize() {

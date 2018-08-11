@@ -10,7 +10,7 @@ public interface IBatchEngine {
 
 	public BatchLocation getProcessingLocation();
 
-	public void next(final TransformResultBatch pBatch);
+    public void next(final TransformResultBatch pBatch, int pOverSample);
 
 	public void put(ITransformResultBatch pBatch);
 
