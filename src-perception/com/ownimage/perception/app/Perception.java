@@ -200,7 +200,6 @@ public class Perception extends AppControlBase {
         int size = 800;
         PictureType preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
         mPreviewControl.setValue(preview);
-        mRenderService.transform(mPreviewControl, mTransformSequence.getLastTransform(), null);
 
         Framework.logExit(mLogger);
     }
