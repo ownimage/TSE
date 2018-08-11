@@ -1,6 +1,5 @@
 package com.ownimage.perception.view.factory;
 
-import com.ownimage.framework.app.IAppControl;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.ActionControl;

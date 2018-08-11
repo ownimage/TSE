@@ -44,7 +44,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 			public void changed(final ObservableValue<? extends TitledPane> pOV, final TitledPane pOldValue, final TitledPane pNewValue) {
                 if (!isMutating()) {
 					int index = getIndex(pNewValue);
-					mControl.setSelectedIndex(index, AccordionView.this);
+					new Thread(() -> mControl.setSelectedIndex(index, AccordionView.this)).start();
 				}
 			}
 		});

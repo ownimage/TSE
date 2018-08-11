@@ -219,7 +219,7 @@ public class Perception extends AppControlBase {
 
         String filename = getSaveFilename();
         File file = new File(filename);
-        fileShowPreview(() -> fileSave(file));
+        fileSaveShowPreview(() -> fileSave(file));
 
         Framework.logExit(mLogger);
     }
@@ -248,11 +248,12 @@ public class Perception extends AppControlBase {
     private void fileSaveAs() {
         Framework.logEntry(mLogger);
 
-        FileControl outputFile = FileControl.createFileSave("Image Save As", NullContainer, getSaveFilename());
-        outputFile.addControlChangeListener((c, m) -> fileSaveUnchecked(outputFile.getFile()));
-        // fileSaveUnchecked is ok here as the file chooser save will have the confirm overwrite dialog.
-
-        fileShowPreview(outputFile::showDialog);
+        fileSaveShowPreview(() -> {
+            FileControl outputFile = FileControl.createFileSave("Image Save As", NullContainer, getSaveFilename());
+            outputFile.addControlChangeListener((c, m) -> new Thread(() -> fileSaveUnchecked(outputFile.getFile())).start());
+            // fileSaveUnchecked is ok here as the file chooser save will have the confirm overwrite dialog.);
+            outputFile.showDialog();
+        });
 
         Framework.logExit(mLogger);
     }
@@ -263,18 +264,30 @@ public class Perception extends AppControlBase {
      * @param pFile the file
      */
     private void fileSaveUnchecked(final File pFile) {
+        System.out.println("fileSaveUnchecked");
         Framework.logEntry(mLogger);
+        new Thread(() -> {
+            try {
+                PictureType testSave = new PictureType(mProperties.getColorOOBProperty(), 100, 100);
+                testSave.getValue().save(pFile); // no point generating a large file if we cant save it
 
-        PictureType output = new PictureType(mProperties.getColorOOBProperty(), pFile.getAbsolutePath());
-        PictureControl outputControl = new PictureControl("Preview", "preview", NullContainer, output);
-        mRenderService.transform(outputControl, mTransformSequence.getLastTransform(), //
-                                 () -> {
-                                     try {
-                                         outputControl.getValue().save(pFile);
-                                     } catch (Exception e) {
-                                         mLogger.severe("Unable to output file");
-                                     }
-                                 });
+                PictureType output = new PictureType(mProperties.getColorOOBProperty(), mTransformSequence.getLastTransform().getWidth(), mTransformSequence.getLastTransform().getHeight());
+                mRenderService.transform(output
+                        , mTransformSequence.getLastTransform()
+                        , () -> {
+                            try {
+                                output.getValue().save(pFile);
+                            } catch (Exception e) {
+                                mLogger.severe("Unable to output file");
+                            }
+                        }
+                        , mTransformSequence.getLastTransform().getOversample());
+            } catch (Throwable pT) {
+                Framework.logThrowable(mLogger, Level.SEVERE, pT);
+                System.out.println("Unable to save file");
+
+            }
+        }).start();
         Framework.logExit(mLogger);
     }
 
@@ -284,17 +297,20 @@ public class Perception extends AppControlBase {
      *
      * @param pAction the action
      */
-    private void fileShowPreview(final IAction pAction) {
+    private void fileSaveShowPreview(final IAction pAction) {
         Framework.logEntry(mLogger);
 
         Container displayContainer = new Container("File Save", "fileSave", this);
         PictureType preview = getResizedPictureTypeIfNeeded(500, null).get();
-        PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        mRenderService.transform(previewControl, mTransformSequence.getLastTransform(), //
-                                 () -> showDialog(displayContainer, DialogOptions.NONE, ok, cancel)
-        );
+        mRenderService.transform(preview
+                , mTransformSequence.getLastTransform()
+                , () -> {
+                    PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
+                    showDialog(displayContainer, DialogOptions.NONE, ok, cancel);
+                }
+                , 1);
 
         Framework.logExit(mLogger);
     }

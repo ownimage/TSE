@@ -22,7 +22,7 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
 	public final static Logger mLogger = Logger.getLogger(mClassname);
 	public final static long serialVersionUID = 1L;
 
-	public File mFile;
+	private File mFile;
 
 	public FileControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final String pValue, final FileControlType pFileControlType) {
 		super(pDisplayName, pPropertyName, pContainer, new FileType(pValue, pFileControlType));

@@ -105,29 +105,29 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
             if (pME.getClickCount() == 2) {
                 event = createMouseEvent(EventType.DoubleClick, pME);
             }
-            UIEventQueue.getInstance().queueEvent(event, mControl);
+            ApplicationEventQueue.getInstance().queueEvent(event, mControl);
         }
     }
 
     private void mouseDraggedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.Drag, pME);
-        UIEventQueue.getInstance().queueEvent(event, mControl);
+        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
     }
 
     private void mousePressedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseDown, pME);
-        UIEventQueue.getInstance().queueEvent(event, mControl);
+        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
     }
 
     private void mouseReleasedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseUp, pME);
-        UIEventQueue.getInstance().queueEvent(event, mControl);
+        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
     }
 
     private void mouseMovedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
-        UIEventQueue.getInstance().queueEvent(event, mControl);
-        mLogger.fine(() -> String.format("UIEventQueue.getInstance().getQueueSize() = ", UIEventQueue.getInstance().getQueueSize()));
+        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
+        mLogger.fine(() -> String.format("ApplicationEventQueue.getInstance().getQueueSize() = ", ApplicationEventQueue.getInstance().getQueueSize()));
     }
 
     @Override
@@ -159,7 +159,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     private void scrollEvent(final ScrollEvent pSE) {
         Framework.logEntry(mLogger);
         UIEvent event = createScrollEvent(pSE);
-        UIEventQueue.getInstance().queueEvent(event, mControl);
+        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
         Framework.logExit(mLogger);
     }
 

@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ownimage.framework.app.IAppControl;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
