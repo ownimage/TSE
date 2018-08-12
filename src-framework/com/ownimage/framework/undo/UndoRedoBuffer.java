@@ -8,13 +8,12 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
-import com.ownimage.framework.util.Version;
 
 public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider {
 
 	public final static Logger mLogger = Framework.getLogger();
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static long serialVersionUID = 1L;
+
+    public final static long serialVersionUID = 1L;
 
 	/** The mPointer always points to the position that the next elements would be added to. */
 	private int mPointer;

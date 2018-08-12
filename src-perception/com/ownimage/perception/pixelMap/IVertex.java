@@ -7,7 +7,6 @@ package com.ownimage.perception.pixelMap;
 
 import java.io.Serializable;
 
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -18,9 +17,8 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public IVertex deepCopy(IVertex pOriginalStartVertex, IVertex pCopyStartVertex);
+    public IVertex deepCopy(IVertex pOriginalStartVertex, IVertex pCopyStartVertex);
 
 	public abstract void delete();
 

@@ -3,11 +3,8 @@
  */
 package com.ownimage.perception.control.grafitti;
 
-import com.ownimage.framework.util.Version;
-
 public interface IGrafitti {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	// public void graffiti(GraphicsHelper pGraphics);
+    // public void graffiti(GraphicsHelper pGraphics);
 }

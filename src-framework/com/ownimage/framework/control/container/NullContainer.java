@@ -11,13 +11,12 @@ import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
 public class NullContainer implements IContainer {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static NullContainer NullContainer = new NullContainer();
 

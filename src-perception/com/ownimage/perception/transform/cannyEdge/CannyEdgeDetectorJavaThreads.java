@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -66,7 +65,7 @@ import com.ownimage.perception.transform.IPictureSource;
 
 public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     private final static Logger mLogger = Framework.getLogger();
 
 	// statics

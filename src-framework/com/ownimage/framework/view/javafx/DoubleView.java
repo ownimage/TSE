@@ -7,7 +7,6 @@ import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IDoubleView;
 
 import javafx.beans.InvalidationListener;
@@ -22,7 +21,7 @@ import javafx.scene.layout.Pane;
 
 public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
-    public final static Version mVersion = new Version(2017, 0, 0, "2017/11/07 16:30");
+
     private final static Logger mLogger = Framework.getLogger();
 
     private static Image mSpinnerImage = getImage("/icon/spinner.png");

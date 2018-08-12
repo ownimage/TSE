@@ -5,9 +5,8 @@
 
 package com.ownimage.perception.pixelMap;
 
-import java.awt.Color;
+import java.awt.*;
 
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CannyEdgeTransform.LineEndShape;
 
@@ -16,9 +15,8 @@ import com.ownimage.perception.transform.CannyEdgeTransform.LineEndShape;
  */
 public interface IPixelMapTransformSource {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public int getHeight();
+    public int getHeight();
 
 	public Color getLineColor();
 

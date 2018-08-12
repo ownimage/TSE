@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class FileType extends StringType {
 
@@ -16,7 +15,7 @@ public class FileType extends StringType {
 		FILEOPEN, FILESAVE, DIRECTORY
 	}
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
 	public final static String mClassname = FileType.class.getName();
 	public final static Logger mLogger = Framework.getLogger();
 

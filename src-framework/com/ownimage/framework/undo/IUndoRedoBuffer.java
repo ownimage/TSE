@@ -3,13 +3,10 @@
  */
 package com.ownimage.framework.undo;
 
-import com.ownimage.framework.util.Version;
-
 public interface IUndoRedoBuffer {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public interface Undo {
+    public interface Undo {
 		public void undo();
 	}
 

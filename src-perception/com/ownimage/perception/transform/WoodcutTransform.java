@@ -18,14 +18,13 @@ import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
 
 public class WoodcutTransform extends BaseTransform {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final PictureControl mEtchPicture;
 	private final IntegerControl mLines = new IntegerControl("Lines", "lines", getContainer(), 50, 10, 100, 10);

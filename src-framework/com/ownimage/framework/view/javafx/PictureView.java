@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.event.IUIEvent;
@@ -29,7 +28,7 @@ import javafx.scene.layout.StackPane;
 
 public class PictureView extends ViewBase<PictureControl> implements IPictureView {
 
-    public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

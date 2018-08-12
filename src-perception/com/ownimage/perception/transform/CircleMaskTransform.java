@@ -4,14 +4,13 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
@@ -19,8 +18,8 @@ import com.ownimage.perception.render.ITransformResult;
 
 public class CircleMaskTransform extends BaseTransform {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	/**
 	 * The Diameter control is the outer radius i.e. it includes the blend zone. Everything inside that radius will get mapped into

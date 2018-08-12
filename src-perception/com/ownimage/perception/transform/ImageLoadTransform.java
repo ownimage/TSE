@@ -16,15 +16,13 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
 
 public class ImageLoadTransform extends BaseTransform {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
 	private final File mFile;
 

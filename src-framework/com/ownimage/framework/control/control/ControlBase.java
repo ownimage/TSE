@@ -19,7 +19,6 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoAction;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
 //import com.ownimage.perception.ui.client.IControlUI;
@@ -39,8 +38,8 @@ import com.ownimage.framework.view.IView;
 public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, M extends IMetaType<R>, R, V extends IView>
 		implements IControl<C, T, M, R> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static String mClassname = ControlBase.class.getName();
+
+    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

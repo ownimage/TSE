@@ -7,11 +7,10 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class TransformResultBatch implements ITransformResultBatch {
 
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 1L;

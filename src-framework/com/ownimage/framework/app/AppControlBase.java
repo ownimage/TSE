@@ -2,7 +2,7 @@ package com.ownimage.framework.app;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -19,7 +19,6 @@ import com.ownimage.framework.control.type.StringType;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -27,9 +26,9 @@ import com.ownimage.framework.view.IView;
 public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProvider {
 
 	public final static Logger mLogger = Framework.getLogger();
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private UndoRedoBuffer mUndoRedoBuffer;
+
+    private UndoRedoBuffer mUndoRedoBuffer;
 
 	private int mX;
 	private int mY;

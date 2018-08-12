@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -19,7 +18,7 @@ import javafx.scene.layout.Region;
 
 public class ViewBase<C extends IViewable> implements FXView {
 
-    public final static Version mVersion = new Version(2017, 0, 0, "2017/11/07 16:30");
+
     private final static Logger mLogger = Framework.getLogger();
 
     protected C mControl;

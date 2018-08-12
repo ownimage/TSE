@@ -9,7 +9,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 /**
  * The Class ExecuteQueue.
@@ -17,7 +16,7 @@ import com.ownimage.framework.util.Version;
  */
 public class ExecuteQueue {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/053/19 08:02");
+
     private final static Logger mLogger = Framework.getLogger();
 
 	private static ExecuteQueue mExecuteQueue = new ExecuteQueue();

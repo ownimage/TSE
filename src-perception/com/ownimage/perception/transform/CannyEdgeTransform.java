@@ -24,7 +24,6 @@ import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.EqualizeValues;
@@ -47,7 +46,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         Square, Straight, Curved
     }
 
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     public final static String mClassname = CannyEdgeTransform.class.getName();
 
     public final static Logger mLogger = Framework.getLogger();

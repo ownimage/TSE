@@ -4,7 +4,7 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.BooleanControl;
@@ -13,7 +13,6 @@ import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.control.grafitti.Path;
 import com.ownimage.perception.math.KMath;
@@ -40,8 +39,8 @@ public class RotateTransform extends BaseTransform {
 		}
 	}
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final BooleanControl mPointRotateControl;
 

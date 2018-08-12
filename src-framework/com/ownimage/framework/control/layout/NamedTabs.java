@@ -6,14 +6,13 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.ControlBase;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
 public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implements INamedTabs {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	private final String mDisplayName;
 	private final String mPropertyName;

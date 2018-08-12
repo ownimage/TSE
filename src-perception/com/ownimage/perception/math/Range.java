@@ -4,13 +4,10 @@
  */
 package com.ownimage.perception.math;
 
-import com.ownimage.framework.util.Version;
-
 public class Range {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public static final Range ZeroToOne = new Range(0.0d, 1.0d);
+    public static final Range ZeroToOne = new Range(0.0d, 1.0d);
 	public static final Range LowerThird = new Range(0.0d, 1.0d / 3.0d);
 	public static final Range MiddleThird = new Range(1.0d / 3.0d, 2.0d / 3.0d);
 	public static final Range UpperThird = new Range(2.0d / 3.0d, 1.0d);

@@ -11,14 +11,13 @@ import com.ownimage.framework.queue.ExecuteQueue;
 import com.ownimage.framework.queue.IJob.Priority;
 import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 
 public class RenderService {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static String mClassname = RenderService.class.getName();
+
+    public final static String mClassname = RenderService.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

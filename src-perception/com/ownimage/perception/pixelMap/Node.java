@@ -9,7 +9,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 // TODO: Auto-generated Javadoc
 
@@ -18,19 +17,10 @@ import com.ownimage.framework.util.Version;
  */
 public class Node extends Pixel {
 
-    /**
-     * The Constant mVersion.
-     */
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-    /**
-     * The Constant mClassname.
-     */
+
     public final static String mClassname = Node.class.getName();
 
-    /**
-     * The Constant mLogger.
-     */
     public final static Logger mLogger = Framework.getLogger();
 
     /**
@@ -38,8 +28,10 @@ public class Node extends Pixel {
      */
     public static final long serialVersionUID = 1L;
 
-    /** The m pixel chains. */
-     private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+    /**
+     * The m pixel chains.
+     */
+    private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
 
     /**
      * Instantiates a new node.

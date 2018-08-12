@@ -5,14 +5,12 @@
 package com.ownimage.framework.control.event;
 
 import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
 public interface IControlEventDispatcher<C> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public void addControlChangeListener(IControlChangeListener<IControl<?, ?, ?, ?>> pListener);
+    public void addControlChangeListener(IControlChangeListener<IControl<?, ?, ?, ?>> pListener);
 
 	public void addControlValidator(IControlValidator pValidator);
 

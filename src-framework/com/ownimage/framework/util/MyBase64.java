@@ -15,8 +15,8 @@ public class MyBase64 {
 
 	// http://stackoverflow.com/questions/469695/decode-base64-data-in-java
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
 
 	private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();

@@ -39,7 +39,6 @@ import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
@@ -154,7 +153,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //        }
 //    }
 
-    public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 06:49");
+
     public final static String mClassname = PixelMap.class.getName();
 
     public final static Logger mLogger = Framework.getLogger();

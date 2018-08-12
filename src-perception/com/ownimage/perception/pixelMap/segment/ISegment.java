@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.ITestableLine;
 import com.ownimage.perception.math.Intersect3D;
 import com.ownimage.perception.math.Line;
@@ -24,7 +23,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
 
 public interface ISegment extends ITestableLine, Serializable {
 
-    public final static Version mVersion = new Version(4, 0, 1, "2014/05/30 20:48");
+
     public final static String mClassname = ISegment.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;

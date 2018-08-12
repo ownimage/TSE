@@ -21,7 +21,6 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
@@ -31,7 +30,7 @@ import com.ownimage.framework.view.factory.ViewFactory;
  */
 public class Container extends ViewableBase<IViewable, IView> implements IContainer, IControlValidator {
 
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

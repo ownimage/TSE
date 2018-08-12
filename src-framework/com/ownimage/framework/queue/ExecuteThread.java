@@ -5,12 +5,11 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.queue.IJob.Status;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class ExecuteThread extends Thread {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/053/19 08:02");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	/** The job. */
 	private final IJob mJob;

@@ -3,7 +3,6 @@ package com.ownimage.perception.math;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 /**
  * This immutable class represents a point in PolarCordinates.
@@ -27,7 +26,6 @@ public class RTheta {
 		}
 	}
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
     private final static Logger mLogger = Framework.getLogger();
 

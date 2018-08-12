@@ -7,10 +7,9 @@ package com.ownimage.perception.math;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import Jama.Matrix;
-
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
+
+import Jama.Matrix;
 
 public class Line implements Serializable {
 
@@ -18,8 +17,8 @@ public class Line implements Serializable {
 	 * 
 	 */
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public static final Line XAxis = new Line(Point.Point00, Point.Point10);

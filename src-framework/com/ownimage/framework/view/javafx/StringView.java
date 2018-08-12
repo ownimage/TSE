@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -17,8 +16,8 @@ import javafx.scene.layout.Pane;
 
 public class StringView extends ViewBase<StringControl> implements ChangeListener<Number> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	private HBox mUI;
 	private TextField mText;

@@ -27,7 +27,6 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 import com.ownimage.perception.math.RectangleSize;
@@ -36,7 +35,7 @@ import com.ownimage.perception.transformSequence.TransformSequence;
 
 public class Perception extends AppControlBase {
 
-    public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

@@ -26,7 +26,6 @@ import com.ownimage.framework.control.layout.ViewableBase;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -50,7 +49,7 @@ import com.ownimage.perception.transform.WoodcutTransform;
 
 public class TransformSequence extends ViewableBase<TransformSequence, ISingleSelectView> implements IPersist, IContainerList {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     private final static Logger mLogger = Framework.getLogger();
 
 	private final Perception mPerception;

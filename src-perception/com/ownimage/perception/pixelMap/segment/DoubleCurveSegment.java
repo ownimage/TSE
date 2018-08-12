@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
@@ -17,7 +16,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
 // TODO need to question why there is a startTangent and endTangent when these can be retreived from the start/endCurve respectively.
 public class DoubleCurveSegment extends SegmentBase {
 
-    public final static Version mVersion = new Version(4, 0, 1, "2014/05/30 20:48");
+
     public final static String mClassname = DoubleCurveSegment.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;

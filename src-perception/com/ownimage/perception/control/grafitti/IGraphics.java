@@ -10,8 +10,8 @@ public interface IGraphics {
 	// Horizontal, Vertical
 	// }
 	//
-	// public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	//
+
+    //
 	// public void drawCircle(double pX, double pY, double pRadius, Color pColor, boolean pDashed);
 	//
 	// public void drawFilledRectangle(double pX1, double pY1, double pX2, double pY2, Color pColor);

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class FileFilter extends javax.swing.filechooser.FileFilter implements FilenameFilter {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
 
 	private Vector<String> mExtensions = new Vector<String>();

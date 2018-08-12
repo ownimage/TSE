@@ -7,8 +7,6 @@ package com.ownimage.framework.queue;
 
 import java.util.Date;
 
-import com.ownimage.framework.util.Version;
-
 /**
  * The Interface IJob represents an activity that is going to be run by the {@link ExecuteQueue}. These jobs are typically very
  * parallel in nature and the {@link ExecuteQueue} ensures that only one of these jobs is running at a time to prevent the system
@@ -39,9 +37,8 @@ public interface IJob {
 		CREATED, QUEUED, RUNNING, TERMINATED, COMPLETE, CANCELLED, FAILED
 	};
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/053/19 08:02");;
 
-	/**
+    /**
 	 * Sends a request to cancel the job; this must only be called by the ExecuteQueue. Whilst the job is QUEUED the ExecuteQueue
 	 * can invoke cancel which will mean that the job will never execute and the status will change to CANCELLED.
 	 */

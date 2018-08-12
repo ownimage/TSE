@@ -7,9 +7,8 @@ package com.ownimage.framework.util;
 
 public class Version {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private final int mMajor;
+    private final int mMajor;
 	private final int mMinor;
 	private final int mRev;
 	private String mRevision;

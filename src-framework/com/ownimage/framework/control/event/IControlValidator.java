@@ -4,12 +4,9 @@
  */
 package com.ownimage.framework.control.event;
 
-import com.ownimage.framework.util.Version;
-
 public interface IControlValidator<C> {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2016/02/23 06:55");
 
-	public boolean validateControl(C pControl);
+    public boolean validateControl(C pControl);
 
 }

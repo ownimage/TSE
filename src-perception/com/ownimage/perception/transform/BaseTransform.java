@@ -27,7 +27,6 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
@@ -39,7 +38,6 @@ import com.ownimage.perception.render.ITransformResultBatch;
 
 public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener, IUndoRedoBufferProvider {
 
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
     private final static Logger mLogger = Framework.getLogger();
 

@@ -9,12 +9,11 @@ import java.util.logging.Logger;
 import javax.vecmath.Vector2d;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class Vector extends Point {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public Vector(final double pX, final double pY) {

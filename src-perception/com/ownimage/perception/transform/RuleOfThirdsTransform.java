@@ -4,14 +4,13 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.PointControl;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
@@ -47,8 +46,8 @@ public class RuleOfThirdsTransform extends BaseTransform {
 		// }
 	}
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public static double OneThird = 1.0d / 3.0d;

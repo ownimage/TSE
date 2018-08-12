@@ -21,7 +21,6 @@ import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.RectangleSize;
@@ -45,10 +44,6 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     private final static Logger mLogger = Framework.getLogger();
 
-    /**
-     * The Constant mVersion.
-     */
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
     /**
      * The Is360, indicates that the image wraps round on the X axis and so needs to be mapped appropriately..

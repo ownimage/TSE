@@ -4,15 +4,12 @@
  */
 package com.ownimage.framework.view;
 
-import java.awt.Color;
-
-import com.ownimage.framework.util.Version;
+import java.awt.*;
 
 public interface IGrafittiImp {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public void drawCircle(double pX, double pY, double pRadius, Color pColor, boolean pDashed);
+    public void drawCircle(double pX, double pY, double pRadius, Color pColor, boolean pDashed);
 
     void clearRectangle(double pX1, double pY1, double pX2, double pY2);
 

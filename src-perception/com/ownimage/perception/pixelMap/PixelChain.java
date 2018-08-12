@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.LineSegment;
 import com.ownimage.perception.math.Point;
@@ -58,7 +57,7 @@ public class PixelChain implements Serializable {
         None, Thin, Normal, Thick
     }
 
-    public final static Version mVersion = new Version(4, 0, 1, "2014/05/30 20:48");
+
     public final static String mClassname = PixelChain.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 

@@ -12,7 +12,6 @@ import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.type.NullMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.IView;
@@ -24,7 +23,7 @@ public class PictureControl
         extends ControlBase<PictureControl, PictureType, NullMetaType<PictureType>, PictureType, IPictureView>
         implements IRawUIEventListener {
 
-    public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

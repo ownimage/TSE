@@ -12,13 +12,12 @@ import com.ownimage.framework.control.event.IControlEventDispatcher;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
 public interface IContainer extends IPersist, IUndoRedoBufferProvider, IViewable<IView>, IControlEventDispatcher<IControl<?, ?, ?, ?>>, IControlChangeListener<IControl<?, ?, ?, ?>> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static long serialVersionUID = 1L;
+
+    public final static long serialVersionUID = 1L;
 
 	/**
 	 * Adds a child Container. A child container will be persisted when the parent is persisted. Events do not trigger from a child

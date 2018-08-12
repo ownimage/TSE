@@ -4,7 +4,7 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.ColorControl;
@@ -13,15 +13,14 @@ import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.DoubleMetaType.DisplayType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.render.ITransformResult;
 
 public class BorderTransform extends BaseTransform {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	private double mBottom;
 	private double mTop;

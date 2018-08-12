@@ -5,16 +5,13 @@
 
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.util.Version;
-
 /**
  * The Interface PixelConstants. This is so that these constants can be shared between all of the Pixel related classes.
  */
 public interface PixelConstants {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public final static int SW = 0;
+    public final static int SW = 0;
 	public final static int S = 1;
 	public final static int SE = 2;
 	public final static int W = 3;

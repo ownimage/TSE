@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.LineSegment;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
@@ -18,7 +17,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
 
 public class StraightSegment extends SegmentBase {
 
-    public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 20:48");
+
     public final static String mClassname = StraightSegment.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;

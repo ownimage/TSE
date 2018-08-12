@@ -1,6 +1,6 @@
 package com.ownimage.perception.app;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -24,14 +24,13 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
 public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist, IControlChangeListener {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final Container mContainer = new Container("Properties", "properties", getUndoRedoBuffer());
 

@@ -11,7 +11,6 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.persist.IPersist;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
 // TODO: Auto-generated Javadoc
@@ -29,10 +28,8 @@ import com.ownimage.framework.view.IView;
  */
 public interface IControl<C, T, M, R> extends IMouseControl, IPersist, IViewable, Serializable, Cloneable, IProperty<R> {
 
-	/** The Constant mVersion. */
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	/** The Constant serialVersionUID. */
+    /** The Constant serialVersionUID. */
 	public final static long serialVersionUID = 1L;
 
 	/**

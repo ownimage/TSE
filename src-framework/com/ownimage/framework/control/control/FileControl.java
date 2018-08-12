@@ -12,14 +12,13 @@ import com.ownimage.framework.control.type.FileType;
 import com.ownimage.framework.control.type.FileType.FileControlType;
 import com.ownimage.framework.control.type.StringMetaType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
 public class FileControl extends ControlBase<FileControl, FileType, StringMetaType, String, IView> {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
-	public final static String mClassname = ControlBase.class.getName();
+
+    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

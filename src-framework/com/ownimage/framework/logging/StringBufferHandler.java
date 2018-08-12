@@ -10,12 +10,11 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class StringBufferHandler extends Handler {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
 
 	StringBuffer mStringBuffer = new StringBuffer();

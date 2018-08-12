@@ -10,7 +10,6 @@ import com.ownimage.perception.math.Point;
 
 public class Path {
 
-    public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
     public enum Type {
         MoveTo, LineTo

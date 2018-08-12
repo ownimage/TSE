@@ -7,12 +7,10 @@ package com.ownimage.perception.util;
 import java.awt.*;
 import java.util.List;
 
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.view.javafx.app.FXPerception;
 
 public class KColor {
 
-    public final static Version mVersion = new Version(4, 0, 1, "2014/05/30 20:48");
 
     private Color mColor;
 

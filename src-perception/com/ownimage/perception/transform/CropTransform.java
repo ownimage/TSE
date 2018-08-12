@@ -8,10 +8,8 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
@@ -20,9 +18,8 @@ import com.ownimage.perception.render.ITransformResult;
 
 public class CropTransform extends BaseTransform implements IControlValidator {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private final static Logger mLogger = Framework.getLogger();
+    private final static Logger mLogger = Framework.getLogger();
 
 	/**
 	 * The Isolated value indicates that this is used independently of the main transform stack. Specifically this means that when

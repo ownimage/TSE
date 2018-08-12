@@ -8,15 +8,14 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 /**
  * The abstract Class Job. Subclasses of this must implement the doJob and suspend methods of the IJob interface.
  */
 public class Job implements IJob {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/053/19 08:02");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	/** The Name. */
 	private final String mName;

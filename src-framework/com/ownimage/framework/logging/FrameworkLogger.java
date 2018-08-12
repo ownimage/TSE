@@ -34,7 +34,6 @@ import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.type.ObjectStringMetaType;
 import com.ownimage.framework.control.type.ObjectType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 
@@ -42,7 +41,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 
     private static final FrameworkLogger mFrameworkLogger = new FrameworkLogger();
 
-    public final Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
     public final String mClassname = FrameworkLogger.class.getName();
     public final Logger mLogger = Framework.getLogger();
 

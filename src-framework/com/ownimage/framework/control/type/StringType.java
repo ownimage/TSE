@@ -8,12 +8,11 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.control.type.StringMetaType.DisplayType;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 public class StringType extends TypeBase<StringMetaType, String> {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public static StringMetaType NORMAL = new StringMetaType((DisplayType.NORMAL));

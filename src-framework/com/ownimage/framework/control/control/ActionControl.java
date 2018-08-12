@@ -12,7 +12,6 @@ import com.ownimage.framework.control.type.BooleanType;
 import com.ownimage.framework.control.type.IMetaType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
@@ -21,8 +20,8 @@ import com.ownimage.framework.view.factory.ViewFactory;
  */
 public class ActionControl extends ControlBase<ActionControl, BooleanType, IMetaType<Boolean>, Boolean, IView> implements IMenuItem {
 
-	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
-	public final static String mClassname = ControlBase.class.getName();
+
+    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

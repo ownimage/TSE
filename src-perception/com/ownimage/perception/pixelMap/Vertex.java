@@ -8,7 +8,6 @@ package com.ownimage.perception.pixelMap;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
@@ -19,7 +18,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
  */
 public class Vertex implements IVertex {
 
-    public final static Version mVersion = new Version(4, 0, 1, "2014/05/15 07:19");
+
     public final static String mClassname = Vertex.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;

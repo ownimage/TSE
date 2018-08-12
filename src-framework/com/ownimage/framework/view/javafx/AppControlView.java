@@ -12,7 +12,6 @@ import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.undo.IUndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.UIEvent;
@@ -39,7 +38,7 @@ import javafx.stage.Stage;
 
 public class AppControlView extends Application implements IAppControlView {
 
-    public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
+
     public final static Logger mLogger = Framework.getLogger();
 
     private static AppControlView mAppControlView;

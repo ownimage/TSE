@@ -13,7 +13,6 @@ import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.PolarCoordinates;
@@ -22,7 +21,7 @@ import com.ownimage.perception.render.ITransformResult;
 
 public class PolarTransform extends BaseTransform {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
+
 	private final static Logger mLogger = Framework.getLogger();
 
 	private final DoubleControl mRotateSlider;

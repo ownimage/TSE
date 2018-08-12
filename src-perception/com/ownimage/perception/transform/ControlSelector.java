@@ -10,14 +10,13 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.control.IMouseControl;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.perception.math.KMath;
 
 public class ControlSelector implements IUIEventListener {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Framework.getLogger();
+
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final BaseTransform mTransform;
 

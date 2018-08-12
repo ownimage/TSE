@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Version;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -16,10 +15,8 @@ import com.ownimage.framework.util.Version;
  */
 public class Point implements Serializable {
 
-	/** The Constant mVersion. */
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	/** The Constant mLogger. */
+    /** The Constant mLogger. */
 	@SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
 

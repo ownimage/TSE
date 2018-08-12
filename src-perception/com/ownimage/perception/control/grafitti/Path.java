@@ -6,7 +6,6 @@ package com.ownimage.perception.control.grafitti;
 
 import java.util.Vector;
 
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.Point;
 
 public class Path {
@@ -43,9 +42,8 @@ public class Path {
 		MoveTo, LineTo
 	};
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private final Vector<Element> mPath = new Vector<Element>();
+    private final Vector<Element> mPath = new Vector<Element>();
 
 	public Path() {
 		moveTo(0.0d, 0.0d);

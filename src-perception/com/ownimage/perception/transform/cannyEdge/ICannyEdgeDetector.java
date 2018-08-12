@@ -1,14 +1,12 @@
 package com.ownimage.perception.transform.cannyEdge;
 
-import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.IPictureSource;
 
 public interface ICannyEdgeDetector {
 
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	public void dispose();
+    public void dispose();
 
 	/**
 	 * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque

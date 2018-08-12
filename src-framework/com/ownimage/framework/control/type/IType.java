@@ -6,8 +6,6 @@ package com.ownimage.framework.control.type;
 
 import java.io.Serializable;
 
-import com.ownimage.framework.util.Version;
-
 // TODO: Auto-generated Javadoc
 /**
  * The Interface IType is a representation of a Type. A Type is a wrapper around a raw type that enables it to be used in the
@@ -30,10 +28,8 @@ import com.ownimage.framework.util.Version;
  */
 public interface IType<M extends IMetaType<R>, R> extends Serializable, Cloneable {
 
-	/** The Constant mVersion. */
-	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	/**
+    /**
 	 * Clone creates a deep copy of the object.
 	 *
 	 * @return the the copy of the object.
