@@ -2,8 +2,8 @@ package com.ownimage.perception.math;
 
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
-import com.ownimage.perception.transform.PolarTransform;
 
 /**
  * Allows co-ordinates to be mapped from Cartesian to Polar and back.
@@ -11,7 +11,7 @@ import com.ownimage.perception.transform.PolarTransform;
 public class PolarCoordinates {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Logger.getLogger(PolarTransform.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private Point mCentre;
 

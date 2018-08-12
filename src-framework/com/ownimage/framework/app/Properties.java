@@ -1,6 +1,6 @@
 package com.ownimage.framework.app;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -8,12 +8,13 @@ import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.undo.UndoRedoBuffer;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 public class Properties {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Logger.getLogger(Properties.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final Container mColorContainer = new Container("Colors", "color", () -> {
 		return new UndoRedoBuffer(10);

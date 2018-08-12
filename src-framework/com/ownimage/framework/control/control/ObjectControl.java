@@ -21,7 +21,7 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
 
 	public final static String mClassname = ControlBase.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public ObjectControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final ObjectType<R> pValue) {

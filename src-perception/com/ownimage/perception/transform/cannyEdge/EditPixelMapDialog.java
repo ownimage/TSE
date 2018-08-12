@@ -196,7 +196,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-        System.out.println("controlChanteEvent for " + pControl.getDisplayName());
+        mLogger.info(() -> "controlChanteEvent for " + pControl.getDisplayName());
         updatePreview();
     }
 
@@ -312,7 +312,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private Optional<Pixel> eventXYToPixel(int pX, int pY) {
         int x = getViewOriginX() + (pX * getWidth() / (getZoom() * getPreviewSize()));
         int y = getViewOriginY() + (pY * getHeight() / (getZoom() * getPreviewSize()));
-        System.out.format("pEvent = %d, %d, x = %d, y = %d\n", pX, pY, x, y);
+        mLogger.info(() -> String.format("pEvent = %d, %d, x = %d, y = %d\n", pX, pY, x, y));
         return mPixelMap.getOptionalPixelAt(x, y);
     }
 
@@ -322,7 +322,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             double right = left + 1.0d / getZoom();
             double bottom = (double) getViewOriginY() / getHeight();
             double top = bottom + 1.0d / getZoom();
-            System.out.print("lrbt " + left + " " + right + " " + bottom + " " + top);
+            mLogger.info(() -> String.format("left = %s, right = %s, bottom = %s, top = %s", left, right, bottom, top));
             mCropTransform.setCrop(left, bottom, right, top);
         }
     }
@@ -418,10 +418,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
      * Fills in the gaps in the drag event so that all the pixels are connected.
      **/
     private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, Optional<Pixel> pPixel) {
-        System.out.println(String.format("############## mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
+        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
         if (isPixelActionOn() || isPixelActionOff()) {
             if (mMouseDragLastPixel.isPresent() && pPixel.isPresent() && !mMouseDragLastPixel.get().equals(pPixel.get())) {
-                System.out.println(String.format("############## mouseDragEventPixelViewFillIn ..."));
+                mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn ..."));
                 int dX = pPixel.get().getX() - mMouseDragLastPixel.get().getX();
                 int dY = pPixel.get().getY() - mMouseDragLastPixel.get().getY();
                 if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
@@ -430,7 +430,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                     IntStream.range(from, to).forEach(x -> {
                         int y = (int) Math.round(mMouseDragLastPixel.get().getY() + (((double) x - mMouseDragLastPixel.get().getX()) / dX) * dY);
                         final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                        System.out.println(String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
+                        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
                         pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
                     });
                 } else { // fill in missing y
@@ -439,7 +439,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                     IntStream.range(from, to).forEach(y -> {
                         int x = (int) Math.round(mMouseDragLastPixel.get().getX() + (((double) y - mMouseDragLastPixel.get().getY()) / dY) * dX);
                         final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                        System.out.println(String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
+                        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
                         pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
                     });
                 }
@@ -552,13 +552,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
-        System.out.println("mouseDragStartEvent");
+        mLogger.info(() -> "mouseDragStartEvent");
         if (isGeneralView()) mouseDragStartEventGeneralView(pEvent);
         if (isPixelView()) mouseDragStartEventPixelView(pEvent);
     }
 
     private void mouseDragStartEventGeneralView(final IUIEvent pEvent) {
-        System.out.println("mouseDragStartEventGeneralView");
+        mLogger.info(() -> "mouseDragStartEventGeneralView");
         mMouseDragStartX = getViewOriginX();
         mMouseDragStartY = getViewOriginY();
     }
@@ -574,12 +574,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void scrollEvent(final IUIEvent pEvent) {
-        System.out.println("scrollEvent");
+        mLogger.info(() -> "scrollEvent");
     }
 
     @Override
     public void keyPressed(final IUIEvent pEvent) {
-        System.out.println("keyPressed " + pEvent.getKey());
+        mLogger.info(() -> "keyPressed " + pEvent.getKey());
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
         if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
@@ -588,12 +588,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void keyReleased(final IUIEvent pEvent) {
-        System.out.println("keyReleased " + pEvent.getKey());
+        mLogger.info(() -> "keyReleased " + pEvent.getKey());
     }
 
     @Override
     public void keyTyped(final IUIEvent pEvent) {
-        System.out.println("keyTyped " + pEvent.getKey());
+        mLogger.info(() -> "keyTyped " + pEvent.getKey());
     }
 
 

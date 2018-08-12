@@ -1,7 +1,5 @@
 package com.ownimage.framework.view.javafx;
 
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -52,13 +50,9 @@ public class ApplicationEventQueue {
     private void processEventQueue() {
         while (true) {
             try {
-                LocalTime start = LocalTime.now();
                 EventItem eventItem = mUIEventQueue.poll(10, TimeUnit.SECONDS);
                 if (eventItem != null) {
                     eventItem.getListener().uiEvent(eventItem.getEvent());
-                    LocalTime end = LocalTime.now();
-                    long elapsed = ChronoUnit.MICROS.between(start, end);
-                    //System.out.println( String.format("%s took %s ms", eventItem.getEvent().getEventType(), elapsed));
                 } else {
                     mLogger.fine(() -> "is alive: " + Thread.currentThread());
                 }

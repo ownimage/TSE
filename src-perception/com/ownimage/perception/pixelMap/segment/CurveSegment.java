@@ -7,7 +7,7 @@ package com.ownimage.perception.pixelMap.segment;
 
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Path;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.CubicEquation;
@@ -23,7 +23,7 @@ public class CurveSegment extends SegmentBase {
 
     public final static Version mVersion = new Version(4, 0, 3, "2014/05/30 07:19");
     public final static String mClassname = CurveSegment.class.getName();
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
     private Point mP1;

@@ -85,7 +85,6 @@ public class AppControlView extends Application implements IAppControlView {
         // //
         // // }
         // //
-        // // System.out.println("mAppControlView = " + mAppControlView);
         return mAppControlView;
     }
 
@@ -318,13 +317,15 @@ public class AppControlView extends Application implements IAppControlView {
         fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
         fileChooser.setInitialFileName(pFileControl.getFile().getName());
         File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
-        // System.out.println("File:" + selectedFile == null ? selectedFile : selectedFile.getAbsolutePath());
+
         if (selectedFile != null) {
-            System.out.println("setValue");
-            if (!selectedFile.getAbsolutePath().equals(originalAbsolutePath))
+            if (!selectedFile.getAbsolutePath().equals(originalAbsolutePath)) {
+                mLogger.info(() -> "selected file changed to: " + selectedFile.getAbsolutePath());
                 pFileControl.setValue(selectedFile.getAbsolutePath());
-            else
+            } else {
+                mLogger.info(() -> "selected file unchanged: " + selectedFile.getAbsolutePath());
                 pFileControl.fireControlChangeEvent();
+            }
         }
     }
 

@@ -1,17 +1,21 @@
 package com.ownimage.framework.view.javafx;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import com.ownimage.framework.app.menu.IMenuItem;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 
 public class MenuView implements IView {
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	private final MenuControl mMenuControl;
 	private Menu mUI;
@@ -50,11 +54,11 @@ public class MenuView implements IView {
 				ActionControl actionControl = (ActionControl) child;
 				MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
 				menu.getItems().add(menuItem.getUI());
-				System.out.println("Menu created: " + actionControl.getDisplayName());
+                mLogger.info(() -> "Menu created: " + actionControl.getDisplayName());
 
 			} else if (child instanceof MenuControl) {
 				MenuControl menuControl = (MenuControl) child;
-				System.out.println("Menu created: " + menuControl.getDisplayName());
+                mLogger.info(() -> "Menu created: " + menuControl.getDisplayName());
 				MenuView subMenu = (MenuView) menuControl.createMenuView();
 				menu.getItems().add(subMenu.getUI());
 			}

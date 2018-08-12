@@ -19,7 +19,7 @@ public class RenderService {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	public final static String mClassname = RenderService.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	private final Perception mPerception;
@@ -190,7 +190,7 @@ public class RenderService {
 		cal.setTime(new Date());
 		long end = cal.getTimeInMillis();
 
-		// System.out.println(String.format("Transform=%s, batchSise=%d, millisecs=%d", pTransform.getDisplayName(),
+        // mLogger.info(() -> String.format("Transform=%s, batchSise=%d, millisecs=%d", pTransform.getDisplayName(),
 		// pBatch.getBatchSize(), (end - start)));
 
 		IBatchTransform previousTransform = pTransform.getPreviousTransform();

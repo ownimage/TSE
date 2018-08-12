@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.type.ObjectMetaType;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 import javafx.application.Platform;
@@ -24,7 +25,7 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 
 	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
 	public final static String mClassname = ObjectView.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
 	private final HBox mUI;
 	private ComboBox<Object> mCombobox;

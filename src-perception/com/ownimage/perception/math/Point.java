@@ -7,6 +7,7 @@ package com.ownimage.perception.math;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 // TODO: Auto-generated Javadoc
@@ -20,7 +21,7 @@ public class Point implements Serializable {
 
 	/** The Constant mLogger. */
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(Point.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	/** The Constant Point00. */
 	public final static Point Point00 = new Point(0.0d, 0.0d);

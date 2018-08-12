@@ -7,13 +7,14 @@ package com.ownimage.perception.math;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 public class LinearEquation implements Serializable {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(LinearEquation.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final double mM;
 	private final double mC;

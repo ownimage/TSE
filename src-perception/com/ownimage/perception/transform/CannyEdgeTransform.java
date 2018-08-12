@@ -50,7 +50,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
     public final static String mClassname = CannyEdgeTransform.class.getName();
 
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
     private final IntegerControl mWidth =
@@ -188,7 +188,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 // }
                 //
                 // if (pControl == mEditPixelMapButton) {
-                // System.out.println("EditPixels");
+                // mLogger.info(() -> "EditPixels");
                 // mEditPixelMapPixelsDialog.showModalDialog();
                 // return;
                 // }
@@ -251,7 +251,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void generateEdgesOK() {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
+        mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
         PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
@@ -271,7 +271,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     public synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            ActionControl ok = ActionControl.create("OK", NullContainer, () -> System.out.println("edit pixelmap OK"));
+            ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info(() -> "edit pixelmap OK"));
             ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
             mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
         }
@@ -574,7 +574,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 // only set the mData if the detector was allowed to finish
                 pixelMap = detector.getEdgeData();
                 // mPreviewControl.getValue().setValue(mPreviewPicture);
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
+                mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
             }
         } finally {
             if (detector != null) {

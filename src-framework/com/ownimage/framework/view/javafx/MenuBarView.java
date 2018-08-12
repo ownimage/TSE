@@ -1,15 +1,19 @@
 package com.ownimage.framework.view.javafx;
 
 import java.util.Iterator;
-
-import javafx.scene.control.MenuBar;
+import java.util.logging.Logger;
 
 import com.ownimage.framework.app.menu.IMenuItem;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 
+import javafx.scene.control.MenuBar;
+
 public class MenuBarView implements IView {
+
+	public final static Logger mLogger = Framework.getLogger();
 
 	private final MenuControl mMenuControl;
 	private MenuBar mUI;
@@ -37,8 +41,7 @@ public class MenuBarView implements IView {
 		Iterator<IMenuItem> menuIterator = mMenuControl.getChildIterator();
 		while (menuIterator.hasNext()) {
 			MenuControl menuControl = (MenuControl) menuIterator.next();
-			mUI.getMenus().add(((MenuView) menuControl.createMenuView()).getUI());
-			System.out.println("Menu created: " + menuControl.getDisplayName());
+			mLogger.info(() -> "Menu created: " + menuControl.getDisplayName());
 		}
 
 		mUI.useSystemMenuBarProperty().set(true);

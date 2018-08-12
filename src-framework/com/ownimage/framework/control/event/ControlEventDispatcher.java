@@ -7,6 +7,7 @@ package com.ownimage.framework.control.event;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 
@@ -14,7 +15,7 @@ public class ControlEventDispatcher implements IControlEventDispatcher<IControl<
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(ControlEventDispatcher.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 	private final EventDispatcher<IControlChangeListener> mControlChangeListeners = new EventDispatcher<IControlChangeListener>(this);
 	private final EventDispatcher<IControlValidator> mControlValidators = new EventDispatcher<IControlValidator>(this);
 	private final Object mOwner; // this is for debugging purposes so you can tell who owns a dispatcher

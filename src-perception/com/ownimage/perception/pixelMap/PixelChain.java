@@ -60,7 +60,7 @@ public class PixelChain implements Serializable {
 
     public final static Version mVersion = new Version(4, 0, 1, "2014/05/30 20:48");
     public final static String mClassname = PixelChain.class.getName();
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
     transient private PixelMap mPixelMap;
@@ -208,8 +208,8 @@ public class PixelChain implements Serializable {
             mEndNode = new Node(end);
             mEndNode.addPixelChain(this);
             if (end.getX() != 0 && end.getY() != 0) {
-                System.out.println("mEndNode bodge");
-                System.out.println(this);
+                mLogger.info(() -> "mEndNode bodge");
+                mLogger.info(() -> this.toString());
                 //end.printNeighbours(5);
             }
         }
@@ -258,19 +258,19 @@ public class PixelChain implements Serializable {
     }
 
     public void approximate() {
-        //System.out.println("PixelChain::approximate");
+        //mLogger.info(() -> "PixelChain::approximate");
         double tolerance = mPixelMap.getLineTolerance() / mPixelMap.getHeight();
-        //System.out.println("tolerance " + tolerance);
+        //mLogger.info(() -> "tolerance " + tolerance);
         mSegments = new Vector<ISegment>();
         approximate01_straightLines(tolerance);
-        //System.out.println("approximate01_straightLines - done");
+        //mLogger.info(() -> "approximate01_straightLines - done");
         approximate02_refineCorners();
-        //System.out.println("approximate02_refineCorners - done");
+        //mLogger.info(() -> "approximate02_refineCorners - done");
         refine();
-        //System.out.println("refine - done");
+        //mLogger.info(() -> "refine - done");
         checkAllVertexesAttached();
-        //System.out.println("checkAllVertexesAttached - done");
-        //System.out.println("PixelChain::approximate - end");
+        //mLogger.info(() -> "checkAllVertexesAttached - done");
+        //mLogger.info(() -> "PixelChain::approximate - end");
     }
 
     public void approximate01_straightLines(final double pTolerance) {
@@ -1077,8 +1077,8 @@ public class PixelChain implements Serializable {
                     if (bestSegment instanceof DoubleCurveSegment) {
                         // final LineSegment lineSegment = new LineSegment(currentSegment.getStartUHVWPoint(), currentSegment.getEndUHVWPoint());
                         // currentSegment.getEndVertex().setTangent(lineSegment);
-                        System.out.println("DCS m " + ((DoubleCurveSegment) bestSegment).getStartCurve().getEndTangentVector());
-                        System.out.println("DCS m " + ((DoubleCurveSegment) bestSegment).getEndCurve().getStartTangentVector());
+                        mLogger.info("DCS m " + ((DoubleCurveSegment) bestSegment).getStartCurve().getEndTangentVector());
+                        mLogger.info("DCS m " + ((DoubleCurveSegment) bestSegment).getEndCurve().getStartTangentVector());
 
                         mLogger.info("DoubleCurve added");
                     }

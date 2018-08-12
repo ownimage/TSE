@@ -21,7 +21,7 @@ public class Vertex implements IVertex {
 
     public final static Version mVersion = new Version(4, 0, 1, "2014/05/15 07:19");
     public final static String mClassname = Vertex.class.getName();
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;
 
     private final PixelChain mPixelChain;

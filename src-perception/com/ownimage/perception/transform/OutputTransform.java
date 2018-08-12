@@ -10,13 +10,14 @@ import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.type.IntegerMetaType;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
 
 public class OutputTransform extends BaseTransform {
 
     @SuppressWarnings("unused")
-    private final static Logger mLogger = Logger.getLogger(OutputTransform.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
     private BooleanControl mUseCustomSize;
     private IntegerControl mWidth;

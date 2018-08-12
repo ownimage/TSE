@@ -1,10 +1,13 @@
 package com.ownimage.perception.persist;
 
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import com.ownimage.framework.persist.IPersistDB;
 
 public class PersistDBImpl implements IPersistDB {
+
+    public final static Logger mLogger = Logger.getLogger(mClassname);
 	
 	private TreeMap<String, String> values = new TreeMap<String, String>();
 
@@ -16,7 +19,7 @@ public class PersistDBImpl implements IPersistDB {
 	@Override
 	public void write(String pId, String pValue) {
 		values.put(pId, pValue);
-		System.out.println("PersistDBImpl.write(\""+ pId + "\", \"" + pValue + "\")");
+        mLogger.fine(() -> String.format("PersistDBImpl.write(%s, %s)", pId, pValue));
 	}
 
 }

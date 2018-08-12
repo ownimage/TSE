@@ -3,8 +3,11 @@ package com.ownimage.framework.view.javafx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.util.Framework;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -15,8 +18,10 @@ import javafx.scene.layout.HBox;
 
 public class ActionView extends ViewBase<ActionControl> {
 
+    public final static Logger mLogger = Framework.getLogger();
+
     private final HBox mUI;
-    ;
+
     private final Button mButton;
 
     public ActionView(final ActionControl pActionControl) {
@@ -59,7 +64,8 @@ public class ActionView extends ViewBase<ActionControl> {
             mButton.setGraphic(new javafx.scene.image.ImageView(image));
 
         } catch (IOException pEx) {
-            System.out.println(pEx.getMessage());
+            mLogger.severe(pEx.getMessage());
+            mLogger.severe(FrameworkLogger.throwableToString(pEx));
         }
 
         Tooltip tooltip = new Tooltip(mControl.getDisplayName());

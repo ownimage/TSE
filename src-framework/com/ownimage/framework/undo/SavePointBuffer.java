@@ -4,12 +4,13 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
 
 public class SavePointBuffer implements IUndoRedoAction {
 
 	public final static String mClassname = SavePointBuffer.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
 	private boolean mLocked;
 	private boolean mCanUndo;

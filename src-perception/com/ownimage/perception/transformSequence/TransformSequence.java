@@ -51,7 +51,7 @@ import com.ownimage.perception.transform.WoodcutTransform;
 public class TransformSequence extends ViewableBase<TransformSequence, ISingleSelectView> implements IPersist, IContainerList {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	private final static Logger mLogger = Logger.getLogger(TransformSequence.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final Perception mPerception;
 

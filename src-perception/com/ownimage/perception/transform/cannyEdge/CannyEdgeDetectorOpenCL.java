@@ -5,12 +5,13 @@
 
 package com.ownimage.perception.transform.cannyEdge;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -65,7 +66,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(CannyEdgeDetector.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	protected final static float GAUSSIAN_CUT_OFF = 0.005f;
 	protected final static float MAGNITUDE_SCALE = 100F;
@@ -99,7 +100,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	// constructors
 
 	private CannyEdgeDetectorOpenCL() {
-		System.out.println("Kernel created");
+        mLogger.info(() -> "Kernel created");
 
 		lowThreshold = 2.5f;
 		highThreshold = 7.5f;
@@ -296,7 +297,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 
 	@Override
 	public synchronized void dispose() {
-		System.out.println("Kernel dispose");
+        mLogger.info(() -> "Kernel dispose");
 		super.dispose();
 	}
 

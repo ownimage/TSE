@@ -20,7 +20,7 @@ public class SoftSquarePolarTransform extends BaseTransform {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(SoftSquarePolarTransform.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final DoubleControl mRotateControl;
 

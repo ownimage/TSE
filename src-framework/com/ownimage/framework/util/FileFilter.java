@@ -9,12 +9,10 @@ import java.io.FilenameFilter;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import com.ownimage.framework.util.Version;
-
 public class FileFilter extends javax.swing.filechooser.FileFilter implements FilenameFilter {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
-	public final static Logger mLogger = Logger.getLogger(FileFilter.class.getName());
+    public final static Logger mLogger = Framework.getLogger();
 
 	private Vector<String> mExtensions = new Vector<String>();
 	private boolean mAcceptDir;

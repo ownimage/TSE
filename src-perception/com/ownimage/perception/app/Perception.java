@@ -67,7 +67,6 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         propertiesInit();
-        loggingInit();
 
         mUndoRedoBuffer = new UndoRedoBuffer(100);
         mRenderService = new RenderService(this);
@@ -163,7 +162,7 @@ public class Perception extends AppControlBase {
 
         mFileControl.showDialog();
         String filename = mFileControl.getString();
-        System.out.println("filename = " + filename);
+        mLogger.info(() -> "filename = " + filename);
         fileOpen(mFileControl.getFile());
 
         Framework.logExit(mLogger);
@@ -263,7 +262,7 @@ public class Perception extends AppControlBase {
      * @param pFile the file
      */
     private void fileSaveUnchecked(final File pFile) {
-        System.out.println("fileSaveUnchecked");
+        mLogger.info(() -> "fileSaveUnchecked");
         Framework.logEntry(mLogger);
         new Thread(() -> {
             try {
@@ -283,7 +282,7 @@ public class Perception extends AppControlBase {
                         , mTransformSequence.getLastTransform().getOversample());
             } catch (Throwable pT) {
                 Framework.logThrowable(mLogger, Level.SEVERE, pT);
-                System.out.println("Unable to save file");
+                mLogger.info(() -> "Unable to save file");
 
             }
         }).start();
@@ -422,47 +421,17 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void loggingInit() {
-        Framework.logEntry(mLogger);
-
-        if (mProperties.useDefaultLoggingFile()) {
-            loggingOpenDefault();
-        }
-
-        Framework.logExit(mLogger);
-    }
-
     private void loggingOpen() {
         Framework.logEntry(mLogger);
-
         FileControl fileControl = FileControl.createFileOpen("Open Logging settings", NullContainer, mLoggingPropertiesFilename);
-        fileControl.showDialog();
-        File file = fileControl.getFile();
-
-        try (FileInputStream fstream = new FileInputStream(file)) {
-            PersistDB props = new PersistDB();
-            props.load(fstream);
-            FrameworkLogger.getInstance().read(props, "");
-        } catch (Exception pEx) {
-            throw new FrameworkException(this, Level.SEVERE, "Cannot Open Logging settings from: " + file.getAbsolutePath(), pEx);
-        }
-
+        fileControl.addControlChangeListener((c, m) -> FrameworkLogger.getInstance().read(fileControl.getValue()));
+        FrameworkLogger.getInstance().read(fileControl.getValue());
         Framework.logExit(mLogger);
     }
 
     private void loggingOpenDefault() {
         Framework.logEntry(mLogger);
-
-        String filename = getLoggingDefaultFilename();
-        try (FileInputStream fstream = new FileInputStream(filename)) {
-            PersistDB props = new PersistDB();
-            props.load(fstream);
-            FrameworkLogger.getInstance().read(props, "");
-        } catch (Exception pEx) {
-            mLogger.log(Level.SEVERE, "Cannot Open Default Logging settings from: " + filename);
-            mLogger.log(Level.SEVERE, "Cannot Open Default Logging settings from: " + filename, pEx);
-        }
-
+        FrameworkLogger.getInstance().read(getLoggingDefaultFilename());
         Framework.logExit(mLogger);
     }
 

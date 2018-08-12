@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.control.type.IntegerType;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
@@ -23,7 +24,7 @@ public class IntegerControl extends ControlBase<IntegerControl, IntegerType, Int
 
 	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
 	public final static String mClassname = ControlBase.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;
 

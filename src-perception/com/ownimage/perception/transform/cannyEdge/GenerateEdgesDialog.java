@@ -17,6 +17,7 @@ import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.queue.ExecuteQueue;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
@@ -38,7 +39,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
     public final static String mClassname = GenerateEdgesDialog.class.getName();
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
     public static int DEFAULT_SIZE = 200;
@@ -215,7 +216,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         crop.setPreviousTransform(getTransform().getPreviousTransform());
         crop.setCrop(getPreviewRectangle());
         Perception.getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()));
-        System.out.println(ExecuteQueue.getInstance().getDepth());
+        mLogger.info(() -> "ExecuteQueue depth:" + ExecuteQueue.getInstance().getDepth());
 
         mLogger.finest("at end");
         return mPreviewPicture.getValue();

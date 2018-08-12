@@ -13,6 +13,7 @@ import com.ownimage.framework.control.type.IMetaType;
 import com.ownimage.framework.control.type.PointType;
 import com.ownimage.framework.control.type.StringMetaType;
 import com.ownimage.framework.control.type.StringType;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.framework.view.IView;
 import com.ownimage.perception.math.Point;
@@ -27,7 +28,7 @@ public class PointControl extends ControlBase<PointControl, PointType, IMetaType
 
 	public final static Version mVersion = new Version(5, 0, 0, "2015/11/26 20:48");
 
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;
 

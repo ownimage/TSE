@@ -5,13 +5,14 @@ package com.ownimage.perception.math;
 
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 public class Point3D extends Tuple3D<Point3D> {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	public final static String mClassname = Point3D.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public Point3D(final double pX, final double pY, final double pZ) {

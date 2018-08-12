@@ -6,6 +6,7 @@ package com.ownimage.perception.math;
 
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 public class QuadraticEquation {
@@ -36,7 +37,7 @@ public class QuadraticEquation {
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(QuadraticEquation.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 	double mA;
 	double mB;
 	double mC;

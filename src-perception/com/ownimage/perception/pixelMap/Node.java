@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 
 // TODO: Auto-generated Javadoc
@@ -30,7 +31,7 @@ public class Node extends Pixel {
     /**
      * The Constant mLogger.
      */
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
     /**
      * The Constant serialVersionUID.

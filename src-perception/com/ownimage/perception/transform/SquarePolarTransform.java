@@ -36,7 +36,7 @@ public class SquarePolarTransform extends BaseTransform {
 
 	@Override
 	public void grafitti(final GrafittiHelper pGrafittiHelper) {
-		System.out.println(mRotateSlider.getNormalizedValue());
+        mLogger.info(() -> "mRotateSlider: " + mRotateSlider.getNormalizedValue());
 		pGrafittiHelper.drawVerticalLine(mRotateSlider.getNormalizedValue(), getGrafitiColor1(), isControlSelected(mRotateSlider));
 	}
 

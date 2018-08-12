@@ -157,7 +157,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public final static Version mVersion = new Version(4, 0, 2, "2014/05/30 06:49");
     public final static String mClassname = PixelMap.class.getName();
 
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 1L;
     private static int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
@@ -954,7 +954,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // values[node.countPixelChains()]++;
     // }
     // for (int i = 0; i < 9; i++) {
-    // // System.out.println("Nodes with " + i + "chains:" + values[i]);
+    // // mLogger.info(() -> "Nodes with " + i + "chains:" + values[i]);
     // }
     // }
     //
@@ -970,25 +970,25 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process05_generateChains();
             process06_straightLinesRefineCorders(mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             validate();
-            System.out.println("validate done");
+            mLogger.info(() -> "validate done");
             process07_mergeChains();
-            System.out.println("process07_mergeChains done");
+            mLogger.info(() -> "process07_mergeChains done");
             validate();
-            System.out.println("validate done");
+            mLogger.info(() -> "validate done");
             process08_refine();
-            System.out.println("process08_refine done");
+            mLogger.info(() -> "process08_refine done");
             validate();
-            System.out.println("validate done");
+            mLogger.info(() -> "validate done");
             // // reapproximate(null, mTransformSource.getLineTolerance());
             validate();
-            System.out.println("validate done");
+            mLogger.info(() -> "validate done");
             //process04a_removeLoneNodes();
             indexSegments();
-            System.out.println("indexSegments done");
+            mLogger.info(() -> "indexSegments done");
             printCount();
             //
         } catch (final Exception pEx) {
-            System.out.println("pEx");
+            mLogger.info(() -> "pEx");
             pEx.printStackTrace(System.err);
         } finally {
             // pProgress.hideProgressBar();
@@ -1009,7 +1009,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     // // public void process08_refine_old() {
-    // // System.out.println("Refine");
+    // // mLogger.info(() -> "Refine");
     // //
     // // class RefineThread extends Thread {
     // //
@@ -1207,23 +1207,23 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // pixelChain.setVisited(false);
         // removePixelChain(pixelChain);
         // }
-        // System.out.println(delete.size() + " pixelchains removed");
+        // mLogger.info(() -> delete.size() + " pixelchains removed");
         //
         // for (PixelChain pixelChain : mPixelChains) {
         // try {
         // ISegment first = pixelChain.getFirstSegment();
         // IVertex start = first.getStartVertex();
         // if (start.getStartSegment() != null) {
-        // System.out.println("Invalid start segment");
+        // mLogger.info(() -> "Invalid start segment");
         // }
         //
         // ISegment last = pixelChain.getLastSegment();
         // IVertex end = last.getEndVertex();
         // if (end.getEndSegment() != null) {
-        // System.out.println("Invalid end segment");
+        // mLogger.info(() -> "Invalid end segment");
         // }
         // } catch (Throwable pT) {
-        // System.out.println(pT.getMessage());
+        // mLogger.info(() -> pT.getMessage());
         // }
         // }
         //
@@ -1306,7 +1306,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 }
             });
 
-            //System.out.println("Number of chains: " + mPixelChains.size());
+            //mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         } finally {
 //            if (pProgress != null) {
 //                pProgress.hideProgressBar();
@@ -1316,7 +1316,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
-        System.out.println("process06_straightLinesRefineCorders " + pMaxiLineTolerance);
+        mLogger.info(() -> "process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
 //      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
 //      mPixelChains) {
@@ -1327,7 +1327,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     pixelChain.approximate01_straightLines(pMaxiLineTolerance);
                     pixelChain.approximate02_refineCorners();
                 });
-        System.out.println("process06_straightLinesRefineCorders - done");
+        mLogger.info(() -> "process06_straightLinesRefineCorders - done");
 //      }
 //      };
 //      job.runImmediate();
@@ -1336,7 +1336,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     void process07_mergeChains() {
-        System.out.println("number of PixelChains: " + mPixelChains.size());
+        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         //for (final Node node : getAllNodes()) {
         mAllNodes.stream().forEach(node -> {
             node.mergePixelChains();
@@ -1344,7 +1344,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mSegmentCount = 0;
 
         indexSegments();
-        System.out.println("number of PixelChains: " + mPixelChains.size());
+        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
     void process08_refine() {
@@ -1511,7 +1511,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void setValue(final int pX, final int pY, final byte pValue) {
         // all the parameter bounds checking is doing in the saveValueNoUndo.
-        // System.out.println("setValue: " + pX + ", " + pY + ", " + pValue);
+        // mLogger.info(() -> "setValue: " + pX + ", " + pY + ", " + pValue);
 
         final byte before = getValue(pX, pY);
         getOptionalUndoRedoBuffer()
@@ -1605,7 +1605,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void validate() {
-        System.out.println("Number of chains: " + mPixelChains.size());
+        mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         for (final PixelChain pixelChain : mPixelChains) {
             pixelChain.validate();
         }
@@ -1636,7 +1636,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
 
             public void print() {
-                System.out.format("straight %d, curve %d, doubleCurve %d, other %d\n", straight, curve, doubleCurve, other);
+                mLogger.info(() -> String.format("straight %d, curve %d, doubleCurve %d, other %d\n", straight, curve, doubleCurve, other));
             }
         }
 

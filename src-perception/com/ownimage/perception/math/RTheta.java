@@ -2,8 +2,8 @@ package com.ownimage.perception.math;
 
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
-import com.ownimage.perception.transform.PolarTransform;
 
 /**
  * This immutable class represents a point in PolarCordinates.
@@ -29,7 +29,7 @@ public class RTheta {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private final static Logger mLogger = Logger.getLogger(PolarTransform.class.getName());;
+    private final static Logger mLogger = Framework.getLogger();
 
 	private final double mR;
 	private final double mTheta;
@@ -41,19 +41,6 @@ public class RTheta {
 		mQuadrant = (mTheta < Math.PI / 2.0d) ? Quadrant.TopRight : //
 				(mTheta < Math.PI) ? Quadrant.BottomRight : //
 						(mTheta < 3 * Math.PI / 2.0d) ? Quadrant.BottomLeft : Quadrant.TopLeft;
-	}
-
-	public static void main(final String[] pArgs) {
-		PolarCoordinates pc = PolarCoordinates.getCircleInUnitSquare();
-		System.out.println(pc.getPolarCoordinate(new Point(0.1d, 0.1d)).getQuadrant().toString());
-		System.out.println(pc.getPolarCoordinate(new Point(0.1d, 0.1d)).getTheta());
-		System.out.println(pc.getPolarCoordinate(new Point(0.9d, 0.9d)).getQuadrant().toString());
-		System.out.println(pc.getPolarCoordinate(new Point(0.9d, 0.9d)).getTheta());
-		System.out.println(pc.getPolarCoordinate(new Point(0.9d, 0.1d)).getQuadrant().toString());
-		System.out.println(pc.getPolarCoordinate(new Point(0.9d, 0.1d)).getTheta());
-		System.out.println(pc.getPolarCoordinate(new Point(0.1d, 0.9d)).getQuadrant().toString());
-		System.out.println(pc.getPolarCoordinate(new Point(0.1d, 0.9d)).getTheta());
-
 	}
 
 	public Quadrant getQuadrant() {

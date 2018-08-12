@@ -10,7 +10,7 @@ public class Framework {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	public final static String mClassname = Framework.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public static void checkParameterGreaterThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {

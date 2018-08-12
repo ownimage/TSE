@@ -4,7 +4,7 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -25,7 +25,7 @@ public class ImageLoadTransform extends BaseTransform {
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
 	@SuppressWarnings("unused")
-	private final static Logger mLogger = Logger.getLogger(ImageLoadTransform.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 	private final File mFile;
 
 	private final PictureControl mSourcePicture; // this is the picture from the file

@@ -194,7 +194,7 @@ public class TransformResultBatch implements ITransformResultBatch {
             cal.setTime(new Date());
             long end = cal.getTimeInMillis();
 
-            System.out.println(String.format("Total batch (%s), batchSise=%d, millisecs=%d", mName, mPixelsProcessed, (end - start)));
+            mLogger.info(() -> String.format("Total batch (%s), batchSise=%d, millisecs=%d", mName, mPixelsProcessed, (end - start)));
         }
 
         Framework.logExit(mLogger, hasNext);

@@ -6,7 +6,7 @@ package com.ownimage.perception.transform;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +45,7 @@ public class WoodcutTransform extends BaseTransform {
 	}
 
 	private void createEtch() {
-		System.out.println("createEtch");
+        mLogger.info("createEtch");
 		int w = getWidth();
 		PictureType etch = new PictureType(getProperties().getColorOOBProperty(), w, mLines.getValue());
 		mEtchPicture.setValue(etch);

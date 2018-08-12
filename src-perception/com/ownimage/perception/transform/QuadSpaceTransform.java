@@ -22,7 +22,7 @@ public class QuadSpaceTransform extends BaseTransform {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 
-	private final static Logger mLogger = Logger.getLogger(QuadSpaceTransform.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 	double[] mDividers;
 
 	private final DoubleControl mOneControl;

@@ -21,7 +21,7 @@ public class ObjectStringMetaType extends ObjectMetaType<String> {
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	public final static String mClassname = ObjectStringMetaType.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	private boolean mAllowUserDefinedValue = false;

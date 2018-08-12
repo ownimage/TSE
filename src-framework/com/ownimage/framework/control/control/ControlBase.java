@@ -41,7 +41,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
 	public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
 	public final static String mClassname = ControlBase.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;
 

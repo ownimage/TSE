@@ -14,6 +14,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Version;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
@@ -27,7 +28,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public final static Version mVersion = new Version(4, 0, 0, "2014/05/06 20:48");
     public final static String mClassname = Pixel.class.getName();
-    public final static Logger mLogger = Logger.getLogger(mClassname);
+    public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
     private static final IntegerPoint[] mNeighbours = { //
             //
@@ -292,16 +293,16 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 //                final int x = getX() + dx;
 //                final int y = getY() - dy;
 //                final Pixel pixel = new Pixel(getPixelMap(), x, y);
-//                // System.out.print(pixel.getPixelMap().getValue(pixel) + "(" + x + "," + y + ")\t");
-//                // System.out.print(pixel.getPixelMap().getValue(pixel) + "\t");
+//                // mLogger System.out.print(pixel.getPixelMap().getValue(pixel) + "(" + x + "," + y + ")\t");
+//                // mLogger System.out.print(pixel.getPixelMap().getValue(pixel) + "\t");
 //                // if (pixel.isNode())
-//                // System.out.print("O");
+//                // mLogger System.out.print("O");
 //                // else if (pixel.isEdge())
-//                // System.out.print("#");
+//                // mLogger System.out.print("#");
 //                // else
-//                // System.out.print(".");
+//                // mLogger System.out.print(".");
 //            }
-//            System.out.println();
+//            mLogger.info(() -> );
 //        }
 //    }
 //

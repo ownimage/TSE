@@ -18,7 +18,7 @@ import com.ownimage.framework.util.Version;
 public class ExecuteQueue {
 
 	public final static Version mVersion = new Version(5, 0, 0, "2015/053/19 08:02");
-	private final static Logger mLogger = Logger.getLogger(ExecuteQueue.class.getName());
+    private final static Logger mLogger = Framework.getLogger();
 
 	private static ExecuteQueue mExecuteQueue = new ExecuteQueue();
 
