@@ -6,14 +6,12 @@ package com.ownimage.framework.control.type;
 
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.control.ControlBase;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.math.Point;
 
 public class PointType extends TypeBase<IMetaType<Point>, Point> {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

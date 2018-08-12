@@ -17,10 +17,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.ownimage.framework.util.Framework;
+
 public class IntegerPointTEST {
 
-	public final static String mClassname = IntegerPointTEST.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	static IntegerPoint mIntegerPoint = new IntegerPoint(60, 50);
 

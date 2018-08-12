@@ -19,7 +19,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 public class Vertex implements IVertex {
 
 
-    public final static String mClassname = Vertex.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;
 
@@ -141,11 +141,11 @@ public class Vertex implements IVertex {
 
     @Override
     public void delete() {
-        mLogger.entering(mClassname, "delete");
+        Framework.logEntry(mLogger);
 
         getPixelChain().deleteVertex(this);
 
-        mLogger.exiting(mClassname, "delete");
+        Framework.logExit(mLogger);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class Vertex implements IVertex {
 
     @Override
     public void setPixel(final Pixel pPixel) {
-        mLogger.entering(mClassname, "setPixel");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pPixel", pPixel);
 
         // need to comment out as PixelMap not set after transform.load
@@ -220,7 +220,7 @@ public class Vertex implements IVertex {
         if (mEndSegment != null) {
             mEndSegment.vertexChange(this);
         }
-        mLogger.exiting(mClassname, "setPixel");
+        Framework.logExit(mLogger);
     }
 
     @Override
@@ -264,17 +264,17 @@ public class Vertex implements IVertex {
 
     @Override
     public int getX() {
-        mLogger.entering(mClassname, "getX");
+        Framework.logEntry(mLogger);
         final int x = getPixel().getX();
-        mLogger.exiting(mClassname, "getX", x);
+        Framework.logExit(mLogger);
         return x;
     }
 
     @Override
     public int getY() {
-        mLogger.entering(mClassname, "getY");
+        Framework.logEntry(mLogger);
         final int y = getPixel().getY();
-        mLogger.exiting(mClassname, "getY", y);
+        Framework.logExit(mLogger);
         return y;
     }
 
@@ -310,11 +310,11 @@ public class Vertex implements IVertex {
 
     @Override
     public boolean samePosition(final IVertex pVertex) {
-        mLogger.entering(mClassname, "samePosition");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pVertex", pVertex);
 
         final boolean result = getX() == pVertex.getX() && getY() == pVertex.getY();
-        mLogger.exiting(mClassname, "samePosition", result);
+        Framework.logExit(mLogger);
         return result;
     }
 

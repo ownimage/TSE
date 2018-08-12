@@ -17,7 +17,6 @@ import com.ownimage.perception.app.Properties;
 public class RenderService {
 
 
-    public final static String mClassname = RenderService.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

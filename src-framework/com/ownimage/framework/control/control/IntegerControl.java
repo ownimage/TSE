@@ -22,7 +22,6 @@ public class IntegerControl extends ControlBase<IntegerControl, IntegerType, Int
 	}
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

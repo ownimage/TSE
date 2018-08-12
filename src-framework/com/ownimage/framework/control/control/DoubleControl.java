@@ -18,7 +18,6 @@ import com.ownimage.framework.view.factory.ViewFactory;
 public class DoubleControl extends ControlBase<DoubleControl, DoubleType, DoubleMetaType, Double, IDoubleView> {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

@@ -21,7 +21,6 @@ import com.ownimage.framework.view.factory.ViewFactory;
 public class ActionControl extends ControlBase<ActionControl, BooleanType, IMetaType<Boolean>, Boolean, IView> implements IMenuItem {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

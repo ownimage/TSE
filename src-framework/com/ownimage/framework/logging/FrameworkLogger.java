@@ -42,7 +42,6 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
     private static final FrameworkLogger mFrameworkLogger = new FrameworkLogger();
 
 
-    public final String mClassname = FrameworkLogger.class.getName();
     public final Logger mLogger = Framework.getLogger();
 
     private final Vector<Logger> mKnownLoggers = new Vector<>();

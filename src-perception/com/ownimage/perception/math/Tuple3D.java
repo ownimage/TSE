@@ -10,7 +10,6 @@ import com.ownimage.framework.util.Framework;
 public abstract class Tuple3D<T extends Tuple3D> {
 
 
-    public final static String mClassname = Tuple3D.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

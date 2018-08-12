@@ -26,7 +26,7 @@ import com.ownimage.perception.math.Point;
 public class Pixel extends IntegerPoint implements PixelConstants {
 
 
-    public final static String mClassname = Pixel.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
     private static final IntegerPoint[] mNeighbours = { //
@@ -156,7 +156,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public Vector<Pixel> getNodeNeighbours() {
-        mLogger.entering(mClassname, "getNodeNeighbours");
+        Framework.logEntry(mLogger);
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("Pixel = " + this);
         }
@@ -171,7 +171,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("Returning " + allNeighbours);
         }
-        mLogger.exiting(mClassname, "getNodeNeighbours");
+        Framework.logExit(mLogger);
 
         return allNeighbours;
     }

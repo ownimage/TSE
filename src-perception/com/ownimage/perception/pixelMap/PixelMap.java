@@ -154,7 +154,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //    }
 
 
-    public final static String mClassname = PixelMap.class.getName();
+
 
     public final static Logger mLogger = Framework.getLogger();
 
@@ -213,41 +213,41 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void addPixelChain(final PixelChain pPixelChain) {
-        mLogger.entering(mClassname, "addPixelChain");
+        Framework.logEntry(mLogger);
         indexSegments();
         mPixelChains.add(pPixelChain);
-        mLogger.exiting(mClassname, "addPixelChain");
+        Framework.logExit(mLogger);
     }
 
     public void addPixelChains(final Collection<PixelChain> pPixelChains) {
-        mLogger.entering(mClassname, "addPixelChain");
+        Framework.logEntry(mLogger);
         indexSegments();
         mPixelChains.addAll(pPixelChains);
-        mLogger.exiting(mClassname, "addPixelChain");
+        Framework.logExit(mLogger);
     }
 
     public void addPixelChains(final PixelChain... pPixelChains) {
-        mLogger.entering(mClassname, "addPixelChain");
+        Framework.logEntry(mLogger);
         indexSegments();
         mPixelChains.addAll(Arrays.asList(pPixelChains));
-        mLogger.exiting(mClassname, "addPixelChain");
+        Framework.logExit(mLogger);
     }
 
     public List<PixelChain> getPixelChains(final Pixel pPixel) {
         Framework.checkParameterNotNull(mLogger, pPixel, "pPixel");
-        mLogger.entering(mClassname, "getPixelChains");
+        Framework.logEntry(mLogger);
         final List<PixelChain> pixelChains = mPixelChains.stream().filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
-        mLogger.exiting(mClassname, "getPixelChains");
+        Framework.logExit(mLogger);
         return pixelChains;
     }
 
     // public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
-    // mLogger.entering(mClassname, "addVertexes");
+    // Framework.logEntry(mLogger);
     // for (final PixelChain pixelChain : getAllPixelChains()) {
     // pixelChain.checkAllVertexesAttached();
     // pixelChain.addVertexes(pVisibleVertexes, pOrigin, pTopLeft);
     // }
-    // mLogger.exiting(mClassname, "addVertexes");
+    // Framework.logExit(mLogger);
     // }
 
 //    private AllPixels allPixels() {
@@ -257,7 +257,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private synchronized void calcSegmentIndex() {
         if (!mSegmentIndexValid) {
-            mLogger.entering(mClassname, "indexSegmentsValidate");
+            Framework.logEntry(mLogger);
             resetSegmentIndex();
 
             for (final PixelChain pixelChain : mPixelChains) {
@@ -267,7 +267,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             //printNodeCounts();
             mSegmentIndexValid = true;
         }
-        mLogger.exiting(mClassname, "indexSegmentsValidate");
+        Framework.logExit(mLogger);
     }
 
     public void equalizeValues(final EqualizeValues pValues) {
@@ -356,7 +356,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     //
     private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
         try {
-            mLogger.entering(mClassname, "generateChain");
+            Framework.logEntry(mLogger);
             if (mLogger.isLoggable(Level.FINEST)) {
                 mLogger.finest("pStartNode: " + pStartNode);
                 mLogger.finest("pCurrentPixel: " + pCurrentPixel);
@@ -365,7 +365,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
             if (pCurrentPixel.isNode()) {
                 pChain.setEndNode(getNode(pCurrentPixel));
-                mLogger.exiting(mClassname, "generateChain");
+                Framework.logExit(mLogger);
                 return;
             }
 
@@ -382,7 +382,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 &&
                         nodalNeighbour.equals(pChain.firstPixel()))) {
                     generateChain(pStartNode, nodalNeighbour, pChain);
-                    mLogger.exiting(mClassname, "generateChain");
+                    Framework.logExit(mLogger);
                     return;
                 }
             }
@@ -395,7 +395,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 // !neighbour.isNeighbour(pChain.firstPixel()))) {
                 if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
                     generateChain(pStartNode, neighbour, pChain);
-                    mLogger.exiting(mClassname, "generateChain");
+                    Framework.logExit(mLogger);
                     return;
                 }
             }
@@ -619,7 +619,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public Optional<Pixel> getOptionalPixelAt(final double pX, final double pY) {
-        mLogger.entering(mClassname, "getPixelAt");
+        Framework.logEntry(mLogger);
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
 
         int x = (int) (pX * getWidth());
@@ -628,13 +628,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         x = modWidth(x);
         final Pixel pixel = getPixelAt(x, y);
 
-        mLogger.exiting(mClassname, "getPixelAt", pixel);
+        Framework.logExit(mLogger);
         return Optional.ofNullable(pixel);
     }
 
     @Deprecated
     public Pixel getPixelAt(final double pX, final double pY) {
-        mLogger.entering(mClassname, "getPixelAt");
+        Framework.logEntry(mLogger);
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
 
         int x = (int) (pX * getWidth());
@@ -643,7 +643,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         x = modWidth(x);
         final Pixel pixel = getPixelAt(x, y);
 
-        mLogger.exiting(mClassname, "getPixelAt", pixel);
+        Framework.logExit(mLogger);
         return pixel;
     }
 
@@ -665,12 +665,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     @Deprecated
     public Pixel getPixelAt(final Point pPoint) {
-        mLogger.entering(mClassname, "getPixelAt");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pPoint", pPoint);
 
         final Pixel pixel = getPixelAt(pPoint.getX(), pPoint.getY());
 
-        mLogger.exiting(mClassname, "getPixelAt", pixel);
+        Framework.logExit(mLogger);
         return pixel;
     }
 
@@ -881,9 +881,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public synchronized void indexSegments() {
-        mLogger.entering(mClassname, "indexSegments");
+        Framework.logEntry(mLogger);
         mSegmentIndexValid = false;
-        mLogger.exiting(mClassname, "indexSegments");
+        Framework.logExit(mLogger);
     }
 
     private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final boolean pThickOnly) {
@@ -1363,7 +1363,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void read(final IPersistDB pDB, final String pId) {
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
         // note that write/read does not preseve the mAllNodes values
-        mLogger.entering(mClassname, "read");
+        Framework.logEntry(mLogger);
         mAutoTrackChanges = true;
         try {
             // pixel data
@@ -1439,7 +1439,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         } catch (final Exception pEx) {
             mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
         }
-        mLogger.exiting(mClassname, "read");
+        Framework.logExit(mLogger);
     }
 
     public synchronized void removePixelChain(final PixelChain pPixelChain) {
@@ -1499,13 +1499,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
-        mLogger.entering(mClassname, "setPixelChainDefaultThickness");
+        Framework.logEntry(mLogger);
         final int shortLength = pTransform.getShortLineLength();
         final int mediumLength = pTransform.getMediumLineLength();
         final int longLength = pTransform.getLongLineLength();
 
         mPixelChains.stream().forEach(chain -> chain.setThickness(shortLength, mediumLength, longLength));
-        mLogger.exiting(mClassname, "setPixelChainDefaultThickness");
+        Framework.logExit(mLogger);
     }
 
     private void setValue(final int pX, final int pY, final byte pValue) {
@@ -1656,7 +1656,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     @Override
     public void write(final IPersistDB pDB, final String pId) throws IOException {
         // note that write/read does not preserve the mAllNodes values
-        mLogger.entering(mClassname, "write");
+        Framework.logEntry(mLogger);
         // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
         ByteArrayOutputStream baos;
         ObjectOutputStream oos;
@@ -1691,7 +1691,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         objectString = null;
         mLogger.info("mSegmentCount = " + mSegmentCount);
 
-        mLogger.exiting(mClassname, "write");
+        Framework.logExit(mLogger);
     }
 
     public void forEach(BiConsumer<Integer, Integer> pFunction) {

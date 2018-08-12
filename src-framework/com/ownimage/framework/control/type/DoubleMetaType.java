@@ -22,7 +22,6 @@ public class DoubleMetaType implements IMetaType<Double> {
 	}
 
 
-    public final static String mClassname = DoubleMetaType.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

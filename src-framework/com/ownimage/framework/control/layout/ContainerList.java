@@ -13,7 +13,6 @@ import com.ownimage.framework.view.factory.ViewFactory;
 public class ContainerList implements IContainerList {
 
 
-    public final static String mClassname = ContainerList.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

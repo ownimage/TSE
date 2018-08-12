@@ -9,7 +9,7 @@ import com.ownimage.framework.util.Id;
 
 public class SavePointBuffer implements IUndoRedoAction {
 
-	public final static String mClassname = SavePointBuffer.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
 
 	private boolean mLocked;

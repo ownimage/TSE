@@ -23,7 +23,6 @@ import javafx.util.StringConverter;
 public class ObjectView extends ViewBase<ObjectControl<?>> {
 
 
-    public final static String mClassname = ObjectView.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	private final HBox mUI;

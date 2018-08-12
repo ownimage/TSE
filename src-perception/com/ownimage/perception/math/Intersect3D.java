@@ -10,7 +10,6 @@ import com.ownimage.framework.util.Framework;
 public class Intersect3D {
 
 
-    public final static String mClassname = Intersect3D.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

@@ -22,8 +22,7 @@ public class BooleanControl extends ControlBase<BooleanControl, BooleanType, IMe
 	}
 
 
-	public final static String mClassname = ControlBase.class.getName();
-	public final static Logger mLogger = Framework.getLogger();
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;
 

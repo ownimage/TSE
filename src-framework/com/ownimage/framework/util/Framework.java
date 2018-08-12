@@ -9,7 +9,6 @@ import com.ownimage.framework.logging.FrameworkLogger;
 public class Framework {
 
 
-    public final static String mClassname = Framework.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

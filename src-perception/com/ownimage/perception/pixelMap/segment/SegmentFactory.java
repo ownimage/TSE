@@ -20,7 +20,6 @@ public class SegmentFactory {
 	}
 
 
-    public final static String mClassname = SegmentFactory.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;;

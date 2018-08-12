@@ -11,7 +11,7 @@ import com.ownimage.framework.util.Framework;
 public class KMath {
 
 
-    public final static String mClassname = KMath.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static double SQRT2 = Math.sqrt(2.0d);
@@ -242,11 +242,11 @@ public class KMath {
 	}
 
 	public static int square(final int pI) {
-		mLogger.entering(mClassname, "square");
+        Framework.logEntry(mLogger);
 		// FrameworkLogger.logParams(mLogger, "pI", pI);
 		final int pi2 = pI * pI;
 
-		mLogger.exiting(mClassname, "square", pi2);
+        Framework.logExit(mLogger);
 		return pi2;
 	}
 }

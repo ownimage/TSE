@@ -12,7 +12,6 @@ import com.ownimage.framework.util.Framework;
 public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 
 
-    public final static String mClassname = IntegerPoint.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

@@ -5,7 +5,6 @@
 package com.ownimage.perception.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.logging.Logger;
 
@@ -19,8 +18,8 @@ import com.ownimage.framework.util.Framework;
 
 public class FrameworkTEST {
 
-	public final static String mClassname = FrameworkTEST.class.getName();
-	public final static Logger mLogger = Framework.getLogger();
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

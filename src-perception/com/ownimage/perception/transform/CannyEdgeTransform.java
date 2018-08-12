@@ -47,8 +47,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
 
-    public final static String mClassname = CannyEdgeTransform.class.getName();
-
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

@@ -18,11 +18,12 @@ import org.junit.Test;
 
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.util.Framework;
 
 public class LoggingTEST {
 
-	public final static String mClassname = LoggingTEST.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+
+    public final static Logger mLogger = Framework.getLogger();
 
 	final String testMessage = "this is a message";
 

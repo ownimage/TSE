@@ -37,7 +37,6 @@ import com.ownimage.perception.transform.CropTransform;
 public class GenerateEdgesDialog extends Container implements IUIEventListener, IControlValidator {
 
 
-    public final static String mClassname = GenerateEdgesDialog.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

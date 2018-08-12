@@ -18,9 +18,6 @@ import com.ownimage.framework.util.Framework;
 public class Node extends Pixel {
 
 
-
-    public final static String mClassname = Node.class.getName();
-
     public final static Logger mLogger = Framework.getLogger();
 
     /**

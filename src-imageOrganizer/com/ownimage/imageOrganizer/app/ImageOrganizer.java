@@ -18,13 +18,13 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.type.FileType;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.util.FileFilter;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 
 public abstract class ImageOrganizer extends AppControlBase {
 
 
-	public final static String mClassname = ImageOrganizer.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+	public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	private static ImageOrganizer mImageOrganizer;

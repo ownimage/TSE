@@ -11,7 +11,6 @@ import com.ownimage.framework.util.Framework;
 public class IntegerMetaType implements IMetaType<Integer> {
 
 
-    public final static String mClassname = IntegerMetaType.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

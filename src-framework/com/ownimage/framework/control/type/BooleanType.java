@@ -6,13 +6,11 @@ package com.ownimage.framework.control.type;
 
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.control.ControlBase;
 import com.ownimage.framework.util.Framework;
 
 public class BooleanType extends TypeBase<IMetaType<Boolean>, Boolean> {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

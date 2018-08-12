@@ -21,7 +21,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 public abstract class SegmentBase implements ISegment {
 
 
-    public final static String mClassname = SegmentBase.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
@@ -126,8 +126,8 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public Point getControlPoint() {
-        mLogger.entering(mClassname, "getControlPoint");
-        mLogger.exiting(mClassname, "getControlPoint");
+        Framework.logEntry(mLogger);
+        Framework.logExit(mLogger);
         return null;
     }
 
@@ -290,8 +290,8 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public void setControlPoint(final Point pPoint) {
-        mLogger.entering(mClassname, "setControlPoint");
-        mLogger.exiting(mClassname, "setControlPoint");
+        Framework.logEntry(mLogger);
+        Framework.logExit(mLogger);
     }
 
     @Override

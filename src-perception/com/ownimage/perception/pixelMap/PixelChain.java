@@ -58,7 +58,7 @@ public class PixelChain implements Serializable {
     }
 
 
-    public final static String mClassname = PixelChain.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
@@ -175,7 +175,7 @@ public class PixelChain implements Serializable {
     }
 
     public void addSegment(final ISegment pSegment) {
-        mLogger.entering(mClassname, "addSegment");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pSegment", pSegment);
 
         if (pSegment == null) {
@@ -192,7 +192,7 @@ public class PixelChain implements Serializable {
         }
 
         mSegments.add(pSegment);
-        mLogger.exiting(mClassname, "addSegment");
+        Framework.logExit(mLogger);
     }
 
     public void addToNodes() {
@@ -215,7 +215,7 @@ public class PixelChain implements Serializable {
     }
 
     private void addVertex(final Vector<IVertex> pVisibleVertexes, final IVertex pVertex, final Pixel pOrigin, final Pixel pTopLeft) {
-        mLogger.entering(mClassname, "addVertex");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pVisibleVertexes, pVertex, pOrigin, pTopLeft", pVisibleVertexes, pVertex, pOrigin, pTopLeft);
 
         if (pOrigin.getX() <= pVertex.getX() && pVertex.getX() <= pTopLeft.getX() //
@@ -230,11 +230,11 @@ public class PixelChain implements Serializable {
                 mLogger.severe("Adding unattached vertex that is not the start vertex");
             }
         }
-        mLogger.exiting(mClassname, "addVertex");
+        Framework.logExit(mLogger);
     }
 
     public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
-        mLogger.entering(mClassname, "addVertexes");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pVisibleVertexes, pOrigin, pTopLeft", pVisibleVertexes, pOrigin, pTopLeft);
 
         // add first vertex, note this works even if there is only a start node
@@ -253,7 +253,7 @@ public class PixelChain implements Serializable {
             }
         }
 
-        mLogger.exiting(mClassname, "addVertexes");
+        Framework.logExit(mLogger);
     }
 
     public void approximate() {
@@ -397,7 +397,7 @@ public class PixelChain implements Serializable {
     }
 
     public boolean checkVertexIsInChain(final IVertex pVertex) {
-        mLogger.entering(mClassname, "checkVertexIsInChain");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pVertex", pVertex);
 
         boolean found = pVertex == getStartVertex();
@@ -408,7 +408,7 @@ public class PixelChain implements Serializable {
             }
         }
 
-        mLogger.exiting(mClassname, "checkVertexIsInChain", found);
+        Framework.logExit(mLogger);
         return found;
     }
 
@@ -450,7 +450,7 @@ public class PixelChain implements Serializable {
     }
 
     public void deleteVertex(final IVertex pVertex) {
-        mLogger.entering(mClassname, "deleteVertex");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pVertex", pVertex);
 
         if (pVertex.getPixelChain() != this) {
@@ -490,7 +490,7 @@ public class PixelChain implements Serializable {
 
         reCalcSegments();
         validate();
-        mLogger.exiting(mClassname, "deleteVertex");
+        Framework.logExit(mLogger);
     }
 
     public Pixel firstPixel() {
@@ -616,9 +616,9 @@ public class PixelChain implements Serializable {
     }
 
     public int getSegmentCount() {
-        mLogger.entering(mClassname, "segmentCount");
+        Framework.logEntry(mLogger);
         final int result = mSegments.size();
-        mLogger.exiting(mClassname, "segmentCount", result);
+        Framework.logExit(mLogger);
         return result;
     }
 
@@ -667,7 +667,7 @@ public class PixelChain implements Serializable {
     // }
 
     public double getWidth() {
-        mLogger.entering(mClassname, "getWidth");
+        Framework.logEntry(mLogger);
 
         double width = 0.0d;
         switch (getThickness()) {
@@ -682,14 +682,14 @@ public class PixelChain implements Serializable {
                 break;
         }
 
-        mLogger.exiting(mClassname, "getWidth", width);
+        Framework.logExit(mLogger);
         return width;
 
     }
 
     // TODO can remove the pSelectedVertex from this as this is drawn separately .. The reason for this is that the selected Vertex might be behind a non=selected one.
     //   public void grafittiVertexsAndControlLines(final EPMDGraphicsHelper pEPMD) {
-//        mLogger.entering(mClassname, "grafittiVertexsAndControlLines");
+//        Framework.logEntry(mLogger);
 //
 //        // the vertexes are drawn on afterwards so they appear on top
 //        pEPMD.graffitiVertex(getStartVertex());
@@ -697,7 +697,7 @@ public class PixelChain implements Serializable {
 //            pEPMD.graffitiVertex(segment.getEndVertex());
 //        }
 //
-//        mLogger.exiting(mClassname, "grafittiVertexsAndControlLines");
+//        Framework.logExit(mLogger);
     //   }
 
     public void indexSegments() {
@@ -1161,12 +1161,12 @@ public class PixelChain implements Serializable {
     }
 
     // public void setStartVertex(final Vertex pStartVertex) {
-    // mLogger.entering(mClassname, "setStartVertex");
+    // Framework.logEntry(mLogger);
     // Framework.logParams(mLogger, "pStartVertex", pStartVertex);
     //
     // mStartVertex = pStartVertex;
     //
-    // mLogger.exiting(mClassname, "setStartVertex");
+    // Framework.logExit(mLogger);
     // }
 
     /**
@@ -1216,7 +1216,7 @@ public class PixelChain implements Serializable {
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
-        mLogger.entering(mClassname, "setPixelMap");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pPixelMap", pPixelMap);
 
         if (pPixelMap == null) {
@@ -1238,11 +1238,11 @@ public class PixelChain implements Serializable {
             segment.getEndPixel().setPixelMap(pPixelMap);
         }
 
-        mLogger.exiting(mClassname, "setPixelMap");
+        Framework.logExit(mLogger);
     }
 
     public void setStartNode(final Node pNode) {
-        mLogger.entering(mClassname, "setStartNode");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pNode", pNode);
 
         if (mStartNode != null) {
@@ -1256,7 +1256,7 @@ public class PixelChain implements Serializable {
         add(pNode);
         mStartVertex = Vertex.createVertex(this, 0);
 
-        mLogger.exiting(mClassname, "setStartNode");
+        Framework.logExit(mLogger);
     }
 
     private void setStartVertex(final IVertex pVertex) {
@@ -1264,7 +1264,7 @@ public class PixelChain implements Serializable {
     }
 
     public void setThickness(final int pThinLength, final int pNormalLength, final int pLongLength) {
-        mLogger.entering(mClassname, "setThickness");
+        Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pNormalLength, pLongLength", pNormalLength, pLongLength);
 
         if (length() < pThinLength) {
@@ -1277,7 +1277,7 @@ public class PixelChain implements Serializable {
             mThickness = Thickness.Thick;
         }
 
-        mLogger.exiting(mClassname, "setThickness");
+        Framework.logExit(mLogger);
     }
 
     public void setThickness(final Thickness thickness) {

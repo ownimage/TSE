@@ -16,8 +16,7 @@ public class FileType extends StringType {
 	}
 
 
-	public final static String mClassname = FileType.class.getName();
-	public final static Logger mLogger = Framework.getLogger();
+    public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;;
 

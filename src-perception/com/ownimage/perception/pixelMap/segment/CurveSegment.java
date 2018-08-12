@@ -21,7 +21,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
 public class CurveSegment extends SegmentBase {
 
 
-    public final static String mClassname = CurveSegment.class.getName();
+
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
@@ -172,8 +172,8 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public Point getControlPoint() {
-        mLogger.entering(mClassname, "getControlPoint");
-        mLogger.exiting(mClassname, "getControlPoint");
+        Framework.logEntry(mLogger);
+        Framework.logExit(mLogger);
         return getP1();
     }
 
@@ -278,9 +278,9 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public void setControlPoint(final Point pPoint) {
-        mLogger.entering(mClassname, "setControlPoint");
+        Framework.logEntry(mLogger);
         setP1(pPoint);
-        mLogger.exiting(mClassname, "setControlPoint");
+        Framework.logExit(mLogger);
     }
 
     public void setP1(final Point pP1) {

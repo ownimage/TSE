@@ -22,7 +22,6 @@ import com.ownimage.framework.util.Framework;
 public class ObjectMetaType<R> implements IMetaType<R> {
 
 
-    public final static String mClassname = ObjectMetaType.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

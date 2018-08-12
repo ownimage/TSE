@@ -18,7 +18,6 @@ import com.ownimage.framework.view.factory.ViewFactory;
 public class FileControl extends ControlBase<FileControl, FileType, StringMetaType, String, IView> {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

@@ -17,7 +17,6 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
 public class DoubleCurveSegment extends SegmentBase {
 
 
-    public final static String mClassname = DoubleCurveSegment.class.getName();
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 

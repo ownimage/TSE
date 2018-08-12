@@ -21,7 +21,6 @@ import com.ownimage.perception.math.KMath;
 public class DoubleType extends TypeBase<DoubleMetaType, Double> {
 
 
-    public final static String mClassname = DoubleType.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

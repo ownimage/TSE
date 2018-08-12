@@ -39,7 +39,6 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 		implements IControl<C, T, M, R> {
 
 
-    public final static String mClassname = ControlBase.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 
 	public final static long serialVersionUID = 1L;

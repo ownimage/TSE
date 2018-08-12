@@ -19,7 +19,6 @@ import com.ownimage.framework.util.Framework;
 public class ObjectStringMetaType extends ObjectMetaType<String> {
 
 
-    public final static String mClassname = ObjectStringMetaType.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

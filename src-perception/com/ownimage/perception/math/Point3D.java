@@ -10,7 +10,6 @@ import com.ownimage.framework.util.Framework;
 public class Point3D extends Tuple3D<Point3D> {
 
 
-    public final static String mClassname = Point3D.class.getName();
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 

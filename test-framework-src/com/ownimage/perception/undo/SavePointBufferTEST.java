@@ -16,12 +16,13 @@ import org.junit.Test;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.undo.IUndoRedoAction;
 import com.ownimage.framework.undo.SavePointBuffer;
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
 
 public class SavePointBufferTEST {
 
-	public final static String mClassname = SavePointBufferTEST.class.getName();
-	public final static Logger mLogger = Logger.getLogger(mClassname);
+
+	public final static Logger mLogger = Framework.getLogger();
 
 	private SavePointBuffer mSavePointBuffer;
 	private UndoRedoActionSequenceASSISTANT[] mUndoRedoActions;
