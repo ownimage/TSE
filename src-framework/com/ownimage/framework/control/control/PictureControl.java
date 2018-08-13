@@ -176,4 +176,9 @@ public class PictureControl
         return mValue.getSize();
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%s %s]", getDisplayName(), System.identityHashCode(this));
+    }
+
 }

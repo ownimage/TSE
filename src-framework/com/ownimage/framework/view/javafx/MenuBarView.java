@@ -41,7 +41,8 @@ public class MenuBarView implements IView {
 		Iterator<IMenuItem> menuIterator = mMenuControl.getChildIterator();
 		while (menuIterator.hasNext()) {
 			MenuControl menuControl = (MenuControl) menuIterator.next();
-			mLogger.info(() -> "Menu created: " + menuControl.getDisplayName());
+            mUI.getMenus().add(((MenuView) menuControl.createMenuView()).getUI());
+            mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
 		}
 
 		mUI.useSystemMenuBarProperty().set(true);

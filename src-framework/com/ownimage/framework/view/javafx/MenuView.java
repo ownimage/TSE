@@ -54,11 +54,11 @@ public class MenuView implements IView {
 				ActionControl actionControl = (ActionControl) child;
 				MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
 				menu.getItems().add(menuItem.getUI());
-                mLogger.info(() -> "Menu created: " + actionControl.getDisplayName());
+                mLogger.fine(() -> "Menu created: " + actionControl.getDisplayName());
 
 			} else if (child instanceof MenuControl) {
 				MenuControl menuControl = (MenuControl) child;
-                mLogger.info(() -> "Menu created: " + menuControl.getDisplayName());
+                mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
 				MenuView subMenu = (MenuView) menuControl.createMenuView();
 				menu.getItems().add(subMenu.getUI());
 			}

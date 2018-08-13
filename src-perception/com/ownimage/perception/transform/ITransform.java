@@ -45,9 +45,5 @@ public interface ITransform extends IBatchTransform, IPersist { // extends , IGr
      */
     void updatePreview();
 
-    /*
-     * This is called once after construction to let the Transform know that it should start processing event properly.
-     */
-    void setInitialized();
-
+    boolean isInitialized();
 }

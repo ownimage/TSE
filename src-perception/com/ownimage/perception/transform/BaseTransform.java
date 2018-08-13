@@ -100,7 +100,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     @Override
     public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
-        if (!isInitalized()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -230,6 +230,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return cs != null && cs.isControlSelected(pControl);
     }
 
+    @Override
     public boolean isInitialized() {
         return getPreviousTransform() != null;
     }
@@ -367,6 +368,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return mIsMutating;
     }
 
+    protected boolean isNotMutating() {
+        return !mIsMutating;
+    }
+
     protected void setMutating(final boolean pIsMutating) {
         this.mIsMutating = pIsMutating;
     }
@@ -376,12 +381,4 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return 1;
     }
 
-    public void setInitialized() {
-        setValues();
-        mIsInitialized = true;
-    }
-
-    private boolean isInitalized() {
-        return mIsInitialized;
-    }
 }

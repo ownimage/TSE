@@ -132,7 +132,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		int index = getSelectedIndex() + 1;
 		mTransforms.add(index, transform);
 		setPreviousTransforms();
-        transform.setInitialized();
 		redraw();
         setSelectedIndex(index);
 		mPerception.refreshPreview();
@@ -262,7 +261,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 			for (i = 0; i < mTransforms.size(); i++) {
 				ITransform transform = mTransforms.get(i);
 				transform.read(pDB, "transform." + i);
-                transform.setInitialized();
 			}
 
 			setSelectedIndex(pDB.read(pId + ".selectedContainer"));

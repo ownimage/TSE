@@ -139,12 +139,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void updatePreview() {
-        if (getPreviewSize() != mPictureControl.getWidth()) {
-            final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
-            mPictureControl.setValue(pictureType);
+        if (mTransform.isInitialized()) {
+            if (getPreviewSize() != mPictureControl.getWidth()) {
+                final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
+                mPictureControl.setValue(pictureType);
+            }
+            Perception.getPerception().getRenderService().transform(mPictureControl, mCropTransform);
         }
-        setCrop();
-        Perception.getPerception().getRenderService().transform(mPictureControl, mCropTransform);
     }
 
     @Override
@@ -195,8 +196,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-        mLogger.info(() -> "controlChanteEvent for " + pControl.getDisplayName());
-        updatePreview();
+        mLogger.fine(() -> "controlChanteEvent for " + pControl.getDisplayName());
+
+        if (pControl == mViewOriginX || pControl == mViewOriginY || pControl == mZoom || pControl == mPreviewSize) {
+            setCrop();
+            updatePreview();
+        }
     }
 
     @Override
@@ -311,7 +316,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private Optional<Pixel> eventXYToPixel(int pX, int pY) {
         int x = getViewOriginX() + (pX * getWidth() / (getZoom() * getPreviewSize()));
         int y = getViewOriginY() + (pY * getHeight() / (getZoom() * getPreviewSize()));
-        mLogger.info(() -> String.format("pEvent = %d, %d, x = %d, y = %d\n", pX, pY, x, y));
         return mPixelMap.getOptionalPixelAt(x, y);
     }
 
@@ -321,7 +325,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             double right = left + 1.0d / getZoom();
             double bottom = (double) getViewOriginY() / getHeight();
             double top = bottom + 1.0d / getZoom();
-            mLogger.info(() -> String.format("left = %s, right = %s, bottom = %s, top = %s", left, right, bottom, top));
             mCropTransform.setCrop(left, bottom, right, top);
         }
     }

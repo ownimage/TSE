@@ -175,7 +175,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         // mLogger.fine("CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " +
         // pIsMutating);
         //
-        if (!isMutating()) {
+        if (isInitialized() && !isMutating()) {
             try {
                 // if (!isInitialized()) { return; }
                 //
@@ -226,7 +226,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                     }
                 }
             } finally {
-                CannyEdgeTransform.super.controlChangeEvent(pControl, pIsMutating);
+                super.controlChangeEvent(pControl, pIsMutating);
             }
         }
     }

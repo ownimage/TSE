@@ -63,6 +63,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName,
                                final String pPropertyName) {
         super(pDisplayName, pPropertyName, pParent);
+        Framework.checkParameterNotNull(mLogger, pParent, "pParent");
 
         mTransform = pParent;
 
@@ -85,22 +86,28 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         mGaussianKernelWidth = new IntegerControl("Gaussian Kernal Width", "gausianKernelWidth", mControlContainer, 2, 2, 15, 1);
         mContrastNormalized = new BooleanControl("Contrast Normalized", "contrastNormalized", mControlContainer, false);
 
-        updatePreview();
+        if (mTransform.isInitialized()) {
+            updatePreview();
+        }
     }
 
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-        mLogger.fine("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent "
-                             + pControl == null ? "null" : pControl.getDisplayName() + " " + pIsMutating);
+        mLogger.fine(String.format("CannyEdgeTransform.ETControlContainerDialog::controlChangeEvent(%s, %s)"
+                , pControl == null ? "null" : pControl.getDisplayName()
+                , pIsMutating
+        ));
 
         if (pControl == mPreviewPositionX || pControl == mPreviewPositionY || pControl == mPreviewPicture) {
             // ignore these preview position updates are handled my the mouse drag event
             return;
         }
-        if (pControl == mPreviewSize) {
-            getTransform().redrawGrafitti();
+        if (getTransform().isInitialized()) {
+            if (pControl == mPreviewSize) {
+                getTransform().redrawGrafitti();
+            }
+            mPreviewPicture.setValue(updatePreview());
         }
-        mPreviewPicture.setValue(updatePreview());
     }
 
     public ICannyEdgeDetector createCannyEdgeDetector(final CannyEdgeDetectorFactory.Type type) {

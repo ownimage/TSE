@@ -204,9 +204,15 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         mLogFileLevel.setValue(logFileLevel);
         mLogFileHandler.setLevel(logFileLevel);
 
+        String frameworkLoggerName = mLogger.getName();
+        String frameworkLoggerLevel = pProperties.getProperty(frameworkLoggerName);
+        if (isValidLevelString(frameworkLoggerLevel))
+            setLevel(frameworkLoggerName, frameworkLoggerLevel);
+
         pProperties.entrySet().stream()
                 .filter(e -> isValidLevelString(e.getValue().toString()))
                 .filter(e -> ((String) e.getKey()).contains("."))
+                .filter(e -> !frameworkLoggerName.equals(e.getKey()))
                 .forEach(e -> setLevel(e.getKey().toString(), e.getValue().toString()));
     }
 
@@ -231,7 +237,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         mDialogHandler.setLevel(Level.FINEST);
         mConsoleHandler.setLevel(Level.FINEST);
         mConsoleHandler.setFormatter(new PerceptionFormatter());
-        logger.log(pLevel, "Logger: " + pName + " level set to: " + pLevel);
+        mLogger.info(() -> "Logger: " + pName + " level set to: " + pLevel);
     }
 
     public void setLevel(final String pName, final String pLevel) {
