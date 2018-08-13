@@ -29,11 +29,7 @@ public class MenuView implements IView {
 			throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar not set.");
 		}
 
-		if (!pMenuControl.isLocked()) {
-			throw new IllegalArgumentException("pMenuBar must locked.");
-		}
 		mMenuControl = pMenuControl;
-
 		createView();
 	}
 

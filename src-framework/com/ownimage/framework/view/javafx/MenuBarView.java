@@ -23,9 +23,7 @@ public class MenuBarView implements IView {
 
 		if (!pMenuControl.isMenuBar()) { throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar set."); }
 
-		if (!pMenuControl.isLocked()) { throw new IllegalArgumentException("pMenuBar must locked."); }
 		mMenuControl = pMenuControl;
-
 		createView();
 	}
 

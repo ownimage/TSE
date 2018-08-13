@@ -10,127 +10,104 @@ import com.ownimage.framework.view.factory.ViewFactory;
 
 public class MenuControl implements IMenuItem, IViewable {
 
-	private final Vector<IMenuItem> mMenuItems = new Vector<IMenuItem>(10);
+    private String mDisplayName;
+    private final Vector<IMenuItem> mMenuItems = new Vector<>(10);
 
-	private String mDisplayName;
-	private boolean mIsLocked = false;
-	private boolean mIsMenuBar = false;
-	private IView mView;
+    private IView mView;
 
-	/**
-	 * Instantiates a new MenuBar. This is a top level Menu that can only have Menus as children and is used as the main menu for an
-	 * application.
-	 */
-	public MenuControl() {
-		mDisplayName = "";
-		mIsMenuBar = true;
-	}
+    /**
+     * Instantiates a new MenuBar. This is a top level Menu that can only have Menus as children and is used as the main menu for an
+     * application.
+     */
+    private MenuControl() {
+        mDisplayName = "";
+    }
 
-	private MenuControl(final boolean pIsMenuBar) {
-		mIsMenuBar = pIsMenuBar;
-	}
+    public static class Builder {
 
-	/**
-	 * Instantiates a new Menu.
-	 *
-	 * @param pDisplayName
-	 *            the display name
-	 */
-	public MenuControl(final String pDisplayName) {
-		if (pDisplayName == null || pDisplayName.length() == 0) {
-			throw new IllegalArgumentException("pDisplayName must not be null or zero length.");
-		}
+        private MenuControl mMenuControl;
 
-		mDisplayName = pDisplayName;
-	}
+        public Builder() {
+            mMenuControl = new MenuControl();
+        }
 
-	public MenuControl addAction(final ActionControl pAction) {
-		if (mIsLocked) {
-			throw new IllegalStateException("Cannot add Action as this Menu is locked.");
-		}
+        public Builder(MenuControl pMenuControl) {
+            mMenuControl = new MenuControl();
+            mMenuControl.mDisplayName = pMenuControl.mDisplayName;
+            mMenuControl.mMenuItems.addAll(pMenuControl.mMenuItems);
+        }
 
-		if (pAction == null) {
-			throw new IllegalArgumentException("pAction must not be null");
-		}
+        public Builder setDisplayName(final String pDisplayName) {
+            if (pDisplayName == null || pDisplayName.length() == 0) {
+                throw new IllegalArgumentException("pDisplayName must not be null or zero length.");
+            }
+            mMenuControl.mDisplayName = pDisplayName;
+            return this;
+        }
 
-		mMenuItems.add(pAction);
-		return this;
-	}
+        public Builder addAction(final ActionControl pAction) {
+            if (pAction == null) {
+                throw new IllegalArgumentException("pAction must not be null");
+            }
 
-	public MenuControl addMenu(final MenuControl pMenu) {
-		if (pMenu == null) {
-			throw new IllegalArgumentException("pMenu must not be null");
-		}
+            mMenuControl.mMenuItems.add(pAction);
+            return this;
+        }
 
-		if (isLocked()) {
-			throw new IllegalStateException("Cannot add Action as this Menu is locked.");
-		}
+        public Builder addMenu(final MenuControl pMenu) {
+            if (pMenu == null) {
+                throw new IllegalArgumentException("pMenu must not be null");
+            }
 
-		if (!pMenu.isLocked()) {
-			throw new IllegalArgumentException("pMenu must be locked");
-		}
+            if (pMenu.isMenuBar()) {
+                throw new IllegalArgumentException("Cannot add a Menu which is a MenuBar to a Menu.");
+            }
 
-		if (pMenu.isMenuBar()) {
-			throw new IllegalArgumentException("Cannot add a Menu which is a MenuBar to a Menu.");
-		}
+            mMenuControl.mMenuItems.add(pMenu);
+            return this;
+        }
 
-		mMenuItems.add(pMenu);
-		return this;
-	}
+        public MenuControl build() {
+            return new Builder(mMenuControl).mMenuControl;
+        }
+    }
 
-	public IView createMenuView() {
-		if (!isLocked()) {
-			throw new IllegalArgumentException("pMenu must be locked to createView");
-		}
+    public IView createMenuView() {
+        mView = ViewFactory.getInstance().createMenuView(this);
+        return mView;
+    }
 
-		mView = ViewFactory.getInstance().createMenuView(this);
-		return mView;
-	}
+    @Override
+    public IView createView() {
+        mView = ViewFactory.getInstance().createView(this);
+        return mView;
+    }
 
-	@Override
-	public IView createView() {
-		if (!isLocked()) {
-			throw new IllegalArgumentException("pMenu must be locked to createView");
-		}
+    public Iterator<IMenuItem> getChildIterator() {
+        return mMenuItems.iterator();
+    }
 
-		mView = ViewFactory.getInstance().createView(this);
-		return mView;
-	}
+    @Override
+    public String getDisplayName() {
+        return mDisplayName;
+    }
 
-	public Iterator<IMenuItem> getChildIterator() {
-		return mMenuItems.iterator();
-	}
 
-	@Override
-	public String getDisplayName() {
-		return mDisplayName;
-	}
+    public boolean isMenuBar() {
+        return "".equals(mDisplayName);
+    }
 
-	public boolean isLocked() {
-		return mIsLocked;
-	}
+    public MenuControl setEnabled(final boolean pEnabled) {
+        if (mView != null) {
+            mView.setEnabled(pEnabled);
+        }
+        return this;
+    }
 
-	public boolean isMenuBar() {
-		return mIsMenuBar;
-	}
-
-	public MenuControl lock() {
-		mIsLocked = true;
-		return this;
-	}
-
-	public MenuControl setEnabled(final boolean pEnabled) {
-		if (mView != null) {
-			mView.setEnabled(pEnabled);
-		}
-		return this;
-	}
-
-	public MenuControl setVisible(final boolean pVisible) {
-		if (mView != null) {
-			mView.setVisible(pVisible);
-		}
-		return this;
-	}
-
+    public MenuControl setVisible(final boolean pVisible) {
+        if (mView != null) {
+            mView.setVisible(pVisible);
+        }
+        return this;
+    }
 }

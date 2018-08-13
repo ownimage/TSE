@@ -25,211 +25,216 @@ import com.ownimage.framework.view.IView;
 
 public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProvider {
 
-	public final static Logger mLogger = Framework.getLogger();
+    public final static Logger mLogger = Framework.getLogger();
 
 
     private UndoRedoBuffer mUndoRedoBuffer;
 
-	private int mX;
-	private int mY;
-	private int mWidth;
+    private int mX;
+    private int mY;
+    private int mWidth;
 
-	private int mHeight;
-	private String mTitle;
-	protected IAppControlView mAppControlView;
+    private int mHeight;
+    private String mTitle;
+    protected IAppControlView mAppControlView;
 
-	private MenuControl mMenu;
+    private MenuControl mMenu;
 
-	private IView mContent;
+    private IView mContent;
 
-	public AppControlBase(final String pTitle) {
-		setTitle(pTitle);
-		setSize();
+    public AppControlBase(final String pTitle) {
+        setTitle(pTitle);
+        setSize();
 
-	}
+    }
 
-	protected IView createContentView() {
-		Container container = new Container("x", "x", this);
-		ColorControl colorControl = new ColorControl("x", "x", container, Color.ORANGE);
+    protected IView createContentView() {
+        Container container = new Container("x", "x", this);
+        ColorControl colorControl = new ColorControl("x", "x", container, Color.ORANGE);
 
-		NamedTabs namedTabs = new NamedTabs("Test", "test");
-		namedTabs.addTab("one", container);
-		namedTabs.addTab("two", container);
-		namedTabs.setSelectedIndex(1);
+        NamedTabs namedTabs = new NamedTabs("Test", "test");
+        namedTabs.addTab("one", container);
+        namedTabs.addTab("two", container);
+        namedTabs.setSelectedIndex(1);
 
-		HSplitLayout hsplit = new HSplitLayout(namedTabs, namedTabs);
+        HSplitLayout hsplit = new HSplitLayout(namedTabs, namedTabs);
 
-		return hsplit.createView();
-	}
+        return hsplit.createView();
+    }
 
-	protected MenuControl createMenuView() {
-		Container menuContainer = new Container("AppControlBase", "AppControlBase", this);
+    protected MenuControl createMenuView() {
+        Container menuContainer = new Container("AppControlBase", "AppControlBase", this);
 
-		MenuControl fileSubMenu = new MenuControl("File Sub");
-		fileSubMenu.addAction(new ActionControl("Exit", "exit", menuContainer, () -> exit()));
-		fileSubMenu.lock();
+        MenuControl menu = new MenuControl.Builder()
+                .addMenu(
+                        new MenuControl.Builder().setDisplayName("File")
+                                .addMenu(
+                                        new MenuControl.Builder().setDisplayName("File Sub")
+                                                .addAction(new ActionControl("Exit", "exit", menuContainer, this::exit))
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
 
-		MenuControl fileMenu = new MenuControl("File");
-		fileMenu.addMenu(fileSubMenu);
-		fileMenu.lock();
+        return menu;
 
-		MenuControl menu = new MenuControl();
-		menu.addMenu(fileMenu);
-		menu.lock();
+    }
 
-		return menu;
+    protected void dialogOKCancel(final String pTitle, final String pMessage, final IAction pOKAction, final IAction pCancelAction) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+        Framework.checkParameterNotNull(mLogger, pMessage, "pMessage");
+        Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
+        Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
-	}
+        Container dialogContainer = new Container(pTitle, "title", this);
 
-	protected void dialogOKCancel(final String pTitle, final String pMessage, final IAction pOKAction, final IAction pCancelAction) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkParameterNotNull(mLogger, pMessage, "pMessage");
-		Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
-		Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
+        StringControl message = new StringControl("Message", "message", dialogContainer, new StringType(pMessage, StringType.LABEL));
+        ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
+        ActionControl cancel = ActionControl.create("Cancel", NullContainer, pCancelAction);
 
-		Container dialogContainer = new Container(pTitle, "title", this);
+        showDialog(dialogContainer, DialogOptions.NONE, cancel, ok);
 
-		StringControl message = new StringControl("Message", "message", dialogContainer, new StringType(pMessage, StringType.LABEL));
-		ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
-		ActionControl cancel = ActionControl.create("Cancel", NullContainer, pCancelAction);
+        Framework.logExit(mLogger);
+    }
 
-		showDialog(dialogContainer, DialogOptions.NONE, cancel, ok);
+    private void exit() {
+        System.exit(0);
+    }
 
-		Framework.logExit(mLogger);
-	}
+    protected void fileExistsCheck(final File pFile, final String pTitle, final IAction pOKAction, final IAction pCancelAction) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
+        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+        Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
+        Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
-	private void exit() {
-		System.exit(0);
-	}
+        if (pFile.exists()) {
+            String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
+            dialogOKCancel(pTitle, message, pOKAction, pCancelAction);
+        } else {
+            pOKAction.performAction();
+        }
 
-	protected void fileExistsCheck(final File pFile, final String pTitle, final IAction pOKAction, final IAction pCancelAction) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pFile, "pFile");
-		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
-		Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
+        Framework.logExit(mLogger);
 
-		if (pFile.exists()) {
-			String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
-			dialogOKCancel(pTitle, message, pOKAction, pCancelAction);
-		} else {
-			pOKAction.performAction();
-		}
+    }
 
-		Framework.logExit(mLogger);
+    @Override
+    public IView getContent() {
+        // note the lazy instantiation is because some UIs fail if content created too early
+        if (mContent == null) {
 
-	}
+            mContent = createContentView();
+            if (mContent == null) {
+                throw new IllegalStateException("createContentView() must not return null.");
+            }
+        }
+        return mContent;
+    }
 
-	@Override
-	public IView getContent() {
-		// note the lazy instantiation is because some UIs fail if content created too early
-		if (mContent == null) {
+    @Override
+    public int getHeight() {
+        return mHeight;
+    }
 
-			mContent = createContentView();
-			if (mContent == null) { throw new IllegalStateException("createContentView() must not return null."); }
-		}
-		return mContent;
-	}
+    @Override
+    public MenuControl getMenu() {
+        if (mMenu == null) {
+            mMenu = createMenuView();
+            if (mMenu == null) {
+                throw new IllegalStateException("createMenuView() must not return null.");
+            }
+            if (!mMenu.isMenuBar()) {
+                throw new IllegalStateException("createMenuView() needs to return a menuBar.");
+            }
+        }
+        return mMenu;
+    }
 
-	@Override
-	public int getHeight() {
-		return mHeight;
-	}
+    @Override
+    public String getTitle() {
+        return mTitle;
+    }
 
-	@Override
-	public MenuControl getMenu() {
-		if (mMenu == null) {
-			mMenu = createMenuView();
-			if (mMenu == null) { throw new IllegalStateException("createMenuView() must not return null."); }
-			if (!mMenu.isLocked()) { throw new IllegalStateException("createMenuView() needs to return a locked menu."); }
-			if (!mMenu.isMenuBar()) { throw new IllegalStateException("createMenuView() needs to return a menuBar."); }
-		}
-		return mMenu;
-	}
+    @Override
+    public synchronized UndoRedoBuffer getUndoRedoBuffer() {
+        Framework.logEntry(mLogger);
 
-	@Override
-	public String getTitle() {
-		return mTitle;
-	}
+        if (mUndoRedoBuffer == null) {
+            mLogger.fine("Creating UndoRedoBuffer");
+            mUndoRedoBuffer = new UndoRedoBuffer(100);
+        }
 
-	@Override
-	public synchronized UndoRedoBuffer getUndoRedoBuffer() {
-		Framework.logEntry(mLogger);
+        Framework.logExit(mLogger);
+        return mUndoRedoBuffer;
+    }
 
-		if (mUndoRedoBuffer == null) {
-			mLogger.fine("Creating UndoRedoBuffer");
-			mUndoRedoBuffer = new UndoRedoBuffer(100);
-		}
+    @Override
+    public int getWidth() {
+        return mWidth;
+    }
 
-		Framework.logExit(mLogger);
-		return mUndoRedoBuffer;
-	}
+    @Override
+    public int getX() {
+        return mX;
+    }
 
-	@Override
-	public int getWidth() {
-		return mWidth;
-	}
+    @Override
+    public int getY() {
+        return mY;
+    }
 
-	@Override
-	public int getX() {
-		return mX;
-	}
+    @Override
+    public void setHeight(final int pHeight) {
+        mHeight = pHeight;
+    }
 
-	@Override
-	public int getY() {
-		return mY;
-	}
+    protected void setSize() {
+        mX = 300;
+        mY = 300;
+        mHeight = 300;
+        mWidth = 300;
+    }
 
-	@Override
-	public void setHeight(final int pHeight) {
-		mHeight = pHeight;
-	}
+    private void setTitle(final String pTitle) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
+        Framework.checkParameterGreaterThan(mLogger, pTitle.length(), 0, "pTitle.length()=%d, it must not be must not zero.");
 
-	protected void setSize() {
-		mX = 300;
-		mY = 300;
-		mHeight = 300;
-		mWidth = 300;
-	}
+        mTitle = pTitle;
+        Framework.logExit(mLogger);
+    }
 
-	private void setTitle(final String pTitle) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-		Framework.checkParameterGreaterThan(mLogger, pTitle.length(), 0, "pTitle.length()=%d, it must not be must not zero.");
+    @Override
+    public void setView(final IAppControlView pAppControlView) {
+        Framework.checkParameterNotNull(mLogger, pAppControlView, "pAppControlView");
+        Framework.checkStateNoChangeOnceSet(mLogger, mAppControlView, "mAppControlView");
+        mAppControlView = pAppControlView;
+    }
 
-		mTitle = pTitle;
-		Framework.logExit(mLogger);
-	}
+    @Override
+    public void setWidth(final int pWidth) {
+        mWidth = pWidth;
+    }
 
-	@Override
-	public void setView(final IAppControlView pAppControlView) {
-		Framework.checkParameterNotNull(mLogger, pAppControlView, "pAppControlView");
-		Framework.checkStateNoChangeOnceSet(mLogger, mAppControlView, "mAppControlView");
-		mAppControlView = pAppControlView;
-	}
+    @Override
+    public void setX(final int pX) {
+        mX = pX;
+    }
 
-	@Override
-	public void setWidth(final int pWidth) {
-		mWidth = pWidth;
-	}
+    @Override
+    public void setY(final int pY) {
+        mY = pY;
+    }
 
-	@Override
-	public void setX(final int pX) {
-		mX = pX;
-	}
+    public void showDialog(final IViewable pViewable, final DialogOptions pOptions, final ActionControl... pButtons) {
+        mAppControlView.showDialog(pViewable, pOptions, pButtons);
+    }
 
-	@Override
-	public void setY(final int pY) {
-		mY = pY;
-	}
-
-	public void showDialog(final IViewable pViewable, final DialogOptions pOptions, final ActionControl... pButtons) {
-		mAppControlView.showDialog(pViewable, pOptions, pButtons);
-	}
-
-	public void showDialog(final IViewable pViewable, final DialogOptions pOptions, final UndoRedoBuffer pUndoRedoBuffer, final ActionControl... pButtons) {
-		mAppControlView.showDialog(pViewable, pOptions, pUndoRedoBuffer, pButtons);
-	}
+    public void showDialog(final IViewable pViewable, final DialogOptions pOptions, final UndoRedoBuffer pUndoRedoBuffer, final ActionControl... pButtons) {
+        mAppControlView.showDialog(pViewable, pOptions, pUndoRedoBuffer, pButtons);
+    }
 
 }

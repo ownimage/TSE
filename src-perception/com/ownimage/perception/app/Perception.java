@@ -111,22 +111,22 @@ public class Perception extends AppControlBase {
 
         Container menuContainer = new Container("MainMenu", "mainMenu", this);
 
-        MenuControl menu = new MenuControl()
-                .addMenu(new MenuControl("File")
+        MenuControl menu = new MenuControl.Builder()
+                .addMenu(new MenuControl.Builder().setDisplayName("File")
                                  .addAction(new ActionControl("Open", "fileOpen", menuContainer, this::fileOpen))
                                  .addAction(new ActionControl("Save", "fileSave", menuContainer, this::fileSave))
                                  .addAction(new ActionControl("Save As", "fileSaveAs", menuContainer, this::fileSaveAs))
                                  .addAction(new ActionControl("Exit", "fileExit", menuContainer, this::fileExit))
                                  .addAction(new ActionControl("Redraw", "redraw", menuContainer, this::fileRedraw))
-                                 .lock())
+                                 .build())
 
-                .addMenu(new MenuControl("Transform")
+                .addMenu(new MenuControl.Builder().setDisplayName("Transform")
                                  .addAction(new ActionControl("Open", "transformOpen", menuContainer, this::transformOpen))
                                  .addAction(new ActionControl("Save", "transformSave", menuContainer, this::transformSave))
                                  .addAction(new ActionControl("Save As", "SaveAs", menuContainer, this::transformSaveAs))
-                                 .lock())
+                                 .build())
 
-                .addMenu(new MenuControl("Properties")
+                .addMenu(new MenuControl.Builder().setDisplayName("Properties")
                                  .addAction(new ActionControl("Edit", "propertiesEdit", menuContainer, this::propertiesEdit))
                                  .addAction(new ActionControl("Open", "propertiesOpen", menuContainer, this::propertiesOpen))
                                  .addAction(new ActionControl("Save", "propertiesSave", menuContainer, this::propertiesSave))
@@ -134,18 +134,17 @@ public class Perception extends AppControlBase {
                                  .addAction(new ActionControl("Save Default", "propertiesSaveDefault", menuContainer, this::propertiesSaveDefault))
                                  .addAction(new ActionControl("Load Default", "propertiesLoadDefault", menuContainer, this::propertiesOpenSystemDefault))
                                  .addAction(new ActionControl("Reset to System Default", "propertiesResetToSystemDefault", menuContainer, this::propertiesResetToSystemDefault))
-                                 .lock())
+                                 .build())
 
-                .addMenu(new MenuControl("Logging")
+                .addMenu(new MenuControl.Builder().setDisplayName("Logging")
                                  .addAction(new ActionControl("Edit", "loggingEdit", menuContainer, this::loggingEdit))
                                  .addAction(new ActionControl("Open Default", "loggingOpenDefault", menuContainer, this::loggingOpenDefault))
                                  .addAction(new ActionControl("Open", "loggingOpen", menuContainer, this::loggingOpenDefault))
                                  .addAction(mLoggingSaveDefaultAction)
                                  .addAction(mLoggingSaveAsAction)
                                  .addAction(new ActionControl("Test", "loggingTest", menuContainer, this::loggingTest))
-                                 .lock())
-
-                .lock();
+                                 .build())
+                .build();
 
         Framework.logExit(mLogger);
         return menu;
