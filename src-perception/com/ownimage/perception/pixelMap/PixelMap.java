@@ -1431,6 +1431,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 }
 
                 mLogger.info("mSegmentCount = " + mSegmentCount);
+                calcSegmentIndex();
 
             }
 
