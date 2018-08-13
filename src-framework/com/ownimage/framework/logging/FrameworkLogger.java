@@ -245,12 +245,12 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         setLevel(pName, level);
     }
 
-    public void showEditDialog(final IAppControlView mAppView, final String mPrefix) {
+    public void showEditDialog(final IAppControlView mAppView, final String mPrefix, ActionControl... pButtons) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, mAppView, "mAppView");
         Framework.checkParameterNotNull(mLogger, mPrefix, "mPrefix");
 
-        Vector<String> loggerNames = new Vector<String>();
+        Vector<String> loggerNames = new Vector<>();
         Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
@@ -288,10 +288,11 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
             }
         });
 
-        ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed"));
+        final Vector<ActionControl> buttons = new Vector<>(Arrays.asList(pButtons));
+        buttons.add(ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed")));
+        ActionControl[] buttonsArray = buttons.toArray(new ActionControl[buttons.size()]);
 
-        mAppView.showDialog(tabs, DialogOptions.NONE, ok);
-
+        mAppView.showDialog(tabs, DialogOptions.NONE, buttonsArray);
         Framework.logExit(mLogger);
     }
 

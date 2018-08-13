@@ -56,6 +56,9 @@ public class Perception extends AppControlBase {
 
     private BorderLayout mBorderLayout;
 
+    private ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
+    private ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
+
     /**
      * The absolute filename. i.e. full path.
      */
@@ -137,8 +140,8 @@ public class Perception extends AppControlBase {
                                  .addAction(new ActionControl("Edit", "loggingEdit", menuContainer, this::loggingEdit))
                                  .addAction(new ActionControl("Open Default", "loggingOpenDefault", menuContainer, this::loggingOpenDefault))
                                  .addAction(new ActionControl("Open", "loggingOpen", menuContainer, this::loggingOpenDefault))
-                                 .addAction(new ActionControl("Save Default", "loggingSaveDefault", menuContainer, this::loggingSaveDefault))
-                                 .addAction(new ActionControl("Save As", "loggingSaveAs", menuContainer, this::loggingSaveAs))
+                                 .addAction(mLoggingSaveDefaultAction)
+                                 .addAction(mLoggingSaveAsAction)
                                  .addAction(new ActionControl("Test", "loggingTest", menuContainer, this::loggingTest))
                                  .lock())
 
@@ -415,7 +418,7 @@ public class Perception extends AppControlBase {
     private void loggingEdit() {
         Framework.logEntry(mLogger);
 
-        FrameworkLogger.getInstance().showEditDialog(mAppControlView, PACKAGE_PREFIX);
+        FrameworkLogger.getInstance().showEditDialog(mAppControlView, PACKAGE_PREFIX, mLoggingSaveAsAction, mLoggingSaveDefaultAction);
 
         Framework.logExit(mLogger);
     }
