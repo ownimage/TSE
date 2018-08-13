@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane;
 
 public class IntegerView extends ViewBase<IntegerControl> {
 
-	private final HBox mUI;;
+    private final HBox mUI;
 	private final Spinner<Integer> mIntegerSpinner;
 
 	private boolean mAllowUpdates = true;
@@ -26,9 +26,9 @@ public class IntegerView extends ViewBase<IntegerControl> {
 
 		// lost focus commiting value from
 		// https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
-		SpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue());
-		TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
-		mIntegerSpinner = new Spinner<Integer>(min, max, mControl.getValue(), step);
+        SpinnerValueFactory<Integer> factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue(), step);
+        TextFormatter<Integer> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
+        mIntegerSpinner = new Spinner<>(min, max, mControl.getValue(), step);
 		mIntegerSpinner.setValueFactory(factory);
 		mIntegerSpinner.setEditable(true);
 		mIntegerSpinner.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // TODO need to fix this
