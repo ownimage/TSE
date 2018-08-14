@@ -269,11 +269,18 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         ObjectControl<Level> logLevel = new ObjectControl<>("Level", "level", levels, Level.INFO, getLogLevels());
 
         loggerName.addControlChangeListener((o, m) -> {
-            String name = ((ObjectControl<String>) o).getString();
-            Logger logger = Logger.getLogger(name);
+            Logger logger = Logger.getLogger(loggerName.getValue());
             Level level = logger.getLevel();
             if (level != null) {
                 logLevel.setValue(level);
+            }
+        });
+
+        logLevel.addControlChangeListener((c, m) -> {
+            Logger logger = Logger.getLogger(loggerName.getValue());
+            Level level = logger.getLevel();
+            if (!level.equals(logLevel.getValue())) {
+                setLevel(loggerName.getValue(), logLevel.getValue());
             }
         });
 
@@ -281,7 +288,6 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         tabs.addTab(mFileHandlerPropertiesContainer);
         tabs.addTab(levels);
 
-        new ActionControl("Set", "set", levels, () -> setLevel(loggerName.getValue(), logLevel.getValue()));
         new ActionControl("Reset All", "resetAll", levels, () -> {
             for (String name : loggerNames) {
                 setLevel(name, logLevel.getValue());
