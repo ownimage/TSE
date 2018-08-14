@@ -678,13 +678,12 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        try (FileInputStream fos = new FileInputStream(pFile)) {
-            PersistDB db = new PersistDB();
-            db.load(fos);
-            getTransformSequence().read(db, "transform");
+        try {
+            getTransformSequence().read(pFile);
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
+        refreshPreview();
 
         Framework.logExit(mLogger);
     }

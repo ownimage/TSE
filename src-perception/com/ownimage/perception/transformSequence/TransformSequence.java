@@ -7,6 +7,7 @@ package com.ownimage.perception.transformSequence;
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ViewableBase;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.ISingleSelectView;
@@ -237,6 +239,14 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		return true;
 	}
 
+	public void read(File pFile) throws Exception {
+		try (FileInputStream fos = new FileInputStream(pFile)) {
+			PersistDB db = new PersistDB();
+			db.load(fos);
+			read(db, "transform");
+		}
+	}
+
 	@Override
 	public void read(final IPersistDB pDB, final String pId) {
 		Framework.logEntry(mLogger);
@@ -245,26 +255,26 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 		mTransforms = new Vector<>();
 		mTransforms.add(save.firstElement());
 		try {
-			int i = 1;
+			int i = 0;
 			do {
 				String transformName = pDB.read("transform." + i + ".name");
-				mLogger.severe("transform." + i++ + ".name=" + transformName);
+				mLogger.info("transform." + i + ".name=" + transformName);
 				if (transformName == null) {
 					break;
 				}
-				ITransform template = mAvailableTransformNameMap.get(transformName);
-				ITransform transform = template.duplicate();
-				mTransforms.add(transform);
-
+				if (i == 0) { // imageLoad
+					mTransforms.get(0).read(pDB, "transform.0");
+				} else {
+					ITransform template = mAvailableTransformNameMap.get(transformName);
+					ITransform transform = template.duplicate();
+					transform.read(pDB, "transform." + i);
+					mTransforms.add(transform);
+				}
+				i++;
 			} while (true);
 
-			for (i = 0; i < mTransforms.size(); i++) {
-				ITransform transform = mTransforms.get(i);
-				transform.read(pDB, "transform." + i);
-			}
-
 			setSelectedIndex(pDB.read(pId + ".selectedContainer"));
-
+			redraw();
 		} catch (Throwable pT) {
 			mTransforms = save;
 			throw new RuntimeException("Transform->Open failed.", pT);
