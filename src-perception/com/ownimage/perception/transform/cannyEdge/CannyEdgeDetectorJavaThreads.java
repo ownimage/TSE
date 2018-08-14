@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.IPictureSource;
@@ -204,7 +204,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 		maxX = width - 1;// kwidth;
 		initY = kwidth;
 		maxY = height - kwidth;
-		final Properties properties = Perception.getPerception().getProperties();
+		final Properties properties = Services.getServices().getProperties();
 
 		class NonMaximalSupressionThread extends Thread {
 			private final int mInitX;

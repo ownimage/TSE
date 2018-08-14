@@ -25,6 +25,7 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
@@ -252,7 +253,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         SplitTimer.split("generateEdgesOK() start");
         PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
-        Perception.getPerception().getRenderService()
+        Services.getServices().getPerception().getRenderService()
                 .transform(inputPictureControl, getPreviousTransform(), () -> {
                     setPixelMap(null);
                     regeneratePixelMap(inputPictureControl);
@@ -556,7 +557,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
         Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
-        pGrafittiHelper.drawRectangle(r, Perception.getPerception().getProperties().getColor1());
+        pGrafittiHelper.drawRectangle(r, Services.getServices().getPerception().getProperties().getColor1());
     }
 
     private void regeneratePixelMap(final PictureControl inputPicture) {

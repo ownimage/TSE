@@ -8,6 +8,7 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,6 +34,7 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.type.ObjectStringMetaType;
 import com.ownimage.framework.control.type.ObjectType;
+import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
@@ -312,6 +314,16 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         logger.warning(pUIMessage);
         if (logger.isLoggable(Level.WARNING)) {
             logger.warning(FrameworkLogger.throwableToString(pEx));
+        }
+    }
+
+    public void write(File pFile, String pComment) {
+        try (FileOutputStream fstream = new FileOutputStream(pFile)) {
+            PersistDB props = new PersistDB();
+            write(props, "");
+            props.store(fstream, pComment);
+        } catch (Exception pEx) {
+            throw new FrameworkException(this, Level.SEVERE, "Cannot save Properties to: " + pFile.getAbsolutePath(), pEx);
         }
     }
 

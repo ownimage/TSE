@@ -23,8 +23,8 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
-import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -178,7 +178,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     private Properties getProperties() {
-        return Perception.getPerception().getProperties();
+        return Services.getServices().getProperties();
     }
 
     private int getSize() {
@@ -208,7 +208,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
-        Perception.getPerception().showDialog(this, DialogOptions.NONE, getUndoRedoBuffer(), pCancel, pOk);
+        Services.getServices().getPerception().showDialog(this, DialogOptions.NONE, getUndoRedoBuffer(), pCancel, pOk);
         updatePreview();
     }
 
@@ -217,10 +217,10 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         int size = getSize();
         PictureType inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
         PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
-        CropTransform crop = new CropTransform(Perception.getPerception(), true);
+        CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
         crop.setPreviousTransform(getTransform().getPreviousTransform());
         crop.setCrop(getPreviewRectangle());
-        Perception.getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()));
+        Services.getServices().getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()));
         mLogger.info(() -> "ExecuteQueue depth:" + ExecuteQueue.getInstance().getDepth());
 
         mLogger.finest("at end");

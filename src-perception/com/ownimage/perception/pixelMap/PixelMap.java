@@ -39,7 +39,7 @@ import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
@@ -1526,7 +1526,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private Optional<UndoRedoBuffer> getOptionalUndoRedoBuffer() {
-        return Perception.getPerception().getOptionalUndoRedoBuffer();
+        return Services.getServices().getPerception().getOptionalUndoRedoBuffer();
     }
 
     /**

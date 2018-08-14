@@ -1,8 +1,11 @@
 package com.ownimage.perception.app;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.Container;
@@ -19,8 +22,10 @@ import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.DoubleMetaType;
+import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
@@ -32,213 +37,234 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     private final static Logger mLogger = Framework.getLogger();
 
-	private final Container mContainer = new Container("Properties", "properties", getUndoRedoBuffer());
+    private final Container mContainer = new Container("Properties", "properties", getUndoRedoBuffer());
 
-	private final BooleanControl mUseDefaultPropertyFile = new BooleanControl("Use Default Property Properties File", "useDefaultPropertyFile", mContainer, true);
-	private final BooleanControl mUseDefaultLoggingFile = new BooleanControl("Use Default Logging Properties File", "useDefaultLoggingFile", mContainer, true);
-	private final BooleanControl mAutoLoadTransformFile = new BooleanControl("Auto Load Transform File", "autoLoadTransformFile", mContainer, true);
+    private final BooleanControl mUseDefaultPropertyFile = new BooleanControl("Use Default Property Properties File", "useDefaultPropertyFile", mContainer, true);
+    private final BooleanControl mUseDefaultLoggingFile = new BooleanControl("Use Default Logging Properties File", "useDefaultLoggingFile", mContainer, true);
+    private final BooleanControl mAutoLoadTransformFile = new BooleanControl("Auto Load Transform File", "autoLoadTransformFile", mContainer, true);
 
-	private final DoubleControl mFontSize = new DoubleControl("Font Size", "fontSize", mContainer, 10.0, new DoubleMetaType(0.0d, 100.0d));
+    private final DoubleControl mFontSize = new DoubleControl("Font Size", "fontSize", mContainer, 10.0, new DoubleMetaType(0.0d, 100.0d));
 
-	private final ColorControl mColor1 = new ColorControl("Color 1", "color1", mContainer, Color.RED);
-	private final ColorControl mColor2 = new ColorControl("Color 2", "color2", mContainer, Color.ORANGE);
-	private final ColorControl mColor3 = new ColorControl("Color 3", "color3", mContainer, Color.GREEN);
-	private final ColorControl mColorOOB = new ColorControl("Color OOB", "colorOOB", mContainer, Color.PINK);
+    private final ColorControl mColor1 = new ColorControl("Color 1", "color1", mContainer, Color.RED);
+    private final ColorControl mColor2 = new ColorControl("Color 2", "color2", mContainer, Color.ORANGE);
+    private final ColorControl mColor3 = new ColorControl("Color 3", "color3", mContainer, Color.GREEN);
+    private final ColorControl mColorOOB = new ColorControl("Color OOB", "colorOOB", mContainer, Color.PINK);
 
-	private final ColorControl mPixelMapBGColor = new ColorControl("PixelMap background", "pixelMapBG", mContainer, Color.WHITE);
-	private final ColorControl mPixelMapFGColor = new ColorControl("PixelMap foreground", "pixelMapFG", mContainer, Color.BLACK);
+    private final ColorControl mPixelMapBGColor = new ColorControl("PixelMap background", "pixelMapBG", mContainer, Color.WHITE);
+    private final ColorControl mPixelMapFGColor = new ColorControl("PixelMap foreground", "pixelMapFG", mContainer, Color.BLACK);
 
-	private final BooleanControl mUseJTP = new BooleanControl("Use JTP", "useJTP", mContainer, true);
-	private final IntegerControl mRenderBatchSize = new IntegerControl("Batch size", "batchSize", mContainer, 1000, 1, 1000000, 100000);
-	private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
-	private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100, 1, 100000, 1000);
+    private final BooleanControl mUseJTP = new BooleanControl("Use JTP", "useJTP", mContainer, true);
+    private final IntegerControl mRenderBatchSize = new IntegerControl("Batch size", "batchSize", mContainer, 1000, 1, 1000000, 100000);
+    private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
+    private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100, 1, 100000, 1000);
 
-	private final BooleanControl mUseOpenCL = new BooleanControl("Use OpenCL", "useOpenCL", mContainer, true);
+    private final BooleanControl mUseOpenCL = new BooleanControl("Use OpenCL", "useOpenCL", mContainer, true);
 
-	public Properties() {
-		Framework.logEntry(mLogger);
-		mContainer.addControlChangeListener(this);
-		Framework.logExit(mLogger);
-	}
+    public Properties() {
+        Framework.logEntry(mLogger);
+        mContainer.addControlChangeListener(this);
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
-		if (pControl == mUseJTP) {
-			setEnabled(mUseJTP.getValue(), mRenderBatchSize, mRenderJTPBatchSize, mRenderThreadPoolSize);
-		}
+    @Override
+    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+        if (pControl == mUseJTP) {
+            setEnabled(mUseJTP.getValue(), mRenderBatchSize, mRenderJTPBatchSize, mRenderThreadPoolSize);
+        }
 
-	}
+    }
 
-	@Override
-	public IView createView() {
-		NamedTabs view = new NamedTabs("Properties", "properties");
+    @Override
+    public IView createView() {
+        NamedTabs view = new NamedTabs("Properties", "properties");
 
-		VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
-		VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
-		VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
+        VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
+        VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
+        VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
 
-		view.addTab("Defaults", defaults);
-		view.addTab("Colors", colors);
-		view.addTab("Render Engine", render);
-		view.addTab(ViewFactory.getInstance().getViewFactoryPropertiesViewable());
+        view.addTab("Defaults", defaults);
+        view.addTab("Colors", colors);
+        view.addTab("Render Engine", render);
+        view.addTab(ViewFactory.getInstance().getViewFactoryPropertiesViewable());
 
-		return view.createView();
-	}
+        return view.createView();
+    }
 
-	public Color getColor1() {
-		return mColor1.getValue();
-	}
+    public Color getColor1() {
+        return mColor1.getValue();
+    }
 
-	public ColorProperty getColor1Property() {
-		return mColor1.getProperty();
-	}
+    public ColorProperty getColor1Property() {
+        return mColor1.getProperty();
+    }
 
-	public Color getColor2() {
-		return mColor2.getValue();
-	}
+    public Color getColor2() {
+        return mColor2.getValue();
+    }
 
-	public ColorProperty getColor2Property() {
-		return mColor2.getProperty();
-	}
+    public ColorProperty getColor2Property() {
+        return mColor2.getProperty();
+    }
 
-	public Color getColor3() {
-		return mColor3.getValue();
-	}
+    public Color getColor3() {
+        return mColor3.getValue();
+    }
 
-	public ColorProperty getColor3Property() {
-		return mColor3.getProperty();
-	}
+    public ColorProperty getColor3Property() {
+        return mColor3.getProperty();
+    }
 
-	public Color getColorOOB() {
-		return mColorOOB.getValue();
-	}
+    public Color getColorOOB() {
+        return mColorOOB.getValue();
+    }
 
-	public ColorProperty getColorOOBProperty() {
-		return mColorOOB.getProperty();
-	}
+    public ColorProperty getColorOOBProperty() {
+        return mColorOOB.getProperty();
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Properties";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Properties";
+    }
 
-	public double getFontSize() {
-		return mFontSize.getValue();
-	}
+    public double getFontSize() {
+        return mFontSize.getValue();
+    }
 
-	public double getJpgQuality() {
-		return 1.0d;
-	}
+    public double getJpgQuality() {
+        return 1.0d;
+    }
 
-	public Color getPixelMapBGColor() {
-		return mPixelMapBGColor.getValue();
-	}
+    public Color getPixelMapBGColor() {
+        return mPixelMapBGColor.getValue();
+    }
 
-	public ColorProperty getPixelMapBGColorProperty() {
-		return mPixelMapBGColor.getProperty();
-	}
+    public ColorProperty getPixelMapBGColorProperty() {
+        return mPixelMapBGColor.getProperty();
+    }
 
-	public Color getPixelMapFGColor() {
-		return mPixelMapFGColor.getValue();
-	}
+    public Color getPixelMapFGColor() {
+        return mPixelMapFGColor.getValue();
+    }
 
-	public ColorProperty getPixelMapFGColorProperty() {
-		return mPixelMapFGColor.getProperty();
-	}
+    public ColorProperty getPixelMapFGColorProperty() {
+        return mPixelMapFGColor.getProperty();
+    }
 
-	public int getPreviewSize() {
-		return 500;
-	}
+    public int getPreviewSize() {
+        return 500;
+    }
 
-	@Override
-	public String getPropertyName() {
-		return "properties";
-	}
+    @Override
+    public String getPropertyName() {
+        return "properties";
+    }
 
-	public int getRenderBatchSize() {
-		return mRenderBatchSize.getValue();
-	}
+    public int getRenderBatchSize() {
+        return mRenderBatchSize.getValue();
+    }
 
-	public IntegerProperty getRenderBatchSizeProperty() {
-		return mRenderBatchSize.getProperty();
-	}
+    public IntegerProperty getRenderBatchSizeProperty() {
+        return mRenderBatchSize.getProperty();
+    }
 
-	public int getRenderJTPBatchSize() {
-		return mRenderJTPBatchSize.getValue();
-	}
+    public int getRenderJTPBatchSize() {
+        return mRenderJTPBatchSize.getValue();
+    }
 
-	public IntegerProperty getRenderJTPBatchSizeProperty() {
-		return mRenderJTPBatchSize.getProperty();
-	}
+    public IntegerProperty getRenderJTPBatchSizeProperty() {
+        return mRenderJTPBatchSize.getProperty();
+    }
 
-	public int getRenderThreadPoolSize() {
-		return mRenderThreadPoolSize.getValue();
-	}
+    public int getRenderThreadPoolSize() {
+        return mRenderThreadPoolSize.getValue();
+    }
 
-	public IntegerProperty getRenderThreadPoolSizeProperty() {
-		return mRenderThreadPoolSize.getProperty();
-	}
+    public IntegerProperty getRenderThreadPoolSizeProperty() {
+        return mRenderThreadPoolSize.getProperty();
+    }
 
-	@Override
-	public UndoRedoBuffer getUndoRedoBuffer() {
-		return ViewFactory.getInstance().getPropertiesUndoRedoBuffer();
-	}
+    @Override
+    public UndoRedoBuffer getUndoRedoBuffer() {
+        return ViewFactory.getInstance().getPropertiesUndoRedoBuffer();
+    }
 
-	public boolean useOpenCL() {
-		return mUseOpenCL.getValue();
-	}
+    public boolean useOpenCL() {
+        return mUseOpenCL.getValue();
+    }
 
-	@Override
-	public boolean isPersistent() {
-		return true;
-	}
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
 
-	@Override
-	public void read(final IPersistDB pDB, final String pId) {
-		mContainer.read(pDB, pId);
-		ViewFactory.getInstance().getViewFactoryPropertiesViewable().read(pDB, pId);
-	}
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        mContainer.read(pDB, pId);
+        ViewFactory.getInstance().getViewFactoryPropertiesViewable().read(pDB, pId);
+    }
 
-	private void setEnabled(final boolean pEnabled, final IControl... pControls) {
-		Arrays.stream(pControls).forEach(c -> c.setEnabled(pEnabled));
-	}
+    private void setEnabled(final boolean pEnabled, final IControl... pControls) {
+        Arrays.stream(pControls).forEach(c -> c.setEnabled(pEnabled));
+    }
 
-	public boolean useAutoLoadTransformFile() {
-		return mAutoLoadTransformFile.getValue();
-	}
+    public boolean useAutoLoadTransformFile() {
+        return mAutoLoadTransformFile.getValue();
+    }
 
-	public BooleanProperty useAutoLoadTransformFileProperty() {
-		return mAutoLoadTransformFile.getProperty();
-	}
+    public BooleanProperty useAutoLoadTransformFileProperty() {
+        return mAutoLoadTransformFile.getProperty();
+    }
 
-	public boolean useDefaultLoggingFile() {
-		return mUseDefaultLoggingFile.getValue();
-	}
+    public boolean useDefaultLoggingFile() {
+        return mUseDefaultLoggingFile.getValue();
+    }
 
-	public BooleanProperty useDefaultLoggingFileProperty() {
-		return mUseDefaultLoggingFile.getProperty();
-	}
+    public BooleanProperty useDefaultLoggingFileProperty() {
+        return mUseDefaultLoggingFile.getProperty();
+    }
 
-	public boolean useDefaultPropertyFile() {
-		return mUseDefaultPropertyFile.getValue();
-	}
+    public boolean useDefaultPropertyFile() {
+        return mUseDefaultPropertyFile.getValue();
+    }
 
-	public BooleanProperty useDefaultPropertyFileProperty() {
-		return mUseDefaultPropertyFile.getProperty();
-	}
+    public BooleanProperty useDefaultPropertyFileProperty() {
+        return mUseDefaultPropertyFile.getProperty();
+    }
 
-	public Boolean useJTP() {
-		return mUseJTP.getValue();
-	}
+    public Boolean useJTP() {
+        return mUseJTP.getValue();
+    }
 
-	public BooleanProperty useJTPProperty() {
-		return mUseJTP.getProperty();
-	}
+    public BooleanProperty useJTPProperty() {
+        return mUseJTP.getProperty();
+    }
 
-	@Override
-	public void write(final IPersistDB pDB, final String pId) throws IOException {
-		mContainer.write(pDB, pId);
-		ViewFactory.getInstance().getViewFactoryPropertiesViewable().write(pDB, pId);
-	}
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        mContainer.write(pDB, pId);
+        ViewFactory.getInstance().getViewFactoryPropertiesViewable().write(pDB, pId);
+    }
+
+    public void write(final File pFile, final String pComment) {
+        try (FileOutputStream fos = new FileOutputStream(pFile)) {
+            PersistDB db = new PersistDB();
+            write(db, "");
+            db.store(fos, pComment);
+
+        } catch (Throwable pT) {
+            throw new FrameworkException(this, Level.SEVERE, "Unable to write properties", pT);
+        }
+    }
+
+    public void reset() {
+        try {
+            PersistDB db = new PersistDB();
+            new Properties().write(db, "");
+            read(db, "");
+        } catch (Throwable pT) {
+            throw new FrameworkException(this, Level.SEVERE, "Unable to reset properties", pT);
+        }
+    }
 
 }

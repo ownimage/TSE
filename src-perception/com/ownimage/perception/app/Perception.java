@@ -42,36 +42,21 @@ public class Perception extends AppControlBase {
     private static final String PACKAGE_PREFIX = "com.ownimage";
     private static final String mLoggingPropertiesFilename = new File("logging.properties").getAbsolutePath();
 
-    private static Perception mPerception;
-    private Properties mProperties;
-    private final UndoRedoBuffer mUndoRedoBuffer;
-
-    private final RenderService mRenderService;
-    private TransformSequence mTransformSequence;
     private final Container mContainer;
-
     private final FileControl mFileControl;
-
     private final PictureControl mPreviewControl;
-
     private BorderLayout mBorderLayout;
 
     private ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
     private ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
 
-    /**
-     * The absolute filename. i.e. full path.
-     */
     private String mFilename;
 
-    private Perception() {
+    Perception() {
         super("Perception");
         Framework.logEntry(mLogger);
 
         propertiesInit();
-
-        mUndoRedoBuffer = new UndoRedoBuffer(100);
-        mRenderService = new RenderService(this);
 
         mContainer = new Container("Container", "container", this);
         mFileControl = new FileControl("File Name", "fileName", mContainer, "", FileControlType.FILEOPEN);
@@ -82,11 +67,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    public static synchronized Perception getPerception() {
-        if (mPerception == null) {
-            mPerception = new Perception();
-        }
-        return mPerception;
+    private TransformSequence getTransformSequence() {
+        return Services.getServices().getTransformSequence();
     }
 
     @Override
@@ -95,9 +77,9 @@ public class Perception extends AppControlBase {
 
         mBorderLayout = new BorderLayout();
 
-        if (mTransformSequence != null) {
+        if (getTransformSequence() != null) {
             ScrollLayout scrollablePreview = new ScrollLayout(mPreviewControl);
-            HSplitLayout hSplitLayout = new HSplitLayout(mTransformSequence.getContent(), scrollablePreview);
+            HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
             mBorderLayout.setCenter(hSplitLayout);
         }
 
@@ -169,6 +151,7 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
+
     /**
      * File open will open the specified File in the application. It will set the Properties to the System Default, or if the
      * default.properties file is available from that. Then if in the resulting Properties if Auto Load Transform is set then the
@@ -182,19 +165,19 @@ public class Perception extends AppControlBase {
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         mFilename = pFile.getAbsolutePath();
-        mTransformSequence = new TransformSequence(this, pFile);
+        Services.getServices().setTransformSequence(new TransformSequence(this, pFile));
 
         propertiesOpenSystemDefault();
-        if (mProperties.useDefaultPropertyFile()) {
+        if (getProperties().useDefaultPropertyFile()) {
             propertiesOpenDefault();
         }
 
-        if (mProperties.useAutoLoadTransformFile()) {
+        if (getProperties().useAutoLoadTransformFile()) {
             transformOpenDefault();
         }
 
         ScrollLayout scrollablePreview = new ScrollLayout(mPreviewControl);
-        HSplitLayout hSplitLayout = new HSplitLayout(mTransformSequence.getContent(), scrollablePreview);
+        HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
         mBorderLayout.setCenter(hSplitLayout);
 
         int size = 800;
@@ -267,12 +250,12 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         new Thread(() -> {
             try {
-                PictureType testSave = new PictureType(mProperties.getColorOOBProperty(), 100, 100);
+                PictureType testSave = new PictureType(getProperties().getColorOOBProperty(), 100, 100);
                 testSave.getValue().save(pFile); // no point generating a large file if we cant save it
 
-                PictureType output = new PictureType(mProperties.getColorOOBProperty(), mTransformSequence.getLastTransform().getWidth(), mTransformSequence.getLastTransform().getHeight());
-                mRenderService.transform(output
-                        , mTransformSequence.getLastTransform()
+                PictureType output = new PictureType(getProperties().getColorOOBProperty(), getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
+                getRenderService().transform(output
+                        , getTransformSequence().getLastTransform()
                         , () -> {
                             try {
                                 output.getValue().save(pFile);
@@ -280,7 +263,7 @@ public class Perception extends AppControlBase {
                                 mLogger.severe("Unable to output file");
                             }
                         }
-                        , mTransformSequence.getLastTransform().getOversample());
+                        , getTransformSequence().getLastTransform().getOversample());
             } catch (Throwable pT) {
                 Framework.logThrowable(mLogger, Level.SEVERE, pT);
                 mLogger.info(() -> "Unable to save file");
@@ -303,8 +286,8 @@ public class Perception extends AppControlBase {
         PictureType preview = getResizedPictureTypeIfNeeded(500, null).get();
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        mRenderService.transform(preview
-                , mTransformSequence.getLastTransform()
+        getRenderService().transform(preview
+                , getTransformSequence().getLastTransform()
                 , () -> {
                     PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
                     showDialog(displayContainer, DialogOptions.NONE, ok, cancel);
@@ -362,12 +345,8 @@ public class Perception extends AppControlBase {
         return 800;
     }
 
-    @Override
     public synchronized Properties getProperties() {
-        if (mProperties == null) {
-            mProperties = new Properties();
-        }
-        return mProperties;
+        return Services.getServices().getProperties();
     }
 
     private String getPropertyFilename() {
@@ -384,7 +363,7 @@ public class Perception extends AppControlBase {
     }
 
     public RenderService getRenderService() {
-        return mRenderService;
+        return Services.getServices().getRenderService();
     }
 
     private String getSaveFilename() {
@@ -396,17 +375,33 @@ public class Perception extends AppControlBase {
 
     private String getTransformFilename() {
         Framework.logEntry(mLogger);
-
         String filename = getFilenameStem() + ".transform";
-
         Framework.logExit(mLogger, filename);
         return filename;
+    }
+
+
+    private void propertiesInit() {
+        Framework.logEntry(mLogger);
+
+        try {
+            propertiesOpenSystemDefault();
+            if (!getProperties().useDefaultPropertyFile()) {
+                propertiesSetSystemDefault();
+            }
+
+        } catch (Exception pT) {
+            propertiesSetSystemDefault();
+            // throw new FrameworkException(this, Level.SEVERE, "Cannot run initProperties", pT);
+        }
+
+        Framework.logExit(mLogger);
     }
 
     @Deprecated
     @Override
     public UndoRedoBuffer getUndoRedoBuffer() {
-        return mUndoRedoBuffer;
+        return Services.getServices().getUndoRedoBuffer();
     }
 
     @Override
@@ -469,13 +464,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        try (FileOutputStream fstream = new FileOutputStream(pFile)) {
-            PersistDB props = new PersistDB();
-            FrameworkLogger.getInstance().write(props, "");
-            props.store(fstream, "Perception Logging");
-        } catch (Exception pEx) {
-            throw new FrameworkException(this, Level.SEVERE, "Cannot save Properties to: " + pFile.getAbsolutePath(), pEx);
-        }
+        FrameworkLogger.getInstance().write(pFile, "Perception Logger");
 
         Framework.logExit(mLogger);
     }
@@ -497,14 +486,14 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         try {
-            mProperties.getUndoRedoBuffer().resetAndDestroyAllBuffers();
+            getProperties().getUndoRedoBuffer().resetAndDestroyAllBuffers();
 
             PersistDB db = new PersistDB();
-            mProperties.write(db, "");
+            getProperties().write(db, "");
 
             ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
-            ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mProperties.read(db, ""));
-            showDialog(mProperties, DialogOptions.NONE, mProperties.getUndoRedoBuffer(), cancel, ok);
+            ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> getProperties().read(db, ""));
+            showDialog(getProperties(), DialogOptions.NONE, getProperties().getUndoRedoBuffer(), cancel, ok);
         } catch (IOException pIOE) {
             // default
         }
@@ -512,22 +501,6 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void propertiesInit() {
-        Framework.logEntry(mLogger);
-
-        try {
-            propertiesOpenSystemDefault();
-            if (!mProperties.useDefaultPropertyFile()) {
-                propertiesSetSystemDefault();
-            }
-
-        } catch (Exception pT) {
-            propertiesSetSystemDefault();
-            // throw new FrameworkException(this, Level.SEVERE, "Cannot run initProperties", pT);
-        }
-
-        Framework.logExit(mLogger);
-    }
 
     private void propertiesOpen() {
         Framework.logEntry(mLogger);
@@ -579,7 +552,7 @@ public class Perception extends AppControlBase {
             PersistDB db = new PersistDB();
             Properties newProps = new Properties();
             newProps.write(db, "properties");
-            mProperties.read(db, "properties");
+            getProperties().read(db, "properties");
         } catch (IOException pIOE) {
             // TODO defautl
         }
@@ -627,14 +600,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        try (FileOutputStream fos = new FileOutputStream(pFile)) {
-            PersistDB db = new PersistDB();
-            mProperties.write(db, "");
-            db.store(fos, "Perception Properties");
-
-        } catch (Throwable pT) {
-            throw new FrameworkException(this, Level.SEVERE, "Error", pT);
-        }
+        getProperties().write(pFile, "Perception Properties");
 
         Framework.logExit(mLogger);
     }
@@ -642,7 +608,7 @@ public class Perception extends AppControlBase {
     private synchronized void propertiesSetSystemDefault() {
         Framework.logEntry(mLogger);
 
-        mProperties = new Properties();
+        Services.getServices().getProperties().reset();
 
         Framework.logExit(mLogger);
     }
@@ -651,7 +617,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         resizePreviewControlIfNeeded();
-        mRenderService.transform(mPreviewControl, mTransformSequence.getLastTransform(), null);
+        getRenderService().transform(mPreviewControl, getTransformSequence().getLastTransform(), null);
 
         Framework.logExit(mLogger);
     }
@@ -661,7 +627,7 @@ public class Perception extends AppControlBase {
      */
     private void resizePreviewControlIfNeeded() {
         int size = getPreviewSize();
-        if (mTransformSequence == null || mTransformSequence.getLastTransform() == null) {
+        if (getTransformSequence() == null || getTransformSequence().getLastTransform() == null) {
             mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), size, size));
         } else {
             getResizedPictureTypeIfNeeded(getPreviewSize(), mPreviewControl.getValue()).ifPresent(mPreviewControl::setValue);
@@ -678,7 +644,7 @@ public class Perception extends AppControlBase {
      * @return Optional representing the correctly sized PictureType
      */
     private Optional<PictureType> getResizedPictureTypeIfNeeded(int pNewSize, final PictureType pCurrent) {
-        RectangleSize requiredRatio = mTransformSequence.getLastTransform().getSize();
+        RectangleSize requiredRatio = getTransformSequence().getLastTransform().getSize();
         RectangleSize requiredSize = requiredRatio.scaleToSquare(pNewSize);
         if (pCurrent == null || !requiredSize.equals(pCurrent.getSize())) {
             return Optional.of(new PictureType(getProperties().getColorOOBProperty(), requiredSize));
@@ -715,7 +681,7 @@ public class Perception extends AppControlBase {
         try (FileInputStream fos = new FileInputStream(pFile)) {
             PersistDB db = new PersistDB();
             db.load(fos);
-            mTransformSequence.read(db, "transform");
+            getTransformSequence().read(db, "transform");
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
@@ -767,7 +733,7 @@ public class Perception extends AppControlBase {
 
         try (FileOutputStream fos = new FileOutputStream(pFile)) {
             PersistDB db = new PersistDB();
-            mTransformSequence.write(db, "transform");
+            getTransformSequence().write(db, "transform");
             db.store(fos, "Perception Transform");
 
         } catch (Throwable pT) {

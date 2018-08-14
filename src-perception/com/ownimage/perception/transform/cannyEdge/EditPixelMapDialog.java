@@ -35,7 +35,7 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
-import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.Pixel;
@@ -80,7 +80,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final CropTransform mCropTransform;
 
     PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
-                                                        new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), 100, 100));
+                                                        new PictureType(Services.getServices().getPerception().getProperties().getColorOOBProperty(), 100, 100));
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
@@ -117,7 +117,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private Id mSavepointId;
 
     public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, final ActionControl pOkAction, final ActionControl pCancelAction) {
-        super(pDisplayName, pPropertyName, Perception.getPerception().getUndoRedoBuffer()); // TODO need to remove the @Deprecated call
+        super(pDisplayName, pPropertyName, Services.getServices().getPerception().getUndoRedoBuffer()); // TODO need to remove the @Deprecated call
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
 
@@ -132,7 +132,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
         mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, getWidth(), 50);
         mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, getHeight(), 50);
-        mCropTransform = new CropTransform(Perception.getPerception(), true);
+        mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updatePreview();
@@ -141,10 +141,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void updatePreview() {
         if (mTransform.isInitialized()) {
             if (getPreviewSize() != mPictureControl.getWidth()) {
-                final PictureType pictureType = new PictureType(Perception.getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
+                final PictureType pictureType = new PictureType(Services.getServices().getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
             }
-            Perception.getPerception().getRenderService().transform(mPictureControl, mCropTransform);
+            Services.getServices().getPerception().getRenderService().transform(mPictureControl, mCropTransform);
         }
     }
 
@@ -234,7 +234,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public UndoRedoBuffer getUndoRedoBuffer() {
-        return Perception.getPerception().getUndoRedoBuffer();
+        return Services.getServices().getPerception().getUndoRedoBuffer();
     }
 
     @Override
@@ -420,10 +420,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
      * Fills in the gaps in the drag event so that all the pixels are connected.
      **/
     private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, Optional<Pixel> pPixel) {
-        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
+        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
         if (isPixelActionOn() || isPixelActionOff()) {
             if (mMouseDragLastPixel.isPresent() && pPixel.isPresent() && !mMouseDragLastPixel.get().equals(pPixel.get())) {
-                mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn ..."));
+                mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn ..."));
                 int dX = pPixel.get().getX() - mMouseDragLastPixel.get().getX();
                 int dY = pPixel.get().getY() - mMouseDragLastPixel.get().getY();
                 if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
@@ -432,7 +432,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                     IntStream.range(from, to).forEach(x -> {
                         int y = (int) Math.round(mMouseDragLastPixel.get().getY() + (((double) x - mMouseDragLastPixel.get().getX()) / dX) * dY);
                         final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn X  %s, %s", x, y));
+                        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn X  %s, %s", x, y));
                         pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
                     });
                 } else { // fill in missing y
@@ -441,7 +441,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                     IntStream.range(from, to).forEach(y -> {
                         int x = (int) Math.round(mMouseDragLastPixel.get().getX() + (((double) y - mMouseDragLastPixel.get().getY()) / dY) * dX);
                         final Optional<Pixel> pixel = mPixelMap.getOptionalPixelAt(x, y);
-                        mLogger.info(() -> String.format("############## mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
+                        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
                         pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), pixel));
                     });
                 }
@@ -554,13 +554,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
-        mLogger.info(() -> "mouseDragStartEvent");
+        mLogger.fine(() -> "mouseDragStartEvent");
         if (isGeneralView()) mouseDragStartEventGeneralView(pEvent);
         if (isPixelView()) mouseDragStartEventPixelView(pEvent);
     }
 
     private void mouseDragStartEventGeneralView(final IUIEvent pEvent) {
-        mLogger.info(() -> "mouseDragStartEventGeneralView");
+        mLogger.fine(() -> "mouseDragStartEventGeneralView");
         mMouseDragStartX = getViewOriginX();
         mMouseDragStartY = getViewOriginY();
     }
@@ -571,17 +571,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public Optional<UndoRedoBuffer> getOptionalUndoRedoBuffer() { // TODO not sure that this is needed
-        return Perception.getPerception().getOptionalUndoRedoBuffer();
+        return Services.getServices().getPerception().getOptionalUndoRedoBuffer();
     }
 
     @Override
     public void scrollEvent(final IUIEvent pEvent) {
-        mLogger.info(() -> "scrollEvent");
+        mLogger.fine(() -> "scrollEvent");
     }
 
     @Override
     public void keyPressed(final IUIEvent pEvent) {
-        mLogger.info(() -> "keyPressed " + pEvent.getKey());
+        mLogger.fine(() -> "keyPressed " + pEvent.getKey());
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
         if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
@@ -590,12 +590,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void keyReleased(final IUIEvent pEvent) {
-        mLogger.info(() -> "keyReleased " + pEvent.getKey());
+        mLogger.fine(() -> "keyReleased " + pEvent.getKey());
     }
 
     @Override
     public void keyTyped(final IUIEvent pEvent) {
-        mLogger.info(() -> "keyTyped " + pEvent.getKey());
+        mLogger.fine(() -> "keyTyped " + pEvent.getKey());
     }
 
 

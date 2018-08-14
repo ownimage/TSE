@@ -8,8 +8,8 @@ package com.ownimage.perception.transform.cannyEdge;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
 public class CannyEdgeDetectorFactory {
@@ -51,6 +51,6 @@ public class CannyEdgeDetectorFactory {
 	}
 
 	private static Properties getProperties() {
-		return Perception.getPerception().getProperties();
+		return Services.getServices().getProperties();
 	}
 }

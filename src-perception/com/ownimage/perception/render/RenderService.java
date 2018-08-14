@@ -11,8 +11,8 @@ import com.ownimage.framework.queue.ExecuteQueue;
 import com.ownimage.framework.queue.IJob.Priority;
 import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
+import com.ownimage.perception.app.Services;
 
 public class RenderService {
 
@@ -20,19 +20,14 @@ public class RenderService {
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private final Perception mPerception;
-
     private TransformResultBatch mBatch;
 
     private final IBatchEngine mBaseBatchEngine;
     private final JTPBatchEngine mJTPBatchEngine;
     private final IBatchEngine mOpenCLBatchEngine;
 
-    public RenderService(final Perception pPerception) {
+    public RenderService() {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPerception, "pPerception");
-
-        mPerception = pPerception;
 
         mBaseBatchEngine = new BaseBatchEngine();
         mJTPBatchEngine = new JTPBatchEngine(getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
@@ -75,7 +70,7 @@ public class RenderService {
     }
 
     private Properties getProperties() {
-        return mPerception.getProperties();
+        return Services.getServices().getProperties();
     }
 
     /**

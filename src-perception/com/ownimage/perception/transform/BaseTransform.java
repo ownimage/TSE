@@ -30,6 +30,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.IBatchEngine;
@@ -179,7 +180,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     public Perception getPerception() {
-        return Perception.getPerception();
+        return Services.getServices().getPerception();
     }
 
     @Override

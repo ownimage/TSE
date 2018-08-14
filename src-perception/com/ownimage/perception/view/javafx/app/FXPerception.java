@@ -6,6 +6,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.view.javafx.AppControlView;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -17,7 +18,7 @@ public class FXPerception extends AppControlView {
 
 		FXViewFactory.setAsViewFactory();
 
-		Perception app = Perception.getPerception();
+		Perception app = Services.getServices().getPerception();
 		setAppControl(app);
 		launch(pArgs);
 
