@@ -80,7 +80,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final CropTransform mCropTransform;
 
     PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
-                                                        new PictureType(Services.getServices().getPerception().getProperties().getColorOOBProperty(), 100, 100));
+                                                        new PictureType(100, 100));
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
@@ -141,7 +141,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void updatePreview() {
         if (mTransform.isInitialized()) {
             if (getPreviewSize() != mPictureControl.getWidth()) {
-                final PictureType pictureType = new PictureType(Services.getServices().getPerception().getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
+                final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
             }
             Services.getServices().getPerception().getRenderService().transform(mPictureControl, mCropTransform);

@@ -61,7 +61,7 @@ public class Perception extends AppControlBase {
         mContainer = new Container("Container", "container", this);
         mFileControl = new FileControl("File Name", "fileName", mContainer, "", FileControlType.FILEOPEN);
 
-        final PictureType preview = new PictureType(getProperties().getColorOOBProperty(), getPreviewSize(), getPreviewSize());
+        final PictureType preview = new PictureType(getPreviewSize(), getPreviewSize());
         mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
 
         Framework.logExit(mLogger);
@@ -181,7 +181,7 @@ public class Perception extends AppControlBase {
         mBorderLayout.setCenter(hSplitLayout);
 
         int size = 800;
-        PictureType preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
+        PictureType preview = new PictureType(size, size);
         mPreviewControl.setValue(preview);
 
         Framework.logExit(mLogger);
@@ -250,10 +250,10 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         new Thread(() -> {
             try {
-                PictureType testSave = new PictureType(getProperties().getColorOOBProperty(), 100, 100);
+                PictureType testSave = new PictureType(100, 100);
                 testSave.getValue().save(pFile); // no point generating a large file if we cant save it
 
-                PictureType output = new PictureType(getProperties().getColorOOBProperty(), getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
+                PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
                 getRenderService().transform(output
                         , getTransformSequence().getLastTransform()
                         , () -> {
@@ -628,7 +628,7 @@ public class Perception extends AppControlBase {
     private void resizePreviewControlIfNeeded() {
         int size = getPreviewSize();
         if (getTransformSequence() == null || getTransformSequence().getLastTransform() == null) {
-            mPreviewControl.setValue(new PictureType(getProperties().getColorOOBProperty(), size, size));
+            mPreviewControl.setValue(new PictureType(size, size));
         } else {
             getResizedPictureTypeIfNeeded(getPreviewSize(), mPreviewControl.getValue()).ifPresent(mPreviewControl::setValue);
         }
@@ -647,7 +647,7 @@ public class Perception extends AppControlBase {
         RectangleSize requiredRatio = getTransformSequence().getLastTransform().getSize();
         RectangleSize requiredSize = requiredRatio.scaleToSquare(pNewSize);
         if (pCurrent == null || !requiredSize.equals(pCurrent.getSize())) {
-            return Optional.of(new PictureType(getProperties().getColorOOBProperty(), requiredSize));
+            return Optional.of(new PictureType(requiredSize));
         }
         return Optional.empty();
     }

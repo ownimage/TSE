@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.IPictureSource;
@@ -527,7 +528,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 
-				Color c = sourceImage.getColor(x, y);
+				Color c = sourceImage.getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
 				int r = c.getRed();
 				int g = c.getGreen();
 				int b = c.getBlue();

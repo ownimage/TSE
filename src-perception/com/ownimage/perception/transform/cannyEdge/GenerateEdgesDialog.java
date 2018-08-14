@@ -70,7 +70,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         mPreviewContainer = new Container("Preview Container", "previewContainer", this, this);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mPreviewContainer, getDefaultSize(), 100, 1000, 50);
         mPreviewSize.addControlChangeListener(this);
-        mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, new PictureType(getProperties().getColorOOBProperty(), getDefaultSize(), getDefaultSize()));
+        mPreviewPicture = new PictureControl("Preview", "preview", mPreviewContainer, new PictureType(getDefaultSize(), getDefaultSize()));
         mPreviewPicture.setUIListener(this);
 
         mControlContainer = new Container("ControlContainer", "controlContainer", this, this);
@@ -136,7 +136,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         PictureType preview;
         if (mPreviewPicture == null || mPreviewPicture.getWidth() != size
                 || mPreviewPicture.getWidth() != size) {
-            preview = new PictureType(getProperties().getColorOOBProperty(), size, size);
+            preview = new PictureType(size, size);
         } else {
             preview = mPreviewPicture.getValue().createCompatible();
         }
@@ -215,7 +215,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     private PictureType updatePreview() {
         SplitTimer.split("updatePreview() start");
         int size = getSize();
-        PictureType inputPicture = new PictureType(mTransform.getColorOOBProperty(), size, size);
+        PictureType inputPicture = new PictureType(size, size);
         PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
         CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
         crop.setPreviousTransform(getTransform().getPreviousTransform());

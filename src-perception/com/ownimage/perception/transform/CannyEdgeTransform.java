@@ -251,7 +251,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private void generateEdgesOK() {
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
-        PictureType inputPicture = new PictureType(getColorOOBProperty(), mWidth.getValue(), mHeight.getValue());
+        PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
         Services.getServices().getPerception().getRenderService()
                 .transform(inputPictureControl, getPreviousTransform(), () -> {

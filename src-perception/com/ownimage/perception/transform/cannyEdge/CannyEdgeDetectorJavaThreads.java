@@ -610,7 +610,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 			if (!showProgressBar("readLuminance", (float) x / width)) { return; }
 			for (int y = 0; y < height; y++) {
 
-				final Color c = sourceImage.getColor(x, y);
+				final Color c = sourceImage.getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
 				final int r = c.getRed();
 				final int g = c.getGreen();
 				final int b = c.getBlue();

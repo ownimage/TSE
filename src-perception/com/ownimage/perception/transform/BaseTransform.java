@@ -65,7 +65,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         int previewSize = getProperties().getPreviewSize();
         ColorProperty oob = getProperties().getColorOOBProperty();
-        PictureType preview = new PictureType(oob, previewSize, previewSize);
+        PictureType preview = new PictureType(previewSize, previewSize);
         Color c = new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
         for (int x = 0; x < previewSize; x++) {
             for (int y = 0; y < previewSize; y++) {

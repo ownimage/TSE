@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
@@ -16,7 +17,6 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 
-import com.ownimage.framework.control.control.ColorControl.ColorProperty;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
@@ -71,7 +71,6 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     private BufferedImage mImage;
 
-    private final ColorProperty mColorProperty;
 
     /**
      * Instantiates a new picture type.
@@ -79,12 +78,10 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFile the file that holds the image data.
      * @throws FrameworkException if there is any underlying problem in instantiating the image.
      */
-    public PictureType(final ColorProperty pColorProperty, final File pFile) throws FrameworkException {
+    public PictureType(final File pFile) throws FrameworkException {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pColorProperty, "pColorProperty");
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        mColorProperty = pColorProperty;
         try {
             mImage = ImageIO.read(pFile);
             if (mImage == null) { //
@@ -105,11 +102,10 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     /**
      * Instantiates a new picture type based on the height and width given. The image will be filled with black..
      *
-     * @param pColorProperty the color for out of range requests
      * @param pSize          the size of the new PictureType
      */
-    public PictureType(final ColorProperty pColorProperty, final RectangleSize pSize) {
-        this(pColorProperty, pSize.getWidth(), pSize.getHeight());
+    public PictureType(final RectangleSize pSize) {
+        this(pSize.getWidth(), pSize.getHeight());
     }
 
     /**
@@ -118,8 +114,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pWidth  the width
      * @param pHeight the height
      */
-    public PictureType(final ColorProperty pColorProperty, final int pWidth, final int pHeight) {
-        mColorProperty = pColorProperty;
+    public PictureType(final int pWidth, final int pHeight) {
         mImage = new BufferedImage(pWidth, pHeight, BufferedImage.TYPE_INT_ARGB);
         mWidth = pWidth;
         mHeight = pHeight;
@@ -131,15 +126,14 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFilename the filename
      * @throws FrameworkException if there is any underlying problem in instantiating the image
      */
-    public PictureType(final ColorProperty pColorProperty, final String pFilename) throws FrameworkException {
-        this(pColorProperty, new File(pFilename));
+    public PictureType(final String pFilename) throws FrameworkException {
+        this(new File(pFilename));
     }
 
     public PictureType(final PictureType pOrig) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pOrig, "pOrig");
 
-        mColorProperty = pOrig.mColorProperty;
         mWidth = pOrig.getWidth();
         mHeight = pOrig.getHeight();
         mImage = new BufferedImage(mWidth, mHeight, BufferedImage.TYPE_INT_ARGB);
@@ -154,7 +148,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     @Override
     public PictureType clone() {
-        PictureType picture = new PictureType(mColorProperty, getHeight(), getWidth());
+        PictureType picture = new PictureType(getHeight(), getWidth());
         picture.setColors(getColors());
         return picture;
     }
@@ -202,7 +196,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         return mImage;
     }
 
-    public synchronized Color getColor(final double pX, final double pY) {
+    public synchronized Optional<Color> getColor(final double pX, final double pY) {
         int x = (int) (pX * mWidth);
         int y = (int) (pY * mHeight);
         return getColor(x, y);
@@ -216,13 +210,13 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @return the color
      */
     @Override
-    public synchronized Color getColor(final int pX, final int pY) {
+    public synchronized Optional<Color> getColor(final int pX, final int pY) {
         if (pY < 0 || pY >= getHeight()) {
-            return mColorProperty.getValue();
+            return Optional.empty();
         }
 
         if (!is360() && (pX < 0 || pX >= getWidth())) {
-            return mColorProperty.getValue();
+            return Optional.empty();
         }
 
         int x = pX;
@@ -232,7 +226,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         }
 
         if (0 <= x && x < getWidth() && 0 <= pY && pY < getHeight()) {//
-            return new Color(mImage.getRGB(x, mHeight - pY - 1));
+            return Optional.of(new Color(mImage.getRGB(x, mHeight - pY - 1)));
         }
 
         throw new IllegalStateException("x needs to be between 0 and getWidth() and is not, based on x = " + x + ", is360() = "
@@ -245,7 +239,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pPoint the point
      * @return the color
      */
-    public Color getColor(final IntegerPoint pPoint) {
+    public Optional<Color> getColor(final IntegerPoint pPoint) {
         if (pPoint == null) {
             throw new IllegalArgumentException("pIn must not be null");
         }
@@ -259,7 +253,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pIn the input point
      * @return the color
      */
-    public Color getColor(final Point pIn) {
+    public Optional<Color> getColor(final Point pIn) {
         if (pIn == null) {
             throw new IllegalArgumentException("pIn must not be null");
         }

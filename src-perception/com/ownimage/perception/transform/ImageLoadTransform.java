@@ -17,6 +17,7 @@ import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.ITransformResult;
 
 public class ImageLoadTransform extends BaseTransform {
@@ -42,7 +43,7 @@ public class ImageLoadTransform extends BaseTransform {
 		Framework.logEntry(mLogger);
 
 		mFile = pFile;
-		PictureType sourcePicture = new PictureType(getProperties().getColorOOBProperty(), mFile);
+		PictureType sourcePicture = new PictureType(mFile);
 		mSourcePicture = new PictureControl("Source Image", "sourceImage", new Container("x", "x", this), sourcePicture) //
 				.setTransient();
 
@@ -58,7 +59,7 @@ public class ImageLoadTransform extends BaseTransform {
 			for (int previewY = 0; previewY < previewHeight; previewY++) {
 				double sourceX = (double) previewX / previewWidth;
 				double sourceY = (double) previewY / previewHeight;
-				Color c = sourcePicture.getColor(sourceX, sourceY);
+				Color c = sourcePicture.getColor(sourceX, sourceY).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
 				previewImage.setColor(previewX, previewY, c);
 			}
 		}
@@ -305,7 +306,7 @@ public class ImageLoadTransform extends BaseTransform {
 	public void transform(final ITransformResult pRenderResult) {
 		double x = pRenderResult.getX();
 		double y = pRenderResult.getY();
-		Color c = mSourcePicture.getValue().getColor(x, y);
+		Color c = mSourcePicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
 		pRenderResult.setColor(c);
 	}
 

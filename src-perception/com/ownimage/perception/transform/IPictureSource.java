@@ -1,10 +1,11 @@
 package com.ownimage.perception.transform;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.Optional;
 
 public interface IPictureSource {
 
-	public Color getColor(int x, int y);
+	public Optional<Color> getColor(int x, int y);
 
 	public int getHeight();
 

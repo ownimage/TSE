@@ -19,6 +19,7 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.ITransformResult;
 
 public class WoodcutTransform extends BaseTransform {
@@ -38,7 +39,7 @@ public class WoodcutTransform extends BaseTransform {
 
 	public WoodcutTransform(final Perception pPerception) {
 		super("Wood Cut", "woodCut");
-		PictureType etch = new PictureType(getProperties().getColorOOBProperty(), 100, mLines.getValue());
+		PictureType etch = new PictureType(100, mLines.getValue());
 		mEtchPicture = new PictureControl("Etch", "etch", NullContainer, etch);
 
 	}
@@ -46,7 +47,7 @@ public class WoodcutTransform extends BaseTransform {
 	private void createEtch() {
         mLogger.info("createEtch");
 		int w = getWidth();
-		PictureType etch = new PictureType(getProperties().getColorOOBProperty(), w, mLines.getValue());
+		PictureType etch = new PictureType(w, mLines.getValue());
 		mEtchPicture.setValue(etch);
 		getPerception().getRenderService().transform(mEtchPicture, getPreviousTransform(), null);
 		// TODO should make this part of the
@@ -71,7 +72,7 @@ public class WoodcutTransform extends BaseTransform {
 		double x = pRenderResult.getX();
 		double y = pRenderResult.getY();
 
-		Color ct = mEtchPicture.getValue().getColor(x, y);
+		Color ct = mEtchPicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
 		double thickness = mScale.getValue() * ((255 - ct.getRed()) / 512.0f);
 
 		double lines = mLines.getValue();
