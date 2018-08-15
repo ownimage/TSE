@@ -29,6 +29,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 import com.ownimage.perception.math.RectangleSize;
@@ -290,13 +291,14 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         Container displayContainer = new Container("File Save", "fileSave", this);
-        PictureType preview = getResizedPictureTypeIfNeeded(500, null).get();
+        StrongReference<PictureType> preview = new StrongReference<>();
+        getResizedPictureTypeIfNeeded(500, null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        getRenderService().transform(preview
+        getRenderService().transform(preview.get()
                 , getTransformSequence().getLastTransform()
                 , () -> {
-                    PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview);
+                    PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview.get());
                     showDialog(displayContainer, DialogOptions.NONE, ok, cancel);
                 }
                 , 1);
@@ -648,7 +650,7 @@ public class Perception extends AppControlBase {
      *
      * @param pNewSize the size of the square that the new PictureType needs to be constrained by
      * @param pCurrent if supplied specifies the size of the current PictureType
-     * @return Optional representing the correctly sized PictureType
+     * @return Optional representing the correctly sized PictureType or Optional.empty if the picture size was OK.
      */
     private Optional<PictureType> getResizedPictureTypeIfNeeded(int pNewSize, final PictureType pCurrent) {
         RectangleSize requiredRatio = getTransformSequence().getLastTransform().getSize();
