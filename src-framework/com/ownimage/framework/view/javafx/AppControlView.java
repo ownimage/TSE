@@ -196,25 +196,22 @@ public class AppControlView extends Application implements IAppControlView {
         Framework.checkParameterNotNull(mLogger, pViewable, "pViewable");
         Framework.checkParameterNotNull(mLogger, pDialogOptions, "pDialogOptions");
 
-        HashMap<ButtonType, ActionControl> buttonMap = new HashMap<ButtonType, ActionControl>();
+        HashMap<ButtonType, ActionControl> buttonMap = new HashMap<>();
         FXView content = (FXView) (pViewable.createView());
         Node contentUI = content.getUI();
         Dialog<ActionControl> dialog = new Dialog<>();
 
         // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
         // themselves which would mean that the mDialog would need to change size as the controls change value.
-        mWidthListener = (observable, oldValue, newValue) -> {
-            dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
-        };
+        mWidthListener = (observable, oldValue, newValue) -> dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
+
         FXViewFactory.getInstance().controlWidthProperty.addListener(mWidthListener);
         FXViewFactory.getInstance().labelWidthProperty.addListener(mWidthListener);
 
         dialog.setTitle(pViewable.getDisplayName());
         dialog.getDialogPane().setContent(contentUI);
         dialog.getDialogPane().layout();
-        dialog.setResultConverter(pButtonType -> {
-            return buttonMap.get(pButtonType);
-        });
+        dialog.setResultConverter(buttonMap::get);
 
         for (ActionControl action : pButtons) {
             ButtonType button = new ButtonType(action.getDisplayName(), ButtonData.OK_DONE);
@@ -291,7 +288,10 @@ public class AppControlView extends Application implements IAppControlView {
                 // new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
                 new ExtensionFilter("All Files", "*.*"));
 
-        if (pFileControl.getFile() != null) {
+        if (pFileControl.getFile().isDirectory()) {
+            fileChooser.setInitialDirectory(pFileControl.getFile());
+        }
+        if (pFileControl.getFile().isFile()) {
             fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
             fileChooser.setInitialFileName(pFileControl.getFile().getName());
         }
@@ -312,9 +312,14 @@ public class AppControlView extends Application implements IAppControlView {
                 // new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
                 // new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
                 new ExtensionFilter("All Files", "*.*"));
-        //
-        fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
-        fileChooser.setInitialFileName(pFileControl.getFile().getName());
+
+        if (pFileControl.getFile().isDirectory()) {
+            fileChooser.setInitialDirectory(pFileControl.getFile());
+        }
+        if (pFileControl.getFile().isDirectory()) {
+            fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
+            fileChooser.setInitialFileName(pFileControl.getFile().getName());
+        }
         File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
 
         if (selectedFile != null) {
@@ -329,7 +334,7 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     @Override
-    public void start(final Stage pPrimaryStage) throws Exception {
+    public void start(final Stage pPrimaryStage) {
         mPrimaryStage = pPrimaryStage;
         redraw();
     }

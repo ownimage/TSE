@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.FileControl;
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HSplitLayout;
 import com.ownimage.framework.control.layout.ScrollLayout;
@@ -59,7 +61,10 @@ public class Perception extends AppControlBase {
         propertiesInit();
 
         mContainer = new Container("Container", "container", this);
-        mFileControl = new FileControl("File Name", "fileName", mContainer, "", FileControlType.FILEOPEN);
+        mFileControl = new FileControl("File Name", "fileName"
+                , mContainer, Paths.get(".").toAbsolutePath().normalize().toString(), FileControlType.FILEOPEN);
+        mFileControl.addControlChangeListener(fileOpenHandler);
+        mLogger.fine(() -> String.format("mFileControl set to %s", mFileControl.getValue()));
 
         final PictureType preview = new PictureType(getPreviewSize(), getPreviewSize());
         mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
@@ -70,6 +75,12 @@ public class Perception extends AppControlBase {
     private TransformSequence getTransformSequence() {
         return Services.getServices().getTransformSequence();
     }
+
+    private IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
+        String filename = f.getString();
+        mLogger.info(() -> "filename = " + filename);
+        fileOpen(f.getFile());
+    };
 
     @Override
     protected IView createContentView() {
@@ -144,9 +155,6 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         mFileControl.showDialog();
-        String filename = mFileControl.getString();
-        mLogger.info(() -> "filename = " + filename);
-        fileOpen(mFileControl.getFile());
 
         Framework.logExit(mLogger);
     }
@@ -181,8 +189,7 @@ public class Perception extends AppControlBase {
         mBorderLayout.setCenter(hSplitLayout);
 
         int size = 800;
-        PictureType preview = new PictureType(size, size);
-        mPreviewControl.setValue(preview);
+        refreshPreview();
 
         Framework.logExit(mLogger);
     }

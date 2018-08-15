@@ -54,361 +54,338 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     private final static Logger mLogger = Framework.getLogger();
 
-	private final Perception mPerception;
+    private final Perception mPerception;
 
-	private Vector<ITransform> mTransforms;
-	private int mSelectedIndex;
-	private BorderLayout mBorderLayout;
+    private Vector<ITransform> mTransforms;
+    private int mSelectedIndex;
+    private BorderLayout mBorderLayout;
 
-	private final ActionControl mUpAction;
-	private final ActionControl mDownAction;
-	private final ActionControl mAddAction;
-	private final ActionControl mRemoveAction;
+    private final ActionControl mUpAction;
+    private final ActionControl mDownAction;
+    private final ActionControl mAddAction;
+    private final ActionControl mRemoveAction;
 
-	private boolean mDirty = false;
+    private boolean mDirty = false;
 
-	private Vector<ITransform> mAvailableTransforms;
-	private Map<String, ITransform> mAvailableTransformNameMap;
+    private Vector<ITransform> mAvailableTransforms;
+    private Map<String, ITransform> mAvailableTransformNameMap;
 
-	public TransformSequence(final Perception pPerception, final File pFile) {
-		mPerception = pPerception;
-		setAvailableTransforms();
+    public TransformSequence(final Perception pPerception, final File pFile) {
+        mPerception = pPerception;
+        setAvailableTransforms();
 
-		Container tempContainer = new Container("Transform Sequence", "transformSequence", mPerception);
-		mUpAction = ActionControl.createImage("Up", tempContainer, () -> upAction(), "/icon/up.png");
-		mDownAction = ActionControl.createImage("Down", tempContainer, () -> downAction(), "/icon/down.png");
-		mAddAction = ActionControl.createImage("Add", tempContainer, () -> addAction(), "/icon/plus.png");
-		mRemoveAction = ActionControl.createImage("Remove", tempContainer, () -> removeAction(), "/icon/minus.png");
+        Container tempContainer = new Container("Transform Sequence", "transformSequence", mPerception);
+        mUpAction = ActionControl.createImage("Up", tempContainer, this::upAction, "/icon/up.png");
+        mDownAction = ActionControl.createImage("Down", tempContainer, this::downAction, "/icon/down.png");
+        mAddAction = ActionControl.createImage("Add", tempContainer, this::addAction, "/icon/plus.png");
+        mRemoveAction = ActionControl.createImage("Remove", tempContainer, this::removeAction, "/icon/minus.png");
 
-		mTransforms = new Vector<ITransform>();
+        mTransforms = new Vector<ITransform>();
 
-		ImageLoadTransform ilt = new ImageLoadTransform(pPerception, pFile);
-		mTransforms.add(ilt);
+        ImageLoadTransform ilt = new ImageLoadTransform(pPerception, pFile);
+        mTransforms.add(ilt);
+    }
 
-		RotateTransform rt = new RotateTransform(pPerception);
-		rt.setPreviousTransform(ilt);
-		mTransforms.add(rt);
+    private void addAction() {
+        Framework.logEntry(mLogger);
 
-		RotateTransform rt2 = new RotateTransform(pPerception);
-		rt2.setPreviousTransform(rt);
-		mTransforms.add(rt2);
+        ObjectControl<ITransform> transformControl = new ObjectControl<>("Select Transform", "transform", NullContainer, getAvailableTransforms().get(0), getAvailableTransforms());
+        ActionControl okAction = ActionControl.create("OK", NullContainer, () -> addTransform(transformControl.getValue()));
+        mPerception.showDialog(transformControl, DialogOptions.NONE, okAction);
+        Framework.logExit(mLogger);
+    }
 
-		VariableStretch3Transform vst = new VariableStretch3Transform(mPerception);
-		vst.setPreviousTransform(rt2);
-		mTransforms.add(vst);
+    private void addAvailableTransform(final ITransform pTransform) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
-		CircleMaskTransform cm1 = new CircleMaskTransform(mPerception);
-		cm1.setPreviousTransform(vst);
-		mTransforms.add(cm1);
+        mAvailableTransforms.add(pTransform);
+        mAvailableTransformNameMap.put(pTransform.getPropertyName(), pTransform);
 
-		CircleMaskTransform cm2 = new CircleMaskTransform(mPerception);
-		cm2.setPreviousTransform(cm1);
-		mTransforms.add(cm2);
+        Framework.logExit(mLogger);
+    }
 
-	}
+    private void addTransform(final ITransform pTransform) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
-	private void addAction() {
-		Framework.logEntry(mLogger);
-
-		ObjectControl<ITransform> transformControl = new ObjectControl<>("Select Transform", "transform", NullContainer, getAvailableTransforms().get(0), getAvailableTransforms());
-		ActionControl okAction = ActionControl.create("OK", NullContainer, () -> addTransform(transformControl.getValue()));
-		mPerception.showDialog(transformControl, DialogOptions.NONE, okAction);
-		Framework.logExit(mLogger);
-	}
-
-	private void addAvailableTransform(final ITransform pTransform) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-
-		mAvailableTransforms.add(pTransform);
-		mAvailableTransformNameMap.put(pTransform.getPropertyName(), pTransform);
-
-		Framework.logExit(mLogger);
-	}
-
-	private void addTransform(final ITransform pTransform) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-
-		ITransform transform = pTransform.duplicate();
-		int index = getSelectedIndex() + 1;
-		mTransforms.add(index, transform);
-		setPreviousTransforms();
-		redraw();
+        ITransform transform = pTransform.duplicate();
+        int index = getSelectedIndex() + 1;
+        mTransforms.add(index, transform);
+        setPreviousTransforms();
+        redraw();
         setSelectedIndex(index);
-		mPerception.refreshPreview();
+        mPerception.refreshPreview();
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public ISingleSelectView createView() {
-		ISingleSelectView view = ViewFactory.getInstance().createView(this);
-		addView(view);
-		return view;
-	}
+    @Override
+    public ISingleSelectView createView() {
+        ISingleSelectView view = ViewFactory.getInstance().createView(this);
+        addView(view);
+        return view;
+    }
 
-	private void downAction() {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 0, "Cannot move ImageLoadTransform.");
-		Framework.checkParameterLessThan(mLogger, mSelectedIndex, mTransforms.size(), "Cannot move the last transform down.");
+    private void downAction() {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 0, "Cannot move ImageLoadTransform.");
+        Framework.checkParameterLessThan(mLogger, mSelectedIndex, mTransforms.size(), "Cannot move the last transform down.");
 
-		int newIndex = mSelectedIndex + 1;
-		ITransform transform = mTransforms.remove(mSelectedIndex);
-		mTransforms.add(newIndex, transform);
-		setPreviousTransforms();
-		redraw();
-		mPerception.refreshPreview();
-		setSelectedIndex(newIndex);
+        int newIndex = mSelectedIndex + 1;
+        ITransform transform = mTransforms.remove(mSelectedIndex);
+        mTransforms.add(newIndex, transform);
+        setPreviousTransforms();
+        redraw();
+        mPerception.refreshPreview();
+        setSelectedIndex(newIndex);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	public Vector<ITransform> getAvailableTransforms() {
-		return mAvailableTransforms;
-	}
+    public Vector<ITransform> getAvailableTransforms() {
+        return mAvailableTransforms;
+    }
 
-	@Override
-	public IContainer getContainer(final int pTab) {
-		ITransform transform = mTransforms.get(pTab);
-		IContainer controls = transform.getControls();
-		return controls;
-	}
+    @Override
+    public IContainer getContainer(final int pTab) {
+        ITransform transform = mTransforms.get(pTab);
+        IContainer controls = transform.getControls();
+        return controls;
+    }
 
-	public IViewable<?> getContent() {
+    public IViewable<?> getContent() {
 
-		HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
+        HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
 
-		BorderLayout buttonPanelAccordionLayout = new BorderLayout();
-		buttonPanelAccordionLayout.setTop(buttonLayout);
-		buttonPanelAccordionLayout.setCenter(this);
+        BorderLayout buttonPanelAccordionLayout = new BorderLayout();
+        buttonPanelAccordionLayout.setTop(buttonLayout);
+        buttonPanelAccordionLayout.setCenter(this);
 
-		ITransform transform = getFirstTransform();
+        ITransform transform = getFirstTransform();
 
-		mBorderLayout = new BorderLayout();
-		mBorderLayout.setCenter(transform.getContent());
-		mBorderLayout.setRight(buttonPanelAccordionLayout);
+        mBorderLayout = new BorderLayout();
+        mBorderLayout.setCenter(transform.getContent());
+        mBorderLayout.setRight(buttonPanelAccordionLayout);
 
-		return mBorderLayout;
-	}
+        return mBorderLayout;
+    }
 
-	@Override
-	public int getCount() {
-		return mTransforms.size();
-	}
+    @Override
+    public int getCount() {
+        return mTransforms.size();
+    }
 
-	public ImageLoadTransform getFirstTransform() {
-		return (ImageLoadTransform) mTransforms.firstElement();
-	}
+    public ImageLoadTransform getFirstTransform() {
+        return (ImageLoadTransform) mTransforms.firstElement();
+    }
 
-	public ITransform getLastTransform() {
-		return mTransforms.lastElement();
-	}
+    public ITransform getLastTransform() {
+        return mTransforms.lastElement();
+    }
 
-	@Override
-	public String getPropertyName() {
-		return "TransformSequence";
-	}
+    @Override
+    public String getPropertyName() {
+        return "TransformSequence";
+    }
 
-	@Override
-	public int getSelectedIndex() {
-		return mSelectedIndex;
-	}
+    @Override
+    public int getSelectedIndex() {
+        return mSelectedIndex;
+    }
 
-	public ITransform getTransform(final int pIndex) {
-		return mTransforms.get(pIndex);
-	}
+    public ITransform getTransform(final int pIndex) {
+        return mTransforms.get(pIndex);
+    }
 
-	private int getTransformCount(final java.util.Properties pProperites, final String pId) {
-		String transformName = pProperites.getProperty(pId + ".0");
-		int cnt = 1;
+    private int getTransformCount(final java.util.Properties pProperites, final String pId) {
+        String transformName = pProperites.getProperty(pId + ".0");
+        int cnt = 1;
 
-		while (transformName != null && transformName.length() != 0) {
-			transformName = pProperites.getProperty(pId + "." + ++cnt);
-		}
+        while (transformName != null && transformName.length() != 0) {
+            transformName = pProperites.getProperty(pId + "." + ++cnt);
+        }
 
-		return cnt;
-	}
+        return cnt;
+    }
 
-	public boolean isDirty() {
-		return mDirty;
-	}
+    public boolean isDirty() {
+        return mDirty;
+    }
 
-	@Override
-	public boolean isPersistent() {
-		return true;
-	}
+    @Override
+    public boolean isPersistent() {
+        return true;
+    }
 
-	public void read(File pFile) throws Exception {
-		try (FileInputStream fos = new FileInputStream(pFile)) {
-			PersistDB db = new PersistDB();
-			db.load(fos);
-			read(db, "transform");
-		}
-	}
+    public void read(File pFile) throws Exception {
+        try (FileInputStream fos = new FileInputStream(pFile)) {
+            PersistDB db = new PersistDB();
+            db.load(fos);
+            read(db, "transform");
+        }
+    }
 
-	@Override
-	public void read(final IPersistDB pDB, final String pId) {
-		Framework.logEntry(mLogger);
+    @Override
+    public void read(final IPersistDB pDB, final String pId) {
+        Framework.logEntry(mLogger);
 
-		Vector<ITransform> save = mTransforms;
-		mTransforms = new Vector<>();
-		mTransforms.add(save.firstElement());
-		try {
-			int i = 0;
-			do {
-				String transformName = pDB.read("transform." + i + ".name");
-				mLogger.info("transform." + i + ".name=" + transformName);
-				if (transformName == null) {
-					break;
-				}
-				if (i == 0) { // imageLoad
-					mTransforms.get(0).read(pDB, "transform.0");
-				} else {
-					ITransform template = mAvailableTransformNameMap.get(transformName);
-					ITransform transform = template.duplicate();
-					transform.read(pDB, "transform." + i);
-					mTransforms.add(transform);
-				}
-				i++;
-			} while (true);
+        Vector<ITransform> save = mTransforms;
+        mTransforms = new Vector<>();
+        mTransforms.add(save.firstElement());
+        try {
+            int i = 0;
+            do {
+                String transformName = pDB.read("transform." + i + ".name");
+                mLogger.info("transform." + i + ".name=" + transformName);
+                if (transformName == null) {
+                    break;
+                }
+                if (i == 0) { // imageLoad
+                    mTransforms.get(0).read(pDB, "transform.0");
+                } else {
+                    ITransform template = mAvailableTransformNameMap.get(transformName);
+                    ITransform transform = template.duplicate();
+                    transform.read(pDB, "transform." + i);
+                    mTransforms.add(transform);
+                }
+                i++;
+            } while (true);
 
-			setSelectedIndex(pDB.read(pId + ".selectedContainer"));
-			redraw();
-		} catch (Throwable pT) {
-			mTransforms = save;
-			throw new RuntimeException("Transform->Open failed.", pT);
+            setSelectedIndex(pDB.read(pId + ".selectedContainer"));
+            redraw();
+        } catch (Throwable pT) {
+            mTransforms = save;
+            throw new RuntimeException("Transform->Open failed.", pT);
 
-		} finally {
-			setPreviousTransforms();
-			mPerception.refreshPreview();
-		}
+        } finally {
+            setPreviousTransforms();
+            mPerception.refreshPreview();
+        }
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	private void removeAction() {
-		Framework.logEntry(mLogger);
+    private void removeAction() {
+        Framework.logEntry(mLogger);
 
-		int index = getSelectedIndex();
-		if (0 < index && index < mTransforms.size()) {
-			mTransforms.remove(index);
-			setPreviousTransforms();
+        int index = getSelectedIndex();
+        if (0 < index && index < mTransforms.size()) {
+            mTransforms.remove(index);
+            setPreviousTransforms();
 
-			if (index >= mTransforms.size()) {
-				index = mTransforms.size() - 1;
-			}
-			setSelectedIndex(index); // this is to force the button enabled to refresh
-			redraw();
-			mPerception.refreshPreview();
-		}
+            if (index >= mTransforms.size()) {
+                index = mTransforms.size() - 1;
+            }
+            setSelectedIndex(index); // this is to force the button enabled to refresh
+            redraw();
+            mPerception.refreshPreview();
+        }
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	private void setAvailableTransforms() {
-		Framework.logEntry(mLogger);
+    private void setAvailableTransforms() {
+        Framework.logEntry(mLogger);
 
-		mAvailableTransforms = new Vector<>();
-		mAvailableTransformNameMap = new HashMap<>();
+        mAvailableTransforms = new Vector<>();
+        mAvailableTransformNameMap = new HashMap<>();
 
-		addAvailableTransform(new BorderTransform(mPerception));
-		addAvailableTransform(new CannyEdgeTransform(mPerception));
-		addAvailableTransform(new CircleMaskTransform(mPerception));
-		addAvailableTransform(new CropTransform(mPerception));
-		addAvailableTransform(new LayerCakeTransform(mPerception));
-		addAvailableTransform(new OutputTransform(mPerception));
-		addAvailableTransform(new PolarTransform(mPerception));
-		addAvailableTransform(new RuleOfThirdsTransform(mPerception));
-		addAvailableTransform(new RotateTransform(mPerception));
-		addAvailableTransform(new QuadSpaceTransform(mPerception));
-		addAvailableTransform(new SoftSquarePolarTransform(mPerception));
-		addAvailableTransform(new SquarePolarTransform(mPerception));
-		addAvailableTransform(new VariableStretch3Transform(mPerception));
-		addAvailableTransform(new WoodcutTransform(mPerception));
+        addAvailableTransform(new BorderTransform(mPerception));
+        addAvailableTransform(new CannyEdgeTransform(mPerception));
+        addAvailableTransform(new CircleMaskTransform(mPerception));
+        addAvailableTransform(new CropTransform(mPerception));
+        addAvailableTransform(new LayerCakeTransform(mPerception));
+        addAvailableTransform(new OutputTransform(mPerception));
+        addAvailableTransform(new PolarTransform(mPerception));
+        addAvailableTransform(new RuleOfThirdsTransform(mPerception));
+        addAvailableTransform(new RotateTransform(mPerception));
+        addAvailableTransform(new QuadSpaceTransform(mPerception));
+        addAvailableTransform(new SoftSquarePolarTransform(mPerception));
+        addAvailableTransform(new SquarePolarTransform(mPerception));
+        addAvailableTransform(new VariableStretch3Transform(mPerception));
+        addAvailableTransform(new WoodcutTransform(mPerception));
 
-		Collections.sort(mAvailableTransforms, (t1, t2) -> {
-			return t1.getDisplayName().compareTo(t2.getDisplayName());
-		});
+        Collections.sort(mAvailableTransforms, (t1, t2) -> t1.getDisplayName().compareTo(t2.getDisplayName()));
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	public void setDirty() {
-		mDirty = true;
-	}
+    public void setDirty() {
+        mDirty = true;
+    }
 
-	private void setDirty(final boolean pDirty) {
-		mDirty = pDirty;
-	}
+    private void setDirty(final boolean pDirty) {
+        mDirty = pDirty;
+    }
 
-	private void setPreviousTransforms() {
-		for (int i = 1; i < mTransforms.size(); i++) {
-			mTransforms.get(i).setPreviousTransform(mTransforms.get(i - 1));
-		}
-	}
+    private void setPreviousTransforms() {
+        for (int i = 1; i < mTransforms.size(); i++) {
+            mTransforms.get(i).setPreviousTransform(mTransforms.get(i - 1));
+        }
+    }
 
 
-	@Override
-	public void setSelectedIndex(IContainer pContainer) {
-		int index = mTransforms.indexOf(pContainer);
-		if (index >= 0 ) {
-			setSelectedIndex(index);
-		}
-		throw new IllegalStateException("TransformSequence does not container specified container.");
-	}
+    @Override
+    public void setSelectedIndex(IContainer pContainer) {
+        int index = mTransforms.indexOf(pContainer);
+        if (index >= 0) {
+            setSelectedIndex(index);
+        }
+        throw new IllegalStateException("TransformSequence does not container specified container.");
+    }
 
-	@Override
-	public void setSelectedIndex(final int pIndex) {
-		setSelectedIndex(pIndex, null);
-	}
+    @Override
+    public void setSelectedIndex(final int pIndex) {
+        setSelectedIndex(pIndex, null);
+    }
 
-	@Override
-	public void setSelectedIndex(final int pIndex, final ISingleSelectView pView) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterGreaterThanEqual(mLogger, pIndex, -1, "pIndex = %d, it must be greater than or equal to %d.");
-		Framework.checkParameterLessThan(mLogger, pIndex, mTransforms.size(), "pIndex = %d, it must be smaller than mTransforms.size() = %d.");
-		Framework.logParams(mLogger, "pIndex", pIndex);
+    @Override
+    public void setSelectedIndex(final int pIndex, final ISingleSelectView pView) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterGreaterThanEqual(mLogger, pIndex, -1, "pIndex = %d, it must be greater than or equal to %d.");
+        Framework.checkParameterLessThan(mLogger, pIndex, mTransforms.size(), "pIndex = %d, it must be smaller than mTransforms.size() = %d.");
+        Framework.logParams(mLogger, "pIndex", pIndex);
 
-		if (pIndex != -1) { // -1 indicates that the view is closing
-			mSelectedIndex = pIndex;
-			invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
+        if (pIndex != -1) { // -1 indicates that the view is closing
+            mSelectedIndex = pIndex;
+            invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
 
-			ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
-			IViewable<?> content = transform.getContent();
-			mBorderLayout.setCenter(content);
-			transform.updatePreview();
+            ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
+            IViewable<?> content = transform.getContent();
+            mBorderLayout.setCenter(content);
+            transform.updatePreview();
 
-			mRemoveAction.setEnabled(pIndex != 0);
-			mUpAction.setEnabled(pIndex > 1);
-			mDownAction.setEnabled(pIndex + 1 < mTransforms.size());
-		}
+            mRemoveAction.setEnabled(pIndex != 0);
+            mUpAction.setEnabled(pIndex > 1);
+            mDownAction.setEnabled(pIndex + 1 < mTransforms.size());
+        }
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	private void upAction() {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 1, "Cannot move ImageLoadTransform, or the first transform after that up.");
+    private void upAction() {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 1, "Cannot move ImageLoadTransform, or the first transform after that up.");
 
-		int newIndex = mSelectedIndex - 1;
-		ITransform transform = mTransforms.remove(mSelectedIndex);
-		mTransforms.add(newIndex, transform);
-		setPreviousTransforms();
-		redraw();
-		mPerception.refreshPreview();
-		setSelectedIndex(newIndex);
+        int newIndex = mSelectedIndex - 1;
+        ITransform transform = mTransforms.remove(mSelectedIndex);
+        mTransforms.add(newIndex, transform);
+        setPreviousTransforms();
+        redraw();
+        mPerception.refreshPreview();
+        setSelectedIndex(newIndex);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public void write(final IPersistDB pDB, final String pId) throws IOException {
-		ITransform[] transforms = mTransforms.toArray(new ITransform[mTransforms.size()]);
-		for (int i = 0; i < transforms.length; i++) {
-			transforms[i].write(pDB, pId + "." + i);
-		}
-		pDB.write(pId + ".selectedContainer", String.valueOf(getSelectedIndex()));
-	}
+    @Override
+    public void write(final IPersistDB pDB, final String pId) throws IOException {
+        ITransform[] transforms = mTransforms.toArray(new ITransform[mTransforms.size()]);
+        for (int i = 0; i < transforms.length; i++) {
+            transforms[i].write(pDB, pId + "." + i);
+        }
+        pDB.write(pId + ".selectedContainer", String.valueOf(getSelectedIndex()));
+    }
 
 }

@@ -30,7 +30,7 @@ public class MenuItemView implements IView {
 
 	private void createView() {
 		mUI = new MenuItem(mActionControl.getDisplayName());
-		mUI.setOnAction(e -> mActionControl.performAction());
+        mUI.setOnAction(e -> new Thread(new ThreadGroup("UI lambda"), mActionControl::performAction).start());
 	}
 
 	public MenuItem getUI() {
