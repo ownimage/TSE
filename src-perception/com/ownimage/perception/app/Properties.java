@@ -21,7 +21,6 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.layout.VFlowLayout;
-import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
@@ -29,6 +28,7 @@ import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
@@ -39,26 +39,33 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     private final Container mContainer = new Container("Properties", "properties", getUndoRedoBuffer());
 
+    // defaults
     private final BooleanControl mUseDefaultPropertyFile = new BooleanControl("Use Default Property Properties File", "useDefaultPropertyFile", mContainer, true);
     private final BooleanControl mUseDefaultLoggingFile = new BooleanControl("Use Default Logging Properties File", "useDefaultLoggingFile", mContainer, true);
     private final BooleanControl mAutoLoadTransformFile = new BooleanControl("Auto Load Transform File", "autoLoadTransformFile", mContainer, true);
 
-    private final DoubleControl mFontSize = new DoubleControl("Font Size", "fontSize", mContainer, 10.0, new DoubleMetaType(0.0d, 100.0d));
+    // sizes
+    private final IntegerControl mPreviewSize = new IntegerControl("Preview size", "previewSize", mContainer, 800, 500, 1600, 100);
+    private final IntegerControl mSavePreviewSize = new IntegerControl("Save size", "savePreviewSize", mContainer, 500, 200, 1600, 100);
 
+    // colors
     private final ColorControl mColor1 = new ColorControl("Color 1", "color1", mContainer, Color.RED);
     private final ColorControl mColor2 = new ColorControl("Color 2", "color2", mContainer, Color.ORANGE);
     private final ColorControl mColor3 = new ColorControl("Color 3", "color3", mContainer, Color.GREEN);
     private final ColorControl mColorOOB = new ColorControl("Color OOB", "colorOOB", mContainer, Color.PINK);
-
     private final ColorControl mPixelMapBGColor = new ColorControl("PixelMap background", "pixelMapBG", mContainer, Color.WHITE);
     private final ColorControl mPixelMapFGColor = new ColorControl("PixelMap foreground", "pixelMapFG", mContainer, Color.BLACK);
 
+    // render
     private final BooleanControl mUseJTP = new BooleanControl("Use JTP", "useJTP", mContainer, true);
     private final IntegerControl mRenderBatchSize = new IntegerControl("Batch size", "batchSize", mContainer, 1000, 1, 1000000, 100000);
     private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
     private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100, 1, 100000, 1000);
-
     private final BooleanControl mUseOpenCL = new BooleanControl("Use OpenCL", "useOpenCL", mContainer, true);
+
+    // output
+    private final DoubleControl mJPGQuality = new DoubleControl("JPG Quality", "jpgQuality", mContainer, 1.0);
+
 
     public Properties() {
         Framework.logEntry(mLogger);
@@ -79,12 +86,16 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         NamedTabs view = new NamedTabs("Properties", "properties");
 
         VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
+        VFlowLayout sizes = new VFlowLayout(mPreviewSize, mSavePreviewSize);
         VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
         VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
+        VFlowLayout output = new VFlowLayout(mJPGQuality);
 
         view.addTab("Defaults", defaults);
+        view.addTab("Sizes", sizes);
         view.addTab("Colors", colors);
         view.addTab("Render Engine", render);
+        view.addTab("Output", output);
         view.addTab(ViewFactory.getInstance().getViewFactoryPropertiesViewable());
 
         return view.createView();
@@ -127,12 +138,8 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         return "Properties";
     }
 
-    public double getFontSize() {
-        return mFontSize.getValue();
-    }
-
     public double getJpgQuality() {
-        return 1.0d;
+        return mJPGQuality.getValue();
     }
 
     public Color getPixelMapBGColor() {
@@ -152,7 +159,11 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     }
 
     public int getPreviewSize() {
-        return 500;
+        return mPreviewSize.getValue();
+    }
+
+    public int getSavePreviewSize() {
+        return mSavePreviewSize.getValue();
     }
 
     @Override
@@ -267,4 +278,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         }
     }
 
+    public ImageQuality getImageQuality() {
+        return new ImageQuality((float) Services.getServices().getProperties().getJpgQuality());
+    }
 }

@@ -43,7 +43,9 @@ public interface ITransform extends IBatchTransform, IPersist { // extends , IGr
     /**
      * Update the input preview image.
      */
-    void updatePreview();
+    void refreshInputPreview();
 
     boolean isInitialized();
+
+    void resizeInputPreview(int pPreviewSize);
 }

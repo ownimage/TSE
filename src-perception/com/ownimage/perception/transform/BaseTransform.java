@@ -46,7 +46,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     private final String mPropertyName;
     private final Container mContainer;
     private final BooleanControl mUseTransform;
-    private final PictureControl mPreviewImage;
+    private final PictureControl mInputPreviewImage;
 
     private ITransform mPreviousTransform;
     private ControlSelector mControlSelector;
@@ -72,14 +72,20 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
                 preview.setColor(x, y, c);
             }
         }
-        mPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", getPerception()), preview);
-        mPreviewImage.setUIListener(this);
+        mInputPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", getPerception()), preview);
+        mInputPreviewImage.setUIListener(this);
         mContainer.addControlChangeListener(this);
 
         setControlSelector(new ControlSelector(this));
         getPreviewImage().setGrafitti(this);
 
         Framework.logExit(mLogger);
+    }
+
+    @Override
+    public void resizeInputPreview(final int pPreviewSize) {
+        PictureType preview = new PictureType(pPreviewSize);
+        mInputPreviewImage.setValue(preview);
     }
 
     public void addXControl(final IMouseControl pControl) {
@@ -108,7 +114,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         if (!isMouseDragInProgress()) {
             setValues();
             redrawGrafitti();
-            refreshPreview();
+            refreshOutputPreview();
         }
 
         Framework.logExit(mLogger);
@@ -141,7 +147,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
     @Override
     public IViewable<?> getContent() {
-        return new ScrollLayout(mPreviewImage);
+        return new ScrollLayout(mInputPreviewImage);
     }
 
     @Override
@@ -189,7 +195,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     protected PictureControl getPreviewImage() {
-        return mPreviewImage;
+        return mInputPreviewImage;
     }
 
     @Override
@@ -198,7 +204,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     public Properties getProperties() {
-        return getPerception().getProperties();
+        return Services.getServices().getProperties();
     }
 
     @Override
@@ -295,9 +301,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         getPreviewImage().redrawGrafitti();
     }
 
-    public void refreshPreview() {
+    public void refreshOutputPreview() {
         Framework.logEntry(mLogger);
-        getPerception().refreshPreview();
+        getPerception().refreshOutputPreview();
         Framework.logExit(mLogger);
     }
 
@@ -349,9 +355,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void updatePreview() {
+    public void refreshInputPreview() {
         Framework.logEntry(mLogger);
-        getPerception().getRenderService().transform(mPreviewImage, mPreviousTransform, null);
+        getPerception().getRenderService().transform(mInputPreviewImage, mPreviousTransform, null);
         Framework.logExit(mLogger);
     }
 

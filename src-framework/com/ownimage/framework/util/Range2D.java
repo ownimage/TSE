@@ -107,4 +107,13 @@ public class Range2D {
                 });
     }
 
+    public void forEachParallel(BiConsumer<Integer, Integer> pFunction) {
+        IntStream.range(0, Math.floorDiv(mXTo - mXFrom, mXStep)).parallel()
+                .forEach(x -> {
+                    IntStream.range(0, Math.floorDiv(mYTo - mYFrom, mYStep))
+                            .forEach(y -> {
+                                pFunction.accept(mXFrom + x * mXStep, mYFrom + y * mYStep);
+                            });
+                });
+    }
 }

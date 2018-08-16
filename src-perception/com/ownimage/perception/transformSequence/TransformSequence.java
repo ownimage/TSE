@@ -58,7 +58,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     private Vector<ITransform> mTransforms;
     private int mSelectedIndex;
-    private BorderLayout mBorderLayout;
+    private BorderLayout mBorderLayout = new BorderLayout();
+    ;
 
     private final ActionControl mUpAction;
     private final ActionControl mDownAction;
@@ -115,7 +116,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         setPreviousTransforms();
         redraw();
         setSelectedIndex(index);
-        mPerception.refreshPreview();
+        mPerception.refreshOutputPreview();
 
         Framework.logExit(mLogger);
     }
@@ -137,7 +138,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         mTransforms.add(newIndex, transform);
         setPreviousTransforms();
         redraw();
-        mPerception.refreshPreview();
+        mPerception.refreshOutputPreview();
         setSelectedIndex(newIndex);
 
         Framework.logExit(mLogger);
@@ -164,7 +165,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
         ITransform transform = getFirstTransform();
 
-        mBorderLayout = new BorderLayout();
         mBorderLayout.setCenter(transform.getContent());
         mBorderLayout.setRight(buttonPanelAccordionLayout);
 
@@ -252,6 +252,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
                 i++;
             } while (true);
 
+            setPreviousTransforms();
             setSelectedIndex(pDB.read(pId + ".selectedContainer"));
             redraw();
         } catch (Throwable pT) {
@@ -259,8 +260,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             throw new RuntimeException("Transform->Open failed.", pT);
 
         } finally {
-            setPreviousTransforms();
-            mPerception.refreshPreview();
+            mPerception.refreshOutputPreview();
         }
 
         Framework.logExit(mLogger);
@@ -279,7 +279,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             }
             setSelectedIndex(index); // this is to force the button enabled to refresh
             redraw();
-            mPerception.refreshPreview();
+            mPerception.refreshOutputPreview();
         }
 
         Framework.logExit(mLogger);
@@ -354,7 +354,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
             IViewable<?> content = transform.getContent();
             mBorderLayout.setCenter(content);
-            transform.updatePreview();
+            transform.refreshInputPreview();
 
             mRemoveAction.setEnabled(pIndex != 0);
             mUpAction.setEnabled(pIndex > 1);
@@ -373,7 +373,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         mTransforms.add(newIndex, transform);
         setPreviousTransforms();
         redraw();
-        mPerception.refreshPreview();
+        mPerception.refreshOutputPreview();
         setSelectedIndex(newIndex);
 
         Framework.logExit(mLogger);
@@ -388,4 +388,12 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         pDB.write(pId + ".selectedContainer", String.valueOf(getSelectedIndex()));
     }
 
+    public void resizeInputPreviews(final int pPreviewSize) {
+        mTransforms.forEach(t -> t.resizeInputPreview(pPreviewSize));
+        getSelectedTransform().refreshInputPreview();
+    }
+
+    public ITransform getSelectedTransform() {
+        return getTransform(getSelectedIndex());
+    }
 }

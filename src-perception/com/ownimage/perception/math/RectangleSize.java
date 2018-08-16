@@ -2,6 +2,9 @@ package com.ownimage.perception.math;
 
 import java.util.Objects;
 
+import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.type.PictureType;
+
 public class RectangleSize {
 
 
@@ -11,6 +14,14 @@ public class RectangleSize {
     public RectangleSize(final int pWidth, final int pHeight) {
         this.mWidth = pWidth;
         this.mHeight = pHeight;
+    }
+
+    public RectangleSize(final PictureControl pPictureControl) {
+        this(pPictureControl.getWidth(), pPictureControl.getHeight());
+    }
+
+    public RectangleSize(final PictureType pPictureType) {
+        this(pPictureType.getWidth(), pPictureType.getHeight());
     }
 
     public int getHeight() {

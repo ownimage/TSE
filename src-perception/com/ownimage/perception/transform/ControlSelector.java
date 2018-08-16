@@ -110,7 +110,7 @@ public class ControlSelector implements IUIEventListener {
 			}
 		}
 
-		mTransform.refreshPreview();
+		mTransform.refreshOutputPreview();
 		Framework.logExit(mLogger);
 	}
 

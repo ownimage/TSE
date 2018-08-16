@@ -47,7 +47,7 @@ public class Perception extends AppControlBase {
 
     private final Container mContainer;
     private final FileControl mFileControl;
-    private final PictureControl mPreviewControl;
+    private final PictureControl mOutputPreviewControl;
     private BorderLayout mBorderLayout;
 
     private ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
@@ -68,7 +68,7 @@ public class Perception extends AppControlBase {
         mLogger.fine(() -> String.format("mFileControl set to %s", mFileControl.getValue()));
 
         final PictureType preview = new PictureType(getPreviewSize(), getPreviewSize());
-        mPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
+        mOutputPreviewControl = new PictureControl("Preview", "preview", mContainer, preview);
 
         Framework.logExit(mLogger);
     }
@@ -90,7 +90,7 @@ public class Perception extends AppControlBase {
         mBorderLayout = new BorderLayout();
 
         if (getTransformSequence() != null) {
-            ScrollLayout scrollablePreview = new ScrollLayout(mPreviewControl);
+            ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
             HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
             mBorderLayout.setCenter(hSplitLayout);
         }
@@ -174,29 +174,37 @@ public class Perception extends AppControlBase {
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         mFilename = pFile.getAbsolutePath();
-        Services.getServices().setTransformSequence(new TransformSequence(this, pFile));
 
         propertiesOpenSystemDefault();
         if (getProperties().useDefaultPropertyFile()) {
             propertiesOpenDefault();
         }
 
+        Services.getServices().setTransformSequence(new TransformSequence(this, pFile));
         if (getProperties().useAutoLoadTransformFile()) {
             transformOpenDefault();
         }
 
-        ScrollLayout scrollablePreview = new ScrollLayout(mPreviewControl);
+        ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
         HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
         mBorderLayout.setCenter(hSplitLayout);
 
-        int size = 800;
-        refreshPreview();
+        refreshOutputPreview();
 
         Framework.logExit(mLogger);
     }
 
     private void fileRedraw() {
+        refreshPreviews();
         mAppControlView.redraw();
+    }
+
+    /**
+     * This will cause the application to recreate all of the images and redraw itseslf
+     */
+    private void refreshPreviews() {
+        refreshOutputPreview();
+        getTransformSequence().resizeInputPreviews(getPreviewSize());
     }
 
     /**
@@ -259,14 +267,14 @@ public class Perception extends AppControlBase {
         new Thread(() -> {
             try {
                 PictureType testSave = new PictureType(100, 100);
-                testSave.getValue().save(pFile); // no point generating a large file if we cant save it
+                testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
 
                 PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
                 getRenderService().transform(output
                         , getTransformSequence().getLastTransform()
                         , () -> {
                             try {
-                                output.getValue().save(pFile);
+                                output.getValue().save(pFile, getProperties().getImageQuality());
                             } catch (Exception e) {
                                 mLogger.severe("Unable to output file");
                             }
@@ -281,6 +289,10 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
+    private int getSavePreviewSize() {
+        return getProperties().getSavePreviewSize();
+    }
+
     /**
      * Shows a dialog with a preview of the output of all of the transforms. If the user presses OK then the specified action is
      * run. If they press Cancel then the dialog closes without action.
@@ -292,7 +304,7 @@ public class Perception extends AppControlBase {
 
         Container displayContainer = new Container("File Save", "fileSave", this);
         StrongReference<PictureType> preview = new StrongReference<>();
-        getResizedPictureTypeIfNeeded(500, null).ifPresent(preview::set);
+        getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
         getRenderService().transform(preview.get()
@@ -351,7 +363,7 @@ public class Perception extends AppControlBase {
     }
 
     private int getPreviewSize() {
-        return 800;
+        return getProperties().getPreviewSize();
     }
 
     public synchronized Properties getProperties() {
@@ -493,6 +505,7 @@ public class Perception extends AppControlBase {
 
     private void propertiesEdit() {
         Framework.logEntry(mLogger);
+        int previousPreviewSize = getPreviewSize();
 
         try {
             getProperties().getUndoRedoBuffer().resetAndDestroyAllBuffers();
@@ -500,12 +513,17 @@ public class Perception extends AppControlBase {
             PersistDB db = new PersistDB();
             getProperties().write(db, "");
 
-            ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.fine("OK"));
+            ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
+                if (previousPreviewSize != getPreviewSize()) {
+                    refreshPreviews();
+                }
+            });
             ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> getProperties().read(db, ""));
             showDialog(getProperties(), DialogOptions.NONE, getProperties().getUndoRedoBuffer(), cancel, ok);
         } catch (IOException pIOE) {
             // default
         }
+
 
         Framework.logExit(mLogger);
     }
@@ -622,11 +640,11 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    public void refreshPreview() {
+    public void refreshOutputPreview() {
         Framework.logEntry(mLogger);
 
         resizePreviewControlIfNeeded();
-        getRenderService().transform(mPreviewControl, getTransformSequence().getLastTransform(), null);
+        getRenderService().transform(mOutputPreviewControl, getTransformSequence().getLastTransform(), null);
 
         Framework.logExit(mLogger);
     }
@@ -637,9 +655,9 @@ public class Perception extends AppControlBase {
     private void resizePreviewControlIfNeeded() {
         int size = getPreviewSize();
         if (getTransformSequence() == null || getTransformSequence().getLastTransform() == null) {
-            mPreviewControl.setValue(new PictureType(size, size));
+            mOutputPreviewControl.setValue(new PictureType(size));
         } else {
-            getResizedPictureTypeIfNeeded(getPreviewSize(), mPreviewControl.getValue()).ifPresent(mPreviewControl::setValue);
+            getResizedPictureTypeIfNeeded(size, mOutputPreviewControl.getValue()).ifPresent(mOutputPreviewControl::setValue);
         }
     }
 
@@ -692,7 +710,7 @@ public class Perception extends AppControlBase {
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
-        refreshPreview();
+        refreshOutputPreview();
 
         Framework.logExit(mLogger);
     }

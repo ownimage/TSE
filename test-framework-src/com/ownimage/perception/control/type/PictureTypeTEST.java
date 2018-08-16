@@ -19,6 +19,7 @@ import com.ownimage.framework.control.control.ColorControl.ColorProperty;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
+import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
 
@@ -27,6 +28,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 	private static Color mTestColor1 = Color.CYAN;
 	private static Color mTestColor2 = Color.RED;
 	private PictureType mPicture;
+	private ImageQuality mImageQuality = new ImageQuality(0.95f);
 
 	private final Container mContainer = new Container("PictureTypeTEST", "PictureTypeTEST", this);
 	private final ColorProperty mOOB = new ColorControl("mOOB", "mOOB", mContainer, Color.CYAN).getProperty();
@@ -368,7 +370,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 		PictureType picture1 = new PictureType(width, height);
 		assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
 		picture1.setColor(ip, mTestColor1);
-		picture1.save(tempFile);
+		picture1.save(tempFile, mImageQuality);
 
 		PictureType picture2 = new PictureType(tempFile);
 		assertTrue("width correct", picture2.getWidth() == width);
@@ -381,7 +383,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 	@Test(expected = IllegalArgumentException.class)
 	// public void save(final File file) throws Exception {
 	public void PictureType_save_01() throws Exception {
-		mPicture.save((File) null);
+		mPicture.save((File) null, mImageQuality);
 	}
 
 	@Test
@@ -397,12 +399,12 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 		PictureType picture1 = new PictureType(width, height);
 		assertFalse("Colors should not match to start with", mTestColor1.equals(picture1.getColor(ip).get()));
 		picture1.setColor(ip, mTestColor1);
-		picture1.save(tmpFileName);
+		picture1.save(tmpFileName, mImageQuality);
 
 		PictureType picture2 = new PictureType(tmpFileName);
 		assertTrue("width correct", picture2.getWidth() == width);
 		assertTrue("height correct", picture2.getHeight() == height);
-		picture2.save(tmpFileName);
+		picture2.save(tmpFileName, mImageQuality);
 		assertEquals("Colors should match", picture1.getColor(ip).get(), picture2.getColor(ip).get());
 		// TODO for some reason the above test fails
 
@@ -426,12 +428,12 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 				picture1.setColor(x, y, mTestColor1);
 			}
 		}
-		picture1.save(tmpFileName);
+		picture1.save(tmpFileName, mImageQuality);
 
 		PictureType picture2 = new PictureType(tmpFileName);
 		assertTrue("width correct", picture2.getWidth() == width);
 		assertTrue("height correct", picture2.getHeight() == height);
-		picture2.save(tmpFileName);
+		picture2.save(tmpFileName, mImageQuality);
 		assertTrue("Colors should match", picture1.getColor(ip).get().equals(picture2.getColor(ip).get()));
 
 		tempFile.delete();
@@ -443,7 +445,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 		File tempFile = File.createTempFile("picture", ".non");
 		String tmpFileName = tempFile.getAbsolutePath();
 		tempFile.delete();
-		mPicture.save(tmpFileName);
+		mPicture.save(tmpFileName, mImageQuality);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -453,13 +455,13 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 		String tmpFileName = tempFile.getAbsolutePath();
 		System.out.println(tmpFileName);
 		tempFile.delete();
-		mPicture.save(tmpFileName);
+		mPicture.save(tmpFileName, mImageQuality);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	// public void save(final File file) throws Exception {
 	public void PictureType_save_14() throws Exception {
-		mPicture.save((String) null);
+		mPicture.save((String) null, mImageQuality);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -526,7 +528,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
 	public void PictureType_setColor_13() {
 		IntegerPoint point = new IntegerPoint(10, 10);
 
-		assertFalse("starting colurs must be different", mTestColor1.equals(mPicture.getColor(point)));
+		assertFalse("starting colurs must be different", mTestColor1.equals(mPicture.getColor(point).get()));
 		mPicture.setColor(point, mTestColor1);
 		assertTrue("colors same", mTestColor1.equals(mPicture.getColor(point).get()));
 	}

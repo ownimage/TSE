@@ -20,6 +20,7 @@ import javax.imageio.stream.FileImageOutputStream;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Point;
@@ -46,7 +47,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
 
 
     /**
-     * The Is360, indicates that the image wraps round on the X axis and so needs to be mapped appropriately..
+     * The Is360, indicates that the image wraps round on the X axis and so needs to be mapped appropriately.
      */
     private boolean mIs360 = false;
 
@@ -100,7 +101,16 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     }
 
     /**
-     * Instantiates a new picture type based on the height and width given. The image will be filled with black..
+     * Instantiates a new picture type with the height and width set to the size (i.e. square). The image will be filled with black.
+     *
+     * @param pSize  the height and width
+     */
+    public PictureType(final int pSize) {
+        this(pSize, pSize);
+    }
+
+    /**
+     * Instantiates a new picture type based on the height and width given. The image will be filled with black.
      *
      * @param pSize          the size of the new PictureType
      */
@@ -109,7 +119,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     }
 
     /**
-     * Instantiates a new picture type based on the height and width given. The image will be filled with black..
+     * Instantiates a new picture type based on the height and width given. The image will be filled with black.
      *
      * @param pWidth  the width
      * @param pHeight the height
@@ -390,8 +400,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFile the file
      * @throws Exception the exception
      */
-    // TODO need to have the quality as a parameter
-    public void save(final File pFile) throws Exception {
+    public void save(final File pFile, ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         mLogger.info("mImage.getType() = " + mImage.getType());
@@ -413,7 +422,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         final ImageWriteParam iwp = writer.getDefaultWriteParam();
 
         if ("jpg".equals(extension)) {
-            float quality = 1.00f;
+            float quality = pImageQuality.getJPGQuality();
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             iwp.setCompressionQuality(quality);
         }
@@ -455,11 +464,11 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFileName the name
      * @throws Exception the exception
      */
-    public void save(final String pFileName) throws Exception {
+    public void save(final String pFileName, ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFileName, "pFileName");
 
-        save(new File(pFileName));
+        save(new File(pFileName), pImageQuality);
 
         Framework.logExit(mLogger);
     }
@@ -621,11 +630,36 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     }
 
     public void forEach(BiConsumer<Integer, Integer> pFunction) {
-        Range2D.forEach(getWidth(), getHeight(), pFunction);
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEach(pFunction);
+    }
+
+    public void forEachParallel(BiConsumer<Integer, Integer> pFunction) {
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEachParallel(pFunction);
     }
 
     public void setColor(BiFunction<Integer, Integer, Color> pFunction) {
-        Range2D.forEach(getWidth(), getHeight(), (x, y) -> setColor(x, y, pFunction.apply(x, y)));
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEachParallel((x, y) -> setColor(x, y, pFunction.apply(x, y)));
+    }
+
+    public void forEachDouble(final BiConsumer<Double, Double> pFunction) {
+        BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEach(function);
+    }
+
+    public void forEachDoubleParallel(final BiConsumer<Double, Double> pFunction) {
+        BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEachParallel(function);
+    }
+
+    public void setColorDouble(BiFunction<Double, Double, Color> pFunction) {
+        BiConsumer<Integer, Integer> function = (x, y) -> setColor(x, y, pFunction.apply((double) x / getWidth(), (double) y / getHeight()));
+        Range2D range = new Range2D(getWidth(), getHeight());
+        range.forEachParallel(function);
     }
 
     public RectangleSize getSize() {
