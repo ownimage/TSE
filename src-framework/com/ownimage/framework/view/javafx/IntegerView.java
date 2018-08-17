@@ -49,7 +49,9 @@ public class IntegerView extends ViewBase<IntegerControl> {
 	@Override
 	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
 		if (pControl == mControl) {
-			mIntegerSpinner.getEditor().setText(mControl.getString());
+            if (!mIntegerSpinner.getValue().equals(mControl.getValue())) {
+                mIntegerSpinner.getEditor().setText(mControl.getString());
+            }
 		}
 	}
 
@@ -60,7 +62,7 @@ public class IntegerView extends ViewBase<IntegerControl> {
 
 	private void setControlValue(final int pValue) {
 		try {
-			if (mAllowUpdates) {
+            if (mAllowUpdates && !mIntegerSpinner.getValue().equals(mControl.getValue())) {
 				mControl.setValue(pValue, this, false);
 				mAllowUpdates = false;
 				mIntegerSpinner.getEditor().setText(mControl.getString());

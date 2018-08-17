@@ -147,6 +147,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
 			@Override
 			public void redo() {
+                mLogger.fine(() -> getDescription() + "\nredo setValue to " + pOldValue);
 				mValue.setValue(pNewValue);
 				mValidateValue = pNewValue;
 				fireControlChangeEvent();
@@ -154,12 +155,20 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
 			@Override
 			public void undo() {
-                mLogger.fine(() -> "undo setValue to " + pOldValue);
+                mLogger.fine(() -> getDescription() + "\nundo setValue to " + pOldValue);
 				mValue.setValue(pOldValue);
 				mValidateValue = pOldValue;
 				setDirty(mOldDirtyFlag);
 				fireControlChangeEvent();
 			}
+
+            @Override
+            public String toString() {
+                return new StringBuilder("IUndoRedoAction ").append(getDescription())
+                        .append("\nOldValue=").append(pOldValue)
+                        .append("\nNewValue=").append(pNewValue)
+                        .toString();
+            }
 		};
 
 		mContainer.getUndoRedoBuffer().add(redo);

@@ -46,6 +46,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
             mSavePoint.add(pAction);
         }
 
+        mLogger.finest(this::stackToString);
         Framework.logExit(mLogger);
     }
 
@@ -66,10 +67,12 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
         mStack.add(mPointer, pAction);
         mPointer++;
 
+        mLogger.finest(this::stackToString);
         Framework.logExit(mLogger);
     }
 
     public void endSavepoint(final Id pId) {
+        Framework.logEntry(mLogger);
 
         if (mSavePoint == null) {
             throw new IllegalArgumentException("No savepoint active");
@@ -90,6 +93,8 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
                 throw new IllegalArgumentException("savepoint not in currenlty active set");
             }
         }
+        mLogger.finest(this::stackToString);
+        Framework.logExit(mLogger);
     }
 
     @Override
@@ -114,6 +119,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
             redo = true;
         }
 
+        mLogger.finest(this::stackToString);
         Framework.logExit(mLogger, redo);
         return redo;
     }
@@ -122,14 +128,20 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
      * Reset and destroy all buffers. For test purposes
      */
     public void resetAndDestroyAllBuffers() {
+        Framework.logEntry(mLogger);
+
         // TODO this can probably be removed ... as the UndoRedoBuffer is no longer a singleton.
         mStack = new Vector<IUndoRedoAction>(mSize);
         mPointer = 0;
         mSavePoint = null;
         mSavePointIds = null;
+
+        mLogger.finest(this::stackToString);
+        Framework.logExit(mLogger);
     }
 
     public Id startSavepoint(final String pString) {
+        Framework.logEntry(mLogger);
         Framework.checkParameterNotNullOrEmpty(mLogger, pString, "pString");
 
         Id id = new Id(pString);
@@ -140,6 +152,8 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
             mSavePointIds.add(id);
         }
 
+        mLogger.finest(this::stackToString);
+        Framework.logExit(mLogger, id);
         return id;
     }
 
@@ -159,7 +173,14 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
             undoRedoAction.undo();
             undo = true;
         }
+        mLogger.finest(this::stackToString);
         Framework.logExit(mLogger, undo);
         return undo;
+    }
+
+    public String stackToString() {
+        StringBuilder sb = new StringBuilder("mStack");
+        mStack.forEach(a -> sb.append("\n").append(a));
+        return sb.toString();
     }
 }
