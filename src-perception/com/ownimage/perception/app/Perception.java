@@ -90,8 +90,8 @@ public class Perception extends AppControlBase {
         mBorderLayout = new BorderLayout();
 
         if (getTransformSequence() != null) {
-            ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
-            HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
+            ScrollLayout scrollableOutputPreview = new ScrollLayout(mOutputPreviewControl);
+            HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollableOutputPreview);
             mBorderLayout.setCenter(hSplitLayout);
         }
 

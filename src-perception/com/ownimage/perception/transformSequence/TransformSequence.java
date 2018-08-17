@@ -59,7 +59,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
     private Vector<ITransform> mTransforms;
     private int mSelectedIndex;
     private BorderLayout mBorderLayout = new BorderLayout();
-    ;
 
     private final ActionControl mUpAction;
     private final ActionControl mDownAction;
@@ -81,7 +80,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         mAddAction = ActionControl.createImage("Add", tempContainer, this::addAction, "/icon/plus.png");
         mRemoveAction = ActionControl.createImage("Remove", tempContainer, this::removeAction, "/icon/minus.png");
 
-        mTransforms = new Vector<ITransform>();
+        mTransforms = new Vector<>();
 
         ImageLoadTransform ilt = new ImageLoadTransform(pPerception, pFile);
         mTransforms.add(ilt);
@@ -163,7 +162,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         buttonPanelAccordionLayout.setTop(buttonLayout);
         buttonPanelAccordionLayout.setCenter(this);
 
-        ITransform transform = getFirstTransform();
+        ITransform transform = getSelectedTransform();
 
         mBorderLayout.setCenter(transform.getContent());
         mBorderLayout.setRight(buttonPanelAccordionLayout);
@@ -328,7 +327,10 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     @Override
     public void setSelectedIndex(IContainer pContainer) {
-        int index = mTransforms.indexOf(pContainer);
+        if (!(pContainer instanceof ITransform))
+            throw new IllegalArgumentException("pContainer is not instanceof ITransform");
+
+        int index = mTransforms.indexOf((ITransform) pContainer);
         if (index >= 0) {
             setSelectedIndex(index);
         }
