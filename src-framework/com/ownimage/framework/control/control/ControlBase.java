@@ -100,7 +100,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 		mValidateValue = pValue.getValue();
 		mContainer = pContainer;
 
-		mViews = new EventDispatcher<V>(this);
+        mViews = new EventDispatcher<>(this);
 		// resetValidateValue();
 		// TODO
 
@@ -154,6 +154,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
 			@Override
 			public void undo() {
+                mLogger.fine(() -> "undo setValue to " + pOldValue);
 				mValue.setValue(pOldValue);
 				mValidateValue = pOldValue;
 				setDirty(mOldDirtyFlag);

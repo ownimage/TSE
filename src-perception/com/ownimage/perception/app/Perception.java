@@ -29,6 +29,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
@@ -50,8 +51,15 @@ public class Perception extends AppControlBase {
     private final PictureControl mOutputPreviewControl;
     private BorderLayout mBorderLayout;
 
+    // Properties actions
+    private ActionControl mPropertiesSave = new ActionControl("Save", "propertiesSave", NullContainer, this::propertiesSave);
+    private ActionControl mPropertiesSaveAs = new ActionControl("Save As", "propertiesSaveAs", NullContainer, this::propertiesSaveAs);
+    private ActionControl mPropertiesSaveDefault = new ActionControl("Save Default", "propertiesSaveDefault", NullContainer, this::propertiesSaveDefault);
+
+    // Logging actions
     private ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
     private ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
+
 
     private String mFilename;
 
@@ -123,9 +131,9 @@ public class Perception extends AppControlBase {
                 .addMenu(new MenuControl.Builder().setDisplayName("Properties")
                                  .addAction(new ActionControl("Edit", "propertiesEdit", menuContainer, this::propertiesEdit))
                                  .addAction(new ActionControl("Open", "propertiesOpen", menuContainer, this::propertiesOpen))
-                                 .addAction(new ActionControl("Save", "propertiesSave", menuContainer, this::propertiesSave))
-                                 .addAction(new ActionControl("Save As", "propertiesSaveAs", menuContainer, this::propertiesSaveAs))
-                                 .addAction(new ActionControl("Save Default", "propertiesSaveDefault", menuContainer, this::propertiesSaveDefault))
+                                 .addAction(mPropertiesSave)
+                                 .addAction(mPropertiesSaveAs)
+                                 .addAction(mPropertiesSaveDefault)
                                  .addAction(new ActionControl("Load Default", "propertiesLoadDefault", menuContainer, this::propertiesOpenSystemDefault))
                                  .addAction(new ActionControl("Reset to System Default", "propertiesResetToSystemDefault", menuContainer, this::propertiesResetToSystemDefault))
                                  .build())
@@ -507,23 +515,24 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         int previousPreviewSize = getPreviewSize();
 
-        try {
-            getProperties().getUndoRedoBuffer().resetAndDestroyAllBuffers();
+        final UndoRedoBuffer undoRedoBuffer = getProperties().getUndoRedoBuffer();
+        Id id = undoRedoBuffer.startSavepoint("Edit");
 
-            PersistDB db = new PersistDB();
-            getProperties().write(db, "");
-
-            ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
-                if (previousPreviewSize != getPreviewSize()) {
-                    refreshPreviews();
-                }
-            });
-            ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> getProperties().read(db, ""));
-            showDialog(getProperties(), DialogOptions.NONE, getProperties().getUndoRedoBuffer(), cancel, ok);
-        } catch (IOException pIOE) {
-            // default
-        }
-
+        IAction success = () -> {
+            undoRedoBuffer.endSavepoint(id);
+            if (previousPreviewSize != getPreviewSize()) this.refreshPreviews();
+        };
+        ActionControl ok = ActionControl.create("OK", NullContainer, success);
+        ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> {
+            undoRedoBuffer.endSavepoint(id);
+            undoRedoBuffer.undo();
+        });
+        showDialog(getProperties(), DialogOptions.NONE, getProperties().getUndoRedoBuffer()
+                , cancel
+                , mPropertiesSave.doBefore(success)
+                , mPropertiesSaveAs.doBefore(success)
+                , mPropertiesSaveDefault.doBefore(success)
+                , ok);
 
         Framework.logExit(mLogger);
     }
