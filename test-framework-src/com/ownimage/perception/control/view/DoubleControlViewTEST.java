@@ -24,6 +24,7 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -235,6 +236,11 @@ public class DoubleControlViewTEST {
 		@Override
 		public IView createView(final VFlowLayout pVFlow) {
 			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IView createView(final ProgressControl pProgressControl) {
 			return null;
 		}
 

@@ -2,12 +2,15 @@ package com.ownimage.framework.view.javafx;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.app.IAppControl;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.control.IEnabledListener;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.undo.IUndoRedoBuffer;
@@ -47,8 +50,6 @@ public class AppControlView extends Application implements IAppControlView {
     private Stage mPrimaryStage;
 
     private Scene mScene;
-
-    private ChangeListener<? super Number> mWidthListener;
 
     public AppControlView() { // need public constructor for the app to work
         if (mAppControlView != null) {
@@ -197,28 +198,34 @@ public class AppControlView extends Application implements IAppControlView {
         Framework.checkParameterNotNull(mLogger, pDialogOptions, "pDialogOptions");
 
         HashMap<ButtonType, ActionControl> buttonMap = new HashMap<>();
+
         FXView content = (FXView) (pViewable.createView());
         Node contentUI = content.getUI();
+
         Dialog<ActionControl> dialog = new Dialog<>();
-
-        // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
-        // themselves which would mean that the mDialog would need to change size as the controls change value.
-        mWidthListener = (observable, oldValue, newValue) -> dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
-
-        FXViewFactory.getInstance().controlWidthProperty.addListener(mWidthListener);
-        FXViewFactory.getInstance().labelWidthProperty.addListener(mWidthListener);
-
         dialog.setTitle(pViewable.getDisplayName());
         dialog.getDialogPane().setContent(contentUI);
         dialog.getDialogPane().layout();
         dialog.setResultConverter(buttonMap::get);
 
+        // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
+        // themselves which would mean that the mDialog would need to change size as the controls change value.
+        ChangeListener<? super Number> widthListener = (observable, oldValue, newValue) -> dialog.setWidth(dialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
+        FXViewFactory.getInstance().controlWidthProperty.addListener(widthListener);
+        FXViewFactory.getInstance().labelWidthProperty.addListener(widthListener);
+
+        List<IEnabledListener> listeners = new Vector<>(); // these are only collected to prevent garbage collection
         for (ActionControl action : pButtons) {
             ButtonType button = new ButtonType(action.getDisplayName(), ButtonData.OK_DONE);
             buttonMap.put(button, action);
             dialog.getDialogPane().getButtonTypes().add(button);
+            dialog.getDialogPane().lookupButton(button).setDisable(!action.isEnabled());
+            IEnabledListener listener = (c, e) -> {
+                dialog.getDialogPane().lookupButton(button).setDisable(!e);
+            };
+            listeners.add(listener);
+            action.addEnabledListener(listener);
         }
-
 
         dialog.getDialogPane().setOnKeyPressed(pKE -> {
             if (pUndoRedo != null) {

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.control.IAction;
+import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.queue.ExecuteQueue;
@@ -79,18 +80,18 @@ public class RenderService {
      * @param pPictureControl the picture
      * @param pTransform      the transform
      */
-    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform) {
+    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, IProgressObserver pObserver) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         mLogger.info(() -> String.format("RenderService::transform pPictureControl=%s pTransform=%s", pPictureControl, pTransform.getDisplayName()));
 
-        transform(pPictureControl, pTransform, null);
+        transform(pPictureControl, pTransform, null, pObserver);
 
         Framework.logExit(mLogger);
     }
 
-    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction) {
+    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
@@ -102,12 +103,12 @@ public class RenderService {
             if (pCompleteAction != null) {
                 pCompleteAction.performAction();
             }
-        }, 1);
+        }, pObserver, 1);
 
         Framework.logExit(mLogger);
     }
 
-    public void transform(final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, int pOverSample) {
+    public void transform(final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
@@ -128,6 +129,10 @@ public class RenderService {
             public void doJob() {
                 super.doJob();
 
+                if (pObserver != null) {
+                    pObserver.started();
+                }
+
                 mJTPBatchEngine.setThreadPoolSize(
                         getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
 
@@ -139,6 +144,10 @@ public class RenderService {
                 batch.initialize(pPictureType, actualEngine, maxBatchSize);
 
                 while (batch.hasNext()) {
+                    if (pObserver != null) {
+                        pObserver.setProgress("Transforming", batch.getPercentComplete());
+                    }
+
                     batch.next(pOverSample);
                     transform(batch, pTransform);
                     batch.render(pPictureType, pOverSample);
@@ -146,6 +155,10 @@ public class RenderService {
 
                 if (pCompleteAction != null) {
                     pCompleteAction.performAction();
+                }
+
+                if (pObserver != null) {
+                    pObserver.finished();
                 }
             }
 

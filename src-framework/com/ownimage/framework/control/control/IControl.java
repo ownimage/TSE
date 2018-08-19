@@ -232,4 +232,11 @@ public interface IControl<C, T, M, R> extends IMouseControl, IPersist, IViewable
 	 */
 	public C setVisible(boolean pVisible);
 
+    public void addVisibileListener(IVisibileListener pListener);
+
+    public void removeVisibleListener(IVisibileListener pListener);
+
+    public void addEnabledListener(IEnabledListener pListener);
+
+    public void removeEnabledListener(IEnabledListener pListener);
 }

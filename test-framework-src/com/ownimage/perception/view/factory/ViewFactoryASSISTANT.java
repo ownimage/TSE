@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.FileControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -143,6 +144,11 @@ public class ViewFactoryASSISTANT implements IViewFactory {
     @Override
     public IView createView(final VFlowLayout pVFlow) {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IView createView(final ProgressControl pProgressControl) {
         return null;
     }
 

@@ -25,7 +25,6 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
 
 
     public final static Logger mLogger = Framework.getLogger();
-
     public final static long serialVersionUID = 1L;
 
     private final IAction mAction;

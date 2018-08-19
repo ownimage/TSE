@@ -8,6 +8,7 @@ import java.awt.*;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.util.KColor;
 
 public class ColorType extends TypeBase<IMetaType<Color>, Color> {
 
@@ -40,6 +41,10 @@ public class ColorType extends TypeBase<IMetaType<Color>, Color> {
 	public String getString() {
 		return String.valueOf(getValue().getRGB());
 	}
+
+    public String getHex() {
+        return KColor.toHex(getValue());
+    }
 
 	/*
 	 * (non-Javadoc)

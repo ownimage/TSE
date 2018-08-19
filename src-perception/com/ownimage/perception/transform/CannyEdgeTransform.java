@@ -257,7 +257,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 .transform(inputPictureControl, getPreviousTransform(), () -> {
                     setPixelMap(null);
                     regeneratePixelMap(inputPictureControl);
-                });
+                }, null);
     }
 
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {

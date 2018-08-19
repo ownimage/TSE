@@ -57,7 +57,7 @@ public class KColor {
      * Returns a value in the range of 0 .. 255 depending on pValue. If pValue <= 0 returns 0, if pValue >= 255 returns 255,
      * otherwise returns pValue
      *
-     * @param value the value
+     * @param pValue the value
      * @return the bounded value
      */
     private static int bound(final int pValue) {
@@ -138,4 +138,8 @@ public class KColor {
         return 0.2126d * getRed() + 0.7152d * getGreen() + 0.0722d * getBlue();
     }
 
+    public static String toHex(final Color pC) {
+        String hex = String.format("#%02x%02x%02x", pC.getRed(), pC.getGreen(), pC.getBlue());
+        return hex;
+    }
 }

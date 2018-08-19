@@ -2,22 +2,23 @@ package com.ownimage.perception.render;
 
 public interface ITransformResultBatch {
 
-	public float[] getA();
+    float[] getA();
 
-	public float[] getB();
+    float[] getB();
 
-	public int getBatchSize();
+    int getBatchSize();
 
-	public float[] getG();
+    float[] getG();
 
-	public int getMaxBatchSize();
+    int getMaxBatchSize();
 
-	public float[] getR();
+    float[] getR();
 
-	public ITransformResult getTransformResult(int pIndex);
+    ITransformResult getTransformResult(int pIndex);
 
-	public double[] getX();
+    double[] getX();
 
-	public double[] getY();
+    double[] getY();
 
+    int getPercentComplete();
 }

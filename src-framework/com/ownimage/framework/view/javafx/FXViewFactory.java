@@ -14,6 +14,7 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
@@ -34,6 +35,7 @@ import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.IViewFactory;
 import com.ownimage.framework.view.factory.ViewFactory;
+import com.ownimage.perception.util.KColor;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -54,6 +56,9 @@ public class FXViewFactory implements IViewFactory {
     private final IntegerControl mSliderValueWidthWidth = new IntegerControl("Slider Value Width", "sliderValueWidth", mPropertiesContainer, 50, 10, 100, 20);
     private final IntegerControl mLabelRightPadding = new IntegerControl("Label Right Padding", "labelRightPadding", mPropertiesContainer, 5, 0, 20, 1);
     private final IntegerControl mSmallButtonWidth = new IntegerControl("Small Button Width", "smallButtonWidth", mPropertiesContainer, 50, 20, 150, 10);
+    private final IntegerControl mProgressBarHeight = new IntegerControl("Progress Bar Height", "progressBarHeight", mPropertiesContainer, 25, 5, 50, 5);
+    private final ColorControl mProgressNormalColor = new ColorControl("Progress Bar Color Normal", "progressColorNormal", mPropertiesContainer, java.awt.Color.BLUE);
+    private final ColorControl mProgressCompleteColor = new ColorControl("Progress Bar Color Complete", "progressColorComplete", mPropertiesContainer, java.awt.Color.GREEN);
 
     // define exposed properties
     public SimpleIntegerProperty controlWidthProperty = new SimpleIntegerProperty(mControlWidth.getValue());
@@ -62,6 +67,18 @@ public class FXViewFactory implements IViewFactory {
     public SimpleIntegerProperty sliderValueWidthProperty = new SimpleIntegerProperty(mSliderValueWidthWidth.getValue());
     public SimpleIntegerProperty labelRightPaddingProperty = new SimpleIntegerProperty(mLabelRightPadding.getValue());
     public SimpleIntegerProperty smallButtonWidthProperty = new SimpleIntegerProperty(mSmallButtonWidth.getValue());
+
+    public int getProgressBarHeight() {
+        return mProgressBarHeight.getValue();
+    }
+
+    public String getProgressNormalColorHex() {
+        return KColor.toHex(mProgressNormalColor.getValue());
+    }
+
+    public String getProgressCompleteColorHex() {
+        return KColor.toHex(mProgressCompleteColor.getValue());
+    }
 
     public FXViewFactory() {
         // define listeners, the property is updated with the value of the control
@@ -191,6 +208,11 @@ public class FXViewFactory implements IViewFactory {
     @Override
     public IView createView(final VFlowLayout pVFlow) {
         return new VFlowView(pVFlow);
+    }
+
+    @Override
+    public IView createView(final ProgressControl pProgressControl) {
+        return new ProgressView(pProgressControl);
     }
 
     @Override

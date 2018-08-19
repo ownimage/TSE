@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.FileControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -166,6 +167,12 @@ public class ViewFactory implements IViewFactory {
 		stateCheck();
 		return mViewFactory.createView(pVFlow);
 	}
+
+    @Override
+    public IView createView(final ProgressControl pProgressControl) {
+        stateCheck();
+        return mViewFactory.createView(pProgressControl);
+    }
 
 	@Override
 	public UndoRedoBuffer getPropertiesUndoRedoBuffer() {

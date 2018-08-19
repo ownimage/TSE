@@ -18,6 +18,7 @@ import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.FileControl;
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HSplitLayout;
@@ -271,6 +272,15 @@ public class Perception extends AppControlBase {
      */
     private void fileSaveUnchecked(final File pFile) {
         mLogger.info(() -> "fileSaveUnchecked");
+
+        ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
+        }).setEnabled(false);
+        ProgressControl progress = new ProgressControl("Progress", "progress", NullContainer
+                , () -> {
+            ok.setEnabled(true);
+        });
+        showDialog(progress, DialogOptions.NONE, ok);
+
         Framework.logEntry(mLogger);
         new Thread(() -> {
             try {
@@ -287,6 +297,7 @@ public class Perception extends AppControlBase {
                                 mLogger.severe("Unable to output file");
                             }
                         }
+                        , progress
                         , getTransformSequence().getLastTransform().getOversample());
             } catch (Throwable pT) {
                 Framework.logThrowable(mLogger, Level.SEVERE, pT);
@@ -321,7 +332,7 @@ public class Perception extends AppControlBase {
                     PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview.get());
                     showDialog(displayContainer, DialogOptions.NONE, ok, cancel);
                 }
-                , 1);
+                , null, 1);
 
         Framework.logExit(mLogger);
     }

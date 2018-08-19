@@ -144,7 +144,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
             }
-            Services.getServices().getPerception().getRenderService().transform(mPictureControl, mCropTransform);
+            Services.getServices().getPerception().getRenderService().transform(mPictureControl, mCropTransform, null);
         }
     }
 

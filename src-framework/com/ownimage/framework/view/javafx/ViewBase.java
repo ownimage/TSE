@@ -86,10 +86,12 @@ public class ViewBase<C extends IViewable> implements FXView {
 
     @Override
     public void setVisible(final boolean pVisible) {
+        Framework.logEntry(mLogger);
         runOnFXApplicationThread(() -> {
             getUI().setManaged(pVisible);
             getUI().setVisible(pVisible);
         });
+        Framework.logExit(Framework.mLogger);
     }
 
     protected boolean isMutating() {

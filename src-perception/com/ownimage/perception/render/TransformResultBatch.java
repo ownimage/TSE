@@ -149,6 +149,14 @@ public class TransformResultBatch implements ITransformResultBatch {
         return mY;
     }
 
+    @Override
+    public int getPercentComplete() {
+        Framework.logEntry(Framework.mLogger);
+        int percent = (100 * mXCurrent) / mXMax;
+        Framework.logExit(Framework.mLogger, percent);
+        return percent;
+    }
+
     public int getYCurrent() {
         return mYCurrent;
     }

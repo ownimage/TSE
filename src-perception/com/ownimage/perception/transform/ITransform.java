@@ -10,7 +10,7 @@ import com.ownimage.framework.persist.IPersist;
 import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.IBatchTransform;
 
-public interface ITransform extends IBatchTransform, IPersist { // extends , IGrafitti, ITransformColor, IProgressBar,
+public interface ITransform extends IBatchTransform, IPersist { // extends , IGrafitti, ITransformColor, IProgressObserver,
     // IPictureReadOnly {
 
 

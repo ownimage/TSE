@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.FileControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -69,6 +70,8 @@ public interface IViewFactory {
 	public IView createView(StringControl pStringControl);
 
 	public IView createView(VFlowLayout pVFlow);
+
+    public IView createView(ProgressControl pProgressControl);
 
 	public UndoRedoBuffer getPropertiesUndoRedoBuffer();
 
