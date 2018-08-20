@@ -113,11 +113,6 @@ public class KMath {
 		return pD;
 	}
 
-	public static void main(final String[] pArgs) {
-		final double lambda = intersect(new Point(0, 1), new Point(1, 1), new Point(5, 0), new Point(0, 1));
-        mLogger.info(() -> "lambda: " + lambda);
-	}
-
 	// commented out as javac gets confused ... but Eclipse compiles?
 	public static double max(final double... pNum) {
 		double max = pNum[0];
