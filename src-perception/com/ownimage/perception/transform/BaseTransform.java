@@ -321,6 +321,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     @Override
     public void setPreviousTransform(final ITransform pPreviousTransform) {
         mPreviousTransform = pPreviousTransform;
+        setValues();
     }
 
     public void setUseTransform(final boolean pUse) {

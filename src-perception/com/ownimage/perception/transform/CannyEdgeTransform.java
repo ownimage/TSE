@@ -71,21 +71,25 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mWhiteFade =
             new DoubleControl("White Fade", "whiteFade", getContainer(), 0.0d);
 
+    private final DoubleControl mLineTolerance =
+            new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
+
+    DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
+    private final DoubleControl mLineCurvePreference =
+            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2, meta);//1.2d, 0.1d, 100.0d);
+
     private final BooleanControl mShowPixels =
             new BooleanControl("Show Pixels", "showPixels", getContainer(), false);
 
     private final ColorControl mPixelColor =
             new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
-    private final DoubleControl mLineTolerance =
-            new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
-    DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
-    private final DoubleControl mLineCurvePreference =
-            new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2, meta);//1.2d, 0.1d, 100.0d);
 
     private final BooleanControl mShowLines =
             new BooleanControl("Show Lines", "showLines", getContainer(), false);
+
     private final ObjectControl<LineEndShape> mLineEndShape =
             new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
+
     private final ObjectControl<LineEndLengthType> mLineEndLengthType =
             new ObjectControl<>(
                     "Line End Length Type",
@@ -492,7 +496,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     @Override
     public void setValues() {
         super.setValues();
-        mPixelColor.setVisible(mShowPixels.getValue());
+        final boolean showPixels = mShowPixels.getValue();
+        mPixelColor.setVisible(showPixels);
 
         final boolean showLines = mShowLines.getValue();
         mLineEndShape.setVisible(showLines);
@@ -509,6 +514,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mShortLineLength.setVisible(showLines);
         mShortLineThickness.setVisible(showLines);
         mShowShadow.setVisible(showLines);
+        mEqualize.setVisible(showLines);
 
         final boolean showShadow = mShowShadow.getValue() && mShowLines.getValue();
         mShadowColor.setVisible(showShadow);
