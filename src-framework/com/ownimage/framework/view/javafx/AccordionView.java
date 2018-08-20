@@ -42,7 +42,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
 		mAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
 			@Override
 			public void changed(final ObservableValue<? extends TitledPane> pOV, final TitledPane pOldValue, final TitledPane pNewValue) {
-                if (!isMutating()) {
+				if (isNotMutating()) {
 					int index = getIndex(pNewValue);
 					new Thread(() -> mControl.setSelectedIndex(index, AccordionView.this)).start();
 				}

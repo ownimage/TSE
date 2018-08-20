@@ -105,7 +105,7 @@ public class OutputTransform extends BaseTransform {
 
     @Override
     public void setValues() {
-        if (!isMutating()) {
+        if (isNotMutating()) {
             if (!mUseCustomSize.getValue()) {
                 try {
                     setMutating(true);
@@ -123,7 +123,7 @@ public class OutputTransform extends BaseTransform {
 
     @Override
     public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
-        if (!isMutating()) {
+        if (isNotMutating()) {
             super.controlChangeEvent(pControl, pIsMutating);
         }
     }

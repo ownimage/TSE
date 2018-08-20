@@ -146,7 +146,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
                 mControlPanel.getChildren().add(mSpinner);
             }
 
-            if (!isMutating()) {
+            if (isNotMutating()) {
                 mControl.setDisplayType(pDisplayType, this);
             }
         });

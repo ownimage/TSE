@@ -180,7 +180,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         // mLogger.fine("CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " +
         // pIsMutating);
         //
-        if (isInitialized() && !isMutating()) {
+        if (isInitialized() && isNotMutating()) {
             try {
                 // if (!isInitialized()) { return; }
                 //

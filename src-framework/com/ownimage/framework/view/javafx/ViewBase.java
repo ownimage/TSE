@@ -98,6 +98,9 @@ public class ViewBase<C extends IViewable> implements FXView {
         return mIsMutating;
     }
 
+    protected boolean isNotMutating() {
+        return !mIsMutating;
+    }
     protected void setMutating(final boolean mIsMutating) {
         this.mIsMutating = mIsMutating;
     }

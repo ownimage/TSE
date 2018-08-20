@@ -65,7 +65,7 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 
 	@Override
 	public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
-		if (!isMutating()) {
+		if (isNotMutating()) {
 			if (isIndependent()) { // supress the update to the base component which updates the main preview
 				setValues();
 				redrawGrafitti();
