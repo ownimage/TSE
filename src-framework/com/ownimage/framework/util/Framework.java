@@ -12,38 +12,36 @@ public class Framework {
     public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
-	public static void checkParameterGreaterThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
+    public static void checkParameterGreaterThan(final Logger pLogger, final int pA, final int pB, final String pName) {
+        Framework.checkParameterNotNull(pLogger, pName, "pMessage");
 		if (!(pA > pB)) {
-			checkParameterMessage(pLogger, pMessage, pA, pB);
+            checkParameterMessage(pLogger, "Parameter ERROR: %s is %s BUT needs to be greater than %s.", pName, pA, pB);
 		}
 	}
 
-	public static void checkParameterGreaterThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
+    public static void checkParameterGreaterThanEqual(final Logger pLogger, final int pA, final int pB, final String pName) {
+        Framework.checkParameterNotNull(pLogger, pName, "pMessage");
 		if (!(pA >= pB)) {
-			checkParameterMessage(pLogger, pMessage, pA, pB);
+            checkParameterMessage(pLogger, "Parameter ERROR: %s is %s BUT needs to be greater than or equal to  %s.", pName, pA, pB);
 		}
 	}
 
-	public static void checkParameterLessThan(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
+    public static void checkParameterLessThan(final Logger pLogger, final int pA, final int pB, final String pName) {
+        Framework.checkParameterNotNull(pLogger, pName, "pMessage");
 		if (!(pA < pB)) {
-			checkParameterMessage(pLogger, pMessage, pA, pB);
+            checkParameterMessage(pLogger, "Parameter ERROR: %s is %s BUT needs to be less than %s.", pName, pA, pB);
 		}
 	}
 
-	public static void checkParameterLessThanEqual(final Logger pLogger, final int pA, final int pB, final String pMessage) {
-		Framework.checkParameterNotNull(pLogger, pMessage, "pMessage");
+    public static void checkParameterLessThanEqual(final Logger pLogger, final int pA, final int pB, final String pName) {
+        Framework.checkParameterNotNull(pLogger, pName, "pMessage");
 		if (!(pA <= pB)) {
-			checkParameterMessage(pLogger, pMessage, pA, pB);
+            checkParameterMessage(pLogger, "Parameter ERROR: %s is %s BUT needs to be less than or equal to  %s.", pName, pA, pB);
 		}
 	}
 
-	private static void checkParameterMessage(final Logger pLogger, final String pMessage, final int pA, final int pB) {
-		Framework.logValue(pLogger, "pA", pA);
-		Framework.logValue(pLogger, "pB", pB);
-		String msg = String.format(pMessage, pA, pB);
+    private static void checkParameterMessage(final Logger pLogger, final String pMessage, final String pName, final int pA, final int pB) {
+        String msg = String.format(pMessage, pName, pA, pB);
 		pLogger.log(Level.SEVERE, msg);
 		throw new IllegalArgumentException(msg);
 	}

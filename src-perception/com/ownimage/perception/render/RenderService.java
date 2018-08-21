@@ -112,8 +112,8 @@ public class RenderService {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        Framework.checkParameterGreaterThanEqual(mLogger, pOverSample, 1, "pOverSample should be between 1 and 4");
-        Framework.checkParameterLessThanEqual(mLogger, pOverSample, 4, "pOverSample should be between 1 and 4");
+        Framework.checkParameterGreaterThanEqual(mLogger, pOverSample, 1, "pOverSample");
+        Framework.checkParameterLessThanEqual(mLogger, pOverSample, 4, "pOverSample");
         mLogger.info(() -> String.format("RenderService::transform pTransform=%s", pTransform.getDisplayName()));
 
         ExecuteQueue eq = ExecuteQueue.getInstance();

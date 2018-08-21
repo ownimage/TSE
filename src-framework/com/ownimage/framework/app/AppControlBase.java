@@ -198,8 +198,7 @@ public abstract class AppControlBase implements IAppControl {
 
     private void setTitle(final String pTitle) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-        Framework.checkParameterGreaterThan(mLogger, pTitle.length(), 0, "pTitle.length()=%d, it must not be must not zero.");
+        Framework.checkParameterNotNullOrEmpty(mLogger, pTitle, "pTitle");
 
         mTitle = pTitle;
         Framework.logExit(mLogger);

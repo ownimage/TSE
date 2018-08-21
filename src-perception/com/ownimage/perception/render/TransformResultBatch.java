@@ -54,7 +54,7 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderService, "pRenderService");
         Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-        Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pMaxBatchSize (%d) must be greater than 0");
+        Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pMaxBatchSize");
 
         mRenderService = pRenderService;
         mMaxBatchSize = pMaxBatchSize;
@@ -283,7 +283,7 @@ public class TransformResultBatch implements ITransformResultBatch {
     private void setMaxBatchSize(final int pMaxBatchSize) {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-        Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pBatchSize (%d) must be greater than 0.");
+        Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pBatchSize");
 
         if (mMaxBatchSize != pMaxBatchSize) {
             mLogger.fine("mMaxBatchSize = " + mMaxBatchSize);
@@ -298,8 +298,8 @@ public class TransformResultBatch implements ITransformResultBatch {
     public void setXCurrent(final int pXCurrent) {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pXCurrent", pXCurrent);
-        Framework.checkParameterGreaterThanEqual(mLogger, pXCurrent, 0, "pXCurrent (%d) must be >= 0.");
-        Framework.checkParameterLessThan(mLogger, pXCurrent, mXMax, "pXCurrent (%d) must be < mXMax (%d).");
+        Framework.checkParameterGreaterThanEqual(mLogger, pXCurrent, 0, "pXCurrent");
+        Framework.checkParameterLessThan(mLogger, pXCurrent, mXMax, "pXCurrent");
 
         mXCurrent = pXCurrent;
 
@@ -315,8 +315,8 @@ public class TransformResultBatch implements ITransformResultBatch {
     public void setYCurrent(final int pYCurrent) {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pYCurrent", pYCurrent);
-        Framework.checkParameterGreaterThanEqual(mLogger, pYCurrent, 0, "pXCurrent (%d) must be >= 0.");
-        Framework.checkParameterLessThanEqual(mLogger, pYCurrent, mYMax, "pXCurrent (%d) must be < mYMax (%d).");
+        Framework.checkParameterGreaterThanEqual(mLogger, pYCurrent, 0, "pXCurrent");
+        Framework.checkParameterLessThanEqual(mLogger, pYCurrent, mYMax, "pXCurrent");
 
         mYCurrent = pYCurrent;
 

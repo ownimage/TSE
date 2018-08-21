@@ -47,10 +47,8 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
      * @param pPropertyName the property name
      */
     public static void validate(final String pDisplayName, final String pPropertyName) {
-        Framework.checkParameterNotNull(mLogger, pDisplayName, "pDisplayName");
-        Framework.checkParameterNotNull(mLogger, pPropertyName, "pPropertyName");
-        Framework.checkParameterGreaterThan(mLogger, pDisplayName.length(), 0, "pDisplayName.length() = %d, it must not be zero length.");
-        Framework.checkParameterGreaterThan(mLogger, pPropertyName.length(), 0, "pPropertyName.length() = %d, it must not be zero length.");
+        Framework.checkParameterNotNullOrEmpty(mLogger, pDisplayName, "pDisplayName");
+        Framework.checkParameterNotNullOrEmpty(mLogger, pPropertyName, "pPropertyName");
 
         if (!Pattern.matches("[a-zA-Z0-9 ]*",
                              pDisplayName)) {

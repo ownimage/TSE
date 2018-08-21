@@ -128,8 +128,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     private void downAction() {
         Framework.logEntry(mLogger);
-        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 0, "Cannot move ImageLoadTransform.");
-        Framework.checkParameterLessThan(mLogger, mSelectedIndex, mTransforms.size(), "Cannot move the last transform down.");
+        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 0, "Cannot move ImageLoadTransform.  mSelectedIndex");
+        Framework.checkParameterLessThan(mLogger, mSelectedIndex, mTransforms.size(), "Cannot move the last transform down.  mSelectedIndex");
 
         int newIndex = mSelectedIndex + 1;
         ITransform transform = mTransforms.remove(mSelectedIndex);
@@ -344,8 +344,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
     @Override
     public void setSelectedIndex(final int pIndex, final ISingleSelectView pView) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterGreaterThanEqual(mLogger, pIndex, -1, "pIndex = %d, it must be greater than or equal to %d.");
-        Framework.checkParameterLessThan(mLogger, pIndex, mTransforms.size(), "pIndex = %d, it must be smaller than mTransforms.size() = %d.");
+        Framework.checkParameterGreaterThanEqual(mLogger, pIndex, -1, "pIndex");
+        Framework.checkParameterLessThan(mLogger, pIndex, mTransforms.size(), "pIndex must be smaller than mTransforms.size().  pIndex");
         Framework.logParams(mLogger, "pIndex", pIndex);
 
         if (pIndex != -1) { // -1 indicates that the view is closing
@@ -367,7 +367,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     private void upAction() {
         Framework.logEntry(mLogger);
-        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 1, "Cannot move ImageLoadTransform, or the first transform after that up.");
+        Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 1, "Cannot move ImageLoadTransform, or the first transform after that up.  mSelectedIndex");
 
         int newIndex = mSelectedIndex - 1;
         ITransform transform = mTransforms.remove(mSelectedIndex);
