@@ -25,15 +25,15 @@ public class ProgressView extends ViewBase<ProgressControl> {
         int step = mControl.getMetaType().getStep();
 
         final ObservableValue<? extends Number> controlWidthProperty = FXViewFactory.getInstance().controlWidthProperty;
-        double height = FXViewFactory.getInstance().getProgressBarHeight();
+        final ObservableValue<? extends Number> progressBarHeight = FXViewFactory.getInstance().progressBarHeight;
 
         mProgressBar = new ProgressBar(mControl.getNormalizedValue());
         mProgressBar.prefWidthProperty().bind(controlWidthProperty);
         mProgressBar.minWidthProperty().bind(controlWidthProperty);
         mProgressBar.maxWidthProperty().bind(controlWidthProperty);
-        mProgressBar.prefHeightProperty().setValue(height);
-        mProgressBar.minHeightProperty().setValue(height);
-        mProgressBar.maxHeightProperty().setValue(height);
+        mProgressBar.prefHeightProperty().bind(progressBarHeight);
+        mProgressBar.minHeightProperty().bind(progressBarHeight);
+        mProgressBar.maxHeightProperty().bind(progressBarHeight);
         mProgressBar.setStyle("-fx-accent: " + FXViewFactory.getInstance().getProgressNormalColorHex());
 
         mProgressText = new Label(mControl.getProgressString());
