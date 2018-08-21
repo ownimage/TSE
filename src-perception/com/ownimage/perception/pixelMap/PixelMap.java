@@ -1,4 +1,4 @@
-/**
+/*
  * This code is part of the Perception programme.
  * All code copyright (c) 2012, 2014 ownimage.com, Keith Hart
  */
@@ -1683,13 +1683,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void forEach(BiConsumer<Integer, Integer> pFunction) {
-        Range2D.forEach(getWidth(), getHeight(), pFunction);
+        new Range2D(getWidth(), getHeight()).forEach(pFunction);
     }
 
     private void forEachPixel(Consumer<Pixel> pFunction) {
-        Range2D.forEach(getWidth(), getHeight(), (x, y) -> {
-            pFunction.accept(getPixelAt(x, y));
-        });
+        new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(getPixelAt(x, y)));
     }
 
     public void forEachPixelChain(Consumer<PixelChain> pFunction) {
