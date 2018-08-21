@@ -16,14 +16,13 @@ import com.ownimage.framework.control.layout.HSplitLayout;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.type.StringType;
-import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 
-public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProvider {
+public abstract class AppControlBase implements IAppControl {
 
     public final static Logger mLogger = Framework.getLogger();
 
@@ -49,7 +48,7 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
     }
 
     protected IView createContentView() {
-        Container container = new Container("x", "x", this);
+        Container container = new Container("x", "x", this::getUndoRedoBuffer);
         ColorControl colorControl = new ColorControl("x", "x", container, Color.ORANGE);
 
         NamedTabs namedTabs = new NamedTabs("Test", "test");
@@ -63,7 +62,7 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
     }
 
     protected MenuControl createMenuView() {
-        Container menuContainer = new Container("AppControlBase", "AppControlBase", this);
+        Container menuContainer = new Container("AppControlBase", "AppControlBase", this::getUndoRedoBuffer);
 
         MenuControl menu = new MenuControl.Builder()
                 .addMenu(
@@ -88,7 +87,7 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
         Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
         Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
-        Container dialogContainer = new Container(pTitle, "title", this);
+        Container dialogContainer = new Container(pTitle, "title", this::getUndoRedoBuffer);
 
         StringControl message = new StringControl("Message", "message", dialogContainer, new StringType(pMessage, StringType.LABEL));
         ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
@@ -158,8 +157,7 @@ public abstract class AppControlBase implements IAppControl, IUndoRedoBufferProv
         return mTitle;
     }
 
-    @Override
-    public synchronized UndoRedoBuffer getUndoRedoBuffer() {
+    private synchronized UndoRedoBuffer getUndoRedoBuffer() {
         Framework.logEntry(mLogger);
 
         if (mUndoRedoBuffer == null) {

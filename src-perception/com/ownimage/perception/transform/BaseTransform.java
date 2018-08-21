@@ -24,7 +24,6 @@ import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.event.IUIEvent;
@@ -37,7 +36,7 @@ import com.ownimage.perception.render.IBatchEngine;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.ITransformResultBatch;
 
-public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener, IUndoRedoBufferProvider {
+public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener {
 
 
     private final static Logger mLogger = Framework.getLogger();
@@ -60,7 +59,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         mDisplayName = pDisplayName;
         mPropertyName = pPropertyName;
 
-        mContainer = new Container(getDisplayName(), getPropertyName(), getPerception());
+        mContainer = new Container(getDisplayName(), getPropertyName(), this::getUndoRedoBuffer);
         mUseTransform = new BooleanControl("Use Transform", "use", mContainer, true);
 
         int previewSize = getProperties().getPreviewSize();
@@ -72,7 +71,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
                 preview.setColor(x, y, c);
             }
         }
-        mInputPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", getPerception()), preview);
+        mInputPreviewImage = new PictureControl("Preview Image", "previewImage", new Container("x", "x", this::getUndoRedoBuffer), preview);
         mInputPreviewImage.setUIListener(this);
         mContainer.addControlChangeListener(this);
 
@@ -212,9 +211,8 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return mPropertyName;
     }
 
-    @Override
-    public UndoRedoBuffer getUndoRedoBuffer() {
-        return getPerception().getUndoRedoBuffer();
+    protected UndoRedoBuffer getUndoRedoBuffer() {
+        return Services.getServices().getUndoRedoBuffer();
     }
 
     @Override

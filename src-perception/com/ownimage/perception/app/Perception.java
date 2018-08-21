@@ -70,7 +70,7 @@ public class Perception extends AppControlBase {
 
         propertiesInit();
 
-        mContainer = new Container("Container", "container", this);
+        mContainer = new Container("Container", "container", this::getUndoRedoBuffer);
         mFileControl = new FileControl("File Name", "fileName"
                 , mContainer, Paths.get(".").toAbsolutePath().normalize().toString(), FileControlType.FILEOPEN);
         mFileControl.addControlChangeListener(fileOpenHandler);
@@ -112,7 +112,7 @@ public class Perception extends AppControlBase {
     protected MenuControl createMenuView() {
         Framework.logEntry(mLogger);
 
-        Container menuContainer = new Container("MainMenu", "mainMenu", this);
+        Container menuContainer = new Container("MainMenu", "mainMenu", this::getUndoRedoBuffer);
 
         MenuControl menu = new MenuControl.Builder()
                 .addMenu(new MenuControl.Builder().setDisplayName("File")
@@ -276,9 +276,7 @@ public class Perception extends AppControlBase {
         ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
         }).setEnabled(false);
         ProgressControl progress = new ProgressControl("Progress", "progress", NullContainer
-                , () -> {
-            ok.setEnabled(true);
-        });
+                , () -> ok.setEnabled(true));
         showDialog(progress, DialogOptions.NONE, ok);
 
         Framework.logEntry(mLogger);
@@ -321,7 +319,7 @@ public class Perception extends AppControlBase {
     private void fileSaveShowPreview(final IAction pAction) {
         Framework.logEntry(mLogger);
 
-        Container displayContainer = new Container("File Save", "fileSave", this);
+        Container displayContainer = new Container("File Save", "fileSave", this::getUndoRedoBuffer);
         StrongReference<PictureType> preview = new StrongReference<>();
         getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
@@ -438,9 +436,7 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    @Deprecated
-    @Override
-    public UndoRedoBuffer getUndoRedoBuffer() {
+    private UndoRedoBuffer getUndoRedoBuffer() {
         return Services.getServices().getUndoRedoBuffer();
     }
 

@@ -45,7 +45,7 @@ public class ImageLoadTransform extends BaseTransform {
 
         mFile = pFile;
         PictureType sourcePicture = new PictureType(mFile);
-        mSourcePicture = new PictureControl("Source Image", "sourceImage", new Container("x", "x", this), sourcePicture) //
+        mSourcePicture = new PictureControl("Source Image", "sourceImage", new Container("x", "x", this::getUndoRedoBuffer), sourcePicture) //
                 .setTransient();
 
         resizeInputPreview(getProperties().getPreviewSize());

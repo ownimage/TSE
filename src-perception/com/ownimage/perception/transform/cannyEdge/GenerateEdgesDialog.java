@@ -40,7 +40,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    public static int DEFAULT_SIZE = 200;
+    private static int DEFAULT_SIZE = 200;
 
     private final CannyEdgeTransform mTransform;
     private final PictureControl mPreviewPicture;
@@ -62,7 +62,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName,
                                final String pPropertyName) {
-        super(pDisplayName, pPropertyName, pParent);
+        super(pDisplayName, pPropertyName, Services.getServices()::getUndoRedoBuffer);
         Framework.checkParameterNotNull(mLogger, pParent, "pParent");
 
         mTransform = pParent;
@@ -111,8 +111,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     public ICannyEdgeDetector createCannyEdgeDetector(final CannyEdgeDetectorFactory.Type type) {
-        ICannyEdgeDetector detector = null;
-        detector = CannyEdgeDetectorFactory.createInstance(getTransform(), type);
+        ICannyEdgeDetector detector = CannyEdgeDetectorFactory.createInstance(getTransform(), type);
         detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
         detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
         detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);

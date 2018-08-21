@@ -1,4 +1,4 @@
-/**
+/*
  * This code is part of the Perception programme.
  * All code copyright (c) 2012, 2013 ownimage.com, Keith Hart
  */
@@ -10,12 +10,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.ObjectControl;
@@ -74,11 +74,10 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         mPerception = pPerception;
         setAvailableTransforms();
 
-        Container tempContainer = new Container("Transform Sequence", "transformSequence", mPerception);
-        mUpAction = ActionControl.createImage("Up", tempContainer, this::upAction, "/icon/up.png");
-        mDownAction = ActionControl.createImage("Down", tempContainer, this::downAction, "/icon/down.png");
-        mAddAction = ActionControl.createImage("Add", tempContainer, this::addAction, "/icon/plus.png");
-        mRemoveAction = ActionControl.createImage("Remove", tempContainer, this::removeAction, "/icon/minus.png");
+        mUpAction = ActionControl.createImage("Up", NullContainer, this::upAction, "/icon/up.png");
+        mDownAction = ActionControl.createImage("Down", NullContainer, this::downAction, "/icon/down.png");
+        mAddAction = ActionControl.createImage("Add", NullContainer, this::addAction, "/icon/plus.png");
+        mRemoveAction = ActionControl.createImage("Remove", NullContainer, this::removeAction, "/icon/minus.png");
 
         mTransforms = new Vector<>();
 
@@ -143,7 +142,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.logExit(mLogger);
     }
 
-    public Vector<ITransform> getAvailableTransforms() {
+    private Vector<ITransform> getAvailableTransforms() {
         return mAvailableTransforms;
     }
 
@@ -175,7 +174,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         return mTransforms.size();
     }
 
-    public ImageLoadTransform getFirstTransform() {
+    private ImageLoadTransform getFirstTransform() {
         return (ImageLoadTransform) mTransforms.firstElement();
     }
 
@@ -305,7 +304,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         addAvailableTransform(new VariableStretch3Transform(mPerception));
         addAvailableTransform(new WoodcutTransform(mPerception));
 
-        Collections.sort(mAvailableTransforms, (t1, t2) -> t1.getDisplayName().compareTo(t2.getDisplayName()));
+        Collections.sort(mAvailableTransforms, Comparator.comparing(ITransform::getDisplayName));
 
         Framework.logExit(mLogger);
     }
@@ -330,7 +329,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         if (!(pContainer instanceof ITransform))
             throw new IllegalArgumentException("pContainer is not instanceof ITransform");
 
-        int index = mTransforms.indexOf((ITransform) pContainer);
+        int index = mTransforms.indexOf(pContainer);
         if (index >= 0) {
             setSelectedIndex(index);
         }
@@ -395,7 +394,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         getSelectedTransform().refreshInputPreview();
     }
 
-    public ITransform getSelectedTransform() {
+    private ITransform getSelectedTransform() {
         return getTransform(getSelectedIndex());
     }
 }
