@@ -33,8 +33,6 @@ import java.util.stream.Stream;
 
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.undo.IUndoRedoBuffer;
-import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
@@ -75,10 +73,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             return node;
         }
 
-        private Collection<Node> allNodes() {
-            return mNodes.values();
-        }
-
         private Node getNode(final Pixel pPixel) {
             return mNodes.get(pPixel);
         }
@@ -94,9 +88,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
 
         private void removeAll(final Set<Pixel> pPixels) {
-            for (final Pixel pixel : pPixels) {
-                remove(pixel);
-            }
+            pPixels.forEach(this::remove);
         }
 
         public Stream<Node> stream() {
@@ -119,39 +111,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mNodes.putAll(allNodes.mNodes);
         }
     }
-
-//    private class AllPixels implements Iterable<Pixel>, Iterator<Pixel> {
-//        // TODO need to change this for the forall stream
-//
-//        int mX = 0;
-//        int mY = 0;
-//
-//        @Override
-//        public boolean hasNext() {
-//            return mX < getWidth() && mY < getHeight();
-//        }
-//
-//        @Override
-//        public Iterator<Pixel> iterator() {
-//            return this;
-//        }
-//
-//        @Override
-//        public Pixel next() {
-//            final Pixel next = getPixelAt(mX, mY);
-//            if (++mY == getHeight()) {
-//                mY = 0;
-//                mX++;
-//            }
-//            return next;
-//        }
-//
-//        @Override
-//        public void remove() {
-//            throw new UnsupportedOperationException();
-//        }
-//    }
-
 
     public final static Logger mLogger = Framework.getLogger();
 
@@ -182,11 +141,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      * This is turned off whilst the bulk processing is running. // TODO should this extend to the conversion of Pixels to Nodes etc.
      */
     private boolean mAutoTrackChanges = false;
-
-    // private final PixelAction mPixelAction = new PixelAction(this);
-
-    private final IUndoRedoBuffer mUndoRedoBuffer = new UndoRedoBuffer(30);
-    //private PixelUndoRedoAction mPixelUndoRedoAction = new PixelUndoRedoAction(this);
 
     public PixelMap(final int pWidth, final int pHeight, final boolean p360, final IPixelMapTransformSource pTransformSource) {
         setWidth(pWidth);
@@ -257,9 +211,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             Framework.logEntry(mLogger);
             resetSegmentIndex();
 
-            for (final PixelChain pixelChain : mPixelChains) {
-                pixelChain.indexSegments();
-            }
+            mPixelChains.forEach(PixelChain::indexSegments);
 
             //printNodeCounts();
             mSegmentIndexValid = true;
@@ -307,51 +259,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pValues.setReturnValues(shortLength, mediumLength, longLength);
     }
 
-    //
-    // public Node findNodeInPixelChains(final Pixel pPixel) {
-    // Node result = null;
-    // for (final PixelChain pixelChain : mPixelChains) {
-    // if (pixelChain.firstPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
-    // result = (Node) pixelChain.firstPixel();
-    // break;
-    // }
-    // if (pixelChain.lastPixel().equals(pPixel) && pixelChain.lastPixel() instanceof Node) {
-    // result = (Node) pixelChain.lastPixel();
-    // break;
-    // }
-    // }
-    // return result;
-    // }
-    //
-    // /**
-    // * Find PixelChain for the given Pixel. A Pixel can be constructed from a PixelMap and an x, y coordinate. This Pixel might be
-    // * part of a PixelChain (so its mPixelChain member will be set). Subsequently a Pixel might be created from the same PixelMap
-    // * with the same x, y coordinates. This method enables us to recover the PixelChain of the original Pixel.
-    // *
-    // * @param pPixel
-    // * the pixel
-    // */
-    // public PixelChain findPixelChain(final Pixel pPixel) {
-    // PixelChain result = null;
-    //
-    // // AbstractCollection<ISegment> segments = getSegments(pPixel);
-    // for (final PixelChain pixelChain : mPixelChains) {
-    // if (pixelChain.contains(pPixel)) {
-    // result = pixelChain;
-    // break;
-    // }
-    // }
-    //
-    // // for (PixelChain pixelChain : mPixelChains) {
-    // // if (pixelChain.contains(pPixel)) {
-    // // result = pixelChain;
-    // // break;
-    // // }
-    // // }
-    //
-    // return result;
-    // }
-    //
     private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
         try {
             Framework.logEntry(mLogger);
@@ -410,7 +317,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final Vector<PixelChain> chains = new Vector<>();
         pStartNode.setVisited(true);
         pStartNode.setInChain(true);
-        for (final Pixel neighbour : pStartNode.getNeighbours()) {
+        pStartNode.getNeighbours().forEach(neighbour -> {
             if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
                 final PixelChain chain = new PixelChain(pStartNode);
                 generateChain(pStartNode, neighbour, chain);
@@ -419,24 +326,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     chain.addToNodes();
                 }
             }
-        }
+        });
         return chains;
     }
-
-    //
-    // /**
-    // * Gets all of the Nodes in the PixelMap, BEWARE that mAllNodes is not made persistent so this is NOT valid after a transform
-    // * load, only during the generate phase.
-    // *
-    // * @return the all nodes
-    // */
-    // private Iterable<Node> getAllNodes() {
-    // return mAllNodes;
-    // }
-
-//    public Iterable<PixelChain> getAllPixelChains() {
-//        return mPixelChains;
-//    }
 
     public double getAspectRatio() {
         return mAspectRatio;
@@ -456,10 +348,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mHeight;
     }
 
-    // public int getLineCount() {
-    // return mSegmentCount;
-    // }
-    //
     public double getLineOpacity() {
         return mTransformSource.getLineOpacity();
     }
@@ -680,10 +568,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return chains;
     }
 
-    // public Color getPixelColor() {
-    // return mTransformSource.getPixelColor();
-    // }
-    //
     private Color transformGetPixelColor(final Point pIn, final Color pColor) {
         Color result = pColor;
         if (getShowPixels()) {
@@ -695,11 +579,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return result;
     }
 
-    //
-    // // private com.ownimage.perception.Properties getProperties() {
-    // // return Perception.getInstanceProperties();
-    // // }
-    //
     @Override
     public String getPropertyName() {
         // TODO Auto-generated method stub
@@ -721,10 +600,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
         return mSegmentIndex[pX][pY];
     }
-
-    // private AbstractCollection<ISegment> getSegments(final Pixel pPixel) {
-    // return getSegments(pPixel.getX(), pPixel.getY());
-    // }
 
     public Color getShadowColor() {
         return mTransformSource.getShadowColor();
@@ -810,10 +685,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mUHVWHalfPixel;
     }
 
-    // public IUndoRedoBuffer getUndoRedoBuffer() {
-    // return mUndoRedoBuffer;
-    // }
-    //
     public byte getValue(final int pX, final int pY) {
 
         if (pX < 0) {
@@ -835,15 +706,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mData[pX][pY];
     }
 
-    // public byte getValue(final Pixel pPixel) {
-    // if (0 <= pPixel.getY() && pPixel.getY() < getHeight() - 1) {
-    // final int x = modWidth(pPixel.getX());
-    // return getValue(x, pPixel.getY());
-    // } else {
-    // return 0;
-    // }
-    // }
-    //
     public int getWidth() {
         return mWidth;
     }
@@ -867,16 +729,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                final Pixel pixel = getPixelAt(x, y);
-                final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
-                if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
-                    getSegments(x, y).add(pSegment);
-                }
+        new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
+            final Pixel pixel = getPixelAt(x, y);
+            final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
+            if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
+                getSegments(x, y).add(pSegment);
             }
-        }
-
+        });
     }
 
     public synchronized void indexSegments() {
@@ -934,28 +793,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    // // public void pixelAction(final Pixel pPixel, final EditPixelMapDialog pEPMD) {
-    // // mPixelUndoRedoAction = new PixelUndoRedoAction(this);
-    // // mPixelAction.pixelAction(pPixel, pEPMD);
-    // // mUndoRedoBuffer.add(mPixelUndoRedoAction);
-    // // mPixelUndoRedoAction = null;
-    // // }
-    //
     public Point pixelToPoint(final Pixel pPixel) {
         final Point point = new Point((double) pPixel.getX() / (double) getWidth(), (double) pPixel.getY() / (double) getHeight());
         return point;
     }
 
-    // private void printNodeCounts() {
-    // final int[] values = new int[9];
-    // for (final Node node : mAllNodes) {
-    // values[node.countPixelChains()]++;
-    // }
-    // for (int i = 0; i < 9; i++) {
-    // // mLogger.info(() -> "Nodes with " + i + "chains:" + values[i]);
-    // }
-    // }
-    //
     public void process() {
         try {
             mAutoTrackChanges = false;
@@ -1005,80 +847,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // mPixelChains.removeAllElements();
         // resetSegmentIndex();
     }
-
-    // // public void process08_refine_old() {
-    // // mLogger.info(() -> "Refine");
-    // //
-    // // class RefineThread extends Thread {
-    // //
-    // // private final int mOffset;
-    // // private final int mStep;
-    // //
-    // // public RefineThread(int pOffset, int pStep) {
-    // // mOffset = pOffset;
-    // // mStep = pStep;
-    // // }
-    // //
-    // // @Override
-    // // public void run() {
-    // // for (int i = mOffset; i < mPixelChains.size(); i += mStep) {
-    // // try {
-    // // mPixelChains.get(i).approximate();
-    // //
-    // // } catch (Throwable pT) {
-    // // mLogger.log(Level.SEVERE, pT.getMessage());
-    // // if (mLogger.isLoggable(Level.FINEST)) {
-    // // mLogger.log(Level.FINEST, Framework.throwableToString(pT));
-    // // }
-    // // }
-    // // }
-    // // }
-    // // }
-    // // ;
-    // //
-    // // Job job = new Job("PixelMap_refinePixelChains", false, this) {
-    // //
-    // // @Override
-    // // public void run() {
-    // //
-    // // int threadCount = getProperties().getNumberOfThreads();
-    // // try {
-    // // if (getProperties().useThreads()) {
-    // // Thread threads[] = new Thread[threadCount];
-    // //
-    // // for (int i = 0; i < getProperties().getNumberOfThreads(); i++) {
-    // // RefineThread runnable;
-    // // runnable = new RefineThread(i, threadCount);
-    // // runnable.setName("PixelMap_refinePixelChains Thread: " + i);
-    // // runnable.start();
-    // //
-    // // threads[i] = runnable;
-    // // }
-    // //
-    // // for (int i = 0; i < threadCount; i++) {
-    // // try {
-    // // threads[i].join();
-    // // } catch (InterruptedException pEx) {
-    // // mLogger.warning("Interruped");
-    // // if (mLogger.isLoggable(Level.FINE)) mLogger.fine(Framework.throwableToString(pEx));
-    // // }
-    // // }
-    // // } else {
-    // // RefineThread runnable = new RefineThread(0, 1);
-    // // runnable.run(); // note this should be run as it is a synchronous call.
-    // // }
-    // // } finally {
-    // // indexSegments();
-    // // }
-    // //
-    // // }
-    // // };
-    // //
-    // // Perception.getInstance().run(job);
-    // //
-    // //
-    // //
-    // // }
 
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
@@ -1189,54 +957,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 
     void process04a_removeLoneNodes() {
-
-        // indexSegments();
-        //
-        // Vector<PixelChain> delete = new Vector<PixelChain>();
-        // for (PixelChain pixelChain : mPixelChains) {
-        // if (pixelChain.getSegmentCount() == 0) {
-        // delete.add(pixelChain);
-        // }
-        // }
-        //
-        // for (PixelChain pixelChain : delete) {
-        // pixelChain.setInChain(false);
-        // pixelChain.setVisited(false);
-        // removePixelChain(pixelChain);
-        // }
-        // mLogger.info(() -> delete.size() + " pixelchains removed");
-        //
-        // for (PixelChain pixelChain : mPixelChains) {
-        // try {
-        // ISegment first = pixelChain.getFirstSegment();
-        // IVertex start = first.getStartVertex();
-        // if (start.getStartSegment() != null) {
-        // mLogger.info(() -> "Invalid start segment");
-        // }
-        //
-        // ISegment last = pixelChain.getLastSegment();
-        // IVertex end = last.getEndVertex();
-        // if (end.getEndSegment() != null) {
-        // mLogger.info(() -> "Invalid end segment");
-        // }
-        // } catch (Throwable pT) {
-        // mLogger.info(() -> pT.getMessage());
-        // }
-        // }
-        //
-        // calcSegmentIndex();
-
-//        for (final Pixel pixel : allPixels()) {
-//            if (pixel.isNode()) {
-//                final Node node = getNode(pixel);
-//                if (node.countEdgeNeighbours() == 0) {
-//                    pixel.setEdge(false);
-//                    pixel.setNode(false);
-//                    pixel.setVisited(false);
-//                }
-//            }
-//        }
-
         forEachPixel(pixel -> {
             if (pixel.isNode()) {
                 final Node node = getNode(pixel);
@@ -1251,10 +971,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     void process04b_removeBristles() {
-        final HashSet<Pixel> toBeRemoved = new HashSet<Pixel>();
+        final HashSet<Pixel> toBeRemoved = new HashSet<>();
 
         mAllNodes.forEach(node -> {
-            for (final Pixel other : node.getNodeNeighbours()) {
+            node.getNodeNeighbours().forEach(other -> {
                 final Set<Pixel> nodeSet = node.allEdgeNeighbours();
                 final Set<Pixel> otherSet = other.allEdgeNeighbours();
 
@@ -1268,7 +988,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     // TODO should be a better check here to see whether it is better to remove the other node
                     toBeRemoved.add(node);
                 }
-            }
+            });
         });
 
         mAllNodes.removeAll(toBeRemoved);
@@ -1283,11 +1003,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     Vector<PixelChain> process05_generateChains() {
         try {
 
-            //process03_generateNodes();
-
-            for (final Node node : mAllNodes.allNodes()) {
-                mPixelChains.addAll(generateChains(node));
-            }
+            mAllNodes.forEach(node -> mPixelChains.addAll(generateChains(node)));
 
             // this captures all the simple loops (i.e. connected sets of pixels with no nodes).
 //            for (final Pixel pixel : allPixels()) { // COMMENTED OUT AS REPLICATED BELOW WITH FOR EACH PIXEL
@@ -1315,20 +1031,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
         mLogger.info(() -> "process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
-//      final JobProcessCollection<PixelChain> job = new JobProcessCollection<PixelChain>("process06_straightLinesRefineCorders",
-//      mPixelChains) {
-//      @Override
-        //public void process(final PixelChain pPixelChain) {
-        mPixelChains
-                .forEach(pixelChain -> {
-                    pixelChain.approximate01_straightLines(pMaxiLineTolerance);
-                    pixelChain.approximate02_refineCorners();
-                });
+        mPixelChains.forEach(pixelChain -> {
+            pixelChain.approximate01_straightLines(pMaxiLineTolerance);
+            pixelChain.approximate02_refineCorners();
+        });
         mLogger.info(() -> "process06_straightLinesRefineCorders - done");
-//      }
-//      };
-//      job.runImmediate();
-
         indexSegments();
     }
 
@@ -1441,23 +1148,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void resetInChain() {
-        //TODO ... change to for all ... and look at making forall parallel again
-        for (int x = 0; x < getWidth() - 1; x++) {
-            for (int y = 0; y < getHeight() - 1; y++) {
-                final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
-                setValue(x, y, newValue);
-            }
-        }
+        forEachParallel((x, y) -> {
+            final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
+            setValue(x, y, newValue);
+        });
     }
 
     private void resetNode() {
-        //TODO ... change to for all ... and look at making forall parallel again
-        for (int x = 0; x < getWidth() - 1; x++) {
-            for (int y = 0; y < getHeight() - 1; y++) {
-                final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
-                setValue(x, y, newValue);
-            }
-        }
+        forEachParallel((x, y) -> {
+            final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
+            setValue(x, y, newValue);
+        });
     }
 
 
@@ -1467,13 +1168,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void resetVisited() {
-        //TODO ... change to for all ... and look at making forall parallel again
-        for (int x = 0; x < getWidth() - 1; x++) {
-            for (int y = 0; y < getHeight() - 1; y++) {
-                final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
-                setValue(x, y, newValue);
-            }
-        }
+        forEachParallel((x, y) -> {
+            final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
+            setValue(x, y, newValue);
+        });
     }
 
     private void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
@@ -1593,9 +1291,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-        for (final PixelChain pixelChain : mPixelChains) {
-            pixelChain.validate();
-        }
+        mPixelChains.stream().parallel().forEach(PixelChain::validate);
     }
 
 
@@ -1686,11 +1382,23 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         new Range2D(getWidth(), getHeight()).forEach(pFunction);
     }
 
+    public void forEachParallel(BiConsumer<Integer, Integer> pFunction) {
+        new Range2D(getWidth(), getHeight()).forEachParallel(pFunction);
+    }
+
     private void forEachPixel(Consumer<Pixel> pFunction) {
         new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(getPixelAt(x, y)));
     }
 
+    private void forEachPixelParallel(Consumer<Pixel> pFunction) {
+        new Range2D(getWidth(), getHeight()).forEachParallel((x, y) -> pFunction.accept(getPixelAt(x, y)));
+    }
+
     public void forEachPixelChain(Consumer<PixelChain> pFunction) {
         mPixelChains.forEach(pFunction);
+    }
+
+    public void forEachPixelChainParallel(Consumer<PixelChain> pFunction) {
+        mPixelChains.stream().parallel().forEach(pFunction);
     }
 }

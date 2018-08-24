@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.ownimage.framework.app.IAppControl;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.IEnabledListener;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.layout.IViewable;
@@ -220,9 +221,7 @@ public class AppControlView extends Application implements IAppControlView {
             buttonMap.put(button, action);
             dialog.getDialogPane().getButtonTypes().add(button);
             dialog.getDialogPane().lookupButton(button).setDisable(!action.isEnabled());
-            IEnabledListener listener = (c, e) -> {
-                dialog.getDialogPane().lookupButton(button).setDisable(!e);
-            };
+            IEnabledListener listener = (c, e) -> dialog.getDialogPane().lookupButton(button).setDisable(!e);
             listeners.add(listener);
             action.addEnabledListener(listener);
         }
@@ -269,10 +268,10 @@ public class AppControlView extends Application implements IAppControlView {
 
         new Thread(() -> {
             // this needs to be done here as the complete function might not be specified.
-            dialogResult.ifPresent(actionControl -> actionControl.performAction());
+            dialogResult.ifPresent(ActionControl::performAction);
 
             // the value is passed into the completeFunction only to indicate how the mDialog ended.
-            pDialogOptions.getCompleteFunction().ifPresent(f -> f.accept(dialogResult));
+            pDialogOptions.getCompleteFunction().ifPresent(IAction::performAction);
         }).start();
     }
 
