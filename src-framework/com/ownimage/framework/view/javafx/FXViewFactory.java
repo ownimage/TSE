@@ -96,8 +96,12 @@ public class FXViewFactory implements IViewFactory {
         return mFXViewFactory;
     }
 
+    /**
+     * Sets this as the view factory. MUST be called from the main thread.
+     */
     public static void setAsViewFactory() {
         ViewFactory.setViewFactory(getInstance());
+        ApplicationEventQueue.getInstance(); // this initializes the event queue of the main thread group
     }
 
     /**

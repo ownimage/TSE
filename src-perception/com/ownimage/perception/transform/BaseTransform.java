@@ -1,4 +1,4 @@
-/**
+/*
  * This code is part of the Perception programme.
  * All code copyright (c) 2012, ownimage.co.uk, Keith Hart
  */
@@ -113,8 +113,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         if (!isMouseDragInProgress()) {
             setValues();
             redrawGrafitti();
-            refreshOutputPreview();
         }
+
+        if (!pIsMutating) refreshOutputPreview();
 
         Framework.logExit(mLogger);
     }

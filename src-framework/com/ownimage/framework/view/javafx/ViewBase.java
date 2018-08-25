@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.util.Framework;
@@ -46,7 +47,7 @@ public class ViewBase<C extends IViewable> implements FXView {
 
     public static Image getImage(final String pName) {
         URL url = pName.getClass().getResource(pName);
-        try (InputStream stream = url.openStream();) {
+        try (InputStream stream = url.openStream()) {
             Image image = new Image(stream);
             return image;
         } catch (IOException ioe) {
@@ -103,5 +104,9 @@ public class ViewBase<C extends IViewable> implements FXView {
     }
     protected void setMutating(final boolean mIsMutating) {
         this.mIsMutating = mIsMutating;
+    }
+
+    protected void queueApplicationEvent(final IAction pAction) {
+        ApplicationEventQueue.getInstance().queueEvent(pAction);
     }
 }

@@ -9,7 +9,6 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
-import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 
@@ -97,36 +96,33 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     private void mouseClickedEvent(final MouseEvent pME) {
         if (pME.getClickCount() <= 2) {
 
-            IUIEvent event = null;
             if (pME.getClickCount() == 1) {
-                event = createMouseEvent(EventType.Click, pME);
+                queueApplicationEvent(() -> createMouseEvent(EventType.Click, pME));
             }
             if (pME.getClickCount() == 2) {
-                event = createMouseEvent(EventType.DoubleClick, pME);
+                queueApplicationEvent(() -> createMouseEvent(EventType.DoubleClick, pME));
             }
-            ApplicationEventQueue.getInstance().queueEvent(event, mControl);
         }
     }
 
     private void mouseDraggedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.Drag, pME);
-        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
+        queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mousePressedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseDown, pME);
-        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
+        queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseReleasedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseUp, pME);
-        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
+        queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseMovedEvent(final MouseEvent pME) {
         UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
-        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
-        mLogger.fine(() -> String.format("ApplicationEventQueue.getInstance().getQueueSize() = ", ApplicationEventQueue.getInstance().getQueueSize()));
+        queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     @Override
@@ -139,9 +135,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     @Override
     public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti) {
-        runOnFXApplicationThread(() -> {
-            pGrafitti.accept(mGrafittiImp);
-        });
+        runOnFXApplicationThread(() -> pGrafitti.accept(mGrafittiImp));
     }
 
 
@@ -158,7 +152,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     private void scrollEvent(final ScrollEvent pSE) {
         Framework.logEntry(mLogger);
         UIEvent event = createScrollEvent(pSE);
-        ApplicationEventQueue.getInstance().queueEvent(event, mControl);
+        queueApplicationEvent(() -> mControl.uiEvent(event));
         Framework.logExit(mLogger);
     }
 

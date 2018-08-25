@@ -5,33 +5,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import com.ownimage.framework.control.control.IRawUIEventListener;
+import com.ownimage.framework.control.control.IAction;
+import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.view.event.IUIEvent;
 
 public class ApplicationEventQueue {
 
     public final static Logger mLogger = Framework.getLogger();
 
-    private class EventItem {
-        private IUIEvent mEvent;
-        private IRawUIEventListener mListener;
-
-        public EventItem(final IUIEvent mEvent, final IRawUIEventListener mListener) {
-            this.mEvent = mEvent;
-            this.mListener = mListener;
-        }
-
-        public IUIEvent getEvent() {
-            return mEvent;
-        }
-
-        public IRawUIEventListener getListener() {
-            return mListener;
-        }
-    }
-
-    private BlockingQueue<EventItem> mUIEventQueue = new LinkedBlockingQueue();
+    private BlockingQueue<IAction> mUIEventQueue = new LinkedBlockingQueue<>();
 
     private static ApplicationEventQueue mInstance = new ApplicationEventQueue();
 
@@ -43,27 +25,32 @@ public class ApplicationEventQueue {
         return mInstance;
     }
 
-    public void queueEvent(final IUIEvent pEvent, IRawUIEventListener pListener) {
-        mUIEventQueue.offer(new EventItem(pEvent, pListener));
+    public void queueEvent(IAction pAction) {
+        mUIEventQueue.offer(pAction);
+        mLogger.severe(() -> String.format("######## mUIEventQueue.size() = %s", mUIEventQueue.size()));
     }
 
     private void processEventQueue() {
         while (true) {
             try {
-                EventItem eventItem = mUIEventQueue.poll(10, TimeUnit.SECONDS);
-                if (eventItem != null) {
-                    eventItem.getListener().uiEvent(eventItem.getEvent());
+                IAction action = mUIEventQueue.poll(10, TimeUnit.SECONDS);
+                if (action != null) {
+                    action.performAction();
                 } else {
                     mLogger.fine(() -> "is alive: " + Thread.currentThread());
                 }
             } catch (Throwable e) {
-                // do nothing handled by loop retry
+                mLogger.info("Queue generatedAction");
+                mLogger.fine(() -> FrameworkLogger.throwableToString(e));
             }
         }
     }
 
     private void startEventQueue() {
-        new Thread(this::processEventQueue, "ApplicationEventQueue processor").start();
+        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+        while (threadGroup.getParent() != null) threadGroup = threadGroup.getParent();
+        threadGroup = new ThreadGroup(threadGroup, "ApplicationEventQueue");
+        new Thread(threadGroup, this::processEventQueue, "ApplicationEventQueue thread").start();
     }
 
     public int getQueueSize() {

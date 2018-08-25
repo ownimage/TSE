@@ -45,7 +45,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         double value = mControl.getValue();
         double step = mControl.getMetaType().getStep();
 
-        mSpinner = new Spinner<Double>(min, max, value, step);
+        mSpinner = new Spinner<>(min, max, value, step);
         mSpinner.setEditable(mControl.isEnabled());
         mSpinner.setDisable(!mControl.isEnabled());
         mSpinner.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -54,7 +54,8 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
         mSlider = new Slider(min, max, value);
         mSlider.setDisable(!mControl.isEnabled());
-        mSlider.valueProperty().addListener((observable, oldValue, newValue) -> setControlValueFromSlider());
+        mSlider.valueProperty().addListener((observable, oldValue, newValue) -> setControlValueFromSlider(true));
+        mSlider.onMouseReleasedProperty().setValue(event -> setControlValueFromSlider(false));
         InvalidationListener sliderSizeListener = o -> {
             int width = getFactory().controlWidthProperty.get() - getFactory().sliderValueWidthProperty.get();
             mSlider.setMaxWidth(width);
@@ -99,12 +100,12 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         return mUI;
     }
 
-    private void setControlValueFromSlider() {
+    private void setControlValueFromSlider(boolean pIsMutating) {
         mLogger.log(Level.FINEST, "setControlValueFromSlider");
         try {
             if (mAllowUpdates) {
                 mAllowUpdates = false;
-                mControl.setValue(mSlider.getValue(), this, false);
+                queueApplicationEvent(() -> mControl.setValue(mSlider.getValue(), this, pIsMutating));
                 controlChangeEvent(mControl, false);
             }
         } finally {
