@@ -3,7 +3,6 @@
  *
  *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
-
 package com.ownimage.perception.view.javafx.app;
 
 import java.io.File;

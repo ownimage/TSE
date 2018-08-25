@@ -3,7 +3,6 @@
  *
  *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
-
 package com.ownimage.framework.control.type;
 
 public class ObjectType<R> extends TypeBase<ObjectMetaType<R>, R> {

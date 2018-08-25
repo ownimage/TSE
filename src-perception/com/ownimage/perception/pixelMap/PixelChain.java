@@ -3,7 +3,6 @@
  *
  *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
-
 package com.ownimage.perception.pixelMap;
 
 import java.io.Serializable;
@@ -1432,47 +1431,4 @@ public class PixelChain implements Serializable {
     }
 
 }
-//package com.ownimage.perception.pixelMap;
-//
-//import com.ownimage.perception.math.Point;
-//import com.ownimage.perception.pixelMap.segment.SegmentBase;
-//
-//public class PixelChain {
-//    public PixelChain(Node node) {
-//
-//    }
-//
-//    public Pixel getPixel(final int averageIndex) {
-//        return null;
-//    }
-//
-//    public void reCalcSegments() {
-//
-//    }
-//
-//    public Point getUHVWPoint(final int i) {
-//        return null;
-//    }
-//
-//    public void deleteSegment(final SegmentBase segmentBase) {
-//    }
-//
-//    public double getActualThickness(final double pPosition) {
-//        return 0;
-//    }
-//
-//    public double length() {
-//        return 0;
-//    }
-//
-//    public void deleteVertex(final Vertex vertex) {
-//
-//    }
-//
-//    public PixelMap getPixelMap() {
-//        return null;
-//    }
-//
-//    public void addToNodes() {
-//    }
-//}
+

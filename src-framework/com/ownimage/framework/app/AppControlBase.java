@@ -3,7 +3,6 @@
  *
  *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
-
 package com.ownimage.framework.app;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
