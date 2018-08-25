@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.control.container;
 
 import java.io.IOException;
@@ -16,7 +22,7 @@ import com.ownimage.framework.view.IView;
 public class NullContainer implements IContainer {
 
 
-    public final static Logger mLogger = Framework.getLogger();
+	public final static Logger mLogger = Framework.getLogger();
 
 	public final static NullContainer NullContainer = new NullContainer();
 

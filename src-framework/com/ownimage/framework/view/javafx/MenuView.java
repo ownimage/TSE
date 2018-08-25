@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.Iterator;
@@ -17,73 +23,73 @@ public class MenuView implements IView {
 
     public final static Logger mLogger = Framework.getLogger();
 
-	private final MenuControl mMenuControl;
-	private Menu mUI;
+    private final MenuControl mMenuControl;
+    private Menu mUI;
 
-	public MenuView(final MenuControl pMenuControl) {
-		if (pMenuControl == null) {
-			throw new IllegalArgumentException("pMenuBar must not be null.");
-		}
+    public MenuView(final MenuControl pMenuControl) {
+        if (pMenuControl == null) {
+            throw new IllegalArgumentException("pMenuBar must not be null.");
+        }
 
-		if (pMenuControl.isMenuBar()) {
-			throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar not set.");
-		}
+        if (pMenuControl.isMenuBar()) {
+            throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar not set.");
+        }
 
-		mMenuControl = pMenuControl;
-		createView();
-	}
+        mMenuControl = pMenuControl;
+        createView();
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-		// TODO Auto-generated method stub
+    @Override
+    public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	private Menu createSubMenu(final MenuControl pMenu) {
-		Menu menu = new Menu(pMenu.getDisplayName());
+    private Menu createSubMenu(final MenuControl pMenu) {
+        Menu menu = new Menu(pMenu.getDisplayName());
 
-		Iterator<IMenuItem> childIterator = pMenu.getChildIterator();
-		while (childIterator.hasNext()) {
-			IMenuItem child = childIterator.next();
+        Iterator<IMenuItem> childIterator = pMenu.getChildIterator();
+        while (childIterator.hasNext()) {
+            IMenuItem child = childIterator.next();
 
-			if (child instanceof ActionControl) {
-				ActionControl actionControl = (ActionControl) child;
-				MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
-				menu.getItems().add(menuItem.getUI());
+            if (child instanceof ActionControl) {
+                ActionControl actionControl = (ActionControl) child;
+                MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
+                menu.getItems().add(menuItem.getUI());
                 mLogger.fine(() -> "Menu created: " + actionControl.getDisplayName());
 
-			} else if (child instanceof MenuControl) {
-				MenuControl menuControl = (MenuControl) child;
+            } else if (child instanceof MenuControl) {
+                MenuControl menuControl = (MenuControl) child;
                 mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
-				MenuView subMenu = (MenuView) menuControl.createMenuView();
-				menu.getItems().add(subMenu.getUI());
-			}
-		}
+                MenuView subMenu = (MenuView) menuControl.createMenuView();
+                menu.getItems().add(subMenu.getUI());
+            }
+        }
 
-		return menu;
-	}
+        return menu;
+    }
 
-	private void createView() {
-		mUI = createSubMenu(mMenuControl);
-	}
+    private void createView() {
+        mUI = createSubMenu(mMenuControl);
+    }
 
-	public Menu getUI() {
-		return mUI;
-	}
+    public Menu getUI() {
+        return mUI;
+    }
 
-	@Override
-	public void redraw() {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void redraw() {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public void setEnabled(final boolean pEnabled) {
-		Platform.runLater(()->mUI.setDisable(!pEnabled));
-	}
+    @Override
+    public void setEnabled(final boolean pEnabled) {
+        Platform.runLater(()->mUI.setDisable(!pEnabled));
+    }
 
-	@Override
-	public void setVisible(final boolean pVisible) {
-		Platform.runLater(()->mUI.setVisible(pVisible));
-	}
+    @Override
+    public void setVisible(final boolean pVisible) {
+        Platform.runLater(()->mUI.setVisible(pVisible));
+    }
 
 }

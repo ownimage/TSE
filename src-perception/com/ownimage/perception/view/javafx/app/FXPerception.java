@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.perception.view.javafx.app;
 
 import java.io.File;
@@ -12,19 +18,19 @@ import javafx.scene.image.Image;
 
 public class FXPerception extends AppControlView {
 
-	public static void main(final String[] pArgs) {
-		FrameworkLogger.getInstance().init("logging.properties", "Perception.log");
+    public static void main(final String[] pArgs) {
+        FrameworkLogger.getInstance().init("logging.properties", "Perception.log");
 
-		FXViewFactory.setAsViewFactory();
+        FXViewFactory.setAsViewFactory();
 
-		Perception app = Services.getServices().getPerception();
-		setAppControl(app);
-		launch(pArgs);
+        Perception app = Services.getServices().getPerception();
+        setAppControl(app);
+        launch(pArgs);
 
-		Image applicationIcon = new Image(app.getClass().getResourceAsStream("/icon/tse2.png"));
-		getAppControlView().setApplicationIcon(applicationIcon);
+        Image applicationIcon = new Image(app.getClass().getResourceAsStream("/icon/tse2.png"));
+        getAppControlView().setApplicationIcon(applicationIcon);
 
-		app.fileOpen((new File("NY2.jpg")));
-	}
+        app.fileOpen((new File("NY2.jpg")));
+    }
 
 }

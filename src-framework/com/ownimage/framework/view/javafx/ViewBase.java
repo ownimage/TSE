@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.io.IOException;
@@ -102,6 +108,7 @@ public class ViewBase<C extends IViewable> implements FXView {
     protected boolean isNotMutating() {
         return !mIsMutating;
     }
+
     protected void setMutating(final boolean mIsMutating) {
         this.mIsMutating = mIsMutating;
     }

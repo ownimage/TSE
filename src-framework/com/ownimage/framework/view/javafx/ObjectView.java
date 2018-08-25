@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.logging.Level;
@@ -25,93 +31,93 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 
     public final static Logger mLogger = Framework.getLogger();
 
-	private final HBox mUI;
-	private ComboBox<Object> mCombobox;
-	private boolean mAllowUpdates = true;
+    private final HBox mUI;
+    private ComboBox<Object> mCombobox;
+    private boolean mAllowUpdates = true;
 
-	public ObjectView(final ObjectControl pObjectControl) {
-		super(pObjectControl);
+    public ObjectView(final ObjectControl pObjectControl) {
+        super(pObjectControl);
 
-		ObjectMetaType<?> meta = mControl.getMetaType();
-		ObservableList<Object> items = FXCollections.observableArrayList(meta.getAllowedValues());
-		FilteredList<Object> filteredItems = new FilteredList<Object>(items, p -> true);
+        ObjectMetaType<?> meta = mControl.getMetaType();
+        ObservableList<Object> items = FXCollections.observableArrayList(meta.getAllowedValues());
+        FilteredList<Object> filteredItems = new FilteredList<Object>(items, p -> true);
 
-		mCombobox = new ComboBox<Object>();
-		mCombobox.setEditable(meta.isFilterable());
-		mCombobox.getEditor().textProperty().addListener((pObs, pOldValue, pNewValue) -> {
-			final TextField editor = mCombobox.getEditor();
-			final Object selected = mCombobox.getSelectionModel().getSelectedItem();
+        mCombobox = new ComboBox<Object>();
+        mCombobox.setEditable(meta.isFilterable());
+        mCombobox.getEditor().textProperty().addListener((pObs, pOldValue, pNewValue) -> {
+            final TextField editor = mCombobox.getEditor();
+            final Object selected = mCombobox.getSelectionModel().getSelectedItem();
 
-			if (meta.isFilterable()) {
-				// This needs run on the GUI thread to avoid the error described
-				// here: https://bugs.openjdk.java.net/browse/JDK-8081700.
-				Platform.runLater(() -> {
-					mLogger.log(Level.FINEST, "runLater newValue = " + pNewValue);
-					if (selected == null || !selected.equals(editor.getText())) {
-						filteredItems.setPredicate(item -> {
-							String itemString = meta.getString(item);
-							return itemString.toUpperCase().contains(pNewValue.toUpperCase());
-						});
-					}
-				});
-			}
-		});
-		mCombobox.setConverter(new StringConverter<Object>() {
+            if (meta.isFilterable()) {
+                // This needs run on the GUI thread to avoid the error described
+                // here: https://bugs.openjdk.java.net/browse/JDK-8081700.
+                Platform.runLater(() -> {
+                    mLogger.log(Level.FINEST, "runLater newValue = " + pNewValue);
+                    if (selected == null || !selected.equals(editor.getText())) {
+                        filteredItems.setPredicate(item -> {
+                            String itemString = meta.getString(item);
+                            return itemString.toUpperCase().contains(pNewValue.toUpperCase());
+                        });
+                    }
+                });
+            }
+        });
+        mCombobox.setConverter(new StringConverter<Object>() {
 
-			@Override
-			public Object fromString(final String pString) {
-				mLogger.log(Level.INFO, "XXXXXXXXX fromString pString = " + pString);
-				Object value = meta.fromString(pString);
-				return value;
-			}
+            @Override
+            public Object fromString(final String pString) {
+                mLogger.log(Level.INFO, "XXXXXXXXX fromString pString = " + pString);
+                Object value = meta.fromString(pString);
+                return value;
+            }
 
-			@Override
-			public String toString(final Object pObject) {
-				mLogger.log(Level.INFO, "toString pObject = " + pObject);
-				String string = (pObject != null) ? meta.getString(pObject) : "";
-				mLogger.log(Level.INFO, "toString return = " + pObject);
-				return string;
-			}
-		});
+            @Override
+            public String toString(final Object pObject) {
+                mLogger.log(Level.INFO, "toString pObject = " + pObject);
+                String string = (pObject != null) ? meta.getString(pObject) : "";
+                mLogger.log(Level.INFO, "toString return = " + pObject);
+                return string;
+            }
+        });
 
-		mCombobox.setOnAction((final ActionEvent ev) -> {
-			if (mAllowUpdates && mCombobox.getSelectionModel().getSelectedItem() != null) {
-				final Object value = mCombobox.getSelectionModel().getSelectedItem();
-				mControl.setValue(value, this, false);
-				mCombobox.editorProperty().get().setText(mCombobox.getConverter().toString(mCombobox.getValue()));
-			} else {
-				String typed = mCombobox.getEditor().textProperty().get();
-				typed = typed;
-			}
-		});
+        mCombobox.setOnAction((final ActionEvent ev) -> {
+            if (mAllowUpdates && mCombobox.getSelectionModel().getSelectedItem() != null) {
+                final Object value = mCombobox.getSelectionModel().getSelectedItem();
+                mControl.setValue(value, this, false);
+                mCombobox.editorProperty().get().setText(mCombobox.getConverter().toString(mCombobox.getValue()));
+            } else {
+                String typed = mCombobox.getEditor().textProperty().get();
+                typed = typed;
+            }
+        });
 
-		mCombobox.setItems(filteredItems);
-		mCombobox.getSelectionModel().select(mControl.getValue());
-		mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
-		mCombobox.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
+        mCombobox.setItems(filteredItems);
+        mCombobox.getSelectionModel().select(mControl.getValue());
+        mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
+        mCombobox.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 
-		mUI = new HBox();
-		mUI.setAlignment(Pos.CENTER);
-		mUI.getChildren().addAll(mLabel, mCombobox);
-		mUI.setDisable(!mControl.isEnabled());
-	}
+        mUI = new HBox();
+        mUI.setAlignment(Pos.CENTER);
+        mUI.getChildren().addAll(mLabel, mCombobox);
+        mUI.setDisable(!mControl.isEnabled());
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-		if (pControl == mControl) {
-			try {
-				mAllowUpdates = false;
-				mCombobox.getSelectionModel().select(mControl.getValue());
-				mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
-			} finally {
-				mAllowUpdates = true;
-			}
-		}
-	}
+    @Override
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+        if (pControl == mControl) {
+            try {
+                mAllowUpdates = false;
+                mCombobox.getSelectionModel().select(mControl.getValue());
+                mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
+            } finally {
+                mAllowUpdates = true;
+            }
+        }
+    }
 
-	@Override
-	public Pane getUI() {
-		return mUI;
-	}
+    @Override
+    public Pane getUI() {
+        return mUI;
+    }
 
 }

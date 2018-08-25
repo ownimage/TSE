@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.Iterator;
@@ -10,26 +16,26 @@ import javafx.scene.layout.VBox;
 
 public class VFlowView extends ViewBase<VFlowLayout> {
 
-	private VBox mUI;
+    private VBox mUI;
 
-	public VFlowView(final VFlowLayout pVFlow) {
-		super(pVFlow);
-		createView();
-	}
+    public VFlowView(final VFlowLayout pVFlow) {
+        super(pVFlow);
+        createView();
+    }
 
-	private void createView() {
-		mUI = new VBox();
+    private void createView() {
+        mUI = new VBox();
 
-		Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
-		while (children.hasNext()) {
-			IViewable child = children.next();
-			mUI.getChildren().add(((FXView) (child.createView())).getUI());
-		}
-	}
+        Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
+        while (children.hasNext()) {
+            IViewable child = children.next();
+            mUI.getChildren().add(((FXView) (child.createView())).getUI());
+        }
+    }
 
-	@Override
-	public Pane getUI() {
-		return mUI;
-	}
+    @Override
+    public Pane getUI() {
+        return mUI;
+    }
 
 }

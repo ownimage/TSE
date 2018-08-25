@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.control.layout;
 
 import java.util.Vector;
@@ -14,90 +20,90 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
 
     public final static Logger mLogger = Framework.getLogger();
 
-	private final String mDisplayName;
-	private final String mPropertyName;
+    private final String mDisplayName;
+    private final String mPropertyName;
 
-	private final Vector<String> mTabNames = new Vector<String>();
-	private final Vector<IViewable<?>> mContent = new Vector<IViewable<?>>();
+    private final Vector<String> mTabNames = new Vector<String>();
+    private final Vector<IViewable<?>> mContent = new Vector<IViewable<?>>();
 
-	private int mSelectedIndex;
+    private int mSelectedIndex;
 
-	public NamedTabs(final String pDisplayName, final String pPropertyName) {
-		Framework.logEntry(mLogger);
-		ControlBase.validate(pDisplayName, pPropertyName);
+    public NamedTabs(final String pDisplayName, final String pPropertyName) {
+        Framework.logEntry(mLogger);
+        ControlBase.validate(pDisplayName, pPropertyName);
 
-		mDisplayName = pDisplayName;
-		mPropertyName = pPropertyName;
+        mDisplayName = pDisplayName;
+        mPropertyName = pPropertyName;
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	public INamedTabs addTab(final IContainer pContainer) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
-		addTab(pContainer.getDisplayName(), pContainer);
-		Framework.logExit(mLogger);
-		return this;
-	}
+    public INamedTabs addTab(final IContainer pContainer) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
+        addTab(pContainer.getDisplayName(), pContainer);
+        Framework.logExit(mLogger);
+        return this;
+    }
 
-	public INamedTabs addTab(final String pTabName, final IViewable<?> pContainer) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pTabName, "pTabName");
-		Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
+    public INamedTabs addTab(final String pTabName, final IViewable<?> pContainer) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pTabName, "pTabName");
+        Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
 
-		checkUniqueContainerPropertyName(pTabName);
+        checkUniqueContainerPropertyName(pTabName);
 
-		mTabNames.add(pTabName);
-		mContent.add(pContainer);
+        mTabNames.add(pTabName);
+        mContent.add(pContainer);
 
-		invokeOnAllViews((view) -> view.redraw());
+        invokeOnAllViews((view) -> view.redraw());
 
-		Framework.logExit(mLogger);
-		return this;
-	}
+        Framework.logExit(mLogger);
+        return this;
+    }
 
-	private void checkUniqueContainerPropertyName(final String pPropertyName) {
-		boolean exists = mTabNames.contains(pPropertyName);
-		if (exists) { throw new IllegalArgumentException("pPropertyName = " + pPropertyName + ", already exists for a IContainer in this NamedTabs collection."); }
-	}
+    private void checkUniqueContainerPropertyName(final String pPropertyName) {
+        boolean exists = mTabNames.contains(pPropertyName);
+        if (exists) { throw new IllegalArgumentException("pPropertyName = " + pPropertyName + ", already exists for a IContainer in this NamedTabs collection."); }
+    }
 
-	@Override
-	public ISingleSelectView createView() {
-		ISingleSelectView view = ViewFactory.getInstance().createView(this);
-		addView(view);
-		return view;
-	}
+    @Override
+    public ISingleSelectView createView() {
+        ISingleSelectView view = ViewFactory.getInstance().createView(this);
+        addView(view);
+        return view;
+    }
 
-	@Override
-	public String getDisplayName() {
-		return mDisplayName;
-	}
+    @Override
+    public String getDisplayName() {
+        return mDisplayName;
+    }
 
-	@Override
-	public int getSelectedIndex() {
-		return mSelectedIndex;
-	}
+    @Override
+    public int getSelectedIndex() {
+        return mSelectedIndex;
+    }
 
-	@Override
-	public String[] getTabNames() {
-		return mTabNames.toArray(new String[mTabNames.size()]);
-	}
+    @Override
+    public String[] getTabNames() {
+        return mTabNames.toArray(new String[mTabNames.size()]);
+    }
 
-	@Override
-	public IViewable<?> getViewable(final String pTabName) {
-		final int index = mTabNames.indexOf(pTabName);
-		if (index != -1) { return mContent.get(index); }
-		return null;
-	}
+    @Override
+    public IViewable<?> getViewable(final String pTabName) {
+        final int index = mTabNames.indexOf(pTabName);
+        if (index != -1) { return mContent.get(index); }
+        return null;
+    }
 
-	public void setSelectedIndex(final int pInt) {
-		setSelectedIndex(pInt, null);
-	}
+    public void setSelectedIndex(final int pInt) {
+        setSelectedIndex(pInt, null);
+    }
 
-	@Override
-	public void setSelectedIndex(final int pInt, final ISingleSelectView pView) {
-		mSelectedIndex = pInt;
-		invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
-	}
+    @Override
+    public void setSelectedIndex(final int pInt, final ISingleSelectView pView) {
+        mSelectedIndex = pInt;
+        invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
+    }
 
 }

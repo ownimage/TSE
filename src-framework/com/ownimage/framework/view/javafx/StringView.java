@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.logging.Logger;
@@ -19,114 +25,114 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
 
     public final static Logger mLogger = Framework.getLogger();
 
-	private HBox mUI;
-	private TextField mText;
+    private HBox mUI;
+    private TextField mText;
 
-	private SimpleIntegerProperty mWidth;
+    private SimpleIntegerProperty mWidth;
 
-	private boolean mAllowUpdates = true;
+    private boolean mAllowUpdates = true;
 
-	public StringView(final StringControl pStringControl) {
-		super(pStringControl);
-		Framework.logEntry(mLogger);
+    public StringView(final StringControl pStringControl) {
+        super(pStringControl);
+        Framework.logEntry(mLogger);
 
-		switch (pStringControl.getMetaType().getDisplayType()) {
-		case LABEL:
-			createLabel();
-			break;
-		case NORMAL:
-			createNormal();
-			break;
-		default:
-			createNormal();
-			break;
-		}
+        switch (pStringControl.getMetaType().getDisplayType()) {
+            case LABEL:
+                createLabel();
+                break;
+            case NORMAL:
+                createNormal();
+                break;
+            default:
+                createNormal();
+                break;
+        }
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public void changed(final ObservableValue<? extends Number> pObservable, final Number pOldValue, final Number pNewValue) {
-		setWidth();
-	}
+    @Override
+    public void changed(final ObservableValue<? extends Number> pObservable, final Number pOldValue, final Number pNewValue) {
+        setWidth();
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
-		if (pControl == mControl) {
-			switch (mControl.getMetaType().getDisplayType()) {
-			case LABEL:
-				mLabel.setText(mControl.getValue());
-				break;
-			case NORMAL:
-				mText.setText(mControl.getValue());
-				break;
-			default:
-				mText.setText(mControl.getValue());
-				break;
-			}
-		}
-	}
+    @Override
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+        if (pControl == mControl) {
+            switch (mControl.getMetaType().getDisplayType()) {
+                case LABEL:
+                    mLabel.setText(mControl.getValue());
+                    break;
+                case NORMAL:
+                    mText.setText(mControl.getValue());
+                    break;
+                default:
+                    mText.setText(mControl.getValue());
+                    break;
+            }
+        }
+    }
 
-	private void createLabel() {
-		getFactory().controlWidthProperty.addListener(this);
-		getFactory().labelWidthProperty.addListener(this);
-		setWidth();
+    private void createLabel() {
+        getFactory().controlWidthProperty.addListener(this);
+        getFactory().labelWidthProperty.addListener(this);
+        setWidth();
 
-		int rightPadding = getFactory().labelRightPaddingProperty.intValue();
-		changed(getFactory().labelRightPaddingProperty, rightPadding, 0);
-		getFactory().labelRightPaddingProperty.addListener(this);
+        int rightPadding = getFactory().labelRightPaddingProperty.intValue();
+        changed(getFactory().labelRightPaddingProperty, rightPadding, 0);
+        getFactory().labelRightPaddingProperty.addListener(this);
 
-		mLabel = new Label(mControl.getValue());
-		mLabel.prefWidthProperty().bind(mWidth);
-		mLabel.minWidthProperty().bind(mWidth);
-		mLabel.maxWidthProperty().bind(mWidth);
+        mLabel = new Label(mControl.getValue());
+        mLabel.prefWidthProperty().bind(mWidth);
+        mLabel.minWidthProperty().bind(mWidth);
+        mLabel.maxWidthProperty().bind(mWidth);
 
-		mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
-		mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
-		mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
+        mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
+        mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
+        mLabel.prefWidthProperty().bind(getFactory().controlWidthProperty);
 
-		mLabel.setWrapText(true);
+        mLabel.setWrapText(true);
 
-		mUI = new HBox();
-		mUI.setAlignment(Pos.CENTER);
-		mUI.getChildren().addAll(mLabel);
-	}
+        mUI = new HBox();
+        mUI.setAlignment(Pos.CENTER);
+        mUI.getChildren().addAll(mLabel);
+    }
 
-	private void createNormal() {
-		mText = new TextField();
-		mText.setText(mControl.getValue());
-		mText.textProperty().addListener((observable, oldValue, newValue) -> setControlValue(newValue));
-		mText.prefWidthProperty().bind(getFactory().controlWidthProperty);
+    private void createNormal() {
+        mText = new TextField();
+        mText.setText(mControl.getValue());
+        mText.textProperty().addListener((observable, oldValue, newValue) -> setControlValue(newValue));
+        mText.prefWidthProperty().bind(getFactory().controlWidthProperty);
 
-		mUI = new HBox();
-		mUI.setAlignment(Pos.CENTER);
-		mUI.getChildren().addAll(mLabel, mText);
-	}
+        mUI = new HBox();
+        mUI.setAlignment(Pos.CENTER);
+        mUI.getChildren().addAll(mLabel, mText);
+    }
 
-	@Override
-	public Pane getUI() {
-		return mUI;
-	}
+    @Override
+    public Pane getUI() {
+        return mUI;
+    }
 
-	private void setControlValue(final String pValue) {
-		try {
-			if (mAllowUpdates) {
-				mControl.setValue(pValue, this, false);
-				mAllowUpdates = false;
-				mText.setText(mControl.getValue());
-				// TODO should use the IView option
-			}
-		} finally {
-			mAllowUpdates = true;
-		}
-	}
+    private void setControlValue(final String pValue) {
+        try {
+            if (mAllowUpdates) {
+                mControl.setValue(pValue, this, false);
+                mAllowUpdates = false;
+                mText.setText(mControl.getValue());
+                // TODO should use the IView option
+            }
+        } finally {
+            mAllowUpdates = true;
+        }
+    }
 
-	private void setWidth() {
-		int width = getFactory().controlWidthProperty.getValue() + getFactory().labelWidthProperty.getValue();
-		if (mWidth == null) {
-			mWidth = new SimpleIntegerProperty(width);
-		}
-		mWidth.set(width);
-	}
+    private void setWidth() {
+        int width = getFactory().controlWidthProperty.getValue() + getFactory().labelWidthProperty.getValue();
+        if (mWidth == null) {
+            mWidth = new SimpleIntegerProperty(width);
+        }
+        mWidth.set(width);
+    }
 
 }

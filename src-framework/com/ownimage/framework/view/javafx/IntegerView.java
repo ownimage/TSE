@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import com.ownimage.framework.control.control.IControl;
@@ -12,7 +18,7 @@ import javafx.scene.layout.Pane;
 
 public class IntegerView extends ViewBase<IntegerControl> {
 
-    private final HBox mUI;
+	private final HBox mUI;
 	private final Spinner<Integer> mIntegerSpinner;
 
 	private boolean mAllowUpdates = true;
@@ -26,9 +32,9 @@ public class IntegerView extends ViewBase<IntegerControl> {
 
 		// lost focus commiting value from
 		// https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
-        SpinnerValueFactory<Integer> factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue(), step);
-        TextFormatter<Integer> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
-        mIntegerSpinner = new Spinner<>(min, max, mControl.getValue(), step);
+		SpinnerValueFactory<Integer> factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue(), step);
+		TextFormatter<Integer> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
+		mIntegerSpinner = new Spinner<>(min, max, mControl.getValue(), step);
 		mIntegerSpinner.setValueFactory(factory);
 		mIntegerSpinner.setEditable(true);
 		mIntegerSpinner.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // TODO need to fix this
@@ -49,9 +55,9 @@ public class IntegerView extends ViewBase<IntegerControl> {
 	@Override
 	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
 		if (pControl == mControl) {
-            if (!mIntegerSpinner.getValue().equals(mControl.getValue())) {
-                mIntegerSpinner.getEditor().setText(mControl.getString());
-            }
+			if (!mIntegerSpinner.getValue().equals(mControl.getValue())) {
+				mIntegerSpinner.getEditor().setText(mControl.getString());
+			}
 		}
 	}
 
@@ -62,7 +68,7 @@ public class IntegerView extends ViewBase<IntegerControl> {
 
 	private void setControlValue(final int pValue) {
 		try {
-            if (mAllowUpdates && !mIntegerSpinner.getValue().equals(mControl.getValue())) {
+			if (mAllowUpdates && !mIntegerSpinner.getValue().equals(mControl.getValue())) {
 				mControl.setValue(pValue, this, false);
 				mAllowUpdates = false;
 				mIntegerSpinner.getEditor().setText(mControl.getString());

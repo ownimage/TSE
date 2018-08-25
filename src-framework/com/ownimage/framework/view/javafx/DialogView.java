@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.HashMap;
@@ -44,7 +50,7 @@ public class DialogView implements IDialogView {
         // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
         // themselves which would mean that the mDialog would need to change size as the controls change value.
         mWidthListener = (observable, oldValue, newValue) ->
-            mDialog.setWidth(mDialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
+                mDialog.setWidth(mDialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
 
         FXViewFactory.getInstance().controlWidthProperty.addListener(mWidthListener);
         FXViewFactory.getInstance().labelWidthProperty.addListener(mWidthListener);

@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.queue;
 
 import java.util.logging.Level;
@@ -9,7 +15,7 @@ import com.ownimage.framework.util.Framework;
 public class ExecuteThread extends Thread {
 
 
-    private final static Logger mLogger = Framework.getLogger();
+	private final static Logger mLogger = Framework.getLogger();
 
 	/** The job. */
 	private final IJob mJob;
@@ -18,7 +24,7 @@ public class ExecuteThread extends Thread {
 	 * Instantiates a new execute thread. When the thread is started the job is run on the background thread. When the job completes
 	 * the this class calls complete() on the job. If there is an exception thrown during the processing of the doJob method then
 	 * the exception is passed to the error method of the job.
-	 * 
+	 *
 	 * @param pJob
 	 *            the job
 	 */
@@ -38,7 +44,7 @@ public class ExecuteThread extends Thread {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Thread#run()
 	 */
 	@Override

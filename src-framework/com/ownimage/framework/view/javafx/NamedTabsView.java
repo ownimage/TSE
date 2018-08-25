@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import com.ownimage.framework.control.layout.INamedTabs;
@@ -11,47 +17,47 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 
 public class NamedTabsView extends ViewBase<INamedTabs> implements ISingleSelectView {
 
-	private TabPane mUI = new TabPane();
+    private TabPane mUI = new TabPane();
 
-	public NamedTabsView(final INamedTabs pNamedTabs) {
-		super(pNamedTabs);
-		createView();
-	}
+    public NamedTabsView(final INamedTabs pNamedTabs) {
+        super(pNamedTabs);
+        createView();
+    }
 
-	private void createView() {
+    private void createView() {
 
-		mUI = new TabPane();
-		mUI.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+        mUI = new TabPane();
+        mUI.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-		for (String name : mControl.getTabNames()) {
+        for (String name : mControl.getTabNames()) {
 
-			Tab tab = new Tab();
-			tab.setText(name);
-			tab.setContent(((FXView) (mControl.getViewable(name).createView())).getUI());
+            Tab tab = new Tab();
+            tab.setText(name);
+            tab.setContent(((FXView) (mControl.getViewable(name).createView())).getUI());
 
-			mUI.getTabs().add(tab);
-		}
+            mUI.getTabs().add(tab);
+        }
 
-		setSelectedIndex(mControl.getSelectedIndex());
+        setSelectedIndex(mControl.getSelectedIndex());
 
-		// adding the listener needs to be after creating the TabPane otherwise it fires an unwanted tab change
-		mUI.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-			mControl.setSelectedIndex(mUI.getTabs().indexOf(newTab), this);
-		});
-	}
+        // adding the listener needs to be after creating the TabPane otherwise it fires an unwanted tab change
+        mUI.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+            mControl.setSelectedIndex(mUI.getTabs().indexOf(newTab), this);
+        });
+    }
 
-	@Override
-	public Node getUI() {
-		return mUI;
-	}
+    @Override
+    public Node getUI() {
+        return mUI;
+    }
 
-	@Override
-	public void redraw() {
-	}
+    @Override
+    public void redraw() {
+    }
 
-	@Override
-	public void setSelectedIndex(final int pInt) {
-		Platform.runLater(() ->mUI.getSelectionModel().select(pInt));
-	}
+    @Override
+    public void setSelectedIndex(final int pInt) {
+        Platform.runLater(() ->mUI.getSelectionModel().select(pInt));
+    }
 
 }

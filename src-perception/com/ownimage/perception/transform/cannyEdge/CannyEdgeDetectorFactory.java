@@ -1,6 +1,7 @@
-/**
- * This code is part of the Perception programme.
- * All code copyright (c) 2012, 2014 ownimage.com, Keith Hart
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
 
 package com.ownimage.perception.transform.cannyEdge;

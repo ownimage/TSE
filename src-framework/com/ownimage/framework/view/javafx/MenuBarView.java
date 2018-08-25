@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.view.javafx;
 
 import java.util.Iterator;
@@ -13,59 +19,59 @@ import javafx.scene.control.MenuBar;
 
 public class MenuBarView implements IView {
 
-	public final static Logger mLogger = Framework.getLogger();
+    public final static Logger mLogger = Framework.getLogger();
 
-	private final MenuControl mMenuControl;
-	private MenuBar mUI;
+    private final MenuControl mMenuControl;
+    private MenuBar mUI;
 
-	public MenuBarView(final MenuControl pMenuControl) {
-		if (pMenuControl == null) { throw new IllegalArgumentException("pMenuBar must not be null."); }
+    public MenuBarView(final MenuControl pMenuControl) {
+        if (pMenuControl == null) { throw new IllegalArgumentException("pMenuBar must not be null."); }
 
-		if (!pMenuControl.isMenuBar()) { throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar set."); }
+        if (!pMenuControl.isMenuBar()) { throw new IllegalArgumentException("pMenuBar must be a Menu with the isMenuBar set."); }
 
-		mMenuControl = pMenuControl;
-		createView();
-	}
+        mMenuControl = pMenuControl;
+        createView();
+    }
 
-	@Override
-	public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-		// TODO Auto-generated method stub
+    @Override
+    public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	private void createView() {
-		mUI = new MenuBar();
+    private void createView() {
+        mUI = new MenuBar();
 
-		Iterator<IMenuItem> menuIterator = mMenuControl.getChildIterator();
-		while (menuIterator.hasNext()) {
-			MenuControl menuControl = (MenuControl) menuIterator.next();
+        Iterator<IMenuItem> menuIterator = mMenuControl.getChildIterator();
+        while (menuIterator.hasNext()) {
+            MenuControl menuControl = (MenuControl) menuIterator.next();
             mUI.getMenus().add(((MenuView) menuControl.createMenuView()).getUI());
             mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
-		}
+        }
 
-		mUI.useSystemMenuBarProperty().set(true);
-	}
+        mUI.useSystemMenuBarProperty().set(true);
+    }
 
-	public MenuBar getUI() {
-		return mUI;
-	}
+    public MenuBar getUI() {
+        return mUI;
+    }
 
-	@Override
-	public void redraw() {
-		// TODO Auto-generated method stub
+    @Override
+    public void redraw() {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void setEnabled(final boolean pEnabled) {
-		// TODO Auto-generated method stub
+    @Override
+    public void setEnabled(final boolean pEnabled) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void setVisible(final boolean pVisible) {
-		// TODO Auto-generated method stub
+    @Override
+    public void setVisible(final boolean pVisible) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
 }

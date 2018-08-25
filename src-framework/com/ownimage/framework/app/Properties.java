@@ -1,3 +1,9 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
 package com.ownimage.framework.app;
 
 import java.awt.*;
@@ -13,7 +19,7 @@ import com.ownimage.framework.util.Framework;
 public class Properties {
 
 
-    private final static Logger mLogger = Framework.getLogger();
+	private final static Logger mLogger = Framework.getLogger();
 
 	private final Container mColorContainer = new Container("Colors", "color", () -> {
 		return new UndoRedoBuffer(10);
