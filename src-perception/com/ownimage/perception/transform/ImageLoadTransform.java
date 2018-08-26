@@ -72,7 +72,7 @@ public class ImageLoadTransform extends BaseTransform {
     @Override
     public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
-        getPreviewImage().redrawGrafitti();
+        getPreviewImage().drawGrafitti();
         Framework.logExit(mLogger);
     }
 

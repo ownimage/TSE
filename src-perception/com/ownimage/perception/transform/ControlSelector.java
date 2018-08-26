@@ -123,7 +123,7 @@ public class ControlSelector implements IUIEventListener {
 		setXYControlValue(pEvent.getNormalizedDeltaX(), pEvent.getNormalizedDeltaY());
 
 		mTransform.setValues();
-		mTransform.getPreviewImage().redrawGrafitti();
+        mTransform.getPreviewImage().drawGrafitti();
 		Framework.logExit(mLogger);
 	}
 

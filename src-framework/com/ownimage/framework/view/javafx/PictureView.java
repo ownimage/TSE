@@ -37,10 +37,14 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     public final static long serialVersionUID = 1L;
 
     private Image mImage;
+
     private GrafittiImp mGrafittiImp;
+    private GraphicsContext mGrafittiContext;
+
+    private GrafittiImp mCursorImp;
+    private GraphicsContext mCursorContext;
 
     private final StackPane mUI;
-    private GraphicsContext mGraphicsContext;
 
     public PictureView(final PictureControl pPictureControl) {
         super(pPictureControl);
@@ -68,7 +72,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
         if (pControl == mControl) {
             Platform.runLater(() -> {
                 updatePicture();
-                mControl.redrawGrafitti();
+                mControl.drawGrafitti();
                 resizeTopParent();
             });
         }
@@ -131,13 +135,20 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     @Override
-    public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
+    public void drawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> {
-            mGraphicsContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
+            mGrafittiContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
             pGrafitti.accept(mGrafittiImp);
         });
     }
 
+    @Override
+    public void drawCursor(Consumer<IGrafittiImp> pGrafitti) {
+        runOnFXApplicationThread(() -> {
+            mCursorContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
+            pGrafitti.accept(mCursorImp);
+        });
+    }
     @Override
     public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> pGrafitti.accept(mGrafittiImp));
@@ -171,11 +182,16 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
         double width = mImage.getWidth();
         double height = mImage.getHeight();
 
-        Canvas canvas = new Canvas(width, height);
-        mGraphicsContext = canvas.getGraphicsContext2D();
-        mGrafittiImp = new GrafittiImp(mGraphicsContext, width, height);
+        Canvas grafittiCanvas = new Canvas(width, height);
+        mGrafittiContext = grafittiCanvas.getGraphicsContext2D();
+        mGrafittiImp = new GrafittiImp(mGrafittiContext, width, height);
+
+        Canvas cursorCanvas = new Canvas(width, height);
+        mCursorContext = cursorCanvas.getGraphicsContext2D();
+        mCursorImp = new GrafittiImp(mCursorContext, width, height);
+
         mUI.getChildren().clear();
-        mUI.getChildren().addAll(imageView, canvas);
+        mUI.getChildren().addAll(imageView, grafittiCanvas, cursorCanvas);
     }
 
 }

@@ -9,7 +9,9 @@ import java.util.function.Consumer;
 
 public interface IPictureView extends IView {
 
-    public void redrawGrafitti(Consumer<IGrafittiImp> pGrafitti);
+    public void drawCursor(Consumer<IGrafittiImp> pGrafitti);
+
+    public void drawGrafitti(Consumer<IGrafittiImp> pGrafitti);
 
     public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti);
 

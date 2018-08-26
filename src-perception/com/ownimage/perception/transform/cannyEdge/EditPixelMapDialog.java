@@ -380,17 +380,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     synchronized private void actionPixelOn(final Pixel pPixel) {
         pPixel.setEdge(true);
-        mPictureControl.redrawGrafitti();
+        mPictureControl.drawGrafitti();
     }
 
     synchronized private void actionPixelToggle(final Pixel pPixel) {
         pPixel.setEdge(!pPixel.isEdge());
-        mPictureControl.redrawGrafitti();
+        mPictureControl.drawGrafitti();
     }
 
     synchronized private void actionPixelChainDelete(final Pixel pPixel) {
         mPixelMap.getPixelChains(pPixel).forEach(PixelChain::delete);
-        mPictureControl.redrawGrafitti();
+        mPictureControl.drawGrafitti();
     }
 
     @Override
@@ -410,7 +410,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void mouseDragEndEventPixelView(final IUIEvent pEvent, Pixel pPixel) {
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
-        grafittiCursorRemovePrevious();
+        updateGrafitti();
         mMouseDragLastPixel = null;
     }
 
@@ -474,7 +474,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOffWide()) actionPixelOff(pPixel);
             if (isPixelActionOffVeryWide()) actionPixelOff(pPixel);
             if (isPixelActionToggle()) mouseDragEventPixelViewToggle(pEvent, pPixel);
-            if (isPixelActionDeletePixelChain()) mouseDragEventPixelViewDeletePixelChain(pEvent, pPixel);
+            if (isPixelActionDeletePixelChain()) actionDeletePixelChain(pPixel);
             grafittiCursor(pEvent, pPixel);
         }
     }
@@ -490,14 +490,14 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                                          .filter(Pixel::isEdge)
                                          .ifPresent(p -> p.setEdge(false))
                 );
-        grafittiCursorRemovePrevious();
+        updateGrafitti();
     }
 
     private void grafittiCursor(IUIEvent pEvent, Pixel pPixel) {
         if (pPixel != null) {
             IGrafitti g = grafittiHelper ->
                     grafittiHelper.drawCircle(pEvent.getNormalizedX(), pEvent.getNormalizedY(), getRadius(), Color.red, false);
-            mPictureControl.redrawGrafitti(g);
+            mPictureControl.drawCursor(g);
             mMouseLastPixelPosition = pPixel;
             mMouseLastSize = getCursorSize();
         }
@@ -517,7 +517,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     /**
      * this is to remove the cursor that has been drawn on the previous grafittiCursor call
      */
-    private void grafittiCursorRemovePrevious() {
+    private void updateGrafitti() {
         if (mMouseLastPixelPosition != null) {
             IGrafitti g = grafittiHelper -> {
                 double x1 = pixelXToGrafittiX(mMouseLastPixelPosition.getX() - mMouseLastSize - 1, getViewOriginX(), getWidth(), getZoom());
@@ -527,7 +527,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 grafittiHelper.clearRectangle(x1, y1, x2, y2);
                 grafitti(grafittiHelper);
             };
-            mPictureControl.redrawGrafitti(g);
+            mPictureControl.updateGrafitti(g);
         }
     }
 
@@ -538,11 +538,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void mouseDragEventPixelViewDeletePixelChain(final IUIEvent pEvent, Pixel pPixel) {
+    private void actionDeletePixelChain(Pixel pPixel) {
         if (pPixel != null && pPixel.isEdge()) {
             mPixelMap.getPixelChains(pPixel).forEach(PixelChain::delete);
         }
-        mPictureControl.redrawGrafitti();
+        mPictureControl.drawGrafitti();
     }
 
     @Override
@@ -551,7 +551,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         Optional<Pixel> pixel = eventToPixel(pEvent);
         pixel.filter(p -> !p.equals(mMouseLastPixelPosition))
                 .ifPresent(p -> {
-                    grafittiCursorRemovePrevious();
+                    mMouseLastPixelPosition = p;
                     grafittiCursor(pEvent, p);
                 });
     }
@@ -571,7 +571,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void mouseDragStartEventPixelView(final IUIEvent pEvent) {
         mSavepointId = getUndoRedoBuffer().startSavepoint("mouseDrag");
-        eventToPixel(pEvent).ifPresent(p -> grafittiCursor(pEvent, p));
+        eventToPixel(pEvent).ifPresent(p -> {
+            grafittiCursor(pEvent, p);
+            mMouseDragLastPixel = p;
+        });
     }
 
     @Override
@@ -585,7 +588,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
         if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
-        mPictureControl.redrawGrafitti(); // TODO should only be for the undo redo events
+        mPictureControl.drawGrafitti(); // TODO should only be for the undo redo events
     }
 
     @Override

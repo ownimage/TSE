@@ -58,7 +58,6 @@ public class PictureControl
             GrafittiHelper grafittiHelper = new GrafittiHelper(pGrafittiImp);
             mGrafitti.grafitti(grafittiHelper);
         }
-
     }
 
     public int getHeight() {
@@ -69,15 +68,19 @@ public class PictureControl
         return getValue().getWidth();
     }
 
-    public void redrawGrafitti() {
-        mViews.invokeAll(view -> view.redrawGrafitti(this::drawGrafitti));
+    public void drawGrafitti() {
+        mViews.invokeAll(view -> view.drawGrafitti(this::drawGrafitti));
     }
 
-    public void redrawGrafitti(IGrafitti pGrafitti) {
+    public void updateGrafitti(IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
         mViews.invokeAll(view -> view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
     }
 
+    public void drawCursor(IGrafitti pGrafitti) {
+        Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
+        mViews.invokeAll(view -> view.drawCursor(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
+    }
     public void setGrafitti(final IGrafitti pGrafitti) {
         Framework.checkStateNoChangeOnceSet(mLogger, mGrafitti, "mGrafitti");
         mGrafitti = pGrafitti;

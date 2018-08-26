@@ -280,7 +280,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     public void mouseDragEvent(final IUIEvent pEvent) {
         if (mControlSelector != null) {
             setValues();
-            getPreviewImage().redrawGrafitti();
+            getPreviewImage().drawGrafitti();
             mControlSelector.mouseDragEvent(pEvent);
         }
     }
@@ -298,7 +298,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     public void redrawGrafitti() {
-        getPreviewImage().redrawGrafitti();
+        getPreviewImage().drawGrafitti();
     }
 
     public void refreshOutputPreview() {
