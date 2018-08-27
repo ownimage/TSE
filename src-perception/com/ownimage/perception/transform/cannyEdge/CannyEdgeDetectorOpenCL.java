@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.amd.aparapi.Kernel;
 import com.amd.aparapi.Range;
+import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -520,7 +521,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
 	}
 
 	@Override
-	public void process(final boolean pShowProgress) {
+	public void process(final IProgressObserver pProgressObserver) {
 		process();
 	}
 

@@ -1,10 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
-import java.util.Vector;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -58,7 +54,7 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
-        pixelMap.process02_thin();
+        pixelMap.process02_thin(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -79,10 +75,10 @@ public class PixelMapTest {
                 "    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        pixelMap.process04a_removeLoneNodes();
+        pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -105,7 +101,7 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
-        pixelMap.process04a_removeLoneNodes();
+        pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -126,12 +122,12 @@ public class PixelMapTest {
                 "    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process01_reset();
-        pixelMap.process02_thin();
-        pixelMap.process03_generateNodes();
+        pixelMap.process01_reset(null);
+        pixelMap.process02_thin(null);
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        pixelMap.process04a_removeLoneNodes();
+        pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -155,7 +151,7 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -177,10 +173,10 @@ public class PixelMapTest {
                 "N    E    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        pixelMap.process04b_removeBristles();
+        pixelMap.process04b_removeBristles(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -205,10 +201,10 @@ public class PixelMapTest {
                 "           ",
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        pixelMap.process04b_removeBristles();
+        pixelMap.process04b_removeBristles(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -233,10 +229,10 @@ public class PixelMapTest {
                 "           ",
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        pixelMap.process04b_removeBristles();
+        pixelMap.process04b_removeBristles(null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);

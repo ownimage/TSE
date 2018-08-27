@@ -280,8 +280,9 @@ public class Perception extends AppControlBase {
 
         ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
         }).setEnabled(false);
-        ProgressControl progress = new ProgressControl("Progress", "progress", NullContainer
-                , () -> ok.setEnabled(true));
+        ProgressControl progress = ProgressControl.builder("Progress", "progress", NullContainer)
+                .withCompleteAction(() -> ok.setEnabled(true))
+                .build();
         showDialog(progress, DialogOptions.NONE, ok);
 
         Framework.logEntry(mLogger);

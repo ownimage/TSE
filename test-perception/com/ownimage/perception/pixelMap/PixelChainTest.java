@@ -1,10 +1,9 @@
 package com.ownimage.perception.pixelMap;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.awt.*;
 import java.util.Vector;
 
 import org.junit.After;
@@ -13,9 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import com.ownimage.perception.transform.CannyEdgeTransform;
 
 public class PixelChainTest {
     @BeforeClass
@@ -45,10 +42,10 @@ public class PixelChainTest {
         when(ipmts.getLineCurvePreference()).thenReturn(1.2d);
 
         PixelMap pixelMap = Utility.createMap(input, ipmts);
-        pixelMap.process03_generateNodes();
+        pixelMap.process03_generateNodes(null);
 
         // WHEN
-        final Vector<PixelChain> chains = pixelMap.process05_generateChains();
+        final Vector<PixelChain> chains = pixelMap.process05_generateChains(null);
 
         // THEN
         assertEquals(1, chains.size());

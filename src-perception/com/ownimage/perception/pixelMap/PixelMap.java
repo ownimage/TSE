@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
@@ -798,24 +799,28 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return point;
     }
 
-    public void process() {
+    private void reportProgress(final IProgressObserver pProgressObserver, String pProgressString, int pPercent) {
+        if (pProgressObserver != null) pProgressObserver.setProgress(pProgressString, pPercent);
+    }
+
+    public void process(final IProgressObserver pProgressObserver) {
         try {
             mAutoTrackChanges = false;
             // // pProgress.showProgressBar();
-            process01_reset();
-            process02_thin();
-            process03_generateNodes();
-            process04b_removeBristles();  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
-            process04a_removeLoneNodes();
-            process05_generateChains();
-            process06_straightLinesRefineCorders(mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            process01_reset(pProgressObserver);
+            process02_thin(pProgressObserver);
+            process03_generateNodes(pProgressObserver);
+            process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
+            process04a_removeLoneNodes(pProgressObserver);
+            process05_generateChains(pProgressObserver);
+            process06_straightLinesRefineCorders(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             validate();
             mLogger.info(() -> "validate done");
-            process07_mergeChains();
+            process07_mergeChains(pProgressObserver);
             mLogger.info(() -> "process07_mergeChains done");
             validate();
             mLogger.info(() -> "validate done");
-            process08_refine();
+            process08_refine(pProgressObserver);
             mLogger.info(() -> "process08_refine done");
             validate();
             mLogger.info(() -> "validate done");
@@ -838,7 +843,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     //
     // resets everything but the isEdgeData
-    void process01_reset() {
+    void process01_reset(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Resetting ...", 0);
         resetVisited();
         resetInChain();
         resetNode();
@@ -850,11 +856,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
-    void process02_thin() {
+    void process02_thin(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Thinning ...", 0);
         forEachPixel(this::thin);
     }
 
-    void process03_generateNodes() {
+    void process03_generateNodes(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.calcIsNode()) {
                 mAllNodes.add(pixel);
@@ -894,16 +902,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     pc.setVisited(false);
                     pc.streamPixels()
                             .filter(Pixel::isNode)//pixel -> pixel.isNode())
-                            .forEach(pixel -> {
-                                pixel.getNode()
+                            .forEach(pixel -> pixel.getNode()
                                         .ifPresent(node -> {
                                             final Collection<PixelChain> chains = generateChains(node);
                                             addPixelChains(chains);
                                             chains.parallelStream()
                                                     .forEach(PixelChain::approximate);
-                                        });
+                                        })
 
-                            });
+                            );
                 });
             } else { // turning pixel on
                 Set<Node> nodes = new HashSet<>();
@@ -956,7 +963,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-    void process04a_removeLoneNodes() {
+    void process04a_removeLoneNodes(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.isNode()) {
                 final Node node = getNode(pixel);
@@ -970,11 +978,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     }
 
-    void process04b_removeBristles() {
+    void process04b_removeBristles(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         final HashSet<Pixel> toBeRemoved = new HashSet<>();
 
-        mAllNodes.forEach(node -> {
-            node.getNodeNeighbours().forEach(other -> {
+        mAllNodes.forEach(node -> node.getNodeNeighbours().forEach(other -> {
                 final Set<Pixel> nodeSet = node.allEdgeNeighbours();
                 final Set<Pixel> otherSet = other.allEdgeNeighbours();
 
@@ -988,8 +996,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     // TODO should be a better check here to see whether it is better to remove the other node
                     toBeRemoved.add(node);
                 }
-            });
-        });
+                          })
+        );
 
         mAllNodes.removeAll(toBeRemoved);
         toBeRemoved
@@ -1000,7 +1008,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 });
     }
 
-    Vector<PixelChain> process05_generateChains() {
+    Vector<PixelChain> process05_generateChains(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Generating Chains ...", 0);
         try {
 
             mAllNodes.forEach(node -> mPixelChains.addAll(generateChains(node)));
@@ -1028,7 +1037,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains;
     }
 
-    private void process06_straightLinesRefineCorders(final double pMaxiLineTolerance) {
+    private void process06_straightLinesRefineCorders(final IProgressObserver pProgressObserver, final double pMaxiLineTolerance) {
+        reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         mLogger.info(() -> "process06_straightLinesRefineCorders " + pMaxiLineTolerance);
 
         mPixelChains.forEach(pixelChain -> {
@@ -1039,7 +1049,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         indexSegments();
     }
 
-    private void process07_mergeChains() {
+    private void process07_mergeChains(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         //for (final Node node : getAllNodes()) {
         mAllNodes.stream().forEach(Node::mergePixelChains);
@@ -1049,7 +1060,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
-    private void process08_refine() {
+    private void process08_refine(final IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Refining ...", 0);
         mPixelChains.forEach(PixelChain::approximate);
     }
 
