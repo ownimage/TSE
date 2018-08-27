@@ -5,13 +5,14 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
+import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.IPictureSource;
 
 public interface ICannyEdgeDetector {
 
 
-    public void dispose();
+    void dispose();
 
     /**
      * Obtains an mData containing the edges detected during the last call to the process method. The buffered mData is an opaque
@@ -20,7 +21,7 @@ public interface ICannyEdgeDetector {
      * @return an mData containing the detected edges, or null if the process method has not yet been called.
      */
 
-    public PixelMap getEdgeData();
+    PixelMap getEdgeData();
 
     /**
      * The radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation. The default
@@ -29,7 +30,7 @@ public interface ICannyEdgeDetector {
      * @return the Gaussian kernel radius in pixels
      */
 
-    public float getGaussianKernelRadius();
+    float getGaussianKernelRadius();
 
     /**
      * The number of pixels across which the Gaussian kernel is applied. The default value is 16.
@@ -37,7 +38,7 @@ public interface ICannyEdgeDetector {
      * @return the radius of the convolution operation in pixels
      */
 
-    public int getGaussianKernelWidth();
+    int getGaussianKernelWidth();
 
     /**
      * The high threshold for hysteresis. The default value is 7.5.
@@ -45,9 +46,9 @@ public interface ICannyEdgeDetector {
      * @return the high hysteresis threshold
      */
 
-    public float getHighThreshold();
+    float getHighThreshold();
 
-    public boolean getKeepRunning();
+    boolean getKeepRunning();
 
     /**
      * The low threshold for hysteresis. The default value is 2.5.
@@ -55,7 +56,7 @@ public interface ICannyEdgeDetector {
      * @return the low hysteresis threshold
      */
 
-    public float getLowThreshold();
+    float getLowThreshold();
 
     /**
      * The mData that provides the luminance data used by this detector to generate edges.
@@ -63,7 +64,7 @@ public interface ICannyEdgeDetector {
      * @return the source mData, or null
      */
 
-    public IPictureSource getSourceImage();
+    IPictureSource getSourceImage();
 
     /**
      * Whether the luminance data extracted from the source image is normalized by linearizing its histogram prior to edge
@@ -72,9 +73,9 @@ public interface ICannyEdgeDetector {
      * @return whether the contrast is normalized
      */
 
-    public boolean isContrastNormalized();
+    boolean isContrastNormalized();
 
-    public void process(boolean pShowProgress);
+    void process(IProgressObserver pProgressObserver);
 
     /**
      * Sets whether the contrast is normalized
@@ -83,7 +84,7 @@ public interface ICannyEdgeDetector {
      *            true if the contrast should be normalized, false otherwise
      */
 
-    public void setContrastNormalized(boolean contrastNormalized);
+    void setContrastNormalized(boolean contrastNormalized);
 
     /**
      * Sets the edges mData. Calling this method will not change the operation of the edge detector in any way. It is intended to
@@ -93,15 +94,14 @@ public interface ICannyEdgeDetector {
      *            expected (though not required) to be null
      */
 
-    public void setEdgeData(PixelMap edgeData);
+    void setEdgeData(PixelMap edgeData);
 
     /**
      * Sets the radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation.
      *
-     * @return a Gaussian kernel radius in pixels, must exceed 0.1f.
      */
 
-    public void setGaussianKernelRadius(float gaussianKernelRadius);
+    void setGaussianKernelRadius(float gaussianKernelRadius);
 
     /**
      * The number of pixels across which the Gaussian kernel is applied. This implementation will reduce the radius if the
@@ -111,7 +111,7 @@ public interface ICannyEdgeDetector {
      *            a radius for the convolution operation in pixels, at least 2.
      */
 
-    public void setGaussianKernelWidth(int gaussianKernelWidth);
+    void setGaussianKernelWidth(int gaussianKernelWidth);
 
     /**
      * Sets the high threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
@@ -121,9 +121,9 @@ public interface ICannyEdgeDetector {
      *            a high hysteresis threshold
      */
 
-    public void setHighThreshold(float threshold);
+    void setHighThreshold(float threshold);
 
-    public void setKeepRunning(boolean pKeepRunning);
+    void setKeepRunning(boolean pKeepRunning);
 
     /**
      * Sets the low threshold for hysteresis. Suitable values for this parameter must be determined experimentally for each
@@ -133,16 +133,16 @@ public interface ICannyEdgeDetector {
      *            a low hysteresis threshold
      */
 
-    public void setLowThreshold(float threshold);
+    void setLowThreshold(float threshold);
 
     /**
      * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before
      * the process method is called.
      *
-     * @param mData
+     * @param pImage
      *            a source of luminance data
      */
 
-    public void setSourceImage(IPictureSource image);
+    void setSourceImage(IPictureSource pImage);
 
 }

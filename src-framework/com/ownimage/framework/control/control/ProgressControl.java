@@ -8,6 +8,7 @@ package com.ownimage.framework.control.control;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.container.IContainer;
+import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.control.type.IntegerType;
 import com.ownimage.framework.logging.FrameworkLogger;
@@ -23,17 +24,41 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
     private IAction mCompleteAction;
     private boolean mStarted;
     private boolean mFinished;
+    private boolean mShowLabel = true;
 
-    public ProgressControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer) {
+    public static class Builder {
+
+        private final ProgressControl mProgressControl;
+        private final IContainer mContainer;
+
+        public Builder(final String pDisplayName, final String pPropertyName, final IContainer pContainer) {
+            mProgressControl = new ProgressControl(pDisplayName, pPropertyName, NullContainer.NullContainer);
+            mContainer = pContainer;
+        }
+
+        public Builder withShowLabel(final boolean pShowLabel) {
+            mProgressControl.mShowLabel = pShowLabel;
+            return this;
+        }
+
+        public Builder withCompleteAction(final IAction pCompleteAction) {
+            mProgressControl.mCompleteAction = pCompleteAction;
+            return this;
+        }
+
+        public ProgressControl build() {
+            return mProgressControl.clone(mContainer);
+        }
+    }
+
+    private ProgressControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer) {
         super(pDisplayName, pPropertyName, pContainer, new IntegerType(0, new IntegerMetaType(0, 100, 1)));
         setTransient();
         setUndoEnabled(false);
-        mCompleteAction = null;
     }
 
-    public ProgressControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, IAction pAction) {
-        this(pDisplayName, pPropertyName, pContainer);
-        mCompleteAction = pAction;
+    public static Builder builder(final String pDisplayName, final String pPropertyName, final IContainer pContainer) {
+        return new Builder(pDisplayName, pPropertyName, pContainer);
     }
 
     @Override
@@ -44,6 +69,8 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
 
         ProgressControl pc = new ProgressControl(getDisplayName(), getPropertyName(), pContainer);
         pc.setValue(getValue());
+        pc.mCompleteAction = mCompleteAction;
+        pc.mShowLabel = mShowLabel;
         return pc;
     }
 
@@ -122,5 +149,17 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
 
     public String getProgressString() {
         return mProgressString;
+    }
+
+    public boolean getShowLabel() {
+        return mShowLabel;
+    }
+
+    public ProgressControl reset() {
+        mStarted = false;
+        mFinished = false;
+        mProgressString = "";
+        setValue(0);
+        return this;
     }
 }

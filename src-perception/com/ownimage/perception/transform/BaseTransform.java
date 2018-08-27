@@ -20,6 +20,7 @@ import com.ownimage.framework.control.control.IGrafitti;
 import com.ownimage.framework.control.control.IMouseControl;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ScrollLayout;
@@ -45,6 +46,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     private final String mDisplayName;
     private final String mPropertyName;
     private final Container mContainer;
+    private final ProgressControl mProgressConrol;
     private final BooleanControl mUseTransform;
     private final PictureControl mInputPreviewImage;
 
@@ -61,6 +63,12 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         mPropertyName = pPropertyName;
 
         mContainer = new Container(getDisplayName(), getPropertyName(), this::getUndoRedoBuffer);
+
+        mProgressConrol = ProgressControl.builder("Progress", "progress", getContainer())
+                .withShowLabel(false)
+                .build()
+                .setVisible(false);
+
         mUseTransform = new BooleanControl("Use Transform", "use", mContainer, true);
 
         int previewSize = getProperties().getPreviewSize();
@@ -220,6 +228,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     @Override
     public boolean getUseTransform() {
         return mUseTransform.getValue();
+    }
+
+    protected ProgressControl getProgressControl() {
+        return mProgressConrol;
     }
 
     @Override

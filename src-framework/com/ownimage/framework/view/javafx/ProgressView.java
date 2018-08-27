@@ -9,6 +9,7 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.ProgressControl;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.ProgressBar;
@@ -30,16 +31,21 @@ public class ProgressView extends ViewBase<ProgressControl> {
         int step = mControl.getMetaType().getStep();
 
         final ObservableValue<? extends Number> controlWidthProperty = FXViewFactory.getInstance().controlWidthProperty;
+        final ObservableValue<? extends Number> labelWidthProperty = FXViewFactory.getInstance().labelWidthProperty;
         final ObservableValue<? extends Number> progressBarHeight = FXViewFactory.getInstance().progressBarHeight;
 
+        mUI = new HBox();
+        mUI.setAlignment(Pos.CENTER);
+
         mProgressBar = new ProgressBar(mControl.getNormalizedValue());
-        mProgressBar.prefWidthProperty().bind(controlWidthProperty);
-        mProgressBar.minWidthProperty().bind(controlWidthProperty);
-        mProgressBar.maxWidthProperty().bind(controlWidthProperty);
         mProgressBar.prefHeightProperty().bind(progressBarHeight);
         mProgressBar.minHeightProperty().bind(progressBarHeight);
         mProgressBar.maxHeightProperty().bind(progressBarHeight);
-        mProgressBar.setStyle("-fx-accent: " + FXViewFactory.getInstance().getProgressNormalColorHex());
+        if (mControl.getShowLabel()) {
+            mProgressBar.prefWidthProperty().bind(controlWidthProperty);
+            mProgressBar.minWidthProperty().bind(controlWidthProperty);
+            mProgressBar.maxWidthProperty().bind(controlWidthProperty);
+        }
 
         mProgressText = new Label(mControl.getProgressString());
         mProgressText.setAlignment(Pos.CENTER);
@@ -47,11 +53,21 @@ public class ProgressView extends ViewBase<ProgressControl> {
         mProgressText.minWidthProperty().bind(controlWidthProperty);
         mProgressText.maxWidthProperty().bind(controlWidthProperty);
 
-        StackPane vbox = new StackPane(mProgressBar, mProgressText);
+        if (!mControl.getShowLabel()) {
+            ChangeListener<Number> widthListener = (obs, oldValue, newValue) -> {
+                double width = labelWidthProperty.getValue().doubleValue() + controlWidthProperty.getValue().doubleValue();
+                mProgressBar.prefWidthProperty().setValue(width);
+                mUI.prefWidthProperty().setValue(width);
+            };
+            labelWidthProperty.addListener(widthListener);
+            controlWidthProperty.addListener(widthListener);
+            widthListener.changed(null, null, null);
+        }
 
-        mUI = new HBox();
-        mUI.setAlignment(Pos.CENTER);
-        mUI.getChildren().addAll(mLabel, vbox);
+        StackPane stack = new StackPane(mProgressBar, mProgressText);
+
+        if (mControl.getShowLabel()) mUI.getChildren().add(mLabel);
+        mUI.getChildren().add(stack);
         mUI.setUserData(this);
 
         setEnabled(mControl.isEnabled());
@@ -64,11 +80,16 @@ public class ProgressView extends ViewBase<ProgressControl> {
             Platform.runLater(() -> {
                 mProgressBar.setProgress(mControl.getNormalizedValue());
                 mProgressText.setText(mControl.getProgressString());
-                if (mControl.isFinished())
-                    mProgressBar.setStyle("-fx-accent: " + FXViewFactory.getInstance().getProgressCompleteColorHex());
+                mProgressBar.setStyle("-fx-accent: " + getColorString());
             });
 
         }
+    }
+
+    private String getColorString() {
+        return mControl.isFinished()
+                ? FXViewFactory.getInstance().getProgressCompleteColorHex()
+                : FXViewFactory.getInstance().getProgressNormalColorHex();
     }
 
     @Override

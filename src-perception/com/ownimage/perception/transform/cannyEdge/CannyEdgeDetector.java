@@ -9,6 +9,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -533,7 +534,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 * @see com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#process(boolean)
 	 */
 	@Override
-	public void process(final boolean pShowProgress) {
+    public void process(final IProgressObserver pProgressObserver) {
 		process();
 	}
 

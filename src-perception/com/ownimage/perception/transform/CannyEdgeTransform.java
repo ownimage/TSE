@@ -568,28 +568,37 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void regeneratePixelMap(final PictureControl inputPicture) {
-        PixelMap pixelMap = null;
-        SplitTimer.split("regeneratePixelMap() start");
-        ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
         try {
-            detector.setSourceImage(inputPicture.getValue());
-            detector.process(false);
+            getProgressControl().reset();
+            getProgressControl().setVisible(true);
+            getProgressControl().setProgress("Working ...", 50);
 
-            if (detector.getKeepRunning()) {
-                // only set the mData if the detector was allowed to finish
-                pixelMap = detector.getEdgeData();
-                // mPreviewControl.getValue().setValue(mPreviewPicture);
-                mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
+            PixelMap pixelMap = null;
+            SplitTimer.split("regeneratePixelMap() start");
+            ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
+            try {
+                detector.setSourceImage(inputPicture.getValue());
+                detector.process(getProgressControl().reset());
+
+                if (detector.getKeepRunning()) {
+                    // only set the mData if the detector was allowed to finish
+                    pixelMap = detector.getEdgeData();
+                    // mPreviewControl.getValue().setValue(mPreviewPicture);
+                    mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
+                }
+            } finally {
+                if (detector != null) {
+                    detector.dispose();
+                }
+            }
+
+            if (pixelMap != null) {
+                pixelMap.process(getProgressControl().reset());
+                setPixelMap(pixelMap);
             }
         } finally {
-            if (detector != null) {
-                detector.dispose();
-            }
-        }
-
-        if (pixelMap != null) {
-            pixelMap.process();
-            setPixelMap(pixelMap);
+            getProgressControl().finished();
+            getProgressControl().setVisible(false);
         }
 
     }
