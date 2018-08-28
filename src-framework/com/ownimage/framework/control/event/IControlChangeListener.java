@@ -8,6 +8,6 @@ package com.ownimage.framework.control.event;
 public interface IControlChangeListener<C> {
 
 
-    public void controlChangeEvent(C pControl, boolean pIsMutating);
+    void controlChangeEvent(C pControl, boolean pIsMutating);
 
 }
