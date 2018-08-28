@@ -18,223 +18,227 @@ public class Job implements IJob {
 
     private final static Logger mLogger = Framework.getLogger();
 
-	/** The Name. */
-	private final String mName;
+    /**
+     * The Name.
+     */
+    private final String mName;
 
-	/** The Control object. */
-	private final Object mControlObject;
+    /**
+     * The Control object.
+     */
+    private final Object mControlObject;
 
-	/** The Created date field records the time that the job was created. */
-	private final Date mCreatedDate;
+    /**
+     * The Created date field records the time that the job was created.
+     */
+    private final Date mCreatedDate;
 
-	/**
-	 * The Priority of the job. This is set when the job is submitted, i.e. runBackground(...), this is because if the job is
-	 * runImmediate the priority is irrelevant.
-	 */
-	private final Priority mPriority;
+    /**
+     * The Priority of the job. This is set when the job is submitted, i.e. runBackground(...), this is because if the job is
+     * runImmediate the priority is irrelevant.
+     */
+    private final Priority mPriority;
 
-	/** The Status of the Job. */
-	private Status mStatus;
+    /**
+     * The Status of the Job.
+     */
+    private Status mStatus;
 
-	/**
-	 * Instantiates a new job.
-	 * 
-	 * @param pName
-	 *            the name
-	 * 
-	 */
-	public Job(final String pName, final Priority pPriority) {
-		this(pName, pPriority, null);
-	}
+    /**
+     * Instantiates a new job.
+     *
+     * @param pName the name
+     */
+    public Job(final String pName, final Priority pPriority) {
+        this(pName, pPriority, null);
+    }
 
-	/**
-	 * Instantiates a new job with a control object.
-	 * 
-	 * @param pName
-	 *            the name
-	 * @param pControlObject
-	 *            the control object
-	 */
-	public Job(final String pName, final Priority pPriority, final Object pControlObject) {
-		Framework.logEntry(mLogger);
-		Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
-		Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
+    /**
+     * Instantiates a new job with a control object.
+     *
+     * @param pName          the name
+     * @param pControlObject the control object
+     */
+    public Job(final String pName, final Priority pPriority, final Object pControlObject) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
+        Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
 
-		mName = pName;
-		mPriority = pPriority;
-		mControlObject = pControlObject;
-		mCreatedDate = new Date();
-		setStatus(Status.CREATED);
+        mName = pName;
+        mPriority = pPriority;
+        mControlObject = pControlObject;
+        mCreatedDate = new Date();
+        setStatus(Status.CREATED);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.framework.queue.IJob#cancel()
-	 */
-	@Override
-	public void cancel() {
-		Framework.logEntry(mLogger);
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.framework.queue.IJob#cancel()
+     */
+    @Override
+    public synchronized void cancel() {
+        Framework.logEntry(mLogger);
 
-		synchronized (mStatus) {
-			if (getStatus() != Status.QUEUED) { throw new IllegalStateException("Can only cancel a QUEUED job, this job  is " + getStatus()); }
-			setStatus(Status.CANCELLED);
-		}
+        if (getStatus() != Status.QUEUED) {
+            throw new IllegalStateException("Can only cancel a QUEUED job, this job  is " + getStatus());
+        }
+        setStatus(Status.CANCELLED);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	@Override
-	public void complete() {
-		Framework.logEntry(mLogger);
+    @Override
+    public synchronized void complete() {
+        Framework.logEntry(mLogger);
 
-		synchronized (mStatus) {
-			if (getStatus() != Status.RUNNING) { throw new IllegalStateException("Can only complete a RUNNING job, this job  is " + getStatus()); }
-			setStatus(Status.COMPLETE);
-		}
+        if (getStatus() != Status.RUNNING) {
+            throw new IllegalStateException("Can only complete a RUNNING job, this job  is " + getStatus());
+        }
+        setStatus(Status.COMPLETE);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#doJob()
-	 */
-	@Override
-	public void doJob() {
-		setStatus(Status.RUNNING);
-		// do work
-		// setStatus(Status.COMPLETE);
-		// Only setStatus(Status.RUNNING); is left in so that subclassess can call super.doJob()
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#doJob()
+     */
+    @Override
+    public void doJob() {
+        setStatus(Status.RUNNING);
+        // do work
+        // setStatus(Status.COMPLETE);
+        // Only setStatus(Status.RUNNING); is left in so that subclassess can call super.doJob()
+    }
 
-	@Override
-	public void error(final Throwable pThrowable) {
-		Framework.logEntry(mLogger);
+    @Override
+    public void error(final Throwable pThrowable) {
+        Framework.logEntry(mLogger);
 
-		synchronized (mStatus) {
-			if (getStatus() != Status.RUNNING) { throw new IllegalStateException("Can only error a RUNNING job, this job  is " + getStatus()); }
-			setStatus(Status.FAILED);
-		}
+        if (getStatus() != Status.RUNNING) {
+            throw new IllegalStateException("Can only error a RUNNING job, this job  is " + getStatus());
+        }
+        setStatus(Status.FAILED);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.util.IJob#getControlObject()
-	 */
-	@Override
-	public Object getControlObject() {
-		return mControlObject;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.util.IJob#getControlObject()
+     */
+    @Override
+    public Object getControlObject() {
+        return mControlObject;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#getCreateDate()
-	 */
-	@Override
-	public Date getCreateDate() {
-		return mCreatedDate;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#getCreateDate()
+     */
+    @Override
+    public Date getCreateDate() {
+        return mCreatedDate;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.util.IJob#getName()
-	 */
-	@Override
-	public String getName() {
-		return mName;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.util.IJob#getName()
+     */
+    @Override
+    public String getName() {
+        return mName;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#getPriority()
-	 */
-	@Override
-	public Priority getPriority() {
-		return mPriority;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#getPriority()
+     */
+    @Override
+    public Priority getPriority() {
+        return mPriority;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#getPercent()
-	 */
-	@Override
-	public double getProgressPercent() {
-		return 50.0d;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#getPercent()
+     */
+    @Override
+    public double getProgressPercent() {
+        return 50.0d;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.framework.queue.IJob#getProgressString()
-	 */
-	@Override
-	public String getProgressString() {
-		// TODO Auto-generated method stub
-		return "";
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.framework.queue.IJob#getProgressString()
+     */
+    @Override
+    public String getProgressString() {
+        // TODO Auto-generated method stub
+        return "";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#getStatus()
-	 */
-	@Override
-	public Status getStatus() {
-		return mStatus;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#getStatus()
+     */
+    @Override
+    public synchronized Status getStatus() {
+        return mStatus;
+    }
 
-	/**
-	 * Sets the status.
-	 * 
-	 * @param pStatus
-	 *            the new status
-	 */
-	private void setStatus(final Status pStatus) {
-		mStatus = pStatus;
-	}
+    /**
+     * Sets the status.
+     *
+     * @param pStatus the new status
+     */
+    private void setStatus(final Status pStatus) {
+        mStatus = pStatus;
+    }
 
-	/**
-	 * Submits the job to the ExecuteQueue to be run in the background with the specified priority. This will call the ExecuteQueues
-	 * runBackground which control the interaction with other running jobs.
-	 * 
-	 */
-	public void submit() {
-		Framework.logEntry(mLogger);
+    /**
+     * Submits the job to the ExecuteQueue to be run in the background with the specified priority. This will call the ExecuteQueues
+     * runBackground which control the interaction with other running jobs.
+     */
+    public synchronized void submit() {
+        Framework.logEntry(mLogger);
 
-		synchronized (mStatus) {
-			if (getStatus() != Status.CREATED) { throw new IllegalStateException("Can only submit a CREATED job, this job  is " + getStatus()); }
-			setStatus(Status.QUEUED);
-			ExecuteQueue.getInstance().submit(this);
-		}
+        ExecuteQueue.getInstance().submit(this);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ownimage.perception.queue.IJob#terminateJob(com.ownimage.perception.queue.IJob)
-	 */
-	@Override
-	public void terminate() {
-		Framework.logEntry(mLogger);
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.ownimage.perception.queue.IJob#terminateJob(com.ownimage.perception.queue.IJob)
+     */
+    @Override
+    public synchronized void terminate() {
+        Framework.logEntry(mLogger);
 
-		synchronized (mStatus) {
-			setStatus(Status.TERMINATED);
-		}
+        setStatus(Status.TERMINATED);
 
-		Framework.logExit(mLogger);
-	}
+        Framework.logExit(mLogger);
+    }
 
+    @Override
+    public synchronized void queued() {
+        if (getStatus() != IJob.Status.CREATED) {
+            throw new IllegalStateException("Can only submit a CREATED job, this job  is " + getStatus());
+        }
+
+        setStatus(Status.QUEUED);
+    }
 }

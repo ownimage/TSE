@@ -370,7 +370,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     @Override
     public void refreshInputPreview() {
         Framework.logEntry(mLogger);
-        getPerception().getRenderService().transform(mInputPreviewImage, mPreviousTransform, null);
+        getPerception().getRenderService().transform("BaseTransform::refreshInputPreview", mInputPreviewImage, mPreviousTransform, null);
         Framework.logExit(mLogger);
     }
 

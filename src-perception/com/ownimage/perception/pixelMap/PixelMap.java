@@ -149,6 +149,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         m360 = p360;
         mTransformSource = pTransformSource;
 
+        resetSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
         mData = new byte[pWidth][pHeight];
@@ -907,12 +908,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     pc.streamPixels()
                             .filter(Pixel::isNode)//pixel -> pixel.isNode())
                             .forEach(pixel -> pixel.getNode()
-                                        .ifPresent(node -> {
-                                            final Collection<PixelChain> chains = generateChains(node);
-                                            addPixelChains(chains);
-                                            chains.parallelStream()
-                                                    .forEach(PixelChain::approximate);
-                                        })
+                                    .ifPresent(node -> {
+                                        final Collection<PixelChain> chains = generateChains(node);
+                                        addPixelChains(chains);
+                                        chains.parallelStream()
+                                                .forEach(PixelChain::approximate);
+                                    })
 
                             );
                 });
@@ -987,19 +988,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final HashSet<Pixel> toBeRemoved = new HashSet<>();
 
         mAllNodes.forEach(node -> node.getNodeNeighbours().forEach(other -> {
-                final Set<Pixel> nodeSet = node.allEdgeNeighbours();
-                final Set<Pixel> otherSet = other.allEdgeNeighbours();
+            final Set<Pixel> nodeSet = node.allEdgeNeighbours();
+            final Set<Pixel> otherSet = other.allEdgeNeighbours();
 
-                nodeSet.remove(other);
-                nodeSet.removeAll(otherSet);
+            nodeSet.remove(other);
+            nodeSet.removeAll(otherSet);
 
-                otherSet.remove(node);
-                otherSet.removeAll(nodeSet);
+            otherSet.remove(node);
+            otherSet.removeAll(nodeSet);
 
-                if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-                    // TODO should be a better check here to see whether it is better to remove the other node
-                    toBeRemoved.add(node);
-                }
+            if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                // TODO should be a better check here to see whether it is better to remove the other node
+                toBeRemoved.add(node);
+            }
                           })
         );
 
@@ -1127,21 +1128,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 mPixelChains.addAll(pixelChains);
                 mPixelChains.parallelStream().forEach(pc -> pc.setPixelMap(this));
 
-                final AllNodes allNodes = (AllNodes) ois.readObject();
                 mAllNodes.removeAllElements();
-                mAllNodes.putAll(allNodes);
-                mAllNodes.setPixelMap(this);
+                forEachPixel(p -> {
+                    if (p.isNode()) mAllNodes.add(p);
+                });
 
                 bais = null;
                 ois = null;
                 objectString = null;
                 objectBytes = null;
 
+                mLogger.info("mAllNodes size() = " + mAllNodes.size());
                 mLogger.info("mPixelChains size() = " + mPixelChains.size());
-
-                for (final PixelChain chain : mPixelChains) {
-                    chain.setPixelMap(this);
-                }
 
                 for (final PixelChain chain : mPixelChains) {
                     chain.indexSegments();
@@ -1377,13 +1375,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
 
         // mAllNodes & mPixelChains
-        mLogger.finest("About to write mAllNodes and mPixelChains");
         mLogger.info("mAllNodes size() = " + mAllNodes.size());
         mLogger.info("mPixelChains size() = " + mPixelChains.size());
         baos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(baos);
         oos.writeObject(mPixelChains);
-        oos.writeObject(mAllNodes);
         oos.close();
 
         String objectString = new String(MyBase64.compressAndEncode(baos.toByteArray()));
