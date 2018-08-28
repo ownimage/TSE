@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
@@ -1066,8 +1067,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void process08_refine(final IProgressObserver pProgressObserver) {
+        Counter counter = new Counter(mPixelChains.size());
         reportProgress(pProgressObserver, "Refining ...", 0);
-        mPixelChains.forEach(PixelChain::approximate);
+        mPixelChains.forEach(pc -> {
+            pc.approximate();
+            counter.increase();
+            reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
+        });
     }
 
 

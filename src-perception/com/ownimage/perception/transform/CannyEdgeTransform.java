@@ -245,6 +245,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     //
     private void editPixels() {
         getEditPixelMapDialog().showDialog();
+        getPerception().refreshOutputPreview();
     }
 
     private void generateEdges() {
