@@ -236,6 +236,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog() {
+        setCrop();
         mDialogIsAlive = true;
         mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         updatePreview();
