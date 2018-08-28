@@ -206,13 +206,13 @@ public class DoubleCurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(getStartUHVWPoint(), getEndUHVWPoint());
         pGraphics.graffiitControlLine(mStartCurve.getP0(), mStartCurve.getP1());
 		pGraphics.graffiitControlLine(mStartCurve.getP1(), mEndCurve.getP1());
 		pGraphics.graffiitControlLine(mEndCurve.getP1(), mEndCurve.getP2());
 		pGraphics.graffitiControlPoint(mStartCurve.getP1());
 		pGraphics.graffitiControlPoint(mEndCurve.getP1());
-		pGraphics.graffitiSelectedControlPoint(getControlPoint());
+        super.graffiti(pGraphics);
+        pGraphics.graffitiSelectedControlPoint(getControlPoint());
     }
 
     @Override

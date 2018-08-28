@@ -258,10 +258,9 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(getStartUHVWPoint(), getEndUHVWPoint());
         pGraphics.graffiitControlLine(getP0(), getP1());
         pGraphics.graffiitControlLine(getP1(), getP2());
-        pGraphics.graffiitControlLine(getP2(), getP0());
+        super.graffiti(pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }
 

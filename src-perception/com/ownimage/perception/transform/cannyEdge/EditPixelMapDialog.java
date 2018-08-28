@@ -25,6 +25,7 @@ import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -107,6 +108,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<PixelAction> mPixelAction =
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
 
+    private final IControlChangeListener mGrafittiChangeRequired = (c, m) -> mPictureControl.drawGrafitti();
+
     // Vertex Container
     private final DoubleControl mVCC1 = new DoubleControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 0.5);
     private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
@@ -141,6 +144,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updatePreview();
+
+        mEdgeColor.addControlChangeListener(mGrafittiChangeRequired);
+        mNodeColor.addControlChangeListener(mGrafittiChangeRequired);
     }
 
     private void updatePreview() {

@@ -941,7 +941,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (pPixel.isNode() && !pValue) {
             mAllNodes.remove(pPixel);
         }
-        if (!pPixel.isNode() && !pValue) {
+        if (!pPixel.isNode() && pValue) {
             mAllNodes.add(pPixel);
         }
         setData(pPixel, pValue, NODE);
