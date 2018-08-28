@@ -46,7 +46,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     private final String mDisplayName;
     private final String mPropertyName;
     private final Container mContainer;
-    private final ProgressControl mProgressConrol;
+    private final ProgressControl mProgressControl;
     private final BooleanControl mUseTransform;
     private final PictureControl mInputPreviewImage;
 
@@ -64,7 +64,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         mContainer = new Container(getDisplayName(), getPropertyName(), this::getUndoRedoBuffer);
 
-        mProgressConrol = ProgressControl.builder("Progress", "progress", getContainer())
+        mProgressControl = ProgressControl.builder("Progress", "progress", getContainer())
                 .withShowLabel(false)
                 .build()
                 .setVisible(false);
@@ -116,6 +116,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
         if (!isInitialized()) {
+            return;
+        }
+
+        if (pControl == mProgressControl) {
             return;
         }
 
@@ -231,7 +235,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     protected ProgressControl getProgressControl() {
-        return mProgressConrol;
+        return mProgressControl;
     }
 
     @Override
