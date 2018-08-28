@@ -803,6 +803,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (pProgressObserver != null) pProgressObserver.setProgress(pProgressString, pPercent);
     }
 
+    public void reapproximateAllChains() {
+        mPixelChains.stream().parallel().forEach(pc -> pc.approximate());
+    }
+
     public void process(final IProgressObserver pProgressObserver) {
         try {
             mAutoTrackChanges = false;

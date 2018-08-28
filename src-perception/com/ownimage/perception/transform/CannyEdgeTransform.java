@@ -209,17 +209,17 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 // }
                 // }
                 //
-                // if (pControl.isOneOf(mLineTolerance, mLineCurvePreference) && !pIsMutating) {
-                // reapproximate();
-                // }
-                //
+                if ((pControl == mLineTolerance || pControl == mLineCurvePreference) && !pIsMutating) {
+                    mPixelMap.reapproximateAllChains();
+                }
+
                 if (pControl == mEqualize) {
                     try {
                         setMutating(true);
 
                         mLogger.info("Equalize");
                         if (mPixelMap != null) {
-                            final EqualizeValues values = (EqualizeValues) mEqualize.getValue();
+                            final EqualizeValues values = mEqualize.getValue();
                             mPixelMap.equalizeValues(values);
                             mShortLineLength.setValue(values.getShortLineLength());
                             mMediumLineLength.setValue(values.getMediumLineLength());
@@ -257,7 +257,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
         PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
-        PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer.NullContainer, inputPicture);
+        PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
         Services.getServices().getPerception().getRenderService()
                 .transform(inputPictureControl, getPreviousTransform(), () -> {
                     setPixelMap(null);
