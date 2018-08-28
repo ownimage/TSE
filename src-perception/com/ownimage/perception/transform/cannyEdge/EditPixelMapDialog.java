@@ -147,6 +147,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         mEdgeColor.addControlChangeListener(mGrafittiChangeRequired);
         mNodeColor.addControlChangeListener(mGrafittiChangeRequired);
+        mShowGrafitti.addControlChangeListener(mGrafittiChangeRequired);
     }
 
     private void updatePreview() {
@@ -155,7 +156,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
             }
-            Services.getServices().getPerception().getRenderService().transform(mPictureControl, mCropTransform, null);
+            Services.getServices().getPerception().getRenderService()
+                    .transform("EditPixelMapDialog::updatePreview", mPictureControl, mCropTransform, null);
         }
     }
 

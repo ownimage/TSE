@@ -224,7 +224,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
         crop.setPreviousTransform(getTransform().getPreviousTransform());
         crop.setCrop(getPreviewRectangle());
-        Services.getServices().getPerception().getRenderService().transform(inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()), null);
+        Services.getServices().getPerception().getRenderService()
+                .transform("GenerateEdgesDialog::updatePreview", inputPictureControl, crop, () -> updatePreview(inputPictureControl.getValue()), null);
         mLogger.info(() -> "ExecuteQueue depth:" + ExecuteQueue.getInstance().getDepth());
 
         mLogger.finest("at end");

@@ -85,25 +85,25 @@ public class RenderService {
      * @param pPictureControl the picture
      * @param pTransform      the transform
      */
-    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, IProgressObserver pObserver) {
+    public void transform(final String pReason, final PictureControl pPictureControl, final IBatchTransform pTransform, IProgressObserver pObserver) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        mLogger.info(() -> String.format("RenderService::transform pPictureControl=%s pTransform=%s", pPictureControl, pTransform.getDisplayName()));
+        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureControl=%s pTransform=%s", pReason, pPictureControl, pTransform.getDisplayName()));
 
-        transform(pPictureControl, pTransform, null, pObserver);
+        transform(pReason, pPictureControl, pTransform, null, pObserver);
 
         Framework.logExit(mLogger);
     }
 
-    public void transform(final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver) {
+    public void transform(final String pReason, final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        mLogger.info(() -> String.format("RenderService::transform pPictureControl=%s pTransform=%s", pPictureControl, pTransform.getDisplayName()));
+        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureControl=%s pTransform=%s", pReason, pPictureControl, pTransform.getDisplayName()));
 
         PictureType picture = pPictureControl.getValue().createCompatible();
-        transform(picture, pTransform, () -> {
+        transform(pReason, picture, pTransform, () -> {
             pPictureControl.setValue(picture);
             if (pCompleteAction != null) {
                 pCompleteAction.performAction();
@@ -113,18 +113,20 @@ public class RenderService {
         Framework.logExit(mLogger);
     }
 
-    public void transform(final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
+    public void transform(final String pReason, final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         Framework.checkParameterGreaterThanEqual(mLogger, pOverSample, 1, "pOverSample");
         Framework.checkParameterLessThanEqual(mLogger, pOverSample, 4, "pOverSample");
-        mLogger.info(() -> String.format("RenderService::transform pTransform=%s", pTransform.getDisplayName()));
+        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureType=%s pTransform=%s", pReason, pPictureType, pTransform.getDisplayName()));
 
         ExecuteQueue eq = ExecuteQueue.getInstance();
         String name = pTransform.getClass().getSimpleName();
 
         class TransformJob extends Job {
+
+            private boolean mTerminated = false;
 
             public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
                 super(pName, pPriority, pControlObject);
@@ -148,7 +150,7 @@ public class RenderService {
                 TransformResultBatch batch = getBatch(pTransform.getDisplayName());
                 batch.initialize(pPictureType, actualEngine, maxBatchSize);
 
-                while (batch.hasNext()) {
+                while (batch.hasNext() && !mTerminated) {
                     if (pObserver != null) {
                         pObserver.setProgress("Transforming", batch.getPercentComplete());
                     }
@@ -169,7 +171,8 @@ public class RenderService {
 
             @Override
             public void terminate() {
-                // currently dont support terminate
+                mTerminated = true;
+                super.terminate();
             }
 
         }

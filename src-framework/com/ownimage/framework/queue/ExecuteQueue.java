@@ -32,7 +32,7 @@ public class ExecuteQueue {
 	 * Instantiates a new execute queue.
 	 */
 	private ExecuteQueue() {
-		mQueue = new PriorityQueue<IJob>((pJob1, pJob2) -> {
+		mQueue = new PriorityQueue<>((pJob1, pJob2) -> {
 			// Note: this comparator imposes orderings that are inconsistent with equals.
 			int priorityOrder = pJob1.getPriority().ordinal() - pJob2.getPriority().ordinal();
 			if (priorityOrder != 0) { return priorityOrder; }
@@ -42,7 +42,7 @@ public class ExecuteQueue {
 			int dateOrder = pJob1.getCreateDate().before(pJob2.getCreateDate()) ? 1 : -1;
 			return dateOrder;
 		});
-	};
+	}
 
 	public static ExecuteQueue getInstance() {
 		return mExecuteQueue;
@@ -92,12 +92,14 @@ public class ExecuteQueue {
 		Framework.checkParameterNotNull(mLogger, pJob, "pJob");
 
 		synchronized (mQueue) {
+			pJob.queued();
+
 			ExecuteThread runningThread = mRunningThread;
 			if (runningThread != null && runningThread.getJob().getControlObject() != null && runningThread.getJob().getControlObject() == pJob.getControlObject()) {
 				runningThread.getJob().terminate();
 			}
 
-			final Vector<IJob> remove = new Vector<IJob>();
+			final Vector<IJob> remove = new Vector<>();
 
 			for (final IJob job : mQueue) {
 				if (job.getControlObject() == pJob.getControlObject()) {

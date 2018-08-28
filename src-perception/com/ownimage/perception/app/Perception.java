@@ -203,7 +203,10 @@ public class Perception extends AppControlBase {
         HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
         mBorderLayout.setCenter(hSplitLayout);
 
-        refreshOutputPreview();
+        if (!getProperties().useAutoLoadTransformFile()) {
+            // if the transform file has been loaded then the output will have already been updated
+            refreshOutputPreview();
+        }
 
         Framework.logExit(mLogger);
     }
@@ -292,7 +295,7 @@ public class Perception extends AppControlBase {
                 testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
 
                 PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
-                getRenderService().transform(output
+                getRenderService().transform("Perception::fileSaveUnchecked", output
                         , getTransformSequence().getLastTransform()
                         , () -> {
                             try {
@@ -330,7 +333,7 @@ public class Perception extends AppControlBase {
         getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        getRenderService().transform(preview.get()
+        getRenderService().transform("Perception::fileSaveShowPreview", preview.get()
                 , getTransformSequence().getLastTransform()
                 , () -> {
                     PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview.get());
@@ -666,7 +669,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         resizePreviewControlIfNeeded();
-        getRenderService().transform(mOutputPreviewControl, getTransformSequence().getLastTransform(), null);
+        getRenderService().transform("Perception::refreshOutputPreview", mOutputPreviewControl, getTransformSequence().getLastTransform(), null);
 
         Framework.logExit(mLogger);
     }
@@ -732,7 +735,6 @@ public class Perception extends AppControlBase {
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
-        refreshOutputPreview();
 
         Framework.logExit(mLogger);
     }

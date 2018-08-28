@@ -17,7 +17,7 @@ public interface IJob {
 	/**
 	 * The Priority of the Job.
 	 */
-	public enum Priority {
+	enum Priority {
 		HIGHEST, HIGH, NORMAL, LOW, LOWEST
 	}
 
@@ -33,21 +33,21 @@ public interface IJob {
 	 * TERMINATED. Whilst the job is QUEUED the ExecuteQueue can invoke cancel which will mean that the job will never execute and
 	 * the status will change to CANCELLED. If an exception is thrown then the status of the job will be changed to FAILED.
 	 */
-	public enum Status {
+	enum Status {
 		CREATED, QUEUED, RUNNING, TERMINATED, COMPLETE, CANCELLED, FAILED
-	};
+	}
 
 
     /**
 	 * Sends a request to cancel the job; this must only be called by the ExecuteQueue. Whilst the job is QUEUED the ExecuteQueue
 	 * can invoke cancel which will mean that the job will never execute and the status will change to CANCELLED.
 	 */
-	public void cancel();
+	void cancel();
 
 	/**
 	 * Complete is called by the Framework when the doJob method has run to completion successfully.
 	 */
-	public void complete();
+	void complete();
 
 	/**
 	 * The doJob method must only be invoked by the ExecuteQueue when this job comes to the front of the queue. This method must
@@ -58,7 +58,7 @@ public interface IJob {
 	 * addition to those running in the ExecuteQueue. Use RunBackground to properly interact with the EventQueue to run the job.
 	 * Note the method is named to prevent confusion with the Thread start and run methods.
 	 */
-	public void doJob();
+	void doJob();
 
 	/**
 	 * Error is called by the Framework when the doJob method has thrown an exception.
@@ -66,7 +66,7 @@ public interface IJob {
 	 * @param pThrowable
 	 *            the exception that was thrown by the doJob method when it was called.
 	 */
-	public void error(Throwable pThrowable);
+	void error(Throwable pThrowable);
 
 	/**
 	 * Gets the control object. This is used to determine if one job in the ExecuteQueue can be used to terminate another. IJobs
@@ -74,7 +74,7 @@ public interface IJob {
 	 * 
 	 * @return the control object
 	 */
-	public Object getControlObject();
+	Object getControlObject();
 
 	/**
 	 * Gets the date that the IJob was created. This will be used by the ExecuteQueue to determine the order that the IJobs that are
@@ -82,14 +82,14 @@ public interface IJob {
 	 * 
 	 * @return the creates the date
 	 */
-	public Date getCreateDate();
+	Date getCreateDate();
 
 	/**
 	 * Gets the name of this Job. This will be used by the ExecuteQueue to name the underlying implementation threads..
 	 * 
 	 * @return the name
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Gets the priority that the IJob has. Before the submit this will return NULL, afterwards it will return the priority that the
@@ -98,7 +98,7 @@ public interface IJob {
 	 * 
 	 * @return the priority
 	 */
-	public Priority getPriority();
+	Priority getPriority();
 
 	/**
 	 * Gets the percent complete that the job is. This will be an estimate that is dependent on the implementation. If it is not
@@ -106,7 +106,7 @@ public interface IJob {
 	 * 
 	 * @return the percent
 	 */
-	public double getProgressPercent();
+	double getProgressPercent();
 
 	/**
 	 * Gets a string that represents the progress of the job. This might be e.g. "41/88 done". This is used to give feedback to the
@@ -116,18 +116,23 @@ public interface IJob {
 	 * 
 	 * @return the progress string
 	 */
-	public String getProgressString();
+	String getProgressString();
 
 	/**
 	 * Gets the status of the Job
 	 * 
 	 * @return the status
 	 */
-	public Status getStatus();
+	Status getStatus();
 
 	/**
 	 * Sends a request to terminate the job; this must only be called by the ExecuteQueue. Whilst the job is RUNNING or QUEUED
 	 * terminate can be called. The job should terminate in a timely fashion and release all unneeded resources.
 	 */
-	public void terminate();
+	void terminate();
+
+	/**
+	 * Sends a message to the job; this must only be called by the ExecuteQueue to put the job into a running state..
+	 */
+	void queued();
 }

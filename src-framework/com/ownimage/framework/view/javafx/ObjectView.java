@@ -39,9 +39,9 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 
         ObjectMetaType<?> meta = mControl.getMetaType();
         ObservableList<Object> items = FXCollections.observableArrayList(meta.getAllowedValues());
-        FilteredList<Object> filteredItems = new FilteredList<Object>(items, p -> true);
+        FilteredList<Object> filteredItems = new FilteredList<>(items, p -> true);
 
-        mCombobox = new ComboBox<Object>();
+        mCombobox = new ComboBox<>();
         mCombobox.setEditable(meta.isFilterable());
         mCombobox.getEditor().textProperty().addListener((pObs, pOldValue, pNewValue) -> {
             final TextField editor = mCombobox.getEditor();
@@ -65,16 +65,16 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
 
             @Override
             public Object fromString(final String pString) {
-                mLogger.log(Level.INFO, "XXXXXXXXX fromString pString = " + pString);
+                mLogger.fine(() -> "fromString pString = " + pString);
                 Object value = meta.fromString(pString);
                 return value;
             }
 
             @Override
             public String toString(final Object pObject) {
-                mLogger.log(Level.INFO, "toString pObject = " + pObject);
+                mLogger.finest(() -> "toString pObject = " + pObject);
                 String string = (pObject != null) ? meta.getString(pObject) : "";
-                mLogger.log(Level.INFO, "toString return = " + pObject);
+                mLogger.finest(() -> "toString return = " + pObject);
                 return string;
             }
         });

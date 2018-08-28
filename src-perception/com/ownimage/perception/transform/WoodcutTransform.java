@@ -50,7 +50,7 @@ public class WoodcutTransform extends BaseTransform {
 		int w = getWidth();
 		PictureType etch = new PictureType(w, mLines.getValue());
 		mEtchPicture.setValue(etch);
-		getPerception().getRenderService().transform(mEtchPicture, getPreviousTransform(), null);
+		getPerception().getRenderService().transform("WoodCutTransform::createEtch", mEtchPicture, getPreviousTransform(), null);
 		// TODO should make this part of the
 		// TransformBase
 	}

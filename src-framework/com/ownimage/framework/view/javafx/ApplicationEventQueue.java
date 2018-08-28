@@ -32,7 +32,7 @@ public class ApplicationEventQueue {
 
     public void queueEvent(IAction pAction) {
         mUIEventQueue.offer(pAction);
-        mLogger.severe(() -> String.format("######## adding mUIEventQueue.size() = %s", mUIEventQueue.size()));
+        mLogger.fine(() -> String.format("#adding mUIEventQueue.size() = %s", mUIEventQueue.size()));
     }
 
     private void processEventQueue() {
@@ -40,7 +40,7 @@ public class ApplicationEventQueue {
             try {
                 IAction action = mUIEventQueue.poll(10, TimeUnit.SECONDS);
                 if (action != null) {
-                    mLogger.severe(() -> String.format("######## removing mUIEventQueue.size() = %s", mUIEventQueue.size()));
+                    mLogger.fine(() -> String.format("removing mUIEventQueue.size() = %s", mUIEventQueue.size()));
                     action.performAction();
                 } else {
                     mLogger.fine(() -> "is alive: " + Thread.currentThread());
