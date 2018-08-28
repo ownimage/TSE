@@ -231,6 +231,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public void graffiti(final ISegmentGrafittiHelper pGraphics) {
+        pGraphics.graffiitLine(getStartUHVWPoint(), getEndUHVWPoint());
     }
 
     @Override
