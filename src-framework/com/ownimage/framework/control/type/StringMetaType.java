@@ -12,13 +12,13 @@ import com.ownimage.framework.util.Framework;
 public class StringMetaType implements IMetaType<String> {
 
     public enum DisplayType {
-        NORMAL, LABEL
+        NORMAL, LABEL, TITLE
     }
 
 
     public final static Logger mLogger = Framework.getLogger();
 
-    public final static long serialVersionUID = 1L;;
+    public final static long serialVersionUID = 1L;
 
     private final DisplayType mDisplayType;
 

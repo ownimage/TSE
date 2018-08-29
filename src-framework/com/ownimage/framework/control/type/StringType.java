@@ -18,6 +18,7 @@ public class StringType extends TypeBase<StringMetaType, String> {
 
 	public static StringMetaType NORMAL = new StringMetaType((DisplayType.NORMAL));
 	public static StringMetaType LABEL = new StringMetaType((DisplayType.LABEL));
+    public static StringMetaType TITLE = new StringMetaType((DisplayType.TITLE));
 
 	/**
 	 * Instantiates a new SringType
@@ -55,11 +56,11 @@ public class StringType extends TypeBase<StringMetaType, String> {
 	 */
 	@Override
 	public String toString() {
-		final StringBuffer buffer = new StringBuffer();
-		buffer.append("FileType(");
-		buffer.append("value=" + mValue);
-		buffer.append(")");
-		return buffer.toString();
+        return new StringBuilder()
+                .append("FileType(")
+                .append("value=").append(mValue)
+                .append(")")
+                .toString();
 	}
 
 }
