@@ -89,11 +89,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
                                                                 new PictureType(100, 100));
 
-    private final IContainer mAlwaysVisibleControls = newContainer("Vertex", "vertex", true);
-    private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mAlwaysVisibleControls, false);
+    private final ContainerList mAlwaysVisible = new ContainerList("General Controls", "generalControls");
+    private final IContainer mGeneralContainer = mAlwaysVisible.add(newContainer("General", "general", true));
+    private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
-    private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
+    private final IContainer mMoveContainer = mContainerList.add(newContainer("Move", "move", true));
     private final IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
     private final IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
 
@@ -142,8 +143,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, getHeight(), 50).setEnabled(false);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
-        mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, getWidth(), 50);
-        mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, getHeight(), 50);
+        mViewOriginX = new IntegerControl("View X", "x", mMoveContainer, 0, 0, getWidth(), 50);
+        mViewOriginY = new IntegerControl("View Y", "y", mMoveContainer, 0, 0, getHeight(), 50);
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
@@ -223,7 +224,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public IView createView() {
-        VFlowLayout vflow = new VFlowLayout(mAlwaysVisibleControls, mContainerList);
+        VFlowLayout vflow = new VFlowLayout(mAlwaysVisible, mContainerList);
         HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
         IView view = ViewFactory.getInstance().createView(hflow);
         addView(view);
@@ -435,8 +436,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void mouseDragEvent(final IUIEvent pEvent) {
         Framework.logEntry(Framework.mLogger);
         final Optional<Pixel> pixel = eventToPixel(pEvent);
-        if (isGeneralView()) {
-            pixel.ifPresent(p -> mouseDragEventGeneralView(pEvent, p));
+        if (isMoveView()) {
+            pixel.ifPresent(p -> mouseDragEventMoveView(pEvent, p));
         }
         if (isPixelView()) {
             pixel.ifPresent(p -> mouseDragEventPixelViewFillIn(pEvent, p));
@@ -478,7 +479,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mMouseDragLastPixel = pPixel;
     }
 
-    private void mouseDragEventGeneralView(final IUIEvent pEvent, Pixel pPixel) {
+    private void mouseDragEventMoveView(final IUIEvent pEvent, Pixel pPixel) {
         mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / getZoom()));
         mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / getZoom()));
     }
@@ -575,12 +576,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
         mLogger.fine(() -> "mouseDragStartEvent");
-        if (isGeneralView()) mouseDragStartEventGeneralView(pEvent);
+        if (isMoveView()) mouseDragStartEventMoveView(pEvent);
         if (isPixelView()) mouseDragStartEventPixelView(pEvent);
     }
 
-    private void mouseDragStartEventGeneralView(final IUIEvent pEvent) {
-        mLogger.fine(() -> "mouseDragStartEventGeneralView");
+    private void mouseDragStartEventMoveView(final IUIEvent pEvent) {
+        mLogger.fine(() -> "mouseDragStartEventMoveView");
         mMouseDragStartX = getViewOriginX();
         mMouseDragStartY = getViewOriginY();
     }
@@ -601,7 +602,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void keyPressed(final IUIEvent pEvent) {
         mLogger.fine(() -> "keyPressed " + pEvent.getKey());
-        if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mGeneralContainer);
+        if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mMoveContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
         if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
         mPictureControl.drawGrafitti(); // TODO should only be for the undo redo events
@@ -630,8 +631,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
     }
 
-    private boolean isGeneralView() {
-        return mContainerList.getSelectedContainer() == mGeneralContainer;
+    private boolean isMoveView() {
+        return mContainerList.getSelectedContainer() == mMoveContainer;
     }
 
     private boolean isPixelView() {

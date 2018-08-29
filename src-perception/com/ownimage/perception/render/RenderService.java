@@ -103,7 +103,7 @@ public class RenderService {
         mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureControl=%s pTransform=%s", pReason, pPictureControl, pTransform.getDisplayName()));
 
         PictureType picture = pPictureControl.getValue().createCompatible();
-        transform(pReason, picture, pTransform, () -> {
+        transform(pReason, picture, pPictureControl, pTransform, () -> {
             pPictureControl.setValue(picture);
             if (pCompleteAction != null) {
                 pCompleteAction.performAction();
@@ -113,7 +113,7 @@ public class RenderService {
         Framework.logExit(mLogger);
     }
 
-    public void transform(final String pReason, final PictureType pPictureType, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
+    public void transform(final String pReason, final PictureType pPictureType, final Object pControlObject, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
@@ -177,7 +177,7 @@ public class RenderService {
 
         }
 
-        TransformJob job = new TransformJob(name, Priority.NORMAL, pPictureType);
+        TransformJob job = new TransformJob(name, Priority.NORMAL, pControlObject);
         job.submit();
 
         Framework.logExit(mLogger);
