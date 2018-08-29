@@ -5,6 +5,8 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
@@ -13,7 +15,6 @@ import java.util.stream.IntStream;
 
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl;
@@ -25,12 +26,14 @@ import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.control.type.StringType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
@@ -86,11 +89,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ITransform mTransform;
     private final CropTransform mCropTransform;
 
-    private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
+    private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer,
                                                                 new PictureType(100, 100));
 
-    private final ContainerList mAlwaysVisible = new ContainerList("General Controls", "generalControls");
-    private final IContainer mGeneralContainer = mAlwaysVisible.add(newContainer("General", "general", true));
+    private final IContainer mGeneralContainer = newContainer("General", "general", true);
+    private final StringControl mGeneralLabel = new StringControl("General", "general", mGeneralContainer,
+                                                                  new StringType("General", StringType.TITLE));
     private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
@@ -224,7 +228,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public IView createView() {
-        VFlowLayout vflow = new VFlowLayout(mAlwaysVisible, mContainerList);
+        VFlowLayout vflow = new VFlowLayout(mGeneralContainer, mContainerList);
         HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
         IView view = ViewFactory.getInstance().createView(hflow);
         addView(view);
@@ -549,7 +553,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEventPixelViewToggle(final IUIEvent pEvent, Pixel pPixel) {
-        if (pPixel != null && (mMouseLastPixelPosition == null || !pPixel.equals(mMouseLastPixelPosition))) {
+        if (pPixel != null && !pPixel.equals(mMouseLastPixelPosition)) {
             actionPixelToggle(pPixel);
             mMouseLastPixelPosition = pPixel;
         }

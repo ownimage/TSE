@@ -14,6 +14,7 @@ import com.ownimage.framework.util.Framework;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -26,6 +27,7 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
 
     private HBox mUI;
     private TextField mText;
+    private Label mTitle;
 
     private SimpleIntegerProperty mWidth;
 
@@ -41,6 +43,9 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
                 break;
             case NORMAL:
                 createNormal();
+                break;
+            case TITLE:
+                createTitle();
                 break;
             default:
                 createNormal();
@@ -65,11 +70,35 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
                 case NORMAL:
                     mText.setText(mControl.getValue());
                     break;
+                case TITLE:
+                    mLabel.setText(mControl.getValue());
+                    break;
                 default:
                     mText.setText(mControl.getValue());
                     break;
             }
         }
+    }
+
+    public void titlePaddingChange(final ObservableValue<? extends Number> pObservable, final Number pOldValue, final Number pNewValue) {
+        mTitle.paddingProperty().setValue(new Insets(0, 0, 0, FXViewFactory.getInstance().titleLeftPaddingProperty.doubleValue()));
+    }
+
+    private void createTitle() {
+        setWidth();
+        mTitle = new Label(mControl.getValue());
+        mTitle.setStyle("-fx-font-weight: bold");
+        mTitle.setWrapText(true);
+        mTitle.alignmentProperty().setValue(Pos.CENTER_LEFT);
+        mTitle.prefWidthProperty().bind(mWidth);
+        mTitle.minWidthProperty().bind(mWidth);
+        mTitle.maxWidthProperty().bind(mWidth);
+
+        FXViewFactory.getInstance().titleLeftPaddingProperty.addListener(this::titlePaddingChange);
+        titlePaddingChange(null, null, null);
+
+        mUI = new HBox();
+        mUI.getChildren().addAll(mTitle);
     }
 
     private void createLabel() {
@@ -78,7 +107,6 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
         setWidth();
 
         int rightPadding = getFactory().labelRightPaddingProperty.intValue();
-        changed(getFactory().labelRightPaddingProperty, rightPadding, 0);
         getFactory().labelRightPaddingProperty.addListener(this);
 
         mLabel = new Label(mControl.getValue());
