@@ -295,7 +295,7 @@ public class Perception extends AppControlBase {
                 testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
 
                 PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
-                getRenderService().transform("Perception::fileSaveUnchecked", output
+                getRenderService().transform("Perception::fileSaveUnchecked", output, output
                         , getTransformSequence().getLastTransform()
                         , () -> {
                             try {
@@ -333,7 +333,7 @@ public class Perception extends AppControlBase {
         getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        getRenderService().transform("Perception::fileSaveShowPreview", preview.get()
+        getRenderService().transform("Perception::fileSaveShowPreview", preview.get(), preview.get()
                 , getTransformSequence().getLastTransform()
                 , () -> {
                     PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview.get());
