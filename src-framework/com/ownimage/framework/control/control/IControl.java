@@ -6,6 +6,7 @@
 package com.ownimage.framework.control.control;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.event.IControlChangeListener;
@@ -226,4 +227,8 @@ public interface IControl<C, T, M, R> extends IMouseControl, IPersist, IViewable
     void addEnabledListener(IEnabledListener pListener);
 
     void removeEnabledListener(IEnabledListener pListener);
+
+    default boolean isOneOf(IControl<?, ?, ?, ?>... pControls) {
+        return Arrays.asList(pControls).contains(this);
+    }
 }
