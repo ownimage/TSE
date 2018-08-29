@@ -29,6 +29,7 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
+import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
@@ -87,6 +88,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer.NullContainer,
                                                                 new PictureType(100, 100));
+
+    private final IContainer mAlwaysVisibleControls = newContainer("Vertex", "vertex", true);
+    private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mAlwaysVisibleControls, false);
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mGeneralContainer = mContainerList.add(newContainer("General", "general", true));
@@ -211,7 +215,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
         mLogger.fine(() -> "controlChanteEvent for " + pControl.getDisplayName());
 
-        if (pControl == mViewOriginX || pControl == mViewOriginY || pControl == mZoom || pControl == mPreviewSize) {
+        if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
             setCrop();
             updatePreview();
         }
@@ -219,7 +223,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public IView createView() {
-        HFlowLayout hflow = new HFlowLayout(mPictureControl, mContainerList);
+        VFlowLayout vflow = new VFlowLayout(mAlwaysVisibleControls, mContainerList);
+        HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
         IView view = ViewFactory.getInstance().createView(hflow);
         addView(view);
         return view;
@@ -236,9 +241,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog() {
-        setCrop();
         mDialogIsAlive = true;
-        mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
+        setCrop();
         updatePreview();
         getDialogView().showModal();
     }
@@ -340,6 +344,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             double bottom = (double) getViewOriginY() / getHeight();
             double top = bottom + 1.0d / getZoom();
             mCropTransform.setCrop(left, bottom, right, top);
+            if (mShowCurves.getValue())
+                mCropTransform.setPreviousTransform(mTransform);
+            else mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         }
     }
 
