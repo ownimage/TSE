@@ -138,9 +138,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mShadowXOffset =
             new DoubleControl("Shadow X Offset", "shadowXOffset", getContainer(), 1.0d, -20.0d, 20.0d);
 
-    // TODO private final ObjectControl<String> mEqualize = new ObjectControl<>("Equalize Lengths", "equalize", getContainer(),
-    // EqualizeValues.getDefaultValue(), EqualizeValues.getAllValues());
-
     private final DoubleControl mShadowYOffset =
             new DoubleControl("Shadow Y Offset", "shadowYOffset", getContainer(), 1.0d, -20.0d, 20.0d);
     private final DoubleControl mShadowThickness =
@@ -213,27 +210,31 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                     mPixelMap.reapproximateAllChains();
                 }
 
-                if (pControl == mEqualize) {
-                    try {
-                        setMutating(true);
+                if (pControl == mEqualize) equalize();
 
-                        mLogger.info("Equalize");
-                        if (mPixelMap != null) {
-                            final EqualizeValues values = mEqualize.getValue();
-                            mPixelMap.equalizeValues(values);
-                            mShortLineLength.setValue(values.getShortLineLength());
-                            mMediumLineLength.setValue(values.getMediumLineLength());
-                            mLongLineLength.setValue(values.getLongLineLength());
-                            // TODO would be better to pass these three values in ... or pass the EqualizeValues in
-                            getPixelMap().ifPresent(pm -> pm.setPixelChainDefaultThickness(this));
-                        }
-                    } finally {
-                        setMutating(false);
-                    }
-                }
             } finally {
                 super.controlChangeEvent(pControl, pIsMutating);
             }
+        }
+    }
+
+    private void equalize() {
+        try {
+            setMutating(true);
+
+            mLogger.info("Equalize");
+            getPixelMap().ifPresent(pm -> {
+                final EqualizeValues values = mEqualize.getValue();
+                pm.equalizeValues(values);
+                mShortLineLength.setValue(values.getShortLineLength());
+                mMediumLineLength.setValue(values.getMediumLineLength());
+                mLongLineLength.setValue(values.getLongLineLength());
+                // TODO would be better to pass these three values in ... or pass the EqualizeValues in
+                pm.setPixelChainDefaultThickness(this);
+                refreshOutputPreview();
+            });
+        } finally {
+            setMutating(false);
         }
     }
 
@@ -259,13 +260,17 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         SplitTimer.split("generateEdgesOK() start");
         PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
         PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
-        Services.getServices().getPerception().getRenderService()
+        Services.getServices().getRenderService()
                 .transform("CannyEdgeTransform::generateEdgesOK",
                            inputPictureControl,
-                           getPreviousTransform(), () -> {
-                    setPixelMap(null);
-                    regeneratePixelMap(inputPictureControl);
-                }, null);
+                           getPreviousTransform(),
+                           () -> {
+                               setPixelMap(null);
+                               regeneratePixelMap(inputPictureControl);
+                               equalize();
+                           },
+                           null
+                );
     }
 
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
