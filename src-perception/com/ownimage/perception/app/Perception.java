@@ -295,17 +295,20 @@ public class Perception extends AppControlBase {
                 testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
 
                 PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
-                getRenderService().transform("Perception::fileSaveUnchecked", output, output
-                        , getTransformSequence().getLastTransform()
-                        , () -> {
+                getRenderService()
+                        .getRenderJobBuilder("Perception::fileSaveUnchecked", output, getTransformSequence().getLastTransform())
+                        .withControlObject(output)
+                        .withCompleteAction(() -> {
                             try {
                                 output.getValue().save(pFile, getProperties().getImageQuality());
                             } catch (Exception e) {
                                 mLogger.severe("Unable to output file");
                             }
-                        }
-                        , progress
-                        , getTransformSequence().getLastTransform().getOversample());
+                        })
+                        .withProgressObserver(progress)
+                        .withOverSample(getTransformSequence().getLastTransform().getOversample())
+                        .build()
+                        .run();
             } catch (Throwable pT) {
                 Framework.logThrowable(mLogger, Level.SEVERE, pT);
                 mLogger.info(() -> "Unable to save file");
@@ -333,13 +336,15 @@ public class Perception extends AppControlBase {
         getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
         ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
-        getRenderService().transform("Perception::fileSaveShowPreview", preview.get(), preview.get()
-                , getTransformSequence().getLastTransform()
-                , () -> {
+        getRenderService().
+                getRenderJobBuilder("Perception::fileSaveShowPreview", preview.get(), getTransformSequence().getLastTransform())
+                .withControlObject(preview.get())
+                .withCompleteAction(() -> {
                     PictureControl previewControl = new PictureControl("Preview", "preview", displayContainer, preview.get());
                     showDialog(displayContainer, DialogOptions.NONE, ok, cancel);
-                }
-                , null, 1);
+                })
+                .build()
+                .run();
 
         Framework.logExit(mLogger);
     }
@@ -669,7 +674,10 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         resizePreviewControlIfNeeded();
-        getRenderService().transform("Perception::refreshOutputPreview", mOutputPreviewControl, getTransformSequence().getLastTransform(), null);
+        getRenderService()
+                .getRenderJobBuilder("Perception::refreshOutputPreview", mOutputPreviewControl, getTransformSequence().getLastTransform())
+                .build()
+                .run();
 
         Framework.logExit(mLogger);
     }

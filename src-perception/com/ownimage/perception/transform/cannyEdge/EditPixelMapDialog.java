@@ -84,10 +84,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ActionControl mCancelAction;
     private IDialogView mEditPixelMapDialogView;
 
+    private boolean mMutating = false;
+
     private final ITransform mTransform;
     private final CropTransform mCropTransform;
 
-    private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer,
+    private PictureControl mPictureControl = new PictureControl("Preview", "preview", NullContainer,
                                                                 new PictureType(100, 100));
 
     private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
@@ -164,8 +166,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
             }
-            Services.getServices().getPerception().getRenderService()
-                    .transform("EditPixelMapDialog::updatePreview", mPictureControl, mCropTransform, null);
+            Services.getServices().getRenderService()
+                    .getRenderJobBuilder("EditPixelMapDialog::updatePreview", mPictureControl, mCropTransform)
+                    .withAllowTerminate(false)
+                    .build()
+                    .run();
         }
     }
 
@@ -215,9 +220,18 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mViewOriginY.getValue();
     }
 
+    private boolean isMutating() {
+        return mMutating;
+    }
+
+    private void setMutating(boolean pMutating) {
+        mMutating = pMutating;
+    }
+
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
         mLogger.fine(() -> "controlChangeEvent for " + pControl.getDisplayName());
+        if (isMutating()) return;
 
         if (pControl != null) {
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
@@ -498,8 +512,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEventMoveView(final IUIEvent pEvent, Pixel pPixel) {
+        setMutating(true);
+        int x = mViewOriginX.getValue();
+        int y = mViewOriginY.getValue();
         mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / getZoom()));
         mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / getZoom()));
+        if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updatePreview();
+        setMutating(false);
     }
 
     private void mouseDragEventPixelView(final IUIEvent pEvent, Pixel pPixel) {

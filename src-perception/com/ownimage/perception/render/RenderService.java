@@ -32,6 +32,142 @@ public class RenderService {
     private final JTPBatchEngine mJTPBatchEngine;
     private final IBatchEngine mOpenCLBatchEngine;
 
+    public class RenderJob {
+        private String mReason;
+        private PictureType mPictureType;
+        private PictureControl mPictureControl;
+        private IBatchTransform mTransform;
+        private Object mControlObject;
+        private IAction mCompleteAction;
+        private IProgressObserver mObserver;
+        private int mOverSample = 1;
+        private boolean mAllowTerminate = true;
+
+        private RenderJob() {
+        }
+
+        private RenderJob(RenderJob pFrom) {
+            mReason = pFrom.mReason;
+            mPictureType = pFrom.mPictureType;
+            mPictureControl = pFrom.mPictureControl;
+            mTransform = pFrom.mTransform;
+            mControlObject = pFrom.mControlObject;
+            mCompleteAction = pFrom.mCompleteAction;
+            mObserver = pFrom.mObserver;
+            mOverSample = pFrom.mOverSample;
+            mAllowTerminate = pFrom.mAllowTerminate;
+        }
+
+        public void run() {
+            Framework.logEntry(mLogger);
+            // note slightly forced use of checkParmeter below
+            Framework.checkParameterNotNullOrEmpty(Framework.mLogger, mReason, "mReason");
+            Framework.checkParameterGreaterThanEqual(mLogger, mOverSample, 1, "pOverSample");
+            Framework.checkParameterLessThanEqual(mLogger, mOverSample, 4, "pOverSample");
+            if (mPictureControl == null && mPictureType == null)
+                throw new IllegalStateException("mPictureType and mPictureControl must not both be null");
+            if (mPictureControl != null && mPictureType != null)
+                throw new IllegalStateException("mPictureType and mPictureControl must not both be non null");
+
+            mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\", pTransform=%s", mReason, mTransform.getDisplayName()));
+
+            ExecuteQueue eq = ExecuteQueue.getInstance();
+
+            class TransformJob extends Job {
+                private boolean mTerminated = false;
+
+                public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
+                    super(pName, pPriority, pControlObject);
+                }
+
+                @Override
+                public void doJob() {
+                    super.doJob();
+
+                    if (mObserver != null) mObserver.started();
+                    mJTPBatchEngine.setThreadPoolSize(
+                            getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
+
+                    IBatchEngine preferredBatchEngine = mTransform.getPreferredBatchEngine();
+                    IBatchEngine actualEngine = getActualBatchEngine(preferredBatchEngine);
+
+                    int maxBatchSize = getProperties().getRenderBatchSize();
+                    TransformResultBatch batch = getBatch(mTransform.getDisplayName());
+                    PictureType pictureType = mPictureType != null ? mPictureType : mPictureControl.getValue().createCompatible();
+                    batch.initialize(pictureType, actualEngine, maxBatchSize);
+
+                    while (batch.hasNext() && !mTerminated) {
+                        if (mObserver != null) mObserver.setProgress("Transforming", batch.getPercentComplete());
+                        batch.next(mOverSample);
+                        transform(batch, mTransform);
+                        batch.render(pictureType, mOverSample);
+                    }
+
+                    if (mPictureType == null) mPictureControl.setValue(pictureType);
+                    if (mCompleteAction != null && !batch.hasNext()) mCompleteAction.performAction();
+                    if (mObserver != null) mObserver.finished();
+                }
+
+                @Override
+                public void terminate() {
+                    if (mAllowTerminate) mTerminated = true;
+                    super.terminate();
+                }
+            }
+
+            TransformJob job = new TransformJob(mReason, Priority.NORMAL, mControlObject);
+            job.submit();
+
+            Framework.logExit(mLogger);
+        }
+    }
+
+    public class RenderJobBuilder {
+
+        private RenderJob mRenderJob = new RenderJob();
+
+        public RenderJobBuilder(String pReason, PictureControl pPictureControl, IBatchTransform pTransform) {
+            mRenderJob.mReason = pReason;
+            mRenderJob.mPictureControl = pPictureControl;
+            mRenderJob.mTransform = pTransform;
+        }
+
+        public RenderJobBuilder(String pReason, PictureType pPictureType, IBatchTransform pTransform) {
+            mRenderJob.mReason = pReason;
+            mRenderJob.mPictureType = pPictureType;
+            mRenderJob.mTransform = pTransform;
+        }
+
+        public RenderJobBuilder withControlObject(Object pControlObject) {
+            mRenderJob.mControlObject = pControlObject;
+            return this;
+        }
+
+        public RenderJobBuilder withCompleteAction(IAction pCompleteAction) {
+            mRenderJob.mCompleteAction = pCompleteAction;
+            return this;
+        }
+
+        public RenderJobBuilder withProgressObserver(IProgressObserver pObserver) {
+            mRenderJob.mObserver = pObserver;
+            return this;
+        }
+
+        public RenderJobBuilder withOverSample(int pOverSample) {
+            mRenderJob.mOverSample = pOverSample;
+            return this;
+        }
+
+        public RenderJobBuilder withAllowTerminate(boolean pAllowTerminate) {
+            mRenderJob.mAllowTerminate = pAllowTerminate;
+            return this;
+        }
+
+        public RenderJob build() {
+            return new RenderJob(mRenderJob);
+        }
+    }
+
     public RenderService() {
         Framework.logEntry(mLogger);
 
@@ -40,6 +176,14 @@ public class RenderService {
         mOpenCLBatchEngine = new OpenCLBatchEngine();
 
         Framework.logExit(mLogger);
+    }
+
+    public RenderJobBuilder getRenderJobBuilder(String pReason, PictureControl pPictureControl, IBatchTransform pTransform) {
+        return new RenderJobBuilder(pReason, pPictureControl, pTransform);
+    }
+
+    public RenderJobBuilder getRenderJobBuilder(String pReason, PictureType pPictureType, IBatchTransform pTransform) {
+        return new RenderJobBuilder(pReason, pPictureType, pTransform);
     }
 
     private IBatchEngine getActualBatchEngine(final IBatchEngine pPreferredBatchEngine) {
@@ -77,110 +221,6 @@ public class RenderService {
 
     private Properties getProperties() {
         return Services.getServices().getProperties();
-    }
-
-    /**
-     * This is the public entry point into the RenderService.
-     *
-     * @param pPictureControl the picture
-     * @param pTransform      the transform
-     */
-    public void transform(final String pReason, final PictureControl pPictureControl, final IBatchTransform pTransform, IProgressObserver pObserver) {
-        Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureControl=%s pTransform=%s", pReason, pPictureControl, pTransform.getDisplayName()));
-
-        transform(pReason, pPictureControl, pTransform, null, pObserver);
-
-        Framework.logExit(mLogger);
-    }
-
-    public void transform(final String pReason, final PictureControl pPictureControl, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver) {
-        Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPictureControl, "pPictureControl");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureControl=%s pTransform=%s", pReason, pPictureControl, pTransform.getDisplayName()));
-
-        PictureType picture = pPictureControl.getValue().createCompatible();
-        transform(pReason, picture, pPictureControl, pTransform, () -> {
-            pPictureControl.setValue(picture);
-            if (pCompleteAction != null) {
-                pCompleteAction.performAction();
-            }
-        }, pObserver, 1);
-
-        Framework.logExit(mLogger);
-    }
-
-    public void transform(final String pReason, final PictureType pPictureType, final Object pControlObject, final IBatchTransform pTransform, final IAction pCompleteAction, IProgressObserver pObserver, int pOverSample) {
-        Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPictureType, "pPictureControl");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        Framework.checkParameterGreaterThanEqual(mLogger, pOverSample, 1, "pOverSample");
-        Framework.checkParameterLessThanEqual(mLogger, pOverSample, 4, "pOverSample");
-        mLogger.info(() -> String.format("RenderService::transform pReason=\"%s\" pPictureType=%s pTransform=%s", pReason, pPictureType, pTransform.getDisplayName()));
-
-        ExecuteQueue eq = ExecuteQueue.getInstance();
-        String name = pTransform.getClass().getSimpleName();
-
-        class TransformJob extends Job {
-
-            private boolean mTerminated = false;
-
-            public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
-                super(pName, pPriority, pControlObject);
-            }
-
-            @Override
-            public void doJob() {
-                super.doJob();
-
-                if (pObserver != null) {
-                    pObserver.started();
-                }
-
-                mJTPBatchEngine.setThreadPoolSize(
-                        getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
-
-                IBatchEngine preferredBatchEngine = pTransform.getPreferredBatchEngine();
-                IBatchEngine actualEngine = getActualBatchEngine(preferredBatchEngine);
-
-                int maxBatchSize = getProperties().getRenderBatchSize();
-                TransformResultBatch batch = getBatch(pTransform.getDisplayName());
-                batch.initialize(pPictureType, actualEngine, maxBatchSize);
-
-                while (batch.hasNext() && !mTerminated) {
-                    if (pObserver != null) {
-                        pObserver.setProgress("Transforming", batch.getPercentComplete());
-                    }
-
-                    batch.next(pOverSample);
-                    transform(batch, pTransform);
-                    batch.render(pPictureType, pOverSample);
-                }
-
-                if (pCompleteAction != null) {
-                    pCompleteAction.performAction();
-                }
-
-                if (pObserver != null) {
-                    pObserver.finished();
-                }
-            }
-
-            @Override
-            public void terminate() {
-                mTerminated = true;
-                super.terminate();
-            }
-
-        }
-
-        TransformJob job = new TransformJob(name, Priority.NORMAL, pControlObject);
-        job.submit();
-
-        Framework.logExit(mLogger);
     }
 
     synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
