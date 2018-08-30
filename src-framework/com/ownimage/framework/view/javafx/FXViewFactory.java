@@ -60,7 +60,7 @@ public class FXViewFactory implements IViewFactory {
     private final StringControl mDoubleFormat = new StringControl("Double format", "doubleFormat", mPropertiesContainer, "%.2f");
     private final IntegerControl mSliderValueWidthWidth = new IntegerControl("Slider Value Width", "sliderValueWidth", mPropertiesContainer, 50, 10, 100, 20);
     private final IntegerControl mLabelRightPadding = new IntegerControl("Label Right Padding", "labelRightPadding", mPropertiesContainer, 5, 0, 20, 1);
-    private final IntegerControl mTitleLeftPadding = new IntegerControl("Title Left Padding", "titleLeftPadding", mPropertiesContainer, 5, 0, 20, 1);
+    private final IntegerControl mContainerBottomPadding = new IntegerControl("Container Bottom Padding", "containerBottomPadding", mPropertiesContainer, 5, 0, 20, 1);
     private final IntegerControl mSmallButtonWidth = new IntegerControl("Small Button Width", "smallButtonWidth", mPropertiesContainer, 50, 20, 150, 10);
     private final IntegerControl mProgressBarHeight = new IntegerControl("Progress Bar Height", "progressBarHeight", mPropertiesContainer, 25, 5, 50, 5);
     private final ColorControl mProgressNormalColor = new ColorControl("Progress Bar Color Normal", "progressColorNormal", mPropertiesContainer, java.awt.Color.BLUE);
@@ -72,7 +72,7 @@ public class FXViewFactory implements IViewFactory {
     public SimpleStringProperty doubleFormat = new SimpleStringProperty(mDoubleFormat.getValue());
     public SimpleIntegerProperty sliderValueWidthProperty = new SimpleIntegerProperty(mSliderValueWidthWidth.getValue());
     public SimpleIntegerProperty labelRightPaddingProperty = new SimpleIntegerProperty(mLabelRightPadding.getValue());
-    public SimpleIntegerProperty titleLeftPaddingProperty = new SimpleIntegerProperty(mTitleLeftPadding.getValue());
+    public SimpleIntegerProperty containerBottomPaddingProperty = new SimpleIntegerProperty(mContainerBottomPadding.getValue());
     public SimpleIntegerProperty smallButtonWidthProperty = new SimpleIntegerProperty(mSmallButtonWidth.getValue());
     public SimpleIntegerProperty progressBarHeight = new SimpleIntegerProperty(mProgressBarHeight.getValue());
 
@@ -95,7 +95,7 @@ public class FXViewFactory implements IViewFactory {
         addListener(mDoubleFormat, (c, m) -> doubleFormat.set(((StringControl) c).getValue()));
         addListener(mSliderValueWidthWidth, (c, m) -> sliderValueWidthProperty.set(((IntegerControl) c).getValue()));
         addListener(mLabelRightPadding, (c, m) -> labelRightPaddingProperty.set(((IntegerControl) c).getValue()));
-        addListener(mTitleLeftPadding, (c, m) -> titleLeftPaddingProperty.set(((IntegerControl) c).getValue()));
+        addListener(mContainerBottomPadding, (c, m) -> containerBottomPaddingProperty.set(((IntegerControl) c).getValue()));
         addListener(mSmallButtonWidth, (c, m) -> smallButtonWidthProperty.set(((IntegerControl) c).getValue()));
         addListener(mProgressBarHeight, (c, m) -> progressBarHeight.set(((IntegerControl) c).getValue()));
     }

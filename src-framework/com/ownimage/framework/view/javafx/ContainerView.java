@@ -9,8 +9,11 @@ import java.util.Iterator;
 
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.layout.IViewable;
 
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
@@ -29,6 +32,11 @@ public class ContainerView extends ViewBase<IContainer> {
     private void createView() {
         mUI = new VBox();
 
+        if (mControl.hasTitle()) {
+            StringControl title = StringControl.createTitle(mControl.getDisplayName());
+            mUI.getChildren().add(((FXView) title.createView()).getUI());
+        }
+
         Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
         while (children.hasNext()) {
             IViewable<?> child = children.next();
@@ -45,6 +53,16 @@ public class ContainerView extends ViewBase<IContainer> {
 
             mUI.getChildren().add(hbox);
         }
+
+        if (mControl.hasBottomPadding()) {
+            FXViewFactory.getInstance().containerBottomPaddingProperty.addListener(this::bottomPaddingChange);
+            bottomPaddingChange(null, null, null);
+        }
+
+    }
+
+    private void bottomPaddingChange(final ObservableValue<? extends Number> observableValue, final Number object, final Number object1) {
+        mUI.setPadding(new Insets(0, 0, FXViewFactory.getInstance().containerBottomPaddingProperty.doubleValue(), 0));
     }
 
     @Override

@@ -40,10 +40,12 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
     private final IContainer mParent;
     private final String mPropertyName;
     private final String mDisplayName;
+    private boolean mHasTitle;
+    private boolean mBottomPadding;
 
-    private final Vector<IControl<?, ?, ?, ?>> mChlidControls = new Vector<IControl<?, ?, ?, ?>>();
-    private final Vector<IContainer> mChildContainers = new Vector<IContainer>();
-    private final Vector<IViewable<?>> mAllChildren = new Vector<IViewable<?>>();
+    private final Vector<IControl<?, ?, ?, ?>> mChlidControls = new Vector<>();
+    private final Vector<IContainer> mChildContainers = new Vector<>();
+    private final Vector<IViewable<?>> mAllChildren = new Vector<>();
 
     private final ControlEventDispatcher mEventDispatcher = new ControlEventDispatcher(this);
 
@@ -88,9 +90,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
 
         if (pListenForEvents) {
             pChild.addControlChangeListener(this);
-            if (this instanceof IControlValidator) {
-                pChild.addControlValidator((IControlValidator) this);
-            }
+            pChild.addControlValidator(this);
         }
     }
 
@@ -201,7 +201,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
             throw new IllegalArgumentException("pId must not be null");
         }
 
-        final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
+        final String id = pId.length() == 0 ? mPropertyName : pId + "." + mPropertyName;
 
         for (final IControl<?, ?, ?, ?> c : mChlidControls) {
             c.read(pDB, id);
@@ -247,7 +247,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
             throw new IllegalArgumentException("pId must not be null");
         }
 
-        final String id = pId == "" ? mPropertyName : pId + "." + mPropertyName;
+        final String id = pId.length() == 0 ? mPropertyName : pId + "." + mPropertyName;
 
         for (final IPersist c : mChlidControls) {
             c.write(pDB, id);
@@ -272,5 +272,29 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
     @Override
     public boolean validateControl(final Object pControl) {
         return true;
+    }
+
+    /**
+     * Adds a title to the container when it is drawn.
+     */
+    public Container addTitle() {
+        mHasTitle = true;
+        return this;
+    }
+
+    /**
+     * Adds bottom padding to the container when it is drawn.
+     */
+    public Container addBottomPadding() {
+        mBottomPadding = true;
+        return this;
+    }
+
+    public boolean hasTitle() {
+        return mHasTitle;
+    }
+
+    public boolean hasBottomPadding() {
+        return mBottomPadding;
     }
 }

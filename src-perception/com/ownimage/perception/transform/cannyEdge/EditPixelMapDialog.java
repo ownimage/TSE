@@ -26,14 +26,12 @@ import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
-import com.ownimage.framework.control.type.StringType;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
@@ -92,9 +90,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private PictureControl mPictureControl = new PictureControl("Test Integer Control", "gausianKernelWidth", NullContainer,
                                                                 new PictureType(100, 100));
 
-    private final IContainer mGeneralContainer = newContainer("General", "general", true);
-    private final StringControl mGeneralLabel = new StringControl("General", "general", mGeneralContainer,
-                                                                  new StringType("General", StringType.TITLE));
+    private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
     private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
