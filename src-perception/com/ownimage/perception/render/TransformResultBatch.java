@@ -7,7 +7,6 @@ package com.ownimage.perception.render;
 
 import java.awt.*;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import com.ownimage.framework.control.type.PictureType;
@@ -51,7 +50,7 @@ public class TransformResultBatch implements ITransformResultBatch {
     private int mXCurrent;
     private int mYCurrent;
 
-    private Date mStartTime;
+    private Calendar mStartTime;
     private int mPixelsProcessed;
     private final RenderService mRenderService;
 
@@ -176,37 +175,23 @@ public class TransformResultBatch implements ITransformResultBatch {
 
     public boolean hasNext() {
         Framework.logEntry(mLogger);
-
-        if (mXCurrent < 0) {
+        if (mXCurrent < 0)
             throw new IllegalStateException(String.format("mXCurrent (%d) must be greater than 0.", mXCurrent));
-        }
-        if (mYCurrent < 0) {
+        if (mYCurrent < 0)
             throw new IllegalStateException(String.format("mYCurrent (%d) must be greater than 0.", mYCurrent));
-        }
 
-        if (mXCurrent == 0 && mYCurrent == 0) {
-            mStartTime = new Date();
-            mPixelsProcessed = 0;
-        } else {
-            mPixelsProcessed += getBatchSize();
-        }
+        boolean hasNext = mXCurrent < mXMax && mYCurrent < mYMax;
+        if (hasNext) mPixelsProcessed += getBatchSize();
+        if (mXCurrent == 0 && mYCurrent == 0) mStartTime = Calendar.getInstance();
 
         Framework.logValue(mLogger, "mXCurrent", mXCurrent);
         Framework.logValue(mLogger, "mYCurrent", mYCurrent);
         Framework.logValue(mLogger, "mXMax", mXMax);
         Framework.logValue(mLogger, "mYMax", mYMax);
 
-        boolean hasNext = mXCurrent < mXMax && mYCurrent < mYMax;
         if (!hasNext) {
-            Calendar cal = Calendar.getInstance();
-
-            cal.setTime(mStartTime);
-            long start = cal.getTimeInMillis();
-
-            cal.setTime(new Date());
-            long end = cal.getTimeInMillis();
-
-            mLogger.info(() -> String.format("Total batch (%s), batchSise=%d, millisecs=%d", mName, mPixelsProcessed, (end - start)));
+            long duration = Calendar.getInstance().getTimeInMillis() - mStartTime.getTimeInMillis();
+            mLogger.info(() -> String.format("Total batch (%s), batchSise=%d, millisecs=%d", mName, mPixelsProcessed, duration));
         }
 
         Framework.logExit(mLogger, hasNext);
@@ -227,6 +212,7 @@ public class TransformResultBatch implements ITransformResultBatch {
         mXCurrent = 0;
         mYCurrent = 0;
         mBatchSize = 0;
+        mPixelsProcessed = 0;
 
         Framework.logValue(mLogger, "mXMax", mXMax);
         Framework.logValue(mLogger, "mYMax", mYMax);
