@@ -92,6 +92,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
     private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
+    private final BooleanControl mAutoUpdateCurves = new BooleanControl("Auto Update Curves", "autoUpdateCurves", mGeneralContainer, false);
+    private final ActionControl mUpateCurves = new ActionControl("Update Curves", "updateCurves", mGeneralContainer, this::updatePreview);
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mMoveContainer = mContainerList.add(newContainer("Move", "move", true));
@@ -156,6 +158,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void updatePreview() {
+        setCrop();
         if (mTransform.isInitialized()) {
             if (getPreviewSize() != mPictureControl.getWidth()) {
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
@@ -214,12 +217,22 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void controlChangeEvent(final IControl<?, ?, ?, ?> pControl, final boolean pIsMutating) {
-        mLogger.fine(() -> "controlChanteEvent for " + pControl.getDisplayName());
+        mLogger.fine(() -> "controlChangeEvent for " + pControl.getDisplayName());
 
-        if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
-            setCrop();
-            updatePreview();
+        if (pControl != null) {
+            if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
+                updatePreview();
+            }
+
+            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves)) {
+                updateControlVisibility();
+            }
         }
+    }
+
+    private void updateControlVisibility() {
+        mAutoUpdateCurves.setVisible(mShowCurves.getValue());
+        mUpateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
     }
 
     @Override
@@ -243,7 +256,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public void showDialog() {
         mDialogIsAlive = true;
-        setCrop();
         updatePreview();
         getDialogView().showModal();
     }
@@ -359,6 +371,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
+    private void autoUpdatePreview() {
+        if (mAutoUpdateCurves.getValue()) updatePreview();
+    }
+
     private void mouseClickEventPixelView(final IUIEvent pEvent, final Pixel pPixel) {
         if (pPixel != null) {
             if (isPixelActionOn()) actionPixelOn(pPixel);
@@ -367,6 +383,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOffVeryWide()) actionPixelOff(pPixel);
             if (isPixelActionToggle()) actionPixelToggle(pPixel);
             if (isPixelActionDeletePixelChain()) actionPixelChainDelete(pPixel);
+            autoUpdatePreview();
         }
         grafittiCursor(pEvent, pPixel);
     }
@@ -418,15 +435,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragEndEvent(final IUIEvent pEvent) {
         Framework.logEntry(mLogger);
-        Optional<Pixel> pixel = Optional.empty(); // this is not used but is set here to make the layer's interfaces consistent
         if (isPixelView()) {
-            pixel.ifPresent(p -> mouseDragEndEventPixelView(pEvent, p));
+            mouseDragEndEventPixelView(pEvent, null);
         }
+        Framework.logExit(mLogger);
     }
 
     private void mouseDragEndEventPixelView(final IUIEvent pEvent, Pixel pPixel) {
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
+        autoUpdatePreview();
         updateGrafitti();
         mMouseDragLastPixel = null;
     }
