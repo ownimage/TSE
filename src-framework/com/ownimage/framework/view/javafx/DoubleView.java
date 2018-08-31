@@ -94,9 +94,11 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            mSpinner.getEditor().setText(mControl.getString());
-            mSlider.setValue(mControl.getValue());
-            updateDisplayedValue();
+            runOnFXApplicationThread(() -> {
+                mSpinner.getEditor().setText(mControl.getString());
+                mSlider.setValue(mControl.getValue());
+                updateDisplayedValue();
+            });
         }
     }
 

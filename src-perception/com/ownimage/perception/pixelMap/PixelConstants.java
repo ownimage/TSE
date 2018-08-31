@@ -15,7 +15,6 @@ public interface PixelConstants {
 	public final static int S = 1;
 	public final static int SE = 2;
 	public final static int W = 3;
-	public final static int ME = 4;
 	public final static int E = 5;
 	public final static int NW = 6;
 	public final static int N = 7;
@@ -26,6 +25,5 @@ public interface PixelConstants {
 	public final static byte VISITED = (byte) 32;
 	public final static byte IN_CHAIN = (byte) 16;
 	public final static byte NODE = (byte) 8;
-	public final static byte FIXED = (byte) 4;
 
 }

@@ -5,86 +5,52 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import java.util.logging.Logger;
-
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Path;
 import com.ownimage.perception.math.LineSegment;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
 import com.ownimage.perception.pixelMap.IVertex;
-import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
+import com.ownimage.perception.pixelMap.PixelChain;
 
 public class StraightSegment extends SegmentBase {
 
 
-    public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    LineSegment mLineSegment;
+    private final LineSegment mLineSegment;
 
-    StraightSegment(final IVertex pStart, final IVertex pEnd) {
+    StraightSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd) {
         super(pStart, pEnd);
-        vertexChange(null);
+        final Point a = getStartUHVWPoint(pPixelChain);
+        final Point b = getEndUHVWPoint(pPixelChain);
+        mLineSegment = new LineSegment(a, b);
     }
 
     @Override
-    public void addToPath(final Path pPath) {
-        pPath.moveTo(getStartPixel().getUHVWPoint());
-        pPath.lineTo(getEndPixel().getUHVWPoint());
+    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+        super.graffiti(pPixelChain, pGraphics);
     }
 
     @Override
-    public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        super.graffiti(pGraphics);
-    }
-
-    @Override
-    public void attachToVertexes(final boolean pReCalcSegments) {
-        super.attachToVertexes(pReCalcSegments);
-        createInternalLineSegment();
-    }
-
-    @Override
-    public boolean closerThan(final Point pPoint) {
+    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint) {
         final double lambda = mLineSegment.closestLambda(pPoint);
-        final double position = getStartPosition() + lambda * getLength();
-        final double actualThickness = getActualThickness(position);
-        return closerThan(pPoint, actualThickness);
+        final double position = getStartPosition() + lambda * getLength(pPixelChain);
+        final double actualThickness = getActualThickness(pPixelChain, position);
+        return closerThan(pPixelChain, pPoint, actualThickness);
     }
 
     @Override
-    public boolean closerThan(final Point pPoint, final double pTolerance) {
+    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         return mLineSegment.isCloserThan(pPoint, pTolerance);
     }
 
     @Override
-    public double closestLambda(final Point pPoint) {
+    public double closestLambda(final Point pPoint, PixelChain pPixelChain) {
         final double lambda = mLineSegment.closestLambda(pPoint);
         return lambda;
     }
 
     @Override
-    public ISegment copy(final IVertex pStartVertex, final IVertex pEndVertex) {
-        return new StraightSegment(pStartVertex, pEndVertex);
-    }
-
-    private void createInternalLineSegment() {
-        final Point a = getStartUHVWPoint();
-        final Point b = getEndUHVWPoint();
-        mLineSegment = new LineSegment(a, b);
-    }
-
-    @Override
-    public ISegment deepCopy(final IVertex pOriginalStartVertex, final IVertex pCopyStartVertex, final IVertex pSegmentStartVertex) {
-        final IVertex endVertex = getEndVertex().deepCopy(pOriginalStartVertex, pCopyStartVertex);
-        final StraightSegment copy = SegmentFactory.createTempStraightSegment(pSegmentStartVertex, endVertex);
-        copy.attachToVertexes(true);
-        return copy;
-    }
-
-    @Override
-    public double distance(final Point pUVHWPoint) {
+    public double distance(PixelChain pPixelChain, final Point pUVHWPoint) {
         final double distance = mLineSegment.distance(pUVHWPoint);
         return distance;
     }
@@ -94,68 +60,43 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public synchronized Point getAveragePoint() {
-        final int start = getStartIndex();
-        final int end = getEndIndex();
-        final int averageIndex = (start + end) / 2;
-        return getStartVertex().getPixelChain().getPixel(averageIndex).getUHVWPoint();
-    }
-
-    @Override
-    public Vector getEndTangentVector() {
+    public Vector getEndTangentVector(PixelChain pPixelChain) {
         return getAB().normalize();
     }
 
     @Override
-    public double getLength() {
+    public double getLength(PixelChain pPixelChain) {
         return getAB().length();
     }
 
-    public LineSegment getLineSegment() {
-        return mLineSegment;
-    }
-
     @Override
-    public double getMaxX() {
+    public double getMaxX(PixelChain pPixelChain) {
         return mLineSegment.getMaxX();
     }
 
     @Override
-    public double getMaxY() {
+    public double getMaxY(PixelChain pPixelChain) {
         return mLineSegment.getMaxY();
     }
 
     @Override
-    public double getMinX() {
+    public double getMinX(PixelChain pPixelChain) {
         return mLineSegment.getMinX();
     }
 
     @Override
-    public double getMinY() {
+    public double getMinY(PixelChain pPixelChain) {
         return mLineSegment.getMinY();
     }
 
     @Override
-    public Point getPointFromLambda(final double pLambda) {
+    public Point getPointFromLambda(PixelChain pPixelChain, final double pLambda) {
         return mLineSegment.getPoint(pLambda);
     }
 
     @Override
-    public SegmentType getSegmentType() {
-        return SegmentType.Straight;
-    }
-
-    @Override
-    public Vector getStartTangentVector() {
+    public Vector getStartTangentVector(PixelChain pPixelChain) {
         return getAB().minus().normalize();
-    }
-
-    public Point intersect(final StraightSegment pEndSegment) {
-        return mLineSegment.intersect(pEndSegment.mLineSegment);
-    }
-
-    public boolean isParallel(final StraightSegment pSegment) {
-        return mLineSegment.isParallel(pSegment.mLineSegment);
     }
 
     @Override
@@ -163,11 +104,6 @@ public class StraightSegment extends SegmentBase {
         return mLineSegment.length();
     }
 
-    @Override
-    public void vertexChange(final IVertex pVertex) {
-        createInternalLineSegment();
-        super.vertexChange(pVertex);
-    }
 
     @Override
     public String toString() {

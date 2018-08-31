@@ -81,7 +81,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     protected synchronized void calcUHVWPoint() {
         final double y = (getY() + 0.5d) / getHeight();
-        final double x = (getX() + 0.5d) / getHeight();
+        final double x = (getX() + 0.5d) / getWidth();
         m_UHVW = new Point(x, y);
     }
 
@@ -111,10 +111,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         }
 
         return count;
-    }
-
-    public Pixel deepCopy() {
-        return new Pixel(this);
     }
 
     @Override
@@ -218,19 +214,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return getPixelMap().getWidth() * getY() + getX();
     }
 
-    public boolean hasNodalNeighbours() {
-        boolean hNN = false;
-
-        for (final Pixel pixel : getNeighbours()) {
-            if (pixel.isNode()) {
-                hNN = true;
-                break;
-            }
-        }
-
-        return hNN;
-    }
-
     public boolean isEdge() {
         return getPixelMap().getData(this, EDGE);
     }
@@ -248,10 +231,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 //        getPixelMap().setData(this, pValue, FIXED);
 //    }
 
-    public boolean isInChain() {
-        return getPixelMap().getData(this, IN_CHAIN);
-    }
-
     public void setInChain(final boolean pValue) {
         getPixelMap().setInChain(this, pValue);
     }
@@ -268,10 +247,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public Optional<Node> getNode() {
         return  isNode() ? Optional.of(new Node(this)) : Optional.empty();
-    }
-
-    public byte getValue() {
-        return mPixelMap.getValue(getX(), getY());
     }
 
     public boolean isUnVisitedEdge() {
@@ -309,10 +284,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 //        // return getPixelMap().thin(this);
 //        return true;
 //    }
-
-    public Point toPoint() {
-        return getPixelMap().pixelToPoint(this);
-    }
 
     @Override
     public String toString() {

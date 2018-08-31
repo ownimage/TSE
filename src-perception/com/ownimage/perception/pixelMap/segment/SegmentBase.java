@@ -5,32 +5,23 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.Intersect3D;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.Point3D;
-import com.ownimage.perception.math.Vector3D;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.PixelMap;
+
+import java.util.logging.Logger;
 
 public abstract class SegmentBase implements ISegment {
-
-
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private final PixelChain mPixelChain;
     private final IVertex mStart;
     private final IVertex mEnd;
     private double mStartPosition;
-
-    private Point mAveragePoint;
 
     public SegmentBase(final IVertex pStart, final IVertex pEnd) {
 
@@ -42,43 +33,30 @@ public abstract class SegmentBase implements ISegment {
             throw new IllegalArgumentException("pEnd must not be null.");
         }
 
-        if (pStart.getPixelChain() != pEnd.getPixelChain()) {
-            throw new IllegalArgumentException("start and end Vertex must belong to the same pixelChain.");
-        }
-
         if (pStart.getIndex() >= pEnd.getIndex()) {
             throw new IllegalArgumentException("start index =(" + pStart.getIndex() + ")must be less than end index =(" + pEnd.getIndex() + ").");
         }
 
-        mPixelChain = pStart.getPixelChain();
         mStart = pStart;
         mEnd = pEnd;
     }
 
     @Override
-    public void attachToVertexes(final boolean pReCalcSegments) {
+    public void attachToVertexes(PixelChain pPixelChain, final boolean pReCalcSegments) {
         mStart.setEndSegment(this);
         mEnd.setStartSegment(this);
         if (pReCalcSegments) {
-            getPixelChain().reCalcSegments();
+            //pPixelChain.reCalcSegments();
+            throw new RuntimeException("PixelChain must reCalcSegments remove recalc arg");
         }
-    }
-
-    private void calcAveragePoint() {
-        Point sum = Point.Point00;
-        for (int i = getStartIndex(); i <= getEndIndex(); i++) {
-            sum = sum.add(mPixelChain.getUHVWPoint(i));
-        }
-        final double cnt = getEndIndex() + 1 - getStartIndex();
-        mAveragePoint = sum.divide(cnt);
     }
 
     @Override
-    public double calcError() {
+    public double calcError(final PixelChain pPixelChain) {
         double error = 0.0d;
-        for (int i = getStartIndex(); i <= getEndIndex(); i++) {
-            final Point uhvw = mPixelChain.getUHVWPoint(i);
-            final double distance = distance(uhvw);
+        for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
+            final Point uhvw = pPixelChain.getUHVWPoint(i);
+            final double distance = distance(pPixelChain, uhvw);
 
             error += distance * distance;
         }
@@ -90,41 +68,18 @@ public abstract class SegmentBase implements ISegment {
         return error;
     }
 
-    @Override
-    public boolean closerThan(final Point pPoint, final double pTolerance) {
+    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    @Override
-    public Point closestPoint(final Point pUhvw) {
-        final double lambda = closestLambda(pUhvw);
-        final Point point = getPointFromLambda(lambda);
-        return point;
-    }
+    public abstract double distance(PixelChain pPixelChain, final Point pUVHWPoint);
 
-    @Override
-    public void delete() {
-        getPixelChain().deleteSegment(this);
-    }
-
-    public abstract double distance(final Point pUVHWPoint);
-
-    public double getActualThickness(final double pPosition) {
-        final double actualThickness = getPixelChain().getActualThickness(pPosition);
+    public double getActualThickness(final PixelChain pPixelChain, final double pPosition) {
+        final double actualThickness = pPixelChain.getActualThickness(pPosition);
         return actualThickness;
     }
 
-    @Override
-    public synchronized Point getAveragePoint() {
-        if (mAveragePoint == null) {
-            calcAveragePoint();
-        }
-
-        return mAveragePoint;
-    }
-
-    @Override
     public Point getControlPoint() {
         Framework.logEntry(mLogger);
         Framework.logExit(mLogger);
@@ -132,171 +87,105 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public int getEndIndex() {
+    public int getEndIndex(PixelChain pPixelChain) {
         return mEnd.getIndex();
     }
 
     @Override
-    public Pixel getEndPixel() {
-        return mEnd.getPixel();
+    public Pixel getEndPoint(PixelChain pPixelChain) {
+        return mEnd.getPixel(pPixelChain);
     }
 
     @Override
-    public Line getEndTangent() {
-        return new Line(getEndUHVWPoint(), getEndUHVWPoint().add(getEndTangentVector()));
+    public Line getEndTangent(PixelChain pPixelChain) {
+        return new Line(getEndUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain).add(getEndTangentVector(pPixelChain)));
     }
 
     @Override
-    public Point getEndUHVWPoint() {
-        return mEnd.getUHVWPoint();
+    public Point getEndUHVWPoint(PixelChain pPixelChain) {
+        return mEnd.getUHVWPoint(pPixelChain);
     }
 
     @Override
-    public IVertex getEndVertex() {
+    public IVertex getEndVertex(PixelChain pPixelChain) {
         return mEnd;
     }
 
-    @Override
-    public double getMaxX() {
+    public double getMaxX(PixelChain pPixelChain) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getMaxY(PixelChain pPixelChain) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getMinX(PixelChain pPixelChain) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getMinY(PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMaxY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getMinX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getMinY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PixelChain getPixelChain() {
-        return mStart.getPixelChain();
-    }
-
-    @Override
-    public int getPixelLength() {
+    public int getPixelLength(PixelChain pPixelChain) {
         int length;
 
-        if (getStartIndex() == 0) {
-            length = 1 + getEndIndex();
+        if (getStartIndex(pPixelChain) == 0) {
+            length = 1 + getEndIndex(pPixelChain);
         } else {
-            length = getEndIndex() - getStartIndex();
+            length = getEndIndex(pPixelChain) - getStartIndex(pPixelChain);
         }
 
         return length;
     }
 
     @Override
-    public PixelMap getPixelMap() {
-        return getStartVertex().getPixelMap();
-    }
-
-    @Override
-    public int getStartIndex() {
+    public int getStartIndex(PixelChain pPixelChain) {
         return mStart.getIndex();
     }
 
-    @Override
-    public Pixel getStartPixel() {
-        return mStart.getPixel();
-    }
-
-    @Override
     public double getStartPosition() {
         return mStartPosition;
     }
 
     @Override
-    public Line getStartTangent() {
-        return new Line(getStartUHVWPoint(), getStartUHVWPoint().add(getStartTangentVector()));
+    public Line getStartTangent(PixelChain pPixelChain) {
+        return new Line(getStartUHVWPoint(pPixelChain), getStartUHVWPoint(pPixelChain).add(getStartTangentVector(pPixelChain)));
     }
 
     @Override
-    public Point getStartUHVWPoint() {
-        return mStart.getUHVWPoint();
+    public Point getStartUHVWPoint(PixelChain pPixelChain) {
+        return mStart.getUHVWPoint(pPixelChain);
     }
 
     @Override
-    public IVertex getStartVertex() {
+    public IVertex getStartVertex(PixelChain pPixelChain) {
         return mStart;
     }
 
     @Override
-    public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitLine(getStartUHVWPoint(), getEndUHVWPoint());
+    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+        pGraphics.graffiitLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
     }
 
-    @Override
-    public Intersect3D intersect3D(final Point pUHVW) {
-        final double lambda = closestLambda(pUHVW);
-        final Point closest = getPointFromLambda(lambda);
-        final double distance = closest.minus(pUHVW).length();
-
-        final double position = getStartPosition() + lambda * getLength();
-        final double actualThickness = getActualThickness(position);
-
-        if (actualThickness < distance) {
-            return null;
-        }
-
-        final double height = Math.sqrt(actualThickness * actualThickness - distance * distance);
-        final Point3D iPoint = new Point3D(pUHVW, height);
-        final Point3D closet3D = new Point3D(closest);
-        final Vector3D iVector = closet3D.to(iPoint).normalize();
-        return new Intersect3D(iPoint, iVector);
-    }
-
-    @Override
     public double length() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void nextControlPoint() {
-    }
-
-    @Override
-    public boolean noPixelFurtherThan(final double pDistance) {
-        for (int i = getStartIndex(); i <= getEndIndex(); i++) {
-            final Point uhvw = mPixelChain.getUHVWPoint(i);
-            if (distance(uhvw) > pDistance) {
+    public boolean noPixelFurtherThan(final PixelChain pPixelChain, final double pDistance) {
+        for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
+            final Point uhvw = pPixelChain.getUHVWPoint(i);
+            if (distance(pPixelChain, uhvw) > pDistance) {
                 return false;
             }
         }
         return true;
     }
 
-    @Override
-    public boolean noPixelFurtherThanReverse(final double pDistance) {
-        for (int i = getEndIndex(); i <= getStartIndex(); i--) {
-            final Point uhvw = mPixelChain.getUHVWPoint(i);
-            if (distance(uhvw) > pDistance) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     @Override
-    public void previousControlPoint() {
-    }
-
-    @Override
-    public void setControlPoint(final Point pPoint) {
-        Framework.logEntry(mLogger);
-        Framework.logExit(mLogger);
-    }
-
-    @Override
-    public void setStartPosition(final double pStartPosition) {
+    public void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
@@ -306,9 +195,11 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void vertexChange(final IVertex pVertex) {
+    public void vertexChange(PixelChain pPixelChain, final IVertex pVertex) {
+        // TODO not sure that we need this call
+        // throw new RuntimeException("need to do this in PixelMap");
         // final Date start = new Date();
-        getPixelMap().indexSegments();
+        //getPixelMap().indexSegments();
         // final long time = new Date().getTime() - start.getTime();
         // mLogger.severe("Vertex time change " + time / 1000.0);
     }

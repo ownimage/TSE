@@ -50,7 +50,7 @@ public class BooleanView extends ViewBase<BooleanControl> {
             if (mAllowUpdates && mControl.getValue() != pValue) { // note the value change check was becasue this seemed to be being
                 // called more than once.
                 mAllowUpdates = false;
-                mControl.setValue(pValue, this, false);
+                queueApplicationEvent(() -> mControl.setValue(pValue, this, false));
             }
         } finally {
             mAllowUpdates = true;

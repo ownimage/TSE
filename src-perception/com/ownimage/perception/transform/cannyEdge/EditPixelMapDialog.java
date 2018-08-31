@@ -5,27 +5,9 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.IntStream;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IGrafitti;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
@@ -52,6 +34,14 @@ import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
 
@@ -90,7 +80,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final CropTransform mCropTransform;
 
     private PictureControl mPictureControl = new PictureControl("Preview", "preview", NullContainer,
-                                                                new PictureType(100, 100));
+            new PictureType(100, 100));
 
     private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
     private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
@@ -261,9 +251,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private IDialogView getDialogView() {
         if (mEditPixelMapDialogView == null) {
             mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
-                                                                             DialogOptions.builder().withCompleteFunction(this::dialogClose).build(),
-                                                                             getUndoRedoBuffer(),
-                                                                             mCancelAction, mOkAction);
+                    DialogOptions.builder().withCompleteFunction(this::dialogClose).build(),
+                    getUndoRedoBuffer(),
+                    mCancelAction, mOkAction);
         }
         return mEditPixelMapDialogView;
     }
@@ -345,7 +335,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void grafittiSegment(GrafittiHelper pGrafittiHelper, ISegment pSegment) {
         SegmentGrafittiHelper segmentGrafittiHelper = new SegmentGrafittiHelper(pGrafittiHelper, this::UHVWtoView);
-        pSegment.graffiti(segmentGrafittiHelper);
+        mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(pc, segmentGrafittiHelper));
     }
 
     private Point UHVWtoView(Point pUHVW) {
@@ -539,10 +529,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         new Range2D(pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size)
                 .forEach((x, y) ->
-                                 mPixelMap.getOptionalPixelAt(x, y)
-                                         .filter(p -> pPixel.getUHVWPoint().distance(p.getUHVWPoint()) < radius)
-                                         .filter(Pixel::isEdge)
-                                         .ifPresent(p -> p.setEdge(false))
+                        mPixelMap.getOptionalPixelAt(x, y)
+                                .filter(p -> pPixel.getUHVWPoint().distance(p.getUHVWPoint()) < radius)
+                                .filter(Pixel::isEdge)
+                                .ifPresent(p -> p.setEdge(false))
                 );
         updateGrafitti();
     }

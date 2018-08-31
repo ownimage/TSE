@@ -13,7 +13,6 @@ import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.type.ObjectMetaType;
 import com.ownimage.framework.util.Framework;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -50,7 +49,7 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
             if (meta.isFilterable()) {
                 // This needs run on the GUI thread to avoid the error described
                 // here: https://bugs.openjdk.java.net/browse/JDK-8081700.
-                Platform.runLater(() -> {
+                runOnFXApplicationThread(() -> {
                     mLogger.log(Level.FINEST, "runLater newValue = " + pNewValue);
                     if (selected == null || !selected.equals(editor.getText())) {
                         filteredItems.setPredicate(item -> {
@@ -86,7 +85,7 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
                 mCombobox.editorProperty().get().setText(mCombobox.getConverter().toString(mCombobox.getValue()));
             } else {
                 String typed = mCombobox.getEditor().textProperty().get();
-                typed = typed;
+                typed = typed; // for debugging
             }
         });
 
@@ -104,13 +103,15 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            try {
-                mAllowUpdates = false;
-                mCombobox.getSelectionModel().select(mControl.getValue());
-                mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
-            } finally {
-                mAllowUpdates = true;
-            }
+            runOnFXApplicationThread(() -> {
+                try {
+                    mAllowUpdates = false;
+                    mCombobox.getSelectionModel().select(mControl.getValue());
+                    mCombobox.setPromptText(mCombobox.getConverter().toString(mCombobox.getValue()));
+                } finally {
+                    mAllowUpdates = true;
+                }
+            });
         }
     }
 

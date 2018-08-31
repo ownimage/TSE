@@ -8,7 +8,6 @@ package com.ownimage.framework.view.javafx;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.ProgressControl;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -77,7 +76,7 @@ public class ProgressView extends ViewBase<ProgressControl> {
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            Platform.runLater(() -> {
+            runOnFXApplicationThread(() -> {
                 mProgressBar.setProgress(mControl.getNormalizedValue());
                 mProgressText.setText(mControl.getProgressString());
                 mProgressBar.setStyle("-fx-accent: " + getColorString());

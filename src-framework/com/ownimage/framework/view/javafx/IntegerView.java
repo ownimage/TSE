@@ -54,9 +54,11 @@ public class IntegerView extends ViewBase<IntegerControl> {
 	@Override
 	public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
 		if (pControl == mControl) {
-			if (!mIntegerSpinner.getValue().equals(mControl.getValue())) {
-				mIntegerSpinner.getEditor().setText(mControl.getString());
-			}
+			runOnFXApplicationThread(() -> {
+				if (!mIntegerSpinner.getValue().equals(mControl.getValue())) {
+					mIntegerSpinner.getEditor().setText(mControl.getString());
+				}
+			});
 		}
 	}
 

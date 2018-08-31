@@ -17,7 +17,6 @@ import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -70,7 +69,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            Platform.runLater(() -> {
+            runOnFXApplicationThread(() -> {
                 updatePicture();
                 mControl.drawGrafitti();
                 resizeTopParent();

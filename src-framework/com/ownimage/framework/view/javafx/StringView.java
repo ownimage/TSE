@@ -62,20 +62,22 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            switch (mControl.getMetaType().getDisplayType()) {
-                case LABEL:
-                    mLabel.setText(mControl.getValue());
-                    break;
-                case NORMAL:
-                    mText.setText(mControl.getValue());
-                    break;
-                case TITLE:
-                    mLabel.setText(mControl.getValue());
-                    break;
-                default:
-                    mText.setText(mControl.getValue());
-                    break;
-            }
+            runOnFXApplicationThread(() -> {
+                switch (mControl.getMetaType().getDisplayType()) {
+                    case LABEL:
+                        mLabel.setText(mControl.getValue());
+                        break;
+                    case NORMAL:
+                        mText.setText(mControl.getValue());
+                        break;
+                    case TITLE:
+                        mLabel.setText(mControl.getValue());
+                        break;
+                    default:
+                        mText.setText(mControl.getValue());
+                        break;
+                }
+            });
         }
     }
 

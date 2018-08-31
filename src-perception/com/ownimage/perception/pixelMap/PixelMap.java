@@ -5,39 +5,10 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.util.Counter;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.MyBase64;
-import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.*;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.KMath;
 import com.ownimage.perception.math.Point;
@@ -48,6 +19,18 @@ import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.util.KColor;
+import io.vavr.Tuple2;
+
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed throught the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -105,13 +88,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             return mNodes.size();
         }
 
-        public void setPixelMap(final PixelMap pPixelMap) {
-            mNodes.values().parallelStream().forEach(n -> n.setPixelMap(pPixelMap));
-        }
-
-        private void putAll(final AllNodes allNodes) {
-            mNodes.putAll(allNodes.mNodes);
-        }
     }
 
     public final static Logger mLogger = Framework.getLogger();
@@ -130,11 +106,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
-    private final byte mData[][];
+    private ImmutableLayerMap2D<Byte>.Map2D mData;
     private final AllNodes mAllNodes = new AllNodes();
     private final Vector<PixelChain> mPixelChains = new Vector<>();
 
-    private LinkedList<ISegment>[][] mSegmentIndex;
+    private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
+    private Map<ISegment, PixelChain> mSegmentToPixelChainMap = new HashMap<>();
+
     private boolean mSegmentIndexValid = false;
     private int mSegmentCount;
 
@@ -153,7 +131,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         resetSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
-        mData = new byte[pWidth][pHeight];
+        mData = new ImmutableLayerMap2D<>(pWidth, pHeight, new Byte((byte) 0)).getMutable();
         // resetSegmentIndex();
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
     }
@@ -166,24 +144,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mTransformSource.getPixelColor();
     }
 
-    public void addPixelChain(final PixelChain pPixelChain) {
-        Framework.logEntry(mLogger);
-        indexSegments();
-        mPixelChains.add(pPixelChain);
-        Framework.logExit(mLogger);
-    }
-
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
         indexSegments();
         mPixelChains.addAll(pPixelChains);
-        Framework.logExit(mLogger);
-    }
-
-    public void addPixelChains(final PixelChain... pPixelChains) {
-        Framework.logEntry(mLogger);
-        indexSegments();
-        mPixelChains.addAll(Arrays.asList(pPixelChains));
         Framework.logExit(mLogger);
     }
 
@@ -331,10 +295,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         });
         return chains;
-    }
-
-    public double getAspectRatio() {
-        return mAspectRatio;
     }
 
     boolean getData(final Pixel pPixel, final byte pValue) {
@@ -588,7 +548,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return null;
     }
 
-    private AbstractCollection<ISegment> getSegments(final int pX, final int pY) {
+    private AbstractCollection<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
 
         if (pX < 0 || pX >= getWidth()) {
             throw new IllegalArgumentException("pX out of range. pX = " + pX + ". It needs to be greater than 0 and less than" + getWidth());
@@ -656,10 +616,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     // return pColor;
     // }
 
-    public int getShortLineLength() {
-        return mTransformSource.getShortLineLength();
-    }
-
     public double getShortLineThickness() {
         return mTransformSource.getShortLineThickness();
     }
@@ -689,7 +645,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public byte getValue(final int pX, final int pY) {
-
+        // TODO change these to Framework checks
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
         }
@@ -706,39 +662,46 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
         }
 
-        return mData[pX][pY];
+        return mData.get(pX, pY);
     }
 
     public int getWidth() {
         return mWidth;
     }
 
-    void index(final ISegment pSegment) {
+    void index(final PixelChain pPixelChain, final ISegment pSegment) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
         //
-        int minX = (int) Math.floor(pSegment.getMinX() * getWidth() / mAspectRatio) - 1;
+        int minX = (int) Math.floor(pSegment.getMinX(pPixelChain) * getWidth() / mAspectRatio) - 1;
         minX = minX < 0 ? 0 : minX;
         minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
 
-        int maxX = (int) Math.ceil(pSegment.getMaxX() * getWidth() / mAspectRatio) + 1;
+        int maxX = (int) Math.ceil(pSegment.getMaxX(pPixelChain) * getWidth() / mAspectRatio) + 1;
         maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
 
-        int minY = (int) Math.floor(pSegment.getMinY() * getHeight()) - 1;
+        int minY = (int) Math.floor(pSegment.getMinY(pPixelChain) * getHeight()) - 1;
         minY = minY < 0 ? 0 : minY;
         minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
 
-        int maxY = (int) Math.ceil(pSegment.getMaxY() * getHeight()) + 1;
+        int maxY = (int) Math.ceil(pSegment.getMaxY(pPixelChain) * getHeight()) + 1;
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
 
         new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
             final Pixel pixel = getPixelAt(x, y);
             final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
-            if (pSegment.closerThan(centre, getUHVWHalfPixel().length())) {
-                getSegments(x, y).add(pSegment);
+            if (pSegment.closerThan(pPixelChain, centre, getUHVWHalfPixel().length())) {
+                getSegments(x, y).add(new Tuple2(pPixelChain, pSegment));
             }
         });
+
+        mSegmentToPixelChainMap.put(pSegment, pPixelChain);
+
+    }
+
+    public Optional<PixelChain> getPixelChainForSegment(ISegment pSegment) {
+        return Optional.ofNullable(mSegmentToPixelChainMap.get(pSegment));
     }
 
     public synchronized void indexSegments() {
@@ -756,14 +719,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
             for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-                    for (final ISegment segment : getSegments(x, y)) {
-                        if (segment.getPixelChain().getThickness() == PixelChain.Thickness.None) {
+                    for (final Tuple2<PixelChain, ISegment> tuple : getSegments(x, y)) {
+                        if (tuple._1().getThickness() == PixelChain.Thickness.None) {
                             break;
                         }
-                        if (pThickOnly && segment.getPixelChain().getThickness() != PixelChain.Thickness.Thick) {
+                        if (pThickOnly && tuple._1().getThickness() != PixelChain.Thickness.Thick) {
                             break;
                         }
-                        if (segment.closerThan(uhvw)) {
+                        if (tuple._2().closerThan(tuple._1(), uhvw)) {
                             return true;
                         }
                     }
@@ -1102,7 +1065,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     int cnt = 0;
                     while ((cnt += ois.read(buff, cnt, getHeight() - cnt)) < getHeight()) {
                     }
-                    mData[x] = buff;
+                    for (int y = 0; y < mHeight; y++) {
+                        mData = mData.set(x, y, buff[y]);
+                    }
                 }
 
                 bais = null;
@@ -1162,20 +1127,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    public synchronized void removePixelChain(final PixelChain pPixelChain) {
+    synchronized void removePixelChain(final PixelChain pPixelChain) {
         mPixelChains.remove(pPixelChain);
         indexSegments();
     }
 
     private void resetInChain() {
-        forEachParallel((x, y) -> {
+        forEach((x, y) -> {
             final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
             setValue(x, y, newValue);
         });
     }
 
     private void resetNode() {
-        forEachParallel((x, y) -> {
+        forEach((x, y) -> {
             final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
             setValue(x, y, newValue);
         });
@@ -1184,11 +1149,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void resetSegmentIndex() {
         mSegmentIndex = new LinkedList[getWidth()][getHeight()];
+        mSegmentToPixelChainMap = new HashMap<>();
         mSegmentCount = 0;
     }
 
     private void resetVisited() {
-        forEachParallel((x, y) -> {
+        forEach((x, y) -> {
             final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
             setValue(x, y, newValue);
         });
@@ -1243,6 +1209,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      * @param pValue the value
      */
     void setValueNoUndo(final int pX, final int pY, final byte pValue) {
+        // TODO check these value using Framework
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
         }
@@ -1259,7 +1226,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
         }
 
-        mData[pX][pY] = pValue;
+        mData = mData.set(pX, pY, pValue);
     }
 
     private void setWidth(final int pWidth) {
@@ -1322,18 +1289,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             private int doubleCurve = 0;
             public int other = 0;
 
-            public void incStraight() {
-                straight++;
-            }
-
-            public void incCurve() {
-                curve++;
-            }
-
-            public void incDoubleCurve() {
-                doubleCurve++;
-            }
-
             private void incOther() {
                 other++;
             }
@@ -1371,7 +1326,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             baos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(baos);
             for (int x = 0; x < getWidth(); x++) {
-                oos.write(mData[x]);
+                final byte[] buff = new byte[getHeight()];
+                for (int y = 0; y < mHeight; y++) {
+                    buff[y] = mData.get(x, y);
+                }
+                oos.write(buff);
             }
             oos.close();
 
@@ -1400,23 +1359,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         new Range2D(getWidth(), getHeight()).forEach(pFunction);
     }
 
-    public void forEachParallel(BiConsumer<Integer, Integer> pFunction) {
-        new Range2D(getWidth(), getHeight()).forEachParallel(pFunction);
-    }
-
     private void forEachPixel(Consumer<Pixel> pFunction) {
         new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(getPixelAt(x, y)));
-    }
-
-    private void forEachPixelParallel(Consumer<Pixel> pFunction) {
-        new Range2D(getWidth(), getHeight()).forEachParallel((x, y) -> pFunction.accept(getPixelAt(x, y)));
     }
 
     public void forEachPixelChain(Consumer<PixelChain> pFunction) {
         mPixelChains.forEach(pFunction);
     }
 
-    public void forEachPixelChainParallel(Consumer<PixelChain> pFunction) {
-        mPixelChains.stream().parallel().forEach(pFunction);
-    }
 }

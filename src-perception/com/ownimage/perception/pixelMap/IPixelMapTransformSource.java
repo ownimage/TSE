@@ -36,11 +36,7 @@ public interface IPixelMapTransformSource {
 
 	public double getLineTolerance();
 
-	public int getLongLineLength();
-
 	public double getLongLineThickness();
-
-	public int getMediumLineLength();
 
 	public double getMediumLineThickness();
 

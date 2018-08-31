@@ -5,11 +5,11 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.io.Serializable;
-
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+
+import java.io.Serializable;
 
 /**
  * The Interface IVertex represends a joining point between two segments that approximate part of a PixelChain. The vertex is associated with a Pixel in the PixelChain i.e. it has an integer (x, y)
@@ -17,59 +17,43 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
+	ISegment getEndSegment();
 
-    public IVertex deepCopy(IVertex pOriginalStartVertex, IVertex pCopyStartVertex);
+	int getIndex();
 
-	public abstract void delete();
+	ISegment getStartSegment();
 
-	public ISegment getEndSegment();
+	Line calcTangent(PixelChain pPiixelChain);
 
-	public int getIndex();
+	Line getTangent();
 
-	public Pixel getPixel();
+	Point getUHVWPoint(PixelChain pPixelChain);
 
-	public PixelChain getPixelChain();
+	int getX(PixelChain pPixelChain);
 
-	public PixelMap getPixelMap();
+	int getY(PixelChain pPixelChain);
 
-	public ISegment getStartSegment();
+	boolean isDisconnected();
 
-	public Line getTangent();
+	boolean isEnd();
 
-	public Point getUHVWPoint();
+	boolean isFixed(PixelChain pPixelChain);
 
-	public int getX();
+	boolean isMiddle();
 
-	public int getY();
+	boolean isStart();
 
-	public boolean isDisconnected();
+	void setEndSegment(ISegment pEndSegment);
 
-	public boolean isEnd();
+	void setFixed(boolean pFixed);
 
-	public abstract boolean isFixed();
+	void setIndex(PixelChain pPixelChain, int pIndex);
 
-	public boolean isMiddle();
+	void setStartSegment(ISegment pStartSegment);
 
-	public boolean isStart();
+	void setTangent(com.ownimage.perception.math.LineSegment pTangent);
 
-	public boolean samePosition(IVertex pVertex);
 
-	public void setEndSegment(ISegment pEndSegment);
-
-	public abstract void setFixed(boolean pFixed);
-
-	public void setIndex(int pIndex);
-
-	public void setPixel(Pixel pPixel);
-
-	public void setStartSegment(ISegment pStartSegment);
-
-	public void setTangent(com.ownimage.perception.math.LineSegment pTangent);
-
-	public abstract IVertex copy();
-
-	public void setSmooth(boolean pSmooth);
-
-	public boolean isSmooth();
+	Pixel getPixel(PixelChain pPixelChain);
 
 }

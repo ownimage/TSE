@@ -5,59 +5,43 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
+import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.math.*;
+import com.ownimage.perception.math.CubicEquation.Root;
+import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.PixelChain;
+
 import java.util.logging.Logger;
 
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Path;
-import com.ownimage.perception.math.CubicEquation;
-import com.ownimage.perception.math.CubicEquation.Root;
-import com.ownimage.perception.math.KMath;
-import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.QuarticEquation;
-import com.ownimage.perception.math.Vector;
-import com.ownimage.perception.pixelMap.IVertex;
-import com.ownimage.perception.pixelMap.segment.SegmentFactory.SegmentType;
-
 public class CurveSegment extends SegmentBase {
-
-
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private Point mP1;
-    private Point mA;
-    private Point mB;
+    private final Point mP1;
+    private final Point mA;
+    private final Point mB;
 
-    CurveSegment(final IVertex pStart, final IVertex pEnd, final Point pP1) {
+    CurveSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd, final Point pP1) {
         super(pStart, pEnd);
         mP1 = pP1;
-        init();
+        mA = getP0(pPixelChain).add(getP2(pPixelChain)).minus(getP1().multiply(2.0d));
+        mB = getP1().minus(getP0(pPixelChain)).multiply(2.0d);
     }
 
     @Override
-    public void addToPath(final Path pPath) {
-        pPath.moveTo(getPointFromLambda(0.0d));
-        for (int i = 0; i < getPixelChain().length(); i++) {
-            final double t = (double) (i + 1) / getPixelChain().length();
-            final Point point = getPointFromLambda(t);
-            pPath.lineTo(point);
-        }
-        // pPath.lineTo(getEndUHVWPoint().add(getPixelMap().getUHVWHalfPixel()));
+    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint) {
+        final double lambda = closestLambda(pPoint, pPixelChain);
+        final double position = getStartPosition() + lambda * getLength(pPixelChain);
+        final double actualThickness = getActualThickness(pPixelChain, position);
+        return closerThan(pPixelChain, pPoint, actualThickness);
     }
 
-    @Override
-    public boolean closerThan(final Point pPoint) {
-        final double lambda = closestLambda(pPoint);
-        final double position = getStartPosition() + lambda * getLength();
-        final double actualThickness = getActualThickness(position);
-        return closerThan(pPoint, actualThickness);
-    }
 
     @Override
-    public boolean closerThan(final Point pPoint, final double pTolerance) {
+    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO is this used any more?
-        final double distance = distance(pPoint);
+        final double distance = distance(pPixelChain, pPoint);
         final boolean b = distance < pTolerance;
         return b;
     }
@@ -72,9 +56,9 @@ public class CurveSegment extends SegmentBase {
     // }
 
     @Override
-    public double closestLambda(final Point pUVHWPoint) {
+    public double closestLambda(final Point pUVHWPoint, PixelChain pPixelChain) {
         // Note this is closely related to distance
-        final Point C = getP0().minus(pUVHWPoint);
+        final Point C = getP0(pPixelChain).minus(pUVHWPoint);
 
         final double a = mA.length2();
         final double b = 2.0d * mA.dot(mB);
@@ -88,7 +72,7 @@ public class CurveSegment extends SegmentBase {
         final Root root = differential.solve();
 
         final double t1 = KMath.limit01(root.getRoot1());
-        final Point p1 = getPointFromLambda(t1);
+        final Point p1 = getPointFromLambda(pPixelChain, t1);
         final Vector delta1 = p1.minus(pUVHWPoint);
         final double distance1 = delta1.length();
         if (root.getNumberOfRoots() == 1) {
@@ -97,12 +81,12 @@ public class CurveSegment extends SegmentBase {
 
         // I do need the p2 point in this to prevent strange results
         final double t2 = KMath.limit01(root.getRoot2());
-        final Point p2 = getPointFromLambda(t2);
+        final Point p2 = getPointFromLambda(pPixelChain, t2);
         final Vector delta2 = p2.minus(pUVHWPoint);
         final double distance2 = delta2.length();
 
         final double t3 = KMath.limit01(root.getRoot3());
-        final Point p3 = getPointFromLambda(t3);
+        final Point p3 = getPointFromLambda(pPixelChain, t3);
         final Vector delta3 = p3.minus(pUVHWPoint);
         final double distance3 = delta3.length();
 
@@ -116,22 +100,9 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public ISegment copy(final IVertex pStartVertex, final IVertex pEndVertex) {
-        return new CurveSegment(pStartVertex, pEndVertex, mP1);
-    }
-
-    @Override
-    public CurveSegment deepCopy(final IVertex pOriginalStartVertex, final IVertex pCopyStartVertex, final IVertex pSegmentStartVertex) {
-        final IVertex endVertex = getEndVertex().deepCopy(pOriginalStartVertex, pCopyStartVertex);
-        final CurveSegment copy = new CurveSegment(pSegmentStartVertex, endVertex, getP1());
-        copy.attachToVertexes(false);
-        return copy;
-    }
-
-    @Override
-    public double distance(final Point pUVHWPoint) {
+    public double distance(PixelChain pPixelChain, final Point pUVHWPoint) {
         // note this is closely related to closestLambda
-        final Point C = getP0().minus(pUVHWPoint);
+        final Point C = getP0(pPixelChain).minus(pUVHWPoint);
 
         final double a = mA.length2();
         final double b = 2.0d * mA.dot(mB);
@@ -145,7 +116,7 @@ public class CurveSegment extends SegmentBase {
         final Root root = differential.solve();
 
         final double t1 = KMath.limit01(root.getRoot1());
-        final Point p1 = getPointFromLambda(t1);
+        final Point p1 = getPointFromLambda(pPixelChain, t1);
         final Vector delta1 = p1.minus(pUVHWPoint);
         final double distance1 = delta1.length();
         if (root.getNumberOfRoots() == 1) {
@@ -154,12 +125,12 @@ public class CurveSegment extends SegmentBase {
 
         // I do need the p2 point in this to prevent strange results
         final double t2 = KMath.limit01(root.getRoot2());
-        final Point p2 = getPointFromLambda(t2);
+        final Point p2 = getPointFromLambda(pPixelChain, t2);
         final Vector delta2 = p2.minus(pUVHWPoint);
         final double distance2 = delta2.length();
 
         final double t3 = KMath.limit01(root.getRoot3());
-        final Point p3 = getPointFromLambda(t3);
+        final Point p3 = getPointFromLambda(pPixelChain, t3);
         final Vector delta3 = p3.minus(pUVHWPoint);
         final double distance3 = delta3.length();
 
@@ -171,126 +142,84 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Point getControlPoint() {
-        Framework.logEntry(mLogger);
-        Framework.logExit(mLogger);
-        return getP1();
+    public Vector getEndTangentVector(PixelChain pPixelChain) {
+        return getP2P1(pPixelChain).normalize();
     }
 
     @Override
-    public Vector getEndTangentVector() {
-        return getP2P1().normalize();
-    }
-
-    @Override
-    public double getLength() {
+    public double getLength(PixelChain pPixelChain) {
         // TODO needs improvement
-        return getP0P1().length() + getP2P1().length();
+        return getP0P1(pPixelChain).length() + getP2P1(pPixelChain).length();
     }
 
-    @Override
-    public double getMaxX() {
-        return KMath.max(getStartUHVWPoint().getX(), getEndUHVWPoint().getX(), getP1().getX());
+
+    public double getMaxX(PixelChain pPixelChain) {
+        return KMath.max(getStartUHVWPoint(pPixelChain).getX(), getEndUHVWPoint(pPixelChain).getX(), getP1().getX());
     }
 
-    @Override
-    public double getMaxY() {
-        return KMath.max(getStartUHVWPoint().getY(), getEndUHVWPoint().getY(), getP1().getY());
+    public double getMaxY(PixelChain pPixelChain) {
+        return KMath.max(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
-    @Override
-    public double getMinX() {
-        return KMath.min(getStartUHVWPoint().getX(), getEndUHVWPoint().getX(), getP1().getX());
+    public double getMinX(PixelChain pPixelChain) {
+        return KMath.min(getStartUHVWPoint(pPixelChain).getX(), getEndUHVWPoint(pPixelChain).getX(), getP1().getX());
     }
 
-    @Override
-    public double getMinY() {
-        return KMath.min(getStartUHVWPoint().getY(), getEndUHVWPoint().getY(), getP1().getY());
+    public double getMinY(PixelChain pPixelChain) {
+        return KMath.min(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
-    public Point getP0() {
-        return getStartUHVWPoint();
+    public Point getP0(PixelChain pPixelChain) {
+        return getStartUHVWPoint(pPixelChain);
     }
 
     /**
      * Gets the Vector from P0 to P1.
      *
      * @return the Vector
+     * @param pPixelChain
      */
-    public Vector getP0P1() {
-        return getP1().minus(getP0());
+    public Vector getP0P1(PixelChain pPixelChain) {
+        return getP1().minus(getP0(pPixelChain));
     }
 
     public Point getP1() {
         return mP1;
     }
 
-    public Point getP2() {
-        return getEndUHVWPoint();
+    public Point getP2(PixelChain pPixelChain) {
+        return getEndUHVWPoint(pPixelChain);
     }
 
     /**
      * Gets the Vector from P2 to P1
      *
      * @return the Vector
+     * @param pPixelChain
      */
-    public Vector getP2P1() {
-        return getP2().minus(getP1());
+    public Vector getP2P1(PixelChain pPixelChain) {
+        return getP2(pPixelChain).minus(getP1());
     }
 
     @Override
-    public Point getPointFromLambda(final double pT) {
-        final Point p = getP0().multiply((1.0d - pT) * (1.0d - pT)) //
+    public Point getPointFromLambda(PixelChain pPixelChain, final double pT) {
+        final Point p = getP0(pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
-                .add(getP2().multiply(pT * pT));
+                .add(getP2(pPixelChain).multiply(pT * pT));
         return p;
     }
 
     @Override
-    public SegmentType getSegmentType() {
-        return SegmentType.Curve;
+    public Vector getStartTangentVector(PixelChain pPixelChain) {
+        return getP0P1(pPixelChain).minus().normalize();
     }
 
     @Override
-    public Vector getStartTangentVector() {
-        return getP0P1().minus().normalize();
-    }
-
-    @Override
-    public void graffiti(final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(getP0(), getP1());
-        pGraphics.graffiitControlLine(getP1(), getP2());
-        super.graffiti(pGraphics);
+    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+        pGraphics.graffiitControlLine(getP0(pPixelChain), getP1());
+        pGraphics.graffiitControlLine(getP1(), getP2(pPixelChain));
+        super.graffiti(pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
-    }
-
-    private void init() {
-//        final Point p0 = getP0();
-//        final Point p1 = getP1();
-//        final Point p1x2 = p1.multiply(2.0d);
-//        final Point p2 = getP2();
-//        final Point p0ap2 = p0.add(p2);
-//        mA= p0ap2.minus(p1x2);
-        mA = getP0().add(getP2()).minus(getP1().multiply(2.0d));
-        mB = getP1().minus(getP0()).multiply(2.0d);
-    }
-
-    @Override
-    public void setControlPoint(final Point pPoint) {
-        Framework.logEntry(mLogger);
-        setP1(pPoint);
-        Framework.logExit(mLogger);
-    }
-
-    public void setP1(final Point pP1) {
-        mP1 = pP1;
-        init();
-    }
-
-    @Override
-    public void vertexChange(final IVertex pVertex) {
-        init();
-        super.vertexChange(pVertex);
     }
 
     @Override

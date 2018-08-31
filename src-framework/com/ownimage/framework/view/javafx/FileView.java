@@ -47,7 +47,7 @@ public class FileView extends ViewBase {
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mFileControl) {
-            mTextField.setText(mFileControl.getValue());
+            runOnFXApplicationThread(() -> mTextField.setText(mFileControl.getValue()));
         }
     }
 

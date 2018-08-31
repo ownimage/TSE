@@ -271,6 +271,13 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 .run();
     }
 
+    @Override
+    public void setPreviousTransform(ITransform pPreviousTransform) {
+        super.setPreviousTransform(pPreviousTransform);
+        mWidth.setValue(pPreviousTransform.getWidth());
+        mHeight.setValue(pPreviousTransform.getHeight());
+    }
+
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
         if (mGenerateEdgesDialog == null) {
             mGenerateEdgesDialog = new GenerateEdgesDialog(this, "Canny Edge Transform", "edge");
@@ -346,7 +353,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
 
-    @Override
     public int getLongLineLength() {
         return mLongLineLength.getValue();
     }
@@ -356,7 +362,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mLongLineThickness.getValue();
     }
 
-    @Override
     public int getMediumLineLength() {
         return mMediumLineLength.getValue();
     }

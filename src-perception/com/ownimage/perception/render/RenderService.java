@@ -5,10 +5,6 @@
  */
 package com.ownimage.perception.render;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.control.PictureControl;
@@ -19,6 +15,10 @@ import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Logger;
 
 public class RenderService {
 
@@ -179,11 +179,11 @@ public class RenderService {
     }
 
     public RenderJobBuilder getRenderJobBuilder(String pReason, PictureControl pPictureControl, IBatchTransform pTransform) {
-        return new RenderJobBuilder(pReason, pPictureControl, pTransform);
+        return new RenderJobBuilder(pReason, pPictureControl, pTransform).withControlObject(pPictureControl);
     }
 
     public RenderJobBuilder getRenderJobBuilder(String pReason, PictureType pPictureType, IBatchTransform pTransform) {
-        return new RenderJobBuilder(pReason, pPictureType, pTransform);
+        return new RenderJobBuilder(pReason, pPictureType, pTransform).withControlObject(pPictureType);
     }
 
     private IBatchEngine getActualBatchEngine(final IBatchEngine pPreferredBatchEngine) {

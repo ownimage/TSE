@@ -32,7 +32,7 @@ public class ColorView extends ViewBase<ColorControl> {
         mUI.getChildren().addAll(mLabel, mColorPicker);
     }
 
-    public final static String toHexString(final Color colour) throws NullPointerException {
+    public static String toHexString(final Color colour) throws NullPointerException {
         String hexColour = Integer.toHexString(colour.getRGB() & 0xffffff);
         if (hexColour.length() < 6) {
             hexColour = "000000".substring(0, 6 - hexColour.length()) + hexColour;
@@ -43,7 +43,7 @@ public class ColorView extends ViewBase<ColorControl> {
     @Override
     public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mControl) {
-            mColorPicker.setValue(getFxColor());
+            runOnFXApplicationThread(() -> mColorPicker.setValue(getFxColor()));
         }
     }
 
@@ -62,9 +62,11 @@ public class ColorView extends ViewBase<ColorControl> {
     }
 
     private void setControlValue() {
-        javafx.scene.paint.Color c = mColorPicker.getValue();
-        Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
-        mControl.setValue(color, this, false);
+        runOnFXApplicationThread(() -> {
+            javafx.scene.paint.Color c = mColorPicker.getValue();
+            Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+            mControl.setValue(color, this, false);
+        });
     }
 
 }

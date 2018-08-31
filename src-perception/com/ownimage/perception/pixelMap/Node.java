@@ -6,9 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.math.IntegerPoint;
 
 // TODO: Auto-generated Javadoc
 
@@ -17,8 +16,6 @@ import com.ownimage.framework.util.Framework;
  */
 public class Node extends Pixel {
 
-
-    public final static Logger mLogger = Framework.getLogger();
 
     /**
      * The Constant serialVersionUID.
@@ -48,6 +45,17 @@ public class Node extends Pixel {
      */
     public Node(final PixelMap pPixelMap, final int pX, final int pY) {
         super(pPixelMap, pX, pY);
+    }
+
+    /**
+     * Instantiates a new node.
+     *
+     * @param pPixelMap the pixel map
+     * @param pX        the p x
+     * @param pY        the p y
+     */
+    public Node(final PixelMap pPixelMap, final IntegerPoint pPoint) {
+        super(pPixelMap, pPoint.getX(), pPoint.getY());
     }
 
     /**
@@ -94,12 +102,6 @@ public class Node extends Pixel {
      */
     public void removePixelChain(final PixelChain pPixelChain) {
         mPixelChains.remove(pPixelChain);
-    }
-
-    public void setPixelChainsVisited(final boolean pValue) {
-        for (PixelChain pixelChain : mPixelChains) {
-            pixelChain.setVisited(pValue);
-        }
     }
 
     public void mergePixelChains() {

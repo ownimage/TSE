@@ -8,7 +8,6 @@ package com.ownimage.framework.view.javafx;
 import com.ownimage.framework.control.layout.INamedTabs;
 import com.ownimage.framework.view.ISingleSelectView;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -40,9 +39,8 @@ public class NamedTabsView extends ViewBase<INamedTabs> implements ISingleSelect
         setSelectedIndex(mControl.getSelectedIndex());
 
         // adding the listener needs to be after creating the TabPane otherwise it fires an unwanted tab change
-        mUI.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-            mControl.setSelectedIndex(mUI.getTabs().indexOf(newTab), this);
-        });
+        mUI.getSelectionModel().selectedItemProperty()
+                .addListener((ov, oldTab, newTab) -> mControl.setSelectedIndex(mUI.getTabs().indexOf(newTab), this));
     }
 
     @Override
@@ -56,7 +54,7 @@ public class NamedTabsView extends ViewBase<INamedTabs> implements ISingleSelect
 
     @Override
     public void setSelectedIndex(final int pInt) {
-        Platform.runLater(() ->mUI.getSelectionModel().select(pInt));
+        runOnFXApplicationThread(() -> mUI.getSelectionModel().select(pInt));
     }
 
 }

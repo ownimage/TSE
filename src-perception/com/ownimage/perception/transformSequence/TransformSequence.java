@@ -5,26 +5,10 @@
  */
 package com.ownimage.perception.transformSequence;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.layout.BorderLayout;
-import com.ownimage.framework.control.layout.HFlowLayout;
-import com.ownimage.framework.control.layout.IContainerList;
-import com.ownimage.framework.control.layout.IViewable;
-import com.ownimage.framework.control.layout.ViewableBase;
+import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.persist.PersistDB;
@@ -33,22 +17,15 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
-import com.ownimage.perception.transform.BorderTransform;
-import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.transform.CircleMaskTransform;
-import com.ownimage.perception.transform.CropTransform;
-import com.ownimage.perception.transform.ITransform;
-import com.ownimage.perception.transform.ImageLoadTransform;
-import com.ownimage.perception.transform.LayerCakeTransform;
-import com.ownimage.perception.transform.OutputTransform;
-import com.ownimage.perception.transform.PolarTransform;
-import com.ownimage.perception.transform.QuadSpaceTransform;
-import com.ownimage.perception.transform.RotateTransform;
-import com.ownimage.perception.transform.RuleOfThirdsTransform;
-import com.ownimage.perception.transform.SoftSquarePolarTransform;
-import com.ownimage.perception.transform.SquarePolarTransform;
-import com.ownimage.perception.transform.VariableStretch3Transform;
-import com.ownimage.perception.transform.WoodcutTransform;
+import com.ownimage.perception.transform.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class TransformSequence extends ViewableBase<TransformSequence, ISingleSelectView> implements IPersist, IContainerList {
 

@@ -152,8 +152,10 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 
                 setLevel(Level.INFO);
 
-                new File(pPropertiesFilename).createNewFile();
-                read(pPropertiesFilename);
+                if (pPropertiesFilename != null) {
+                    new File(pPropertiesFilename).createNewFile();
+                    read(pPropertiesFilename);
+                }
 
             }
         } catch (Throwable pEx) {
