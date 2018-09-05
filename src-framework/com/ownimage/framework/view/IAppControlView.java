@@ -5,14 +5,14 @@
  */
 package com.ownimage.framework.view;
 
-import java.util.Optional;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.layout.IViewable;
-import com.ownimage.framework.undo.IUndoRedoBuffer;
+import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+
+import java.util.Optional;
+import java.util.logging.Logger;
 
 public interface IAppControlView {
 
@@ -20,13 +20,14 @@ public interface IAppControlView {
 
     class DialogOptions {
 
-        public static DialogOptions NONE = new DialogOptions.Builder().build();
+        public static DialogOptions NONE = DialogOptions.builder().build();
 
         public static Builder builder() {
             return new Builder();
         }
 
-        private IAction mCompleteFunciton;
+        private IAction mCompleteFunction = () -> {
+        };
 
         public static class Builder {
             private DialogOptions mDialogOptions = new DialogOptions();
@@ -36,13 +37,13 @@ public interface IAppControlView {
 
             public DialogOptions build() {
                 DialogOptions dialogOptions = new DialogOptions();
-                dialogOptions.mCompleteFunciton = mDialogOptions.mCompleteFunciton;
+                dialogOptions.mCompleteFunction = mDialogOptions.mCompleteFunction;
                 return dialogOptions;
             }
 
             public Builder withCompleteFunction(IAction pCompleteFunciton) {
                 Framework.checkParameterNotNull(mLogger, pCompleteFunciton, "pCompleteFunction");
-                mDialogOptions.mCompleteFunciton = pCompleteFunciton;
+                mDialogOptions.mCompleteFunction = pCompleteFunciton;
                 return this;
             }
         }
@@ -51,7 +52,7 @@ public interface IAppControlView {
         }
 
         public Optional<IAction> getCompleteFunction() {
-            return Optional.ofNullable(mCompleteFunciton);
+            return Optional.ofNullable(mCompleteFunction);
         }
 
     }
@@ -62,6 +63,6 @@ public interface IAppControlView {
 
     void showDialog(IViewable pViewable, DialogOptions pOptions, ActionControl... pButtons);
 
-    void showDialog(IViewable pViewable, DialogOptions pOptions, final IUndoRedoBuffer mUndoRedo, ActionControl... pButtons);
+    void showDialog(IViewable pViewable, DialogOptions pOptions, final UndoRedoBuffer mUndoRedo, ActionControl... pButtons);
 
 }

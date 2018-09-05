@@ -5,25 +5,10 @@
  */
 package com.ownimage.perception.app;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.app.AppControlBase;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.FileControl;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HSplitLayout;
@@ -39,9 +24,21 @@ import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
+import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class Perception extends AppControlBase {
 
@@ -121,37 +118,37 @@ public class Perception extends AppControlBase {
 
         MenuControl menu = new MenuControl.Builder()
                 .addMenu(new MenuControl.Builder().setDisplayName("File")
-                                 .addAction(new ActionControl("Open", "fileOpen", menuContainer, this::fileOpen))
-                                 .addAction(new ActionControl("Save", "fileSave", menuContainer, this::fileSave))
-                                 .addAction(new ActionControl("Save As", "fileSaveAs", menuContainer, this::fileSaveAs))
-                                 .addAction(new ActionControl("Exit", "fileExit", menuContainer, this::fileExit))
-                                 .addAction(new ActionControl("Redraw", "redraw", menuContainer, this::fileRedraw))
-                                 .build())
+                        .addAction(new ActionControl("Open", "fileOpen", menuContainer, this::fileOpen))
+                        .addAction(new ActionControl("Save", "fileSave", menuContainer, this::fileSave))
+                        .addAction(new ActionControl("Save As", "fileSaveAs", menuContainer, this::fileSaveAs))
+                        .addAction(new ActionControl("Exit", "fileExit", menuContainer, this::fileExit))
+                        .addAction(new ActionControl("Redraw", "redraw", menuContainer, this::fileRedraw))
+                        .build())
 
                 .addMenu(new MenuControl.Builder().setDisplayName("Transform")
-                                 .addAction(new ActionControl("Open", "transformOpen", menuContainer, this::transformOpen))
-                                 .addAction(new ActionControl("Save", "transformSave", menuContainer, this::transformSave))
-                                 .addAction(new ActionControl("Save As", "SaveAs", menuContainer, this::transformSaveAs))
-                                 .build())
+                        .addAction(new ActionControl("Open", "transformOpen", menuContainer, this::transformOpen))
+                        .addAction(new ActionControl("Save", "transformSave", menuContainer, this::transformSave))
+                        .addAction(new ActionControl("Save As", "SaveAs", menuContainer, this::transformSaveAs))
+                        .build())
 
                 .addMenu(new MenuControl.Builder().setDisplayName("Properties")
-                                 .addAction(new ActionControl("Edit", "propertiesEdit", menuContainer, this::propertiesEdit))
-                                 .addAction(new ActionControl("Open", "propertiesOpen", menuContainer, this::propertiesOpen))
-                                 .addAction(mPropertiesSave)
-                                 .addAction(mPropertiesSaveAs)
-                                 .addAction(mPropertiesSaveDefault)
-                                 .addAction(new ActionControl("Load Default", "propertiesLoadDefault", menuContainer, this::propertiesOpenSystemDefault))
-                                 .addAction(new ActionControl("Reset to System Default", "propertiesResetToSystemDefault", menuContainer, this::propertiesResetToSystemDefault))
-                                 .build())
+                        .addAction(new ActionControl("Edit", "propertiesEdit", menuContainer, this::propertiesEdit))
+                        .addAction(new ActionControl("Open", "propertiesOpen", menuContainer, this::propertiesOpen))
+                        .addAction(mPropertiesSave)
+                        .addAction(mPropertiesSaveAs)
+                        .addAction(mPropertiesSaveDefault)
+                        .addAction(new ActionControl("Load Default", "propertiesLoadDefault", menuContainer, this::propertiesOpenSystemDefault))
+                        .addAction(new ActionControl("Reset to System Default", "propertiesResetToSystemDefault", menuContainer, this::propertiesResetToSystemDefault))
+                        .build())
 
                 .addMenu(new MenuControl.Builder().setDisplayName("Logging")
-                                 .addAction(new ActionControl("Edit", "loggingEdit", menuContainer, this::loggingEdit))
-                                 .addAction(new ActionControl("Open Default", "loggingOpenDefault", menuContainer, this::loggingOpenDefault))
-                                 .addAction(new ActionControl("Open", "loggingOpen", menuContainer, this::loggingOpenDefault))
-                                 .addAction(mLoggingSaveDefaultAction)
-                                 .addAction(mLoggingSaveAsAction)
-                                 .addAction(new ActionControl("Test", "loggingTest", menuContainer, this::loggingTest))
-                                 .build())
+                        .addAction(new ActionControl("Edit", "loggingEdit", menuContainer, this::loggingEdit))
+                        .addAction(new ActionControl("Open Default", "loggingOpenDefault", menuContainer, this::loggingOpenDefault))
+                        .addAction(new ActionControl("Open", "loggingOpen", menuContainer, this::loggingOpenDefault))
+                        .addAction(mLoggingSaveDefaultAction)
+                        .addAction(mLoggingSaveAsAction)
+                        .addAction(new ActionControl("Test", "loggingTest", menuContainer, this::loggingTest))
+                        .build())
                 .build();
 
         Framework.logExit(mLogger);
@@ -548,12 +545,15 @@ public class Perception extends AppControlBase {
             undoRedoBuffer.endSavepoint(id);
             undoRedoBuffer.undo();
         });
-        showDialog(getProperties(), DialogOptions.NONE, getProperties().getUndoRedoBuffer()
-                , cancel
+
+        new DialogView(getProperties()
+                , DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog Closed")).build()
+                , null
                 , mPropertiesSave.doBefore(success)
                 , mPropertiesSaveAs.doBefore(success)
                 , mPropertiesSaveDefault.doBefore(success)
-                , ok);
+                , ok
+        ).showModal();
 
         Framework.logExit(mLogger);
     }

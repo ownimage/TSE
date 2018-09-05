@@ -5,27 +5,6 @@
  */
 package com.ownimage.framework.logging;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.BooleanControl;
@@ -39,6 +18,13 @@ import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
+import com.ownimage.framework.view.javafx.DialogView;
+
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class FrameworkLogger implements IControlChangeListener {// implements IControlChangeListener {
 
@@ -303,7 +289,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         buttons.add(ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed")));
         ActionControl[] buttonsArray = buttons.toArray(new ActionControl[buttons.size()]);
 
-        mAppView.showDialog(tabs, DialogOptions.NONE, buttonsArray);
+        new DialogView(tabs, DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog closed.")).build(), null, buttonsArray).showModal();
         Framework.logExit(mLogger);
     }
 
