@@ -25,6 +25,7 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
+import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Rectangle;
@@ -101,8 +102,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mViewOriginY;
 
     // Pixel Container
-    private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, Color.GREEN);
-    private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, Color.RED);
+    private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, getProperties().getCETEPMDEdgeColor());
+    private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, getProperties().getCETEPMDNodeColor());
     private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true);
     private final ObjectControl<PixelAction> mPixelAction =
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
@@ -133,10 +134,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mOkAction = pOkAction;
         mCancelAction = pCancelAction;
 
+        Properties properties = Services.getServices().getProperties();
+
         mPixelMapWidth = new IntegerControl("PixelMap Height", "pixelMapWidth", mGeneralContainer, getWidth(), 0, getWidth(), 50).setEnabled(false);
         mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, getHeight(), 50).setEnabled(false);
-        mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, 600, 100, 1000, 50);
-        mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, 2, 1, 16, 2);
+        mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, properties.getCETEPMDPreviewSize(), properties.CETEPMDPreviewSizeModel);
+        mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, properties.getCETEPMDZoom(), properties.CETEPMDZoomModel);
         mViewOriginX = new IntegerControl("View X", "x", mMoveContainer, 0, 0, getWidth(), 50);
         mViewOriginY = new IntegerControl("View Y", "y", mMoveContainer, 0, 0, getHeight(), 50);
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
@@ -668,5 +671,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean isVertexView() {
         return mContainerList.getSelectedContainer() == mVertexControlContainer;
+    }
+
+    private Properties getProperties() {
+        return Services.getServices().getProperties();
     }
 }

@@ -5,27 +5,16 @@
  */
 package com.ownimage.perception.app;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.control.BooleanControl.BooleanProperty;
-import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.IntegerControl.IntegerProperty;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.layout.VFlowLayout;
+import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
@@ -36,6 +25,14 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist, IControlChangeListener {
 
@@ -52,6 +49,14 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     // sizes
     private final IntegerControl mPreviewSize = new IntegerControl("Preview size", "previewSize", mContainer, 800, 500, 1600, 100);
     private final IntegerControl mSavePreviewSize = new IntegerControl("Save size", "savePreviewSize", mContainer, 500, 200, 1600, 100);
+
+    // cannyEdgeTransform
+    public final IntegerMetaType CETEPMDPreviewSizeModel = new IntegerMetaType(100, 1000, 50);
+    public final IntegerMetaType CETEPMDZoomModel = new IntegerMetaType(1, 20, 2);
+    private final IntegerControl mCETEPMDPreviewSize = new IntegerControl("Preview size", "previewSize", mContainer, 800, CETEPMDPreviewSizeModel);
+    private final IntegerControl mCETEPMDZoom = new IntegerControl("Save size", "savePreviewSize", mContainer, 2, CETEPMDZoomModel);
+    private final ColorControl mCETEPMDEdgeColor = new ColorControl("Edge Color", "edgeColor", mContainer, Color.GREEN);
+    private final ColorControl mCETEPMDNodeColor = new ColorControl("Node Color", "nodeColor", mContainer, Color.RED);
 
     // colors
     private final ColorControl mColor1 = new ColorControl("Color 1", "color1", mContainer, Color.RED);
@@ -93,12 +98,17 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
         VFlowLayout sizes = new VFlowLayout(mPreviewSize, mSavePreviewSize);
         VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
+
+        NamedTabs transformsTab = new NamedTabs("Transforms", "transforms");
+        transformsTab.addTab("CannyEdge", new VFlowLayout(mCETEPMDPreviewSize, mCETEPMDZoom, mCETEPMDEdgeColor, mCETEPMDNodeColor));
+
         VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
         VFlowLayout output = new VFlowLayout(mJPGQuality);
 
         view.addTab("Defaults", defaults);
         view.addTab("Sizes", sizes);
         view.addTab("Colors", colors);
+        view.addTab("Transforms", transformsTab);
         view.addTab("Render Engine", render);
         view.addTab("Output", output);
         view.addTab(ViewFactory.getInstance().getViewFactoryPropertiesViewable());
@@ -285,5 +295,21 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     public ImageQuality getImageQuality() {
         return new ImageQuality((float) Services.getServices().getProperties().getJpgQuality());
+    }
+
+    public int getCETEPMDPreviewSize() {
+        return mCETEPMDPreviewSize.getValue();
+    }
+
+    public int getCETEPMDZoom() {
+        return mCETEPMDZoom.getValue();
+    }
+
+    public Color getCETEPMDEdgeColor() {
+        return mCETEPMDEdgeColor.getValue();
+    }
+
+    public Color getCETEPMDNodeColor() {
+        return mCETEPMDNodeColor.getValue();
     }
 }

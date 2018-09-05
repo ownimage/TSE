@@ -5,13 +5,15 @@
  */
 package com.ownimage.framework.view.javafx;
 
-import java.util.Iterator;
-
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.VFlowLayout;
-
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+
+import java.util.Iterator;
 
 public class VFlowView extends ViewBase<VFlowLayout> {
 
@@ -24,11 +26,17 @@ public class VFlowView extends ViewBase<VFlowLayout> {
 
     private void createView() {
         mUI = new VBox();
+        mUI.setPadding(new Insets(10, 0, 0, 0));
 
         Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
         while (children.hasNext()) {
             IViewable child = children.next();
-            mUI.getChildren().add(((FXView) (child.createView())).getUI());
+
+            HBox hbox = new HBox();
+            hbox.setAlignment(Pos.TOP_LEFT);
+            hbox.getChildren().add(((FXView) (child.createView())).getUI());
+
+            mUI.getChildren().add(hbox);
         }
     }
 
