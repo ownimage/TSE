@@ -45,14 +45,12 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public double closestLambda(final Point pPoint, PixelChain pPixelChain) {
-        final double lambda = mLineSegment.closestLambda(pPoint);
-        return lambda;
+        return mLineSegment.closestLambda(pPoint);
     }
 
     @Override
     public double distance(PixelChain pPixelChain, final Point pUVHWPoint) {
-        final double distance = mLineSegment.distance(pUVHWPoint);
-        return distance;
+        return mLineSegment.distance(pUVHWPoint);
     }
 
     public Vector getAB() {

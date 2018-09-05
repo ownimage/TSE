@@ -53,7 +53,7 @@ public class Vertex implements IVertex {
     /**
      * Calc tangent always generates a tangent line that goes in the direction of start to finish.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      */
     @Override
     public Line calcTangent(PixelChain pPixelChain) {

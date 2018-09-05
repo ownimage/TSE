@@ -42,8 +42,7 @@ public class CurveSegment extends SegmentBase {
     public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO is this used any more?
         final double distance = distance(pPixelChain, pPoint);
-        final boolean b = distance < pTolerance;
-        return b;
+        return distance < pTolerance;
     }
 
     // @Override
@@ -177,7 +176,7 @@ public class CurveSegment extends SegmentBase {
      * Gets the Vector from P0 to P1.
      *
      * @return the Vector
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      */
     public Vector getP0P1(PixelChain pPixelChain) {
         return getP1().minus(getP0(pPixelChain));
@@ -195,7 +194,7 @@ public class CurveSegment extends SegmentBase {
      * Gets the Vector from P2 to P1
      *
      * @return the Vector
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      */
     public Vector getP2P1(PixelChain pPixelChain) {
         return getP2(pPixelChain).minus(getP1());
@@ -203,10 +202,9 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public Point getPointFromLambda(PixelChain pPixelChain, final double pT) {
-        final Point p = getP0(pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
+        return getP0(pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
                 .add(getP2(pPixelChain).multiply(pT * pT));
-        return p;
     }
 
     @Override

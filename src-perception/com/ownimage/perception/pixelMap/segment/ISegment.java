@@ -17,7 +17,7 @@ import java.io.Serializable;
 public interface ISegment extends Serializable {
 
 
-    final static long serialVersionUID = 1L;
+    long serialVersionUID = 1L;
 
     /**
      * Attach to vertexes. A number of segments might be defines as being between the same two vertexes, this is done to see which one of the segments most closely approximates the underlying pixels.
@@ -41,7 +41,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the end index (into the mPixels) of this segment.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the end index
      */
     int getEndIndex(PixelChain pPixelChain);
@@ -49,7 +49,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the end Pixel of this segment.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the end Pixel
      */
     IntegerPoint getEndPoint(PixelChain pPixelChain);
@@ -59,7 +59,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the end tangent.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
     Vector getEndTangentVector(PixelChain pPixelChain);
@@ -67,7 +67,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the end uhvw point.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
     Point getEndUHVWPoint(PixelChain pPixelChain);
@@ -75,7 +75,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the end Vertex of this segment.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the end Vertex
      */
     IVertex getEndVertex(PixelChain pPixelChain);
@@ -89,7 +89,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the start index (into the mPixels) of this segment.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the start index
      */
     int getStartIndex(PixelChain pPixelChain);
@@ -99,7 +99,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the start tangent
      */
     Vector getStartTangentVector(PixelChain pPixelChain);
@@ -107,7 +107,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the start uhvw point.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
     Point getStartUHVWPoint(PixelChain pPixelChain);
@@ -115,7 +115,7 @@ public interface ISegment extends Serializable {
     /**
      * Gets the start Vertex of this segment.
      *
-     * @param pPixelChain
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the start Vertex
      */
     IVertex getStartVertex(PixelChain pPixelChain);

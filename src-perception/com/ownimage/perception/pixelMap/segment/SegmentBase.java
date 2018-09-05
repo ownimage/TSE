@@ -76,8 +76,7 @@ public abstract class SegmentBase implements ISegment {
     public abstract double distance(PixelChain pPixelChain, final Point pUVHWPoint);
 
     public double getActualThickness(final PixelChain pPixelChain, final double pPosition) {
-        final double actualThickness = pPixelChain.getActualThickness(pPosition);
-        return actualThickness;
+        return pPixelChain.getActualThickness(pPosition);
     }
 
     public Point getControlPoint() {
