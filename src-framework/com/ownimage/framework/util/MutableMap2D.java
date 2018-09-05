@@ -8,7 +8,7 @@ package com.ownimage.framework.util;
 import java.util.logging.Logger;
 
 
-public class DONOTADDMutableMap2D<T> {
+public class MutableMap2D<T> {
 
     public static Logger mLogger = Framework.getLogger();
     private static final int DENSITY = 1000;
@@ -18,7 +18,7 @@ public class DONOTADDMutableMap2D<T> {
     private Object[][] mData;
 
 
-    public DONOTADDMutableMap2D(int pX, int pY, T pDefaultValue) {
+    public MutableMap2D(int pX, int pY, T pDefaultValue) {
         Framework.checkParameterGreaterThan(mLogger, pX, 0, "pX");
         Framework.checkParameterGreaterThan(mLogger, pY, 0, "pY");
 
@@ -33,13 +33,13 @@ public class DONOTADDMutableMap2D<T> {
         return (T) mData[pX][pY];
     }
 
-    public DONOTADDMutableMap2D set(int pX, int pY, T pValue) {
+    public MutableMap2D set(int pX, int pY, T pValue) {
         checkXY(pX, pY);
         mData[pX][pY] = pValue;
         return this;
     }
 
-    public DONOTADDMutableMap2D getVersion() {
+    public MutableMap2D getVersion() {
         return this;
     }
 
