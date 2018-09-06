@@ -5,24 +5,21 @@
  */
 package com.ownimage.framework.view.javafx;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IDoubleView;
-
 import javafx.beans.InvalidationListener;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
@@ -50,11 +47,17 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         double value = mControl.getValue();
         double step = mControl.getMetaType().getStep();
 
+        // https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
+        SpinnerValueFactory<Double> factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, pDoubleControl.getValue(), step);
+        TextFormatter<Double> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
         mSpinner = new Spinner<>(min, max, value, step);
+        mSpinner.setValueFactory(factory);
         mSpinner.setEditable(mControl.isEnabled());
         mSpinner.setDisable(!mControl.isEnabled());
         mSpinner.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         mSpinner.valueProperty().addListener((observable, oldValue, newValue) -> setControlValueFromSpinner(newValue));
+        mSpinner.getEditor().setTextFormatter(formatter);
+        factory.valueProperty().bindBidirectional(formatter.valueProperty());
         bindWidth(mSpinner, getFactory().controlWidthProperty);
 
         mSlider = new Slider(min, max, value);
@@ -141,23 +144,28 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
     }
 
     public void setDisplayType(DoubleMetaType.DisplayType pDisplayType) {
-        runOnFXApplicationThread(() -> {
-            if (pDisplayType == DoubleMetaType.DisplayType.SLIDER) {
-                mDisplayType = DoubleMetaType.DisplayType.SLIDER;
-                mDisplayOption.setGraphic(new ImageView(mSliderImage));
-                mControlPanel.getChildren().clear();
-                mControlPanel.getChildren().addAll(mSlider, mDisplayedValue);
-            } else {
-                mDisplayType = DoubleMetaType.DisplayType.SPINNER;
-                mDisplayOption.setGraphic(new ImageView(mSpinnerImage));
-                mControlPanel.getChildren().clear();
-                mControlPanel.getChildren().add(mSpinner);
-            }
+        setMutating(true);
+        try {
+            runOnFXApplicationThread(() -> {
+                if (pDisplayType == DoubleMetaType.DisplayType.SLIDER) {
+                    mDisplayType = DoubleMetaType.DisplayType.SLIDER;
+                    mDisplayOption.setGraphic(new ImageView(mSliderImage));
+                    mControlPanel.getChildren().clear();
+                    mControlPanel.getChildren().addAll(mSlider, mDisplayedValue);
+                } else {
+                    mDisplayType = DoubleMetaType.DisplayType.SPINNER;
+                    mDisplayOption.setGraphic(new ImageView(mSpinnerImage));
+                    mControlPanel.getChildren().clear();
+                    mControlPanel.getChildren().add(mSpinner);
+                }
 
-            if (isNotMutating()) {
-                mControl.setDisplayType(pDisplayType, this);
-            }
-        });
+                if (isNotMutating()) {
+                    mControl.setDisplayType(pDisplayType, this);
+                }
+            });
+        } finally {
+            setMutating(false);
+        }
     }
 
     private void updateDisplayedValue() {
