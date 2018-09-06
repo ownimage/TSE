@@ -5,10 +5,10 @@
  */
 package com.ownimage.perception.util;
 
+import com.ownimage.perception.view.javafx.app.FXPerception;
+
 import java.awt.*;
 import java.util.List;
-
-import com.ownimage.perception.view.javafx.app.FXPerception;
 
 public class KColor {
 
@@ -79,8 +79,7 @@ public class KColor {
 
     public static int brighter(final int pColor1, final int pColor2, final double pAmount) {
         final int delta = pColor2 - pColor1;
-        final int newValue = (int) (pColor1 + delta * pAmount);
-        return newValue;
+        return (int) (pColor1 + delta * pAmount);
     }
 
     /**
@@ -89,34 +88,36 @@ public class KColor {
      * then Color2 is underneath with it's own opacity in the color, but also at a strength given by Amount.
      * The result is the resultant Color with the appropriate opacity.
      *
-     * @param pColor1
-     * @param pColor2
-     * @param pAmount
-     * @return
+     * @param pColor1 topColor including opacity
+     * @param pColor2 bottomColor including opacity
+     * @param pAmount amount of blend
+     * @return new Color
      */
     public static Color fade(final Color pColor1, final Color pColor2, final double pAmount) {
+        float amount = (float) pAmount;
         final float[] c1 = pColor1.getComponents(new float[4]);
         final float[] c2 = pColor2.getComponents(new float[4]);
-        final float omaa = (1.0f - c1[3]) * c2[3] * (float) pAmount;
-        final float red = c1[0] * c1[3] + omaa * c2[0];
-        final float green = c1[1] * c1[3] + omaa * c2[1];
-        final float blue = c1[2] * c1[3] + omaa * c2[2];
-        final float alpha = c1[3] + omaa;
-        final Color color = new Color(red, green, blue, alpha);
-        return color;
+        final float red = relativeColor(c1[0], c1[3], c2[0], c2[3] * amount);
+        final float green = relativeColor(c1[1], c1[3], c2[1], c2[3] * amount);
+        final float blue = relativeColor(c1[2], c1[3], c2[2], c2[3] * amount);
+        final float alpha = c1[3] + (1.0f - c1[3]) * c2[3] * amount;
+        return new Color(red, green, blue, alpha);
+    }
+
+    private static float relativeColor(final float c1, final float a1, final float c2, final float a2) {
+        float omaa = (1.0f - a1) * a2;
+        return (c1 * a1 + c2 * omaa);
     }
 
     public static Color fade(final Color pColor, final double pAmount) {
         final int red = brighter(pColor.getRed(), pAmount);
         final int green = brighter(pColor.getGreen(), pAmount);
         final int blue = brighter(pColor.getBlue(), pAmount);
-        final Color color = new Color(red, green, blue);
-        return color;
+        return new Color(red, green, blue);
     }
 
     public static Color invert(final Color pColor) {
-        final Color c = new Color(255 - pColor.getRed(), 255 - pColor.getGreen(), 255 - pColor.getBlue());
-        return c;
+        return new Color(255 - pColor.getRed(), 255 - pColor.getGreen(), 255 - pColor.getBlue());
     }
 
     public static double luminance(final Color pColor) {
@@ -140,7 +141,6 @@ public class KColor {
     }
 
     public static String toHex(final Color pC) {
-        String hex = String.format("#%02x%02x%02x", pC.getRed(), pC.getGreen(), pC.getBlue());
-        return hex;
+        return String.format("#%02x%02x%02x", pC.getRed(), pC.getGreen(), pC.getBlue());
     }
 }

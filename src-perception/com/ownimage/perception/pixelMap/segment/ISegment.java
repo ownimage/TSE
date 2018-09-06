@@ -32,7 +32,7 @@ public interface ISegment extends Serializable {
      */
     double calcError(final PixelChain pPixelChain);
 
-    boolean closerThan(final PixelChain pPixelChain, Point pPoint);
+    boolean closerThanActual(final PixelChain pPixelChain, Point pPoint, double pMultiplier);
 
     boolean closerThan(PixelChain pPixelChain, Point pPoint, double pTolerance);
 

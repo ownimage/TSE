@@ -68,7 +68,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mLineTolerance =
             new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
 
-    DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
+    private DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
     private final DoubleControl mLineCurvePreference =
             new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2, meta);//1.2d, 0.1d, 100.0d);
 
@@ -274,10 +274,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         } finally {
             setMutating(false);
         }
-        ;
     }
 
-    public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
+    private synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
         if (mGenerateEdgesDialog == null) {
             mGenerateEdgesDialog = new GenerateEdgesDialog(this, "Canny Edge Transform", "edge");
         }
@@ -628,11 +627,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     public void transform(final ITransformResult pRenderResult) {
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
         getPixelMap().ifPresent(pixelMap -> pixelMap.transform(pRenderResult));
-//        int x = (int) Math.floor(getWidth() * pRenderResult.getX());
-//        int y = (int) Math.floor(getHeight() * pRenderResult.getY());
-//        if (mPixelMap != null && mPixelMap.getPixelAt(x, y).isEdge()) {
-//            pRenderResult.setColor(Color.RED);
-//        }
+
         float whiteFade = mWhiteFade.getValue().floatValue();
         if (whiteFade != 0.0f) {
             Color color = pRenderResult.getColor();

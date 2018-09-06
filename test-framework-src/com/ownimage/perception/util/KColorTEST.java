@@ -4,35 +4,28 @@
  */
 package com.ownimage.perception.util;
 
-import java.awt.*;
+import org.junit.*;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.awt.*;
 
 public class KColorTEST {
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
     }
 
 
-    public void runTest(final Color color1, final Color color2, final double amount, final Color expected) {
+    private void runTest(final Color color1, final Color color2, final double amount, final Color expected) {
         Color actual = KColor.fade(color1, color2, amount);
         assertEquals(expected, actual);
     }
 
     private void assertEquals(Color expected, Color actual) {
-        Assert.assertEquals(expected.getRed(), actual.getRed());
-        Assert.assertEquals(expected.getGreen(), actual.getGreen());
-        Assert.assertEquals(expected.getBlue(), actual.getBlue());
+        Assert.assertEquals(expected, actual);
         Assert.assertEquals(expected.getAlpha(), actual.getAlpha());
     }
 

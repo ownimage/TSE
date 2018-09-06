@@ -131,7 +131,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         resetSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
-        mData = new ImmutableLayerMap2D<>(pWidth, pHeight, new Byte((byte) 0)).getMutable();
+        mData = new ImmutableLayerMap2D<>(pWidth, pHeight, (byte) 0).getMutable();
         // resetSegmentIndex();
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
     }
@@ -300,8 +300,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     boolean getData(final Pixel pPixel, final byte pValue) {
         if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
             final int x = modWidth(pPixel.getX());
-            final boolean b = (getValue(x, pPixel.getY()) & pValue) != 0;
-            return b;
+            return (getValue(x, pPixel.getY()) & pValue) != 0;
         } else {
             return false;
         }
@@ -348,9 +347,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final double shortThickness = getMediumLineThickness() * pThicknessMuliplier / 1000d;
         final double normalThickness = getShortLineThickness() * pThicknessMuliplier / 1000d;
         final double longThickness = getLongLineThickness() * pThicknessMuliplier / 1000d;
-        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness, pThickOnly)) {
-            return KColor.fade(pColorIn, pLineColor,
-                               pOpacity);
+        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness, pThicknessMuliplier, pThickOnly)) {
+            return KColor.fade(pColorIn, pLineColor, pOpacity);
         }
         return pColorIn;
     }
@@ -710,10 +708,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final boolean pThickOnly) {
+    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, double pMultiplier, final boolean pThickOnly) {
         calcSegmentIndex();
 
-        final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
+        final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         final Point uhvw = toUHVW(pPoint);
 
         for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
@@ -726,7 +724,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                         if (pThickOnly && tuple._1().getThickness() != PixelChain.Thickness.Thick) {
                             break;
                         }
-                        if (tuple._2().closerThan(tuple._1(), uhvw)) {
+                        if (tuple._2().closerThanActual(tuple._1(), uhvw, pMultiplier)) {
                             return true;
                         }
                     }
@@ -760,8 +758,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public Point pixelToPoint(final Pixel pPixel) {
-        final Point point = new Point((double) pPixel.getX() / (double) getWidth(), (double) pPixel.getY() / (double) getHeight());
-        return point;
+        return new Point((double) pPixel.getX() / (double) getWidth(), (double) pPixel.getY() / (double) getHeight());
     }
 
     private void reportProgress(final IProgressObserver pProgressObserver, String pProgressString, int pPercent) {
@@ -769,7 +766,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void reapproximateAllChains() {
-        mPixelChains.stream().parallel().forEach(pc -> pc.approximate());
+        mPixelChains.stream().parallel().forEach(PixelChain::approximate);
     }
 
     public void process(final IProgressObserver pProgressObserver) {
@@ -952,20 +949,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final HashSet<Pixel> toBeRemoved = new HashSet<>();
 
         mAllNodes.forEach(node -> node.getNodeNeighbours().forEach(other -> {
-            final Set<Pixel> nodeSet = node.allEdgeNeighbours();
-            final Set<Pixel> otherSet = other.allEdgeNeighbours();
+                    final Set<Pixel> nodeSet = node.allEdgeNeighbours();
+                    final Set<Pixel> otherSet = other.allEdgeNeighbours();
 
-            nodeSet.remove(other);
-            nodeSet.removeAll(otherSet);
+                    nodeSet.remove(other);
+                    nodeSet.removeAll(otherSet);
 
-            otherSet.remove(node);
-            otherSet.removeAll(nodeSet);
+                    otherSet.remove(node);
+                    otherSet.removeAll(nodeSet);
 
-            if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-                // TODO should be a better check here to see whether it is better to remove the other node
-                toBeRemoved.add(node);
-            }
-                          })
+                    if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                        // TODO should be a better check here to see whether it is better to remove the other node
+                        toBeRemoved.add(node);
+                    }
+                })
         );
 
         mAllNodes.removeAll(toBeRemoved);
@@ -1193,8 +1190,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (before != pValue) {
             Services.getServices().getUndoRedoBuffer()
                     .add("Pixel::setValue",
-                         () -> setValueNoUndo(pX, pY, before),
-                         () -> setValueNoUndo(pX, pY, pValue)
+                            () -> setValueNoUndo(pX, pY, before),
+                            () -> setValueNoUndo(pX, pY, pValue)
                     );
         }
         setValueNoUndo(pX, pY, pValue);
@@ -1269,10 +1266,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
         color = transformGetLineColor(pIn, color, false);
         color = getMaxiLineShadowColor(pIn, color);
-        // color = getShortLineColor(pIn, color);
-        // return color;
-        // }
-        //
+
         pRenderResult.setColor(color);
     }
 

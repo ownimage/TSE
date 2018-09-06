@@ -30,10 +30,10 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint) {
+    public boolean closerThanActual(final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
         final double lambda = closestLambda(pPoint, pPixelChain);
         final double position = getStartPosition() + lambda * getLength(pPixelChain);
-        final double actualThickness = getActualThickness(pPixelChain, position);
+        final double actualThickness = getActualThickness(pPixelChain, position) * pMultiplier;
         return closerThan(pPixelChain, pPoint, actualThickness);
     }
 

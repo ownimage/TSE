@@ -76,7 +76,7 @@ public class RenderService {
             class TransformJob extends Job {
                 private boolean mTerminated = false;
 
-                public TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
+                private TransformJob(final String pName, final Priority pPriority, final Object pControlObject) {
                     super(pName, pPriority, pControlObject);
                 }
 
@@ -104,7 +104,7 @@ public class RenderService {
                     }
 
                     if (mPictureType == null) mPictureControl.setValue(pictureType);
-                    if (mCompleteAction != null && !batch.hasNext()) mCompleteAction.performAction();
+                    if (mCompleteAction != null && !mTerminated) mCompleteAction.performAction();
                     if (mObserver != null) mObserver.finished();
                 }
 
@@ -223,7 +223,7 @@ public class RenderService {
         return Services.getServices().getProperties();
     }
 
-    synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
+    private synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");

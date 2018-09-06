@@ -62,8 +62,8 @@ public class DoubleCurveSegment extends SegmentBase {
     }
 
     @Override
-    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint) {
-        return mStartCurve.closerThan(pPixelChain, pPoint) || mEndCurve.closerThan(pPixelChain, pPoint);
+    public boolean closerThanActual(final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+        return mStartCurve.closerThanActual(pPixelChain, pPoint, pMultiplier) || mEndCurve.closerThanActual(pPixelChain, pPoint, pMultiplier);
     }
 
     @Override
