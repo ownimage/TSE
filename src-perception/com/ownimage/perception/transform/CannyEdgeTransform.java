@@ -5,21 +5,7 @@
  */
 package com.ownimage.perception.transform;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.logging.Logger;
-
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.persist.IPersistDB;
@@ -37,6 +23,13 @@ import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
 import com.ownimage.perception.util.KColor;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
@@ -273,9 +266,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public void setPreviousTransform(ITransform pPreviousTransform) {
-        super.setPreviousTransform(pPreviousTransform);
-        mWidth.setValue(pPreviousTransform.getWidth());
-        mHeight.setValue(pPreviousTransform.getHeight());
+        try {
+            setMutating(true);
+            super.setPreviousTransform(pPreviousTransform);
+            mWidth.setValue(pPreviousTransform.getWidth());
+            mHeight.setValue(pPreviousTransform.getHeight());
+        } finally {
+            setMutating(false);
+        }
+        ;
     }
 
     public synchronized GenerateEdgesDialog getGenerateEdgesDialog() {
