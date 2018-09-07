@@ -278,6 +278,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         NamedTabs tabs = new NamedTabs("Edit Logging", "editLogging");
         tabs.addTab(mFileHandlerPropertiesContainer);
         tabs.addTab(levels);
+        tabs.setSelectedIndex(1);
 
         new ActionControl("Reset All", "resetAll", levels, () -> {
             for (String name : loggerNames) {
