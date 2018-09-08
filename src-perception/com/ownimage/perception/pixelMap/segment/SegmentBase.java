@@ -33,8 +33,8 @@ public abstract class SegmentBase implements ISegment {
             throw new IllegalArgumentException("pEnd must not be null.");
         }
 
-        if (pStart.getIndex() >= pEnd.getIndex()) {
-            throw new IllegalArgumentException("start index =(" + pStart.getIndex() + ")must be less than end index =(" + pEnd.getIndex() + ").");
+        if (pStart.getPixelIndex() >= pEnd.getPixelIndex()) {
+            throw new IllegalArgumentException("start index =(" + pStart.getPixelIndex() + ")must be less than end index =(" + pEnd.getPixelIndex() + ").");
         }
 
         mStart = pStart;
@@ -87,7 +87,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public int getEndIndex(PixelChain pPixelChain) {
-        return mEnd.getIndex();
+        return mEnd.getPixelIndex();
     }
 
     @Override
@@ -141,7 +141,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public int getStartIndex(PixelChain pPixelChain) {
-        return mStart.getIndex();
+        return mStart.getPixelIndex();
     }
 
     public double getStartPosition() {

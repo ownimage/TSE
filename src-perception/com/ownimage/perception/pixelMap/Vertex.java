@@ -22,7 +22,8 @@ public class Vertex implements IVertex {
     public final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;
 
-    private int mIndex;
+    private int mVertexIndex;
+    private int mPixelIndex;
 
     private ISegment mStartSegment;
     private ISegment mEndSegment;
@@ -34,20 +35,23 @@ public class Vertex implements IVertex {
      */
     private boolean mSmooth;
 
-    private Vertex(PixelChain pPixelChain, final IVertex pOther) {
-        mIndex = pOther.getIndex();
-        mTangent = pOther.calcTangent(pPixelChain);
+    private Vertex(final int pVertexIndex, final int pPixelIndex) {
+        mVertexIndex = pVertexIndex;
+        mPixelIndex = pPixelIndex;
+
     }
 
-    private Vertex(final PixelChain pPixelChain, final int pIndex, final ISegment pStartSegment, final ISegment pEndSegment) {
-        mIndex = pIndex;
+    public static Vertex createVertex(PixelChain pPixelChain, int pVertexIndex, final int pPixelIndex) {
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
+        }
 
-        mStartSegment = pStartSegment;
-        mEndSegment = pEndSegment;
+        return new Vertex(pVertexIndex, pPixelIndex);
     }
 
-    public static Vertex createVertex(final PixelChain mPixelChain, final int pIndex) {
-        return new Vertex(mPixelChain, pIndex, null, null);
+    @Override
+    public int getVertexIndex() {
+        return mVertexIndex;
     }
 
     /**
@@ -83,7 +87,7 @@ public class Vertex implements IVertex {
      */
     @Override
     public int compareTo(final IVertex pOther) {
-        return mIndex - pOther.getIndex();
+        return mPixelIndex - pOther.getPixelIndex();
     }
 
     @Override
@@ -93,7 +97,7 @@ public class Vertex implements IVertex {
         }
 
         final Vertex other = (Vertex) pObject;
-        return mIndex == other.mIndex;
+        return mPixelIndex == other.mPixelIndex;
     }
 
     @Override
@@ -107,8 +111,8 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public int getIndex() {
-        return mIndex;
+    public int getPixelIndex() {
+        return mPixelIndex;
     }
 
     @Override
@@ -123,11 +127,11 @@ public class Vertex implements IVertex {
             throw new IllegalStateException("Cannot set the index on a Vertex that isFixed()");
         }
 
-        if (mIndex == pIndex) {
+        if (mPixelIndex == pIndex) {
             return;
         }
 
-        mIndex = pIndex;
+        mPixelIndex = pIndex;
 
         if (mStartSegment != null) {
             mStartSegment.vertexChange(pPixelChain, this);
@@ -140,7 +144,7 @@ public class Vertex implements IVertex {
 
     @Override
     public Pixel getPixel(PixelChain pPixelChain) {
-        return pPixelChain.getPixel(mIndex);
+        return pPixelChain.getPixel(mPixelIndex);
     }
 
     @Override
@@ -225,7 +229,7 @@ public class Vertex implements IVertex {
 
     @Override
     public String toString() {
-        return "Vertex[Index=" + mIndex + "]";
+        return "Vertex[Index=" + mPixelIndex + "]";
     }
 
 }

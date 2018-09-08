@@ -19,9 +19,11 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
 	ISegment getEndSegment();
 
-	int getIndex();
+	int getPixelIndex();
 
 	ISegment getStartSegment();
+
+	int getVertexIndex();
 
 	Line calcTangent(PixelChain pPiixelChain);
 
