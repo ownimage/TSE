@@ -26,23 +26,10 @@ public class DoubleCurveSegment extends SegmentBase {
      * The end tangent. This should match the start vertex tangent exactly.
      */
     private final Line mEndTangent;
-    private final IVertex mThroughVertex;
+    private final IVertex mThroughVertex; // TODO remove
 
     private final CurveSegment mStartCurve;
     private final CurveSegment mEndCurve;
-
-
-    DoubleCurveSegment(final IVertex pStart, final Line pStartTangent, final CurveSegment pStartCurve, final IVertex pEnd, final Line pEndTangent, final CurveSegment pEndCurve, final IVertex pThrough, PixelChain pPixelChain) {
-        super(pStart, pEnd);
-        mStartTangent = pStartTangent;
-        mStartCurve = pStartCurve;
-        mEndTangent = pEndTangent;
-        mEndCurve = pEndCurve;
-        mThroughVertex = pThrough;
-
-        mThroughVertex.setStartSegment(mStartCurve);
-        mThroughVertex.setEndSegment(mEndCurve);
-    }
 
     DoubleCurveSegment(PixelChain pPixelChain, final IVertex pStart, final CurveSegment pStartCurve, final IVertex pEnd, final CurveSegment pEndCurve, final IVertex pThrough) {
         super(pStart, pEnd);
@@ -51,9 +38,6 @@ public class DoubleCurveSegment extends SegmentBase {
         mEndCurve = pEndCurve;
         mEndTangent = mEndCurve.getEndTangent(pPixelChain);
         mThroughVertex = pThrough;
-
-        mThroughVertex.setStartSegment(mStartCurve);
-        mThroughVertex.setEndSegment(mEndCurve);
     }
 
     @Override
@@ -172,7 +156,7 @@ public class DoubleCurveSegment extends SegmentBase {
     }
 
     @Override
-    public void vertexChange(PixelChain pPixelChain, final IVertex pVertex) {
+    public void vertexChange(PixelChain pPixelChain, final IVertex pVertex) { // TODO
         super.vertexChange(pPixelChain, pVertex);
     }
 

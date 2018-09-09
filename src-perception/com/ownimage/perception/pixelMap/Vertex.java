@@ -14,31 +14,20 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import java.util.logging.Logger;
 
 /**
- * The Class Vertex. Note: this class has a natural ordering that is inconsistent with equals.
+ * The Vertex class, this class is immutable. Note: this class has a natural ordering that is inconsistent with equals.
  */
 public class Vertex implements IVertex {
 
 
-    public final static Logger mLogger = Framework.getLogger();
+    private final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;
 
     private int mVertexIndex;
     private int mPixelIndex;
 
-    private ISegment mStartSegment;
-    private ISegment mEndSegment;
-
-    private Line mTangent;
-
-    /**
-     * This is used to track whether the segments either side match the tangent.
-     */
-    private boolean mSmooth;
-
     private Vertex(final int pVertexIndex, final int pPixelIndex) {
         mVertexIndex = pVertexIndex;
         mPixelIndex = pPixelIndex;
-
     }
 
     public static Vertex createVertex(PixelChain pPixelChain, int pVertexIndex, final int pPixelIndex) {
@@ -61,23 +50,22 @@ public class Vertex implements IVertex {
      */
     @Override
     public Line calcTangent(PixelChain pPixelChain) {
-        if (mTangent == null) {
-            if (getStartSegment() == null && getEndSegment() == null) {
-                mTangent = null;
-            } else if (getStartSegment() == null) {
-                Line tangent = getEndSegment().getStartTangent(pPixelChain);
-                mTangent = tangent.getReverse();
-            } else if (getEndSegment() == null) {
-                mTangent = getStartSegment().getEndTangent(pPixelChain);
+        Line tangent;
+        if (getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null) {
+            tangent = null;
+        } else if (getStartSegment(pPixelChain) == null) {
+            tangent = getEndSegment(pPixelChain).getStartTangent(pPixelChain);
+            tangent = tangent.getReverse();
+        } else if (getEndSegment(pPixelChain) == null) {
+            tangent = getStartSegment(pPixelChain).getEndTangent(pPixelChain);
             } else {
-                final Point startTangentPoint = getStartSegment().getEndTangent(pPixelChain).getPoint(1.0d);
-                final Point endTangentPoint = getEndSegment().getStartTangent(pPixelChain).getPoint(1.0d);
+            final Point startTangentPoint = getStartSegment(pPixelChain).getEndTangent(pPixelChain).getPoint(1.0d);
+            final Point endTangentPoint = getEndSegment(pPixelChain).getStartTangent(pPixelChain).getPoint(1.0d);
                 final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
 
-                mTangent = new Line(getUHVWPoint(pPixelChain), getUHVWPoint(pPixelChain).add(tangentVector));
+            tangent = new Line(getUHVWPoint(pPixelChain), getUHVWPoint(pPixelChain).add(tangentVector));
             }
-        }
-        return mTangent;
+        return tangent;
     }
 
     /*
@@ -101,13 +89,8 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public ISegment getEndSegment() {
-        return mEndSegment;
-    }
-
-    @Override
-    public void setEndSegment(final ISegment pEndSegment) {
-        mEndSegment = pEndSegment;
+    public ISegment getEndSegment(PixelChain pPixelChain) {
+        return pPixelChain.getSegment(mVertexIndex);
     }
 
     @Override
@@ -116,55 +99,13 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public void setIndex(PixelChain pPixelChain, final int pIndex) {
-        // if (mStartSegment != null && !(pIndex > mStartSegment.getStartIndex())) { throw new IllegalArgumentException("pIndex must be greater than mStartSegment's starting index"); }
-
-        if (mEndSegment != null && !(pIndex < mEndSegment.getEndIndex(pPixelChain))) {
-            throw new IllegalArgumentException("pIndex must be less than than mEndSegment's end index");
-        }
-
-        if (isFixed(pPixelChain)) {
-            throw new IllegalStateException("Cannot set the index on a Vertex that isFixed()");
-        }
-
-        if (mPixelIndex == pIndex) {
-            return;
-        }
-
-        mPixelIndex = pIndex;
-
-        if (mStartSegment != null) {
-            mStartSegment.vertexChange(pPixelChain, this);
-        }
-
-        if (mEndSegment != null) {
-            mEndSegment.vertexChange(pPixelChain, this);
-        }
-    }
-
-    @Override
     public Pixel getPixel(PixelChain pPixelChain) {
         return pPixelChain.getPixel(mPixelIndex);
     }
 
     @Override
-    public ISegment getStartSegment() {
-        return mStartSegment;
-    }
-
-    @Override
-    public void setStartSegment(final ISegment pStartSegment) {
-        mStartSegment = pStartSegment;
-    }
-
-    @Override
-    public Line getTangent() {
-        return mTangent;
-    }
-
-    @Override
-    public void setTangent(final com.ownimage.perception.math.LineSegment pTangent) {
-        mTangent = pTangent;
+    public ISegment getStartSegment(PixelChain pPixelChain) {
+        return pPixelChain.getSegment(mVertexIndex - 1);
     }
 
     @Override
@@ -173,58 +114,23 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public int getX(PixelChain pPixelChain) {
-        Framework.logEntry(mLogger);
-        final int x = getPixel(pPixelChain).getX();
-        Framework.logExit(mLogger);
-        return x;
+    public boolean isDisconnected(PixelChain pPixelChain) {
+        return getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null;
     }
 
     @Override
-    public int getY(PixelChain pPixelChain) {
-        Framework.logEntry(mLogger);
-        final int y = getPixel(pPixelChain).getY();
-        Framework.logExit(mLogger);
-        return y;
+    public boolean isEnd(PixelChain pPixelChain) {
+        return getStartSegment(pPixelChain) != null && getEndSegment(pPixelChain) == null;
     }
 
     @Override
-    public boolean isDisconnected() {
-        return getStartSegment() == null && getEndSegment() == null;
+    public boolean isMiddle(PixelChain pPixelChain) {
+        return getStartSegment(pPixelChain) != null && getEndSegment(pPixelChain) != null;
     }
 
     @Override
-    public boolean isEnd() {
-        return getStartSegment() != null && getEndSegment() == null;
-    }
-
-    @Override
-    public boolean isFixed(PixelChain pPixelChain) {
-        return getPixel(pPixelChain).isFixed();
-    }
-
-    @Override
-    public void setFixed(final boolean pFixed) {
-        //mPixel.setFixed(pFixed);
-    }
-
-    @Override
-    public boolean isMiddle() {
-        return getStartSegment() != null && getEndSegment() != null;
-    }
-
-    @Override
-    public boolean isStart() {
-        return getStartSegment() == null && getEndSegment() != null;
-    }
-
-    private boolean samePosition(PixelChain pPixelChain, final IVertex pVertex) {
-        Framework.logEntry(mLogger);
-        Framework.logParams(mLogger, "pVertex", pVertex);
-
-        final boolean result = getX(pPixelChain) == pVertex.getX(pPixelChain) && getY(pPixelChain) == pVertex.getY(pPixelChain);
-        Framework.logExit(mLogger);
-        return result;
+    public boolean isStart(PixelChain pPixelChain) {
+        return getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) != null;
     }
 
     @Override

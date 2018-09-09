@@ -42,9 +42,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void attachToVertexes(PixelChain pPixelChain, final boolean pReCalcSegments) {
-        mStart.setEndSegment(this);
-        mEnd.setStartSegment(this);
+    public void attachToVertexes(PixelChain pPixelChain, final boolean pReCalcSegments) {  // TODO remove
         if (pReCalcSegments) {
             //pPixelChain.reCalcSegments();
             throw new RuntimeException("PixelChain must reCalcSegments remove recalc arg");

@@ -5,6 +5,7 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
+import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.IVertex;
@@ -42,10 +43,10 @@ public class SegmentFactory {
 			if (segment.getA().length2() != 0) {
 				return segment;
 			} else {
-				return null; // createTempStraightSegment(pStart, pEnd);
+				return null;//createTempStraightSegment(pStart, pEnd);
 			}
 		} catch (Throwable pT) {
-			mLogger.severe("Error " + pT.getMessage());
+			mLogger.severe(FrameworkLogger.throwableToString(pT));
 		}
 		return null;
 	}
@@ -65,7 +66,7 @@ public class SegmentFactory {
 		}
 	}
 
-	static public StraightSegment createTempStraightSegment(final IVertex pStart, final IVertex pEnd, PixelChain pPixelChain) {
+	static public StraightSegment createTempStraightSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd) {
 		return new StraightSegment(pPixelChain, pStart, pEnd);
 	}
 

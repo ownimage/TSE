@@ -17,45 +17,27 @@ import java.io.Serializable;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
-	ISegment getEndSegment();
+    ISegment getEndSegment(PixelChain pPixelChain);
 
 	int getPixelIndex();
 
-	ISegment getStartSegment();
+    ISegment getStartSegment(PixelChain pPixelChain);
 
 	int getVertexIndex();
 
 	Line calcTangent(PixelChain pPiixelChain);
 
-	Line getTangent();
+    Point getUHVWPoint(PixelChain pPixelChain);
 
-	Point getUHVWPoint(PixelChain pPixelChain);
+    boolean isDisconnected(PixelChain pPixelChain);
 
-	int getX(PixelChain pPixelChain);
+    boolean isEnd(PixelChain pPixelChain);
 
-	int getY(PixelChain pPixelChain);
+    boolean isMiddle(PixelChain pPixelChain);
 
-	boolean isDisconnected();
-
-	boolean isEnd();
-
-	boolean isFixed(PixelChain pPixelChain);
-
-	boolean isMiddle();
-
-	boolean isStart();
-
-	void setEndSegment(ISegment pEndSegment);
-
-	void setFixed(boolean pFixed);
-
-	void setIndex(PixelChain pPixelChain, int pIndex);
-
-	void setStartSegment(ISegment pStartSegment);
-
-	void setTangent(com.ownimage.perception.math.LineSegment pTangent);
+    boolean isStart(PixelChain pPixelChain);
 
 
-	Pixel getPixel(PixelChain pPixelChain);
+    Pixel getPixel(PixelChain pPixelChain);
 
 }
