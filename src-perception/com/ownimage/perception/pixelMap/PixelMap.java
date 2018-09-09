@@ -714,6 +714,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         final Point uhvw = toUHVW(pPoint);
 
+        // to prevent the expensive closerThanActual being run against the same segment more than once they
+        // are condensed into a set.
+        HashSet<Tuple2<PixelChain, ISegment>> candidateSegments = new HashSet<>();
+
         for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
             for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
@@ -724,14 +728,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                         if (pThickOnly && tuple._1().getThickness() != PixelChain.Thickness.Thick) {
                             break;
                         }
-                        if (tuple._2().closerThanActual(tuple._1(), uhvw, pMultiplier)) {
-                            return true;
-                        }
+                        candidateSegments.add(tuple);
                     }
                 }
             }
         }
-        return false;
+
+        StrongReference<Boolean> result = new StrongReference<>(false);
+        candidateSegments.stream()
+                .filter(tuple -> tuple._2().closerThanActual(tuple._1(), uhvw, pMultiplier))
+                .findFirst()
+                .ifPresent(tuple -> result.set(true));
+        return result.get();
     }
 
     @Override
