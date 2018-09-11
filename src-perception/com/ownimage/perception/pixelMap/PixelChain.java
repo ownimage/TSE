@@ -12,6 +12,7 @@ import com.ownimage.perception.math.LineSegment;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.*;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import io.vavr.Tuple4;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -57,7 +58,7 @@ public class PixelChain implements Serializable {
     public final static long serialVersionUID = 2L;
     transient private PixelMap mPixelMap;
     transient private double mLength;
-    private final Vector<Pixel> mPixels = new Vector<>();
+    private Vector<Pixel> mPixels = new Vector<>();
     private Vector<ISegment> mSegments = new Vector<>();
     private Vector<IVertex> mVertexes = new Vector<>();
     private Node mStartNode;
@@ -84,13 +85,6 @@ public class PixelChain implements Serializable {
         return mPixels.stream();
     }
 
-    // @Deprecated
-    // private PixelChain(final PixelMap pPixelMap, final Node pStartNode) {
-    // mThickness = Thickness.Normal;
-    // mPixelMap = pPixelMap;
-    // setStartNode(pStartNode);
-    // }
-
     public boolean add(final Pixel pPixel) {
         if (mPixelMap != pPixel.getPixelMap()) { //
             throw new IllegalArgumentException("Pixel added does not come from the correct PixelMap");
@@ -108,6 +102,19 @@ public class PixelChain implements Serializable {
      */
     private void add(final PixelChain pOtherChain) {
         validate("add");
+        pOtherChain.validate("add pOtherChain");
+        mLogger.fine(() -> String.format("this.mPixels.size() = %s", mPixels.size()));
+        mLogger.fine(() -> String.format("pOtherChain.mPixels.size() = %s", pOtherChain.mPixels.size()));
+        mLogger.fine(() -> String.format("this.mSegments.size() = %s", mSegments.size()));
+        mLogger.fine(() -> String.format("pOtherChain.mSegments.size() = %s", pOtherChain.mSegments.size()));
+        if (mLogger.isLoggable(Level.FINE)) {
+            mSegments.forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
+            mSegments.forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
+            pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartVertex(pOtherChain).getPixelIndex(), s.getEndVertex(pOtherChain).getPixelIndex())));
+            pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartIndex(pOtherChain), s.getEndIndex(pOtherChain))));
+        }
+
+        validate("add");
         pOtherChain.validate("add");
 
         if (getPixelMap() != pOtherChain.getPixelMap()) {
@@ -119,21 +126,15 @@ public class PixelChain implements Serializable {
         }
 
         final int offset = mPixels.size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
-
-        final Vector<Pixel> pixelsDebug = new Vector<>(mPixels);
-
         mPixels.removeElementAt(mPixels.size() - 1);// need to remove the last pixel as it will be duplicated on the other chain;
         mPixels.addAll(pOtherChain.mPixels);
-
-        IVertex start = mSegments.lastElement().getEndVertex(this);
+        mLogger.fine(() -> String.format("offset = %s", offset));
 
         for (final ISegment segment : pOtherChain.mSegments) {
-            final IVertex end = Vertex.createVertex(this, mVertexes.size(), segment.getEndIndex(this) + offset);
+            final IVertex end = Vertex.createVertex(this, mVertexes.size(), segment.getEndIndex(pOtherChain) + offset);
             mVertexes.add(end);
-            final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(this, start, end);
-            newSegment.attachToVertexes(this, false);
+            final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(this, mSegments.size());
             mSegments.add(newSegment);
-            start = end;
         }
 
         pOtherChain.mSegments.removeAllElements(); // TODO
@@ -145,6 +146,8 @@ public class PixelChain implements Serializable {
         getEndNode().addPixelChain(this);
         getPixelMap().removePixelChain(pOtherChain);
 
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("out..mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
         validate("add");
     }
 
@@ -200,28 +203,33 @@ public class PixelChain implements Serializable {
 
         int maxIndex = 0;
         IVertex maxVertex = null;
-        StraightSegment maxLine = null;
+        StraightSegment maxSegment = null;
 
         int endIndex = 1;
 
         while (endIndex < mPixels.size()) {
-            for (int index = endIndex; index < mPixels.size(); index++) {
-                final IVertex candidateVertex = Vertex.createVertex(this, mVertexes.size(), index);
-                final StraightSegment candidateLine = SegmentFactory.createTempStraightSegment(this, startVertex, candidateVertex);
+            int vertexIndex = mVertexes.size();
+            mVertexes.add(null);
+            int segmentIndex = mSegments.size();
+            mSegments.add(null);
 
-                if (candidateLine.noPixelFurtherThan(this, pTolerance)) {
+            for (int index = endIndex; index < mPixels.size(); index++) {
+                final IVertex candidateVertex = Vertex.createVertex(this, vertexIndex, index);
+                mVertexes.set(vertexIndex, candidateVertex);
+                final StraightSegment candidateSegment = SegmentFactory.createTempStraightSegment(this, segmentIndex);
+                mSegments.set(segmentIndex, candidateSegment);
+
+                if (candidateSegment.noPixelFurtherThan(this, pTolerance)) {
                     maxIndex = index;
                     maxVertex = candidateVertex;
-                    maxLine = candidateLine;
+                    maxSegment = candidateSegment;
                     continue;
                 }
                 break;
             }
 
-            mVertexes.add(maxVertex);
-            maxLine.attachToVertexes(this, false);
-            mSegments.add(maxLine);
-            startVertex = maxVertex;
+            mVertexes.set(vertexIndex, maxVertex);
+            mSegments.set(segmentIndex, maxSegment);
             endIndex = maxIndex + 1;
         }
 
@@ -230,50 +238,42 @@ public class PixelChain implements Serializable {
     }
 
     void approximate02_refineCorners() {
-        // TODO note pTolerance is not used at the moment
-        for (final ISegment currentSegment : mSegments) {
-            if (currentSegment == mSegments.lastElement()) {
-                return;
-            }
+        for (final ISegment segment : mSegments) {
+            if (segment == mSegments.lastElement()) return;
 
-            final ISegment nextSegment = currentSegment.getEndVertex(this).getEndSegment(this);
-            if (nextSegment == null) {
-                throw new IllegalStateException("Only the final segment in a PixelChain can have no EndVertex's EndSegment");
-            }
+            int firstSegmentIndex = segment.getSegmentIndex();
+            int secondSegmentIndex = firstSegmentIndex + 1;
+            int midVertexIndex = secondSegmentIndex;
 
-            final int firstLineStartIndex = (currentSegment.getStartVertex(this).getPixelIndex() + currentSegment.getEndVertex(this).getPixelIndex()) / 2;
-            final int currentMidpointIndex = currentSegment.getEndVertex(this).getPixelIndex();
+            IVertex midVertex = getVertex(midVertexIndex);
+            ISegment firstSegment = segment;
+            ISegment secondSegment = getSegment(segment.getSegmentIndex() + 1);
 
-            final int secondLineEndIndex = (nextSegment.getStartVertex(this).getPixelIndex() + nextSegment.getEndVertex(this).getPixelIndex()) / 2;
+            final int minVertexIndex = (segment.getStartVertex(this).getPixelIndex() + segment.getEndVertex(this).getPixelIndex()) / 2;
+            final int maxVertexIndex = (secondSegment.getStartVertex(this).getPixelIndex() + secondSegment.getEndVertex(this).getPixelIndex()) / 2;
 
-            final IVertex firstLineStartVertex = Vertex.createVertex(this, mVertexes.size(), firstLineStartIndex);
-            IVertex midpointVertex = Vertex.createVertex(this, mVertexes.size(), currentMidpointIndex);
-            final IVertex secondLineEndVertex = Vertex.createVertex(this, mVertexes.size(), secondLineEndIndex);
+            double currentError = segment.calcError(this) + secondSegment.calcError(this);
+            Tuple4<Double, ISegment, IVertex, ISegment> best = new Tuple4<>(currentError, firstSegment, midVertex, secondSegment);
 
-            // TODO the check below is needed as some segments may only be one index length so generating a midpoint might generate an invalid segment
-            if (firstLineStartIndex < currentMidpointIndex && currentMidpointIndex < secondLineEndIndex) {
-                ISegment firstLine = SegmentFactory.createTempStraightSegment(this, firstLineStartVertex, midpointVertex);
-                ISegment secondLine = SegmentFactory.createTempStraightSegment(this, midpointVertex, secondLineEndVertex);
+            // the check below is needed as some segments may only be one index length so generating a midpoint might generate an invalid segment
+            if (minVertexIndex < midVertexIndex && midVertexIndex < maxVertexIndex) {
+                for (int candidateIndex = minVertexIndex + 1; candidateIndex < maxVertexIndex; candidateIndex++) {
+                    midVertex = Vertex.createVertex(this, midVertexIndex, candidateIndex);
+                    mVertexes.set(midVertexIndex, midVertex);
+                    firstSegment = SegmentFactory.createTempStraightSegment(this, firstSegmentIndex);
+                    mSegments.set(firstSegmentIndex, firstSegment);
+                    secondSegment = SegmentFactory.createTempStraightSegment(this, secondSegmentIndex);
+                    mSegments.set(secondSegmentIndex, secondSegment);
 
-                int bestMidpointIndex = currentMidpointIndex;
-                double bestError = firstLine.calcError(this) + secondLine.calcError(this);
+                    currentError = segment.calcError(this) + secondSegment.calcError(this);
 
-                for (int candidateIndex = firstLineStartIndex + 1; candidateIndex < secondLineEndIndex; candidateIndex++) {
-                    midpointVertex = Vertex.createVertex(this, mVertexes.size(), candidateIndex);
-
-                    firstLine = SegmentFactory.createTempStraightSegment(this, firstLineStartVertex, midpointVertex);
-                    secondLine = SegmentFactory.createTempStraightSegment(this, midpointVertex, secondLineEndVertex);
-
-                    final double error = firstLine.calcError(this) + secondLine.calcError(this);
-
-                    if (error < bestError) {
-                        bestError = error;
-                        bestMidpointIndex = candidateIndex;
+                    if (currentError < best._1) {
+                        best = new Tuple4<>(currentError, firstSegment, midVertex, secondSegment);
                     }
                 }
-
-                firstLine.attachToVertexes(this, false);
-                secondLine.attachToVertexes(this, false);
+                mVertexes.set(midVertexIndex, best._3);
+                mSegments.set(firstSegmentIndex, best._2);
+                mSegments.set(secondSegmentIndex, best._4);
             }
         }
 
@@ -424,10 +424,9 @@ public class PixelChain implements Serializable {
     }
 
     private IVertex getStartVertex() {
-        if (mSegments == null || mSegments.size() == 0) {
-            return mVertexes.firstElement();
-        }
-        return mSegments.firstElement().getStartVertex(this);
+        return mVertexes.size() != 0
+                ? mVertexes.firstElement()
+                : null;
     }
 
     public synchronized Thickness getThickness() {
@@ -552,171 +551,128 @@ public class PixelChain implements Serializable {
             return;
         }
 
-        final Vector<ISegment> segments = new Vector<>();
-
         for (final ISegment currentSegment : mSegments) {
-            final IVertex startVertex = currentSegment.getStartVertex(this);
-            final IVertex endVertex = currentSegment.getEndVertex(this);
 
             // get error values from straight line to start the compare
             ISegment bestSegment = currentSegment;
             double lowestError = currentSegment.calcError(this);
             lowestError *= getTransformSource().getLineCurvePreference();
 
-            try {
+            if (currentSegment == mSegments.firstElement()) {
+                // first segment
+                try {
+                    // calculate end tangent
+                    final Line tangent = currentSegment.getEndVertex(this).calcTangent(this);
 
-                if (currentSegment == mSegments.firstElement()) {
-                    // first segment
-                    try {
-                        // calculate end tangent
-                        final Line tangent = currentSegment.getEndVertex(this).calcTangent(this);
-
-                        if (tangent == null) {
-                            // this was for test purposes
-                            final Line tangent2 = currentSegment.getEndVertex(this).calcTangent(this);
-                        }
-                        // find closest point between start point and tangent line
-                        final Point closest = tangent.closestPoint(currentSegment.getStartUHVWPoint(this));
-                        // divide this line (tangentRuler) into the number of pixels in the segment
-                        // for each of the points on the division find the lowest error
-                        final LineSegment tangentRuler = new LineSegment(closest, currentSegment.getEndUHVWPoint(this));
-                        for (int i = 1; i < currentSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
-                            try {
-                                final double lambda = (double) i / currentSegment.getPixelLength(this);
-                                final Point p1 = tangentRuler.getPoint(lambda);
-                                final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getStartVertex(this), currentSegment.getEndVertex(this), p1);
-                                final double candidateError = candidateCurve != null ? candidateCurve.calcError(this) : 0.0d;
-
-                                if (isValid(candidateCurve) && candidateError < lowestError) {
-                                    lowestError = candidateError;
-                                    bestSegment = candidateCurve;
-                                }
-
-                            } catch (final Throwable pT) {
-                                mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                            }
-                        }
-                    } catch (final Throwable pT) {
-                        mLogger.log(Level.INFO, "Error: ", pT);
-                    } finally {
-                        if (bestSegment instanceof LineSegment) {
-                            final LineSegment lineSegment = new LineSegment(currentSegment.getStartUHVWPoint(this), currentSegment.getEndUHVWPoint(this));
-                            //currentSegment.getEndVertex(this).setTangent(lineSegment);
-                        }
+                    if (tangent == null) {
+                        // this was for test purposes
+                        final Line tangent2 = currentSegment.getEndVertex(this).calcTangent(this);
                     }
-
-                } else if (currentSegment == mSegments.lastElement()) {
-                    // end segment
-                    try {
-                        // calculate start tangent
-                        final Line tangent = currentSegment.getStartVertex(this).calcTangent(this);
-                        // find closest point between start point and tangent line
-                        if (tangent == null) {
-                            final Line tangent2 = currentSegment.getStartVertex(this).calcTangent(this);
-                        }
-                        final Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(this));
-                        // divide this line (tangentRuler) into the number of pixels in the segment
-                        // for each of the points on the division find the lowest error
-                        final Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(this), closest);
-                        for (int i = 1; i < currentSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
-                            try {
-                                final double lambda = (double) i / currentSegment.getPixelLength(this);
-                                final Point p1 = tangentRuler.getPoint(lambda);
-                                final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getStartVertex(this), currentSegment.getEndVertex(this), p1);
-                                if (candidateCurve != null) {
-                                    final double candidateError = candidateCurve.calcError(this);
-
-                                    if (isValid(candidateCurve) && candidateError < lowestError) {
-                                        lowestError = candidateError;
-                                        bestSegment = candidateCurve;
-                                    }
-                                }
-                            } catch (final Throwable pT) {
-                                mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                            }
-                        }
-                    } catch (final Throwable pT) {
-                        mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                    }
-
-                } else {
-                    // mid segment
-                    // get tangent at start and end
-                    // calculate intersection
-                    // what if they are parallel ? -- ignore as the initial estimate is not good enough
-                    // see if it is closer than the line
-                    try {
-                        // // method 1 - looking at blending the gradients
+                    // find closest point between start point and tangent line
+                    final Point closest = tangent.closestPoint(currentSegment.getStartUHVWPoint(this));
+                    // divide this line (tangentRuler) into the number of pixels in the segment
+                    // for each of the points on the division find the lowest error
+                    final LineSegment tangentRuler = new LineSegment(closest, currentSegment.getEndUHVWPoint(this));
+                    for (int i = 1; i < currentSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
                         try {
-                            Line startTangent = currentSegment.getStartVertex(this).calcTangent(this);
-                            Line endTangent = currentSegment.getEndVertex(this).calcTangent(this);
+                            final double lambda = (double) i / currentSegment.getPixelLength(this);
+                            final Point p1 = tangentRuler.getPoint(lambda);
+                            final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getSegmentIndex(), p1);
+                            mSegments.set(currentSegment.getSegmentIndex(), candidateSegment);
+                            final double candidateError = candidateSegment != null ? candidateSegment.calcError(this) : 0.0d;
 
-                            if (startTangent != null && endTangent != null) {
-                                Point p1 = startTangent.intersect(endTangent);
-                                if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
-                                    Line newStartTangent = new Line(p1, currentSegment.getStartVertex(this).getUHVWPoint(this));
-                                    Line newEndTangent = new Line(p1, currentSegment.getEndVertex(this).getUHVWPoint(this));
-                                    p1 = newStartTangent.intersect(newEndTangent);
-                                    // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
-                                    ISegment candidateCurve = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getStartVertex(this), currentSegment.getEndVertex(this), p1);
-                                    double candidateError = candidateCurve.calcError(this);
-
-                                    if (isValid(candidateCurve) && candidateError < lowestError) {
-                                        lowestError = candidateError;
-                                        bestSegment = candidateCurve;
-                                    }
-                                    // }
-                                }
+                            if (isValid(candidateSegment) && candidateError < lowestError) {
+                                lowestError = candidateError;
+                                bestSegment = candidateSegment;
                             }
-                        } catch (Throwable pT) {
+
+                        } catch (final Throwable pT) {
                             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                         }
-
-                        // method 2 - looking at going through pixels
-                        // try {
-                        // for (int i = startVertex.getPixelIndex() + 2; i < endVertex.getPixelIndex() - 2; i++) { // first and last pixel will throw an error and are equivalent to the straight line
-                        // try {
-                        // final Point through = getPixel(i).getUHVWPoint();
-                        // final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentThrough(startVertex, endVertex, through);
-                        //
-                        // final double candidateError = candidateCurve.calcError();
-                        //
-                        // if (isValid(candidateCurve) && candidateError < lowestError) {
-                        // lowestError = candidateError;
-                        // bestSegment = candidateCurve;
-                        // }
-                        // } catch (final Throwable pT) {
-                        // mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                        // }
-                        // }
-                        //
-                        // } catch (final Throwable pT) {
-                        // mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                        // }
-
-                        // method 3 - intersection of tangents
-                        // final Point through = currentSegment.getStartTangent().intersect(currentSegment.getEndTangent());
-                        // if (through != null) {
-                        // final ISegment candidateCurve = SegmentFactory.createTempCurveSegmentThrough(startVertex, endVertex, through);
-                        //
-                        // final double candidateError = candidateCurve.calcError();
-                        //
-                        // if (isValid(candidateCurve) && candidateError < lowestError) {
-                        // lowestError = candidateError;
-                        // bestSegment = candidateCurve;
-                        // }
-                        // }
-
-                    } catch (final Throwable pT) {
-                        mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                     }
+                } catch (final Throwable pT) {
+                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                } finally {
+                    mSegments.set(currentSegment.getSegmentIndex(), bestSegment);
                 }
-            } finally {
-                bestSegment.attachToVertexes(this, false);
-                segments.add(bestSegment);
+
+            } else if (currentSegment == mSegments.lastElement()) {
+                // end segment
+                try {
+                    // calculate start tangent
+                    final Line tangent = currentSegment.getStartVertex(this).calcTangent(this);
+                    // find closest point between start point and tangent line
+                    if (tangent == null) {
+                        final Line tangent2 = currentSegment.getStartVertex(this).calcTangent(this);
+                    }
+                    final Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(this));
+                    // divide this line (tangentRuler) into the number of pixels in the segment
+                    // for each of the points on the division find the lowest error
+                    final Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(this), closest);
+                    for (int i = 1; i < currentSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
+                        try {
+                            final double lambda = (double) i / currentSegment.getPixelLength(this);
+                            final Point p1 = tangentRuler.getPoint(lambda);
+                            final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getSegmentIndex(), p1);
+                            if (candidateSegment != null) {
+                                final double candidateError = candidateSegment.calcError(this);
+
+                                if (isValid(candidateSegment) && candidateError < lowestError) {
+                                    lowestError = candidateError;
+                                    bestSegment = candidateSegment;
+                                }
+                            }
+                        } catch (final Throwable pT) {
+                            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                        }
+                    }
+                } catch (final Throwable pT) {
+                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                } finally {
+                    mSegments.set(currentSegment.getSegmentIndex(), bestSegment);
+                }
+
+            } else {
+                // mid segment
+                // get tangent at start and end
+                // calculate intersection
+                // what if they are parallel ? -- ignore as the initial estimate is not good enough
+                // see if it is closer than the line
+                try {
+                    // // method 1 - looking at blending the gradients
+                    try {
+                        Line startTangent = currentSegment.getStartVertex(this).calcTangent(this);
+                        Line endTangent = currentSegment.getEndVertex(this).calcTangent(this);
+
+                        if (startTangent != null && endTangent != null) {
+                            Point p1 = startTangent.intersect(endTangent);
+                            if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
+                                Line newStartTangent = new Line(p1, currentSegment.getStartVertex(this).getUHVWPoint(this));
+                                Line newEndTangent = new Line(p1, currentSegment.getEndVertex(this).getUHVWPoint(this));
+                                p1 = newStartTangent.intersect(newEndTangent);
+                                // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
+                                final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getSegmentIndex(), p1);
+                                double candidateError = candidateSegment.calcError(this);
+
+                                if (isValid(candidateSegment) && candidateError < lowestError) {
+                                    lowestError = candidateError;
+                                    bestSegment = candidateSegment;
+                                }
+                                // }
+                            }
+                        }
+                    } catch (Throwable pT) {
+                        mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                    } finally {
+                        mSegments.set(currentSegment.getSegmentIndex(), bestSegment);
+                    }
+
+                } catch (final Throwable pT) {
+                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                }
             }
+
         } // end loop
-        mSegments = segments;
         validate("refine01_matchCurves");
     }
 
@@ -746,29 +702,31 @@ public class PixelChain implements Serializable {
         return endVertex.calcTangent(this);
     }
 
+
+    private PixelChain copy() {
+        PixelChain copy = new PixelChain(mStartNode);
+        copy.mEndNode = mEndNode;
+        copy.mPixels = mPixels;
+        copy.mThickness = mThickness;
+        return copy;
+    }
+
     private void refine03_matchDoubleCurves() {
-
-        if (mSegments.size() == 1) {
-            return;
-        }
-
-        final Vector<ISegment> segments = new Vector<>();
-
+        if (mSegments.size() == 1) return;
         for (final ISegment currentSegment : mSegments) {
+            if (currentSegment instanceof CurveSegment) continue;
+
             final IVertex startVertex = currentSegment.getStartVertex(this);
             final IVertex endVertex = currentSegment.getEndVertex(this);
             final Line startTangent = getDCStartTangent(currentSegment);
             final Line endTangent = getDCEndTangent(currentSegment);
 
+            ISegment bestCandidate = currentSegment;
+
             // get error values from straight line to start the compare
-            ISegment bestSegment = currentSegment;
             double lowestError = currentSegment.calcError(this);
             if (currentSegment instanceof StraightSegment) {
                 lowestError *= getTransformSource().getLineCurvePreference();
-            }
-
-            if (currentSegment instanceof CurveSegment) {
-                lowestError = -1.0d;
             }
 
             try {
@@ -783,81 +741,62 @@ public class PixelChain implements Serializable {
                         Line endLine = new Line(endVertex.getUHVWPoint(this), closestEnd);
                         // should check that lambdas are the correct sign
 
-                        ISegment candidateCurve;
-                        Point p1;
-                        Point p2;
-
                         for (double sigma = 0.3d; sigma < 0.7d; sigma += 0.1d) {
-                            // double sigma = 0.5d;
                             try {
                                 // try from start
-                                p1 = startLine.getPoint(sigma);
-                                p2 = new Line(p1, midVertex.getUHVWPoint(this)).intersect(endLine);
+                                Point p1 = startLine.getPoint(sigma);
+                                Point p2 = new Line(p1, midVertex.getUHVWPoint(this)).intersect(endLine);
                                 if (p2 != null) {
                                     double closestLambda = endLine.closestLambda(p2);
 
                                     if (closestLambda > 0.1d && closestLambda < 1.2d) {
 
-                                        candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, startVertex, p1, midVertex, p2, endVertex);
-
-                                        if (candidateCurve != null) {
+                                        ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
+                                        mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
+                                        if (isValid(candidateCurve)) {
                                             final double candidateError = candidateCurve.calcError(this);
-
-                                            if (isValid(candidateCurve) && candidateError < lowestError) {
-                                                lowestError = candidateError;
-                                                bestSegment = candidateCurve;
+                                            if (candidateError < lowestError) {
+                                                bestCandidate = candidateCurve;
                                             }
                                         }
                                     }
                                 }
 
                             } catch (final Throwable pT) {
-                                mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                                //mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                             }
 
                             // try from end
                             try {
-                                p2 = endLine.getPoint(sigma);
-                                p1 = new Line(p2, midVertex.getUHVWPoint(this)).intersect(startLine);
+                                Point p2 = endLine.getPoint(sigma);
+                                Point p1 = new Line(p2, midVertex.getUHVWPoint(this)).intersect(startLine);
                                 double closestLambda = startLine.closestLambda(p2);
 
                                 if (p1 != null && 0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
 
-                                    candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, startVertex, p1, midVertex, p2, endVertex);
-
-                                    if (candidateCurve != null) {
+                                    ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
+                                    mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
+                                    if (isValid(candidateCurve)) {
                                         final double candidateError = candidateCurve.calcError(this);
-
-                                        if (isValid(candidateCurve) && candidateError < lowestError) {
-                                            // lowestError = candidateError;
-                                            // bestSegment = candidateCurve;
+                                        if (candidateError < lowestError) {
+                                            bestCandidate = candidateCurve;
                                         }
                                     }
                                 }
                             } catch (final Throwable pT) {
-                                mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                                //mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                             }
                         }
                     }
                 } catch (final Throwable pT) {
-                    mLogger.log(Level.INFO, "Error: ", pT);
-                } finally {
-                    if (bestSegment instanceof DoubleCurveSegment) {
-                        // final LineSegment lineSegment = new LineSegment(currentSegment.getStartUHVWPoint(), currentSegment.getEndUHVWPoint());
-                        // currentSegment.getEndVertex().setTangent(lineSegment);
-                        mLogger.fine("DCS m " + ((DoubleCurveSegment) bestSegment).getStartCurve().getEndTangentVector(this));
-                        mLogger.fine("DCS m " + ((DoubleCurveSegment) bestSegment).getEndCurve().getStartTangentVector(this));
-
-                        mLogger.fine("DoubleCurve added");
-                    }
+                    mLogger.severe(FrameworkLogger.throwableToString(pT));
                 }
-
             } finally {
-                bestSegment.attachToVertexes(this, false);
-                segments.add(bestSegment);
+                if (bestCandidate instanceof DoubleCurveSegment) mLogger.fine("DoubleCurve added");
+                mSegments.set(currentSegment.getSegmentIndex(), bestCandidate);
             }
         } // end loop
-        mSegments = segments;
+
         validate("refine03_matchDoubleCurves");
     }
 
@@ -868,31 +807,36 @@ public class PixelChain implements Serializable {
      */
     private void reverse() {
         // note that this uses direct access to the data members as the public setters have other side effects
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
+
         final Node tmp = getStartNode();
         mStartNode = getEndNode();
         mEndNode = tmp;
 
-        Vector<IVertex> vertexes = new Vector<>();
-        Collections.reverse(mPixels);
-
-        final Vector<ISegment> stnemges = new Vector<>();
         final int maxPixelIndex = mPixels.size() - 1;
 
-        IVertex start = Vertex.createVertex(this, vertexes.size(), 0);
-        vertexes.add(start);
-        for (int i = mSegments.size() - 1; i >= 0; i--) {
-            final ISegment segment = mSegments.get(i);
-            final IVertex end = Vertex.createVertex(this, vertexes.size(), maxPixelIndex - segment.getStartIndex(this));
-            vertexes.add(end);
-            final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(this, start, end);
-            newSegment.attachToVertexes(this, false);
-            stnemges.add(newSegment);
-            start = end;
+        Collections.reverse(mPixels);
+        Vector<IVertex> vertexes = new Vector<>();
+        final Vector<ISegment> stnemges = new Vector<>();
+
+        for (int i = mVertexes.size() - 1; i >= 0; i--) {
+            final IVertex vertex = mVertexes.get(i);
+            final IVertex v = Vertex.createVertex(this, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            vertexes.add(v);
+            if (i != mVertexes.size() - 1) {
+                final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(this, stnemges.size());
+                stnemges.add(newSegment);
+            }
         }
+
         mSegments = stnemges;
         mVertexes = vertexes;
-        // TODO setStartVertex(mSegments.firstElement().getStartVertex(this));
+        //setStartVertex(mSegments.firstElement().getStartVertex(this));
         // TODO mVertexes.firstElement().setIndex(this, 0);
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
+        mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
+
         validate("reverse");
     }
 
@@ -1018,7 +962,7 @@ public class PixelChain implements Serializable {
             }
 
             if (mSegments.size() != 0 && mSegments.lastElement().getEndIndex(this) != mPixels.size() - 1) { //
-                throw new IllegalStateException("last segment not linked properly");
+                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", mSegments.size(), mSegments.lastElement().getEndIndex(this), mPixels.size() - 1));
             }
 
             if (mSegments.size() == 0) { //
@@ -1092,6 +1036,11 @@ public class PixelChain implements Serializable {
     ISegment getSegment(int i) {
         if (mSegments.size() <= i || i < 0) return null;
         return mSegments.get(i);
+    }
+
+    public IVertex getVertex(int i) {
+        if (mVertexes.size() <= i || i < 0) return null;
+        return mVertexes.get(i);
     }
 
     void setInChain(boolean pValue) {

@@ -7,11 +7,15 @@ package com.ownimage.perception.pixelMap.segment;
 
 import com.ownimage.perception.math.Point;
 
+import java.awt.*;
+
 public interface ISegmentGrafittiHelper {
 
-    void graffiitLine(Point p1, Point p2);
+    void grafittiLine(Point p1, Point p2);
 
-    void graffiitControlLine(Point p1, Point p2);
+    void grafittLine(Point p1, Point p2, Color pColor);
+
+    void grafittiControlLine(Point p1, Point p2);
 
     void graffitiControlPoint(Point p1);
 

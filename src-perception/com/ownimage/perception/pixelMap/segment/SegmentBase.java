@@ -9,7 +9,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.IVertex;
-import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.util.logging.Logger;
@@ -19,34 +18,11 @@ public abstract class SegmentBase implements ISegment {
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private final IVertex mStart;
-    private final IVertex mEnd;
+    private int mSegmentIndex;
     private double mStartPosition;
 
-    public SegmentBase(final IVertex pStart, final IVertex pEnd) {
-
-        if (pStart == null) {
-            throw new IllegalArgumentException("pStart must not be null.");
-        }
-
-        if (pEnd == null) {
-            throw new IllegalArgumentException("pEnd must not be null.");
-        }
-
-        if (pStart.getPixelIndex() >= pEnd.getPixelIndex()) {
-            throw new IllegalArgumentException("start index =(" + pStart.getPixelIndex() + ")must be less than end index =(" + pEnd.getPixelIndex() + ").");
-        }
-
-        mStart = pStart;
-        mEnd = pEnd;
-    }
-
-    @Override
-    public void attachToVertexes(PixelChain pPixelChain, final boolean pReCalcSegments) {  // TODO remove
-        if (pReCalcSegments) {
-            //pPixelChain.reCalcSegments();
-            throw new RuntimeException("PixelChain must reCalcSegments remove recalc arg");
-        }
+    public SegmentBase(final int pSegmentIndex) {
+        mSegmentIndex = pSegmentIndex;
     }
 
     @Override
@@ -64,6 +40,11 @@ public abstract class SegmentBase implements ISegment {
         }
 
         return error;
+    }
+
+    @Override
+    public int getSegmentIndex() {
+        return mSegmentIndex;
     }
 
     public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
@@ -85,12 +66,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public int getEndIndex(PixelChain pPixelChain) {
-        return mEnd.getPixelIndex();
-    }
-
-    @Override
-    public Pixel getEndPoint(PixelChain pPixelChain) {
-        return mEnd.getPixel(pPixelChain);
+        return pPixelChain.getVertex(mSegmentIndex + 1).getPixelIndex();
     }
 
     @Override
@@ -100,12 +76,12 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public Point getEndUHVWPoint(PixelChain pPixelChain) {
-        return mEnd.getUHVWPoint(pPixelChain);
+        return getEndVertex(pPixelChain).getUHVWPoint(pPixelChain);
     }
 
     @Override
     public IVertex getEndVertex(PixelChain pPixelChain) {
-        return mEnd;
+        return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
     public double getMaxX(PixelChain pPixelChain) {
@@ -139,7 +115,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public int getStartIndex(PixelChain pPixelChain) {
-        return mStart.getPixelIndex();
+        return getStartVertex(pPixelChain).getPixelIndex();
     }
 
     public double getStartPosition() {
@@ -153,17 +129,17 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public Point getStartUHVWPoint(PixelChain pPixelChain) {
-        return mStart.getUHVWPoint(pPixelChain);
+        return getStartVertex(pPixelChain).getUHVWPoint(pPixelChain);
     }
 
     @Override
     public IVertex getStartVertex(PixelChain pPixelChain) {
-        return mStart;
+        return pPixelChain.getVertex(mSegmentIndex);
     }
 
     @Override
     public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
+        pGraphics.grafittiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
     }
 
     public double length() {
@@ -180,7 +156,6 @@ public abstract class SegmentBase implements ISegment {
         return true;
     }
 
-
     @Override
     public void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
         mStartPosition = pStartPosition;
@@ -188,16 +163,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public String toString() {
-        return "SegmentBase[" + mStart + "," + mEnd + "]";
+        return "SegmentBase[" + mSegmentIndex + "]";
     }
 
-    @Override
-    public void vertexChange(PixelChain pPixelChain, final IVertex pVertex) {
-        // TODO not sure that we need this call
-        // throw new RuntimeException("need to do this in PixelMap");
-        // final Date start = new Date();
-        //getPixelMap().indexSegments();
-        // final long time = new Date().getTime() - start.getTime();
-        // mLogger.severe("Vertex time change " + time / 1000.0);
-    }
 }

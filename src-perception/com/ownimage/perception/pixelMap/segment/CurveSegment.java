@@ -8,7 +8,6 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.math.*;
 import com.ownimage.perception.math.CubicEquation.Root;
-import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.util.logging.Logger;
@@ -22,8 +21,8 @@ public class CurveSegment extends SegmentBase {
     private final Point mA;
     private final Point mB;
 
-    CurveSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd, final Point pP1) {
-        super(pStart, pEnd);
+    CurveSegment(PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+        super(pSegmentIndex);
         mP1 = pP1;
         mA = getP0(pPixelChain).add(getP2(pPixelChain)).minus(getP1().multiply(2.0d));
         mB = getP1().minus(getP0(pPixelChain)).multiply(2.0d);
@@ -44,15 +43,6 @@ public class CurveSegment extends SegmentBase {
         final double distance = distance(pPixelChain, pPoint);
         return distance < pTolerance;
     }
-
-    // @Override
-    // public double closestLambda(final Point pPoint) {
-    // final double d0 = getP0().minus(pPoint).length();
-    // final double d2 = getP2().minus(pPoint).length();
-    // final double lambda = d0 / (d0 + d2);
-    //
-    // return lambda;
-    // }
 
     @Override
     public double closestLambda(final Point pUVHWPoint, PixelChain pPixelChain) {
@@ -214,8 +204,8 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(getP0(pPixelChain), getP1());
-        pGraphics.graffiitControlLine(getP1(), getP2(pPixelChain));
+        pGraphics.grafittiControlLine(getP0(pPixelChain), getP1());
+        pGraphics.grafittiControlLine(getP1(), getP2(pPixelChain));
         super.graffiti(pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }

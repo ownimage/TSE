@@ -8,8 +8,9 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
-import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
+
+import java.awt.*;
 
 // TODO need to question why there is a startTangent and endTangent when these can be retreived from the start/endCurve respectively.
 public class DoubleCurveSegment extends SegmentBase {
@@ -26,18 +27,16 @@ public class DoubleCurveSegment extends SegmentBase {
      * The end tangent. This should match the start vertex tangent exactly.
      */
     private final Line mEndTangent;
-    private final IVertex mThroughVertex; // TODO remove
 
     private final CurveSegment mStartCurve;
     private final CurveSegment mEndCurve;
 
-    DoubleCurveSegment(PixelChain pPixelChain, final IVertex pStart, final CurveSegment pStartCurve, final IVertex pEnd, final CurveSegment pEndCurve, final IVertex pThrough) {
-        super(pStart, pEnd);
+    DoubleCurveSegment(PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
+        super(pStartCurve.getSegmentIndex());
         mStartCurve = pStartCurve;
         mStartTangent = mStartCurve.getStartTangent(pPixelChain);
         mEndCurve = pEndCurve;
         mEndTangent = mEndCurve.getEndTangent(pPixelChain);
-        mThroughVertex = pThrough;
     }
 
     @Override
@@ -135,13 +134,14 @@ public class DoubleCurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffiitControlLine(mStartCurve.getP0(pPixelChain), mStartCurve.getP1());
-		pGraphics.graffiitControlLine(mStartCurve.getP1(), mEndCurve.getP1());
-        pGraphics.graffiitControlLine(mEndCurve.getP1(), mEndCurve.getP2(pPixelChain));
+        pGraphics.grafittiControlLine(mStartCurve.getP0(pPixelChain), mStartCurve.getP1());
+        pGraphics.grafittiControlLine(mStartCurve.getP1(), mEndCurve.getP1());
+        pGraphics.grafittiControlLine(mEndCurve.getP1(), mEndCurve.getP2(pPixelChain));
 		pGraphics.graffitiControlPoint(mStartCurve.getP1());
 		pGraphics.graffitiControlPoint(mEndCurve.getP1());
         super.graffiti(pPixelChain, pGraphics);
         pGraphics.graffitiSelectedControlPoint(getControlPoint());
+        pGraphics.grafittLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain), Color.RED);
     }
 
     @Override
@@ -155,10 +155,6 @@ public class DoubleCurveSegment extends SegmentBase {
         mEndCurve.setStartPosition(pPixelChain, pStartPosition + mStartCurve.getLength(pPixelChain));
     }
 
-    @Override
-    public void vertexChange(PixelChain pPixelChain, final IVertex pVertex) { // TODO
-        super.vertexChange(pPixelChain, pVertex);
-    }
 
     public CurveSegment getStartCurve() {
         return mStartCurve;

@@ -16,58 +16,61 @@ import java.util.logging.Logger;
 
 public class SegmentFactory {
 
-	public enum SegmentType {
-		Straight, Curve, DoubleCurve
-	}
+    public enum SegmentType {
+        Straight, Curve, DoubleCurve
+    }
 
 
     public final static Logger mLogger = Framework.getLogger();
 
-	/**
-	 * Creates the curve segment starting at pStart, ending at pEnd and the gradient of the curve at the start and end is towards pP1. In the event that the line collapses to a straight line then it
-	 * will return a LineApproximation instead.
-	 *
-	 *
-	 * @param pPixelChain the Pixel Chain performing this operation
-	 * @param pStart
-	 *            the start vertex
-	 * @param pEnd
-	 *            the end vertex
-	 * @param pP1
-	 *            the point that the start and end gradient goes through
-	 * @return the curve approximation
-	 */
-	static public ISegment createTempCurveSegmentTowards(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd, final Point pP1) {
-		try {
-			final CurveSegment segment = new CurveSegment(pPixelChain, pStart, pEnd, pP1);
-			if (segment.getA().length2() != 0) {
-				return segment;
-			} else {
-				return null;//createTempStraightSegment(pStart, pEnd);
-			}
-		} catch (Throwable pT) {
-			mLogger.severe(FrameworkLogger.throwableToString(pT));
-		}
-		return null;
-	}
+    /**
+     * Creates the curve segment starting at pStart, ending at pEnd and the gradient of the curve at the start and end is towards pP1.
+     * will return a LineApproximation instead.
+     *
+     * @param pPixelChain the Pixel Chain performing this operation
+     * @param pP1         the point that the start and end gradient goes through
+     * @return the curve approximation
+     */
+    static public CurveSegment createTempCurveSegmentTowards(PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+        try {
+            final CurveSegment segment = new CurveSegment(pPixelChain, pSegmentIndex, pP1);
+            if (segment.getA().length2() != 0) {
+                return segment;
+            } else {
+                return null;
+            }
+        } catch (Throwable pT) {
+            mLogger.severe(FrameworkLogger.throwableToString(pT));
+        }
+        return null;
+    }
 
-	public static ISegment createTempDoubleCurveSegment(PixelChain pPixelChain, final IVertex pStartVertex, final Point pP1, final IVertex pMidVertex, final Point pP2, final IVertex pEndVertex) {
-		// note that no checking is done that the parameters give a sensible DoubleCurve
-		CurveSegment startCurve = (CurveSegment) createTempCurveSegmentTowards(pPixelChain, pStartVertex, pMidVertex, pP1);
-		CurveSegment endCurve = (CurveSegment) createTempCurveSegmentTowards(pPixelChain, pMidVertex, pEndVertex, pP2);
+    //public static ISegment createTempDoubleCurveSegment(PixelChain pPixelChain, final int pSegmentIndex, final CurveSegment pStartCurve, final CurveSegment pEndCurve, final IVertex pThrough) {
+    public static ISegment createTempDoubleCurveSegment(final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1, final IVertex pMidVertex, final Point pP2) {
 
-		// Vector x = startCurve.getEndTangentVector();
-		// Vector y = endCurve.getStartTangentVector();
+        try {
+            // note that no checking is done that the parameters give a sensible DoubleCurve
+            CurveSegment startCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP1) {
+                @Override
+                public IVertex getEndVertex(PixelChain pPixelChain) {
+                    return pMidVertex;
+                }
+            };
+            CurveSegment endCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP2) {
+                @Override
+                public IVertex getStartVertex(PixelChain pPixelChain) {
+                    return pMidVertex;
+                }
+            };
+            return new DoubleCurveSegment(pPixelChain, startCurve, endCurve);
 
-		if (startCurve != null && endCurve != null) {
-			return new DoubleCurveSegment(pPixelChain, pStartVertex, startCurve, pEndVertex, endCurve, pMidVertex);
-		} else {
-			return null;
-		}
-	}
+        } catch (Throwable pT) {
+            return null;
+        }
+    }
 
-	static public StraightSegment createTempStraightSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd) {
-		return new StraightSegment(pPixelChain, pStart, pEnd);
-	}
+    static public StraightSegment createTempStraightSegment(PixelChain pPixelChain, final int pSegmentIndex) {
+        return new StraightSegment(pPixelChain, pSegmentIndex);
+    }
 
 }

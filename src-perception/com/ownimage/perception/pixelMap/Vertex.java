@@ -114,26 +114,6 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public boolean isDisconnected(PixelChain pPixelChain) {
-        return getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null;
-    }
-
-    @Override
-    public boolean isEnd(PixelChain pPixelChain) {
-        return getStartSegment(pPixelChain) != null && getEndSegment(pPixelChain) == null;
-    }
-
-    @Override
-    public boolean isMiddle(PixelChain pPixelChain) {
-        return getStartSegment(pPixelChain) != null && getEndSegment(pPixelChain) != null;
-    }
-
-    @Override
-    public boolean isStart(PixelChain pPixelChain) {
-        return getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) != null;
-    }
-
-    @Override
     public String toString() {
         return "Vertex[Index=" + mPixelIndex + "]";
     }

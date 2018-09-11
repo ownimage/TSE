@@ -8,7 +8,6 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.perception.math.LineSegment;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
-import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 public class StraightSegment extends SegmentBase {
@@ -18,8 +17,8 @@ public class StraightSegment extends SegmentBase {
 
     private final LineSegment mLineSegment;
 
-    StraightSegment(PixelChain pPixelChain, final IVertex pStart, final IVertex pEnd) {
-        super(pStart, pEnd);
+    StraightSegment(PixelChain pPixelChain, final int pSegmentIndex) {
+        super(pSegmentIndex);
         final Point a = getStartUHVWPoint(pPixelChain);
         final Point b = getEndUHVWPoint(pPixelChain);
         mLineSegment = new LineSegment(a, b);

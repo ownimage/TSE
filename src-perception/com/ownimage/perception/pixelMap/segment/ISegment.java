@@ -5,7 +5,6 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.perception.math.IntegerPoint;
 import com.ownimage.perception.math.Line;
 import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
@@ -20,12 +19,6 @@ public interface ISegment extends Serializable {
     long serialVersionUID = 1L;
 
     /**
-     * Attach to vertexes. A number of segments might be defines as being between the same two vertexes, this is done to see which one of the segments most closely approximates the underlying pixels.
-     * When one is finally chosen as the best this segment needs to be attached to the its vertexes, or more precisely the vertexes need to be updated to they attach to this segment.
-     */
-    void attachToVertexes(PixelChain pPixelChain, boolean pReCalcSegments);
-
-    /**
      * This returns the sum of the distances that all of the pixels in the original PixelChain (covered by this segment) are.
      *
      * @return the sum of the distances.
@@ -33,6 +26,8 @@ public interface ISegment extends Serializable {
     double calcError(final PixelChain pPixelChain);
 
     boolean closerThanActual(final PixelChain pPixelChain, Point pPoint, double pMultiplier);
+
+    int getSegmentIndex();
 
     boolean closerThan(PixelChain pPixelChain, Point pPoint, double pTolerance);
 
@@ -45,14 +40,6 @@ public interface ISegment extends Serializable {
      * @return the end index
      */
     int getEndIndex(PixelChain pPixelChain);
-
-    /**
-     * Gets the end Pixel of this segment.
-     *
-     * @param pPixelChain the Pixel Chain performing this operation
-     * @return the end Pixel
-     */
-    IntegerPoint getEndPoint(PixelChain pPixelChain);
 
     Line getEndTangent(PixelChain pPixelChain);
 
@@ -123,8 +110,6 @@ public interface ISegment extends Serializable {
     void graffiti(PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
     void setStartPosition(PixelChain pPixelChain, double pStartPosition);
-
-    void vertexChange(PixelChain pPixelChain, IVertex pVertex);
 
     double getMaxX(PixelChain pPixelChain);
 

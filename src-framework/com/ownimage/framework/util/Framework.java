@@ -5,11 +5,11 @@
  */
 package com.ownimage.framework.util;
 
+import com.ownimage.framework.logging.FrameworkLogger;
+
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.ownimage.framework.logging.FrameworkLogger;
 
 public class Framework {
 
@@ -104,14 +104,14 @@ public class Framework {
 
     public static void logEntry(final Logger pLogger) {
         try {
-            if (pLogger.isLoggable(Level.FINE)) {
+            if (pLogger.isLoggable(Level.FINEST)) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 StackTraceElement stackTraceElement = stackTraceElements[2];
                 String methodName = stackTraceElement.getMethodName();
                 String fdClassName = stackTraceElement.getClassName();
                 String[] names = fdClassName.split("\\.");
                 String className = names[names.length - 1];
-                pLogger.log(Level.FINE, className + ":" + methodName + " entered.");
+                pLogger.log(Level.FINEST, className + ":" + methodName + " entered.");
             }
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);
@@ -120,14 +120,14 @@ public class Framework {
 
     public static void logExit(final Logger pLogger) {
         try {
-            if (pLogger.isLoggable(Level.FINE)) {
+            if (pLogger.isLoggable(Level.FINEST)) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 StackTraceElement stackTraceElement = stackTraceElements[2];
                 String methodName = stackTraceElement.getMethodName();
                 String fdClassName = stackTraceElement.getClassName();
                 String[] names = fdClassName.split("\\.");
                 String className = names[names.length - 1];
-                pLogger.log(Level.FINE, className + ":" + methodName + " exited.");
+                pLogger.log(Level.FINEST, className + ":" + methodName + " exited.");
             }
         } catch (Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);

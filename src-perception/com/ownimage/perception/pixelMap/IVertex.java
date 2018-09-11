@@ -25,18 +25,9 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
 	int getVertexIndex();
 
-	Line calcTangent(PixelChain pPiixelChain);
+    Line calcTangent(PixelChain pPixelChain);
 
     Point getUHVWPoint(PixelChain pPixelChain);
-
-    boolean isDisconnected(PixelChain pPixelChain);
-
-    boolean isEnd(PixelChain pPixelChain);
-
-    boolean isMiddle(PixelChain pPixelChain);
-
-    boolean isStart(PixelChain pPixelChain);
-
 
     Pixel getPixel(PixelChain pPixelChain);
 
