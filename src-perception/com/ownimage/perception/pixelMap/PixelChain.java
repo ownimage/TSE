@@ -46,7 +46,7 @@ import java.util.stream.Stream;
  * <br/>}
  * </code>
  */
-public class PixelChain implements Serializable {
+public class PixelChain implements Serializable, Cloneable {
 
     public enum Thickness {
         None, Thin, Normal, Thick
@@ -475,14 +475,21 @@ public class PixelChain implements Serializable {
 
     }
 
-    void indexSegments() {
-        double startPosition = 0.0d;
-        for (final ISegment segment : mSegments) {
-            getPixelMap().index(this, segment);
-            segment.setStartPosition(this, startPosition);
-            startPosition += segment.getLength(this);
+    PixelChain indexSegments() {
+        try {
+            PixelChain pixelChainClone = (PixelChain) clone();
+            double startPosition = 0.0d;
+            for (final ISegment segment : pixelChainClone.mSegments) {
+                ISegment segmentClone = segment.withStartPosition(pixelChainClone, startPosition);
+                getPixelMap().index(pixelChainClone, segmentClone);
+                pixelChainClone.mSegments.set(segment.getSegmentIndex(), segmentClone);
+                startPosition += segment.getLength(pixelChainClone);
+            }
+            pixelChainClone.setLength(startPosition);
+            return pixelChainClone;
+        } catch (CloneNotSupportedException pCNSE) {
+            throw new RuntimeException("Clone not supported", pCNSE);
         }
-        setLength(startPosition);
     }
 
     private boolean isValid(final ISegment pSegment) { // need to maks sure that not only the pixels are close to the line but the line is close to the pixels

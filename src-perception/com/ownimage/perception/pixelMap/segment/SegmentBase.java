@@ -13,7 +13,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.util.logging.Logger;
 
-public abstract class SegmentBase implements ISegment {
+public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> {
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
@@ -23,6 +23,14 @@ public abstract class SegmentBase implements ISegment {
 
     public SegmentBase(final int pSegmentIndex) {
         mSegmentIndex = pSegmentIndex;
+    }
+
+    protected void setSegmentIndex(int pSegmentIndex) {
+        mSegmentIndex = pSegmentIndex;
+    }
+
+    protected void setStartPosition(double pStartPosition) {
+        mStartPosition = pStartPosition;
     }
 
     @Override
@@ -142,10 +150,6 @@ public abstract class SegmentBase implements ISegment {
         pGraphics.grafittiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
     }
 
-    public double length() {
-        throw new UnsupportedOperationException();
-    }
-
     public boolean noPixelFurtherThan(final PixelChain pPixelChain, final double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             final Point uhvw = pPixelChain.getUHVWPoint(i);
@@ -156,14 +160,37 @@ public abstract class SegmentBase implements ISegment {
         return true;
     }
 
-    @Override
-    public void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+    protected void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
     @Override
     public String toString() {
         return "SegmentBase[" + mSegmentIndex + "]";
+    }
+
+    @Override
+    public T withSegmentIndex(int pSegmentIndex) {
+        if (pSegmentIndex == mSegmentIndex) return (T) this;
+        try {
+            T clone = (T) clone();
+            clone.setSegmentIndex(pSegmentIndex);
+            return (T) this;
+        } catch (CloneNotSupportedException pCNSE) {
+            throw new RuntimeException("Cannot clone", pCNSE);
+        }
+    }
+
+    @Override
+    public T withStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+        if (pStartPosition == mStartPosition) return (T) this;
+        try {
+            T clone = (T) clone();
+            clone.setStartPosition(pPixelChain, pStartPosition);
+            return clone;
+        } catch (CloneNotSupportedException pCNSE) {
+            throw new RuntimeException("Cannot clone", pCNSE);
+        }
     }
 
 }

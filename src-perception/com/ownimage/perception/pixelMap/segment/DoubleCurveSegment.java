@@ -12,9 +12,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.awt.*;
 
-// TODO need to question why there is a startTangent and endTangent when these can be retreived from the start/endCurve respectively.
-public class DoubleCurveSegment extends SegmentBase {
-
+public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
 
     public final static long serialVersionUID = 1L;
 
@@ -28,8 +26,8 @@ public class DoubleCurveSegment extends SegmentBase {
      */
     private final Line mEndTangent;
 
-    private final CurveSegment mStartCurve;
-    private final CurveSegment mEndCurve;
+    private CurveSegment mStartCurve;
+    private CurveSegment mEndCurve;
 
     DoubleCurveSegment(PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
         super(pStartCurve.getSegmentIndex());
@@ -145,12 +143,7 @@ public class DoubleCurveSegment extends SegmentBase {
     }
 
     @Override
-    public double length() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+    protected void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
         mStartCurve.setStartPosition(pPixelChain, pStartPosition);
         mEndCurve.setStartPosition(pPixelChain, pStartPosition + mStartCurve.getLength(pPixelChain));
     }
@@ -167,5 +160,16 @@ public class DoubleCurveSegment extends SegmentBase {
     @Override
     public String toString() {
         return "DoubleCurveSegment[" + super.toString() + "]";
+    }
+
+    /**
+     * This is a MUTATING method that sets the segment index on this object.
+     *
+     * @param pSegmentIndex the new segment index for this copy.
+     */
+    protected void setSegmentIndex(int pSegmentIndex) {
+        super.setSegmentIndex(pSegmentIndex);
+        mStartCurve = mStartCurve.withSegmentIndex(pSegmentIndex);
+        mEndCurve = mEndCurve.withSegmentIndex(pSegmentIndex);
     }
 }

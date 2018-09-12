@@ -10,7 +10,7 @@ import com.ownimage.perception.math.Point;
 import com.ownimage.perception.math.Vector;
 import com.ownimage.perception.pixelMap.PixelChain;
 
-public class StraightSegment extends SegmentBase {
+public class StraightSegment extends SegmentBase<StraightSegment> {
 
 
     public final static long serialVersionUID = 1L;
@@ -97,15 +97,8 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double length() {
-        return mLineSegment.length();
-    }
-
-
-    @Override
     public String toString() {
         return "StraightSegment[" + super.toString() + "]";
     }
-
 
 }

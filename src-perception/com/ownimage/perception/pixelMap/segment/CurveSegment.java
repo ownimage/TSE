@@ -12,7 +12,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.util.logging.Logger;
 
-public class CurveSegment extends SegmentBase {
+public class CurveSegment extends SegmentBase<CurveSegment> {
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
@@ -168,7 +168,7 @@ public class CurveSegment extends SegmentBase {
      * @return the Vector
      * @param pPixelChain the Pixel Chain performing this operation
      */
-    public Vector getP0P1(PixelChain pPixelChain) {
+    private Vector getP0P1(PixelChain pPixelChain) {
         return getP1().minus(getP0(pPixelChain));
     }
 
@@ -186,7 +186,7 @@ public class CurveSegment extends SegmentBase {
      * @return the Vector
      * @param pPixelChain the Pixel Chain performing this operation
      */
-    public Vector getP2P1(PixelChain pPixelChain) {
+    private Vector getP2P1(PixelChain pPixelChain) {
         return getP2(pPixelChain).minus(getP1());
     }
 
@@ -214,4 +214,5 @@ public class CurveSegment extends SegmentBase {
     public String toString() {
         return "CurveSegment[" + super.toString() + "]";
     }
+
 }

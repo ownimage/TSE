@@ -13,7 +13,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.io.Serializable;
 
-public interface ISegment extends Serializable {
+public interface ISegment<T> extends Serializable, Cloneable {
 
 
     long serialVersionUID = 1L;
@@ -109,8 +109,6 @@ public interface ISegment extends Serializable {
 
     void graffiti(PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
-    void setStartPosition(PixelChain pPixelChain, double pStartPosition);
-
     double getMaxX(PixelChain pPixelChain);
 
     double getMaxY(PixelChain pPixelChain);
@@ -119,4 +117,7 @@ public interface ISegment extends Serializable {
 
     double getMinY(PixelChain pPixelChain);
 
+    ISegment withSegmentIndex(int pSegmentIndex); // for future use I might want to move a segment
+
+    ISegment withStartPosition(PixelChain pPixelChain, double pStartPosition);
 }

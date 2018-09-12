@@ -108,7 +108,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final Point mUHVWHalfPixel;
     private ImmutableLayerMap2D<Byte>.Map2D mData;
     private final AllNodes mAllNodes = new AllNodes();
-    private final Vector<PixelChain> mPixelChains = new Vector<>();
+    private Vector<PixelChain> mPixelChains = new Vector<>();
 
     private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
     private Map<ISegment, PixelChain> mSegmentToPixelChainMap = new HashMap<>();
@@ -178,7 +178,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             Framework.logEntry(mLogger);
             resetSegmentIndex();
 
-            mPixelChains.forEach(PixelChain::indexSegments);
+            Vector<PixelChain> pixelChains = new Vector<>();
+            mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments()));
+            mPixelChains = pixelChains;
 
             //printNodeCounts();
             mSegmentIndexValid = true;
