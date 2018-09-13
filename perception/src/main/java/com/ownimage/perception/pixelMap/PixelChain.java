@@ -239,7 +239,6 @@ public class PixelChain implements Serializable, Cloneable {
         }
 
         validate("approximate01_straightLines");
-        indexSegments();
     }
 
     void approximate02_refineCorners() {

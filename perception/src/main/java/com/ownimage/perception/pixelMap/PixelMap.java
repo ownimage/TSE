@@ -134,7 +134,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
     private Map<ISegment, PixelChain> mSegmentToPixelChainMap = new HashMap<>();
 
-    private boolean mSegmentIndexValid = false;
     private int mSegmentCount;
 
     /**
@@ -167,7 +166,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
-        indexSegments();
+        invalidateSegmentIndex();
         mPixelChains.addAll(pPixelChains);
         Framework.logExit(mLogger);
     }
@@ -195,16 +194,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 
     private synchronized void calcSegmentIndex() {
-        if (!mSegmentIndexValid) {
-            Framework.logEntry(mLogger);
+        Framework.logEntry(mLogger);
+        if (!isSegmentIndexValid()) {
             resetSegmentIndex();
 
             Vector<PixelChain> pixelChains = new Vector<>();
             mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments()));
             mPixelChains = pixelChains;
-
-            //printNodeCounts();
-            mSegmentIndexValid = true;
         }
         Framework.logExit(mLogger);
     }
@@ -569,20 +565,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return null;
     }
 
+    private LinkedList<Tuple2<PixelChain, ISegment>>[][] getSegmentIndex() {
+        calcSegmentIndex();
+        return mSegmentIndex;
+    }
+
     private AbstractCollection<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
+        Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
+        Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
+        Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
+        Framework.checkParameterLessThan(mLogger, pY, getHeight(), "pY");
 
-        if (pX < 0 || pX >= getWidth()) {
-            throw new IllegalArgumentException("pX out of range. pX = " + pX + ". It needs to be greater than 0 and less than" + getWidth());
-        }
-
-        if (pY < 0 || pY >= getHeight()) {
-            throw new IllegalArgumentException("pY out of range. pY = " + pY + ". It needs to be greater than 0 and less than" + getHeight());
-        }
-
-        if (mSegmentIndex[pX][pY] == null) { //
-            mSegmentIndex[pX][pY] = new LinkedList<>();
-        }
-        return mSegmentIndex[pX][pY];
+        LinkedList<Tuple2<PixelChain, ISegment>>[][] segmentIndex = getSegmentIndex();
+        if (segmentIndex[pX][pY] == null) segmentIndex[pX][pY] = new LinkedList<>();
+        return segmentIndex[pX][pY];
     }
 
     private Color getShadowColor() {
@@ -725,9 +721,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return Optional.ofNullable(mSegmentToPixelChainMap.get(pSegment));
     }
 
-    private synchronized void indexSegments() {
+    private boolean isSegmentIndexValid() {
+        return mSegmentIndex != null;
+    }
+
+    private synchronized void invalidateSegmentIndex() {
         Framework.logEntry(mLogger);
-        mSegmentIndexValid = false;
+        mSegmentIndex = null;
         Framework.logExit(mLogger);
     }
 
@@ -825,8 +825,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             validate();
             mLogger.info(() -> "validate done");
             //process04a_removeLoneNodes();
-            indexSegments();
-            mLogger.info(() -> "indexSegments done");
+            invalidateSegmentIndex();
+            mLogger.info(() -> "invalidateSegmentIndex done");
             printCount();
             //
         } catch (final Exception pEx) {
@@ -1043,7 +1043,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             pixelChain.approximate02_refineCorners();
         });
         mLogger.info(() -> "process06_straightLinesRefineCorners - done");
-        indexSegments();
+        invalidateSegmentIndex();
     }
 
     private void process07_mergeChains(final IProgressObserver pProgressObserver) {
@@ -1053,7 +1053,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mAllNodes.stream().forEach(Node::mergePixelChains);
         mSegmentCount = 0;
 
-        indexSegments();
+        invalidateSegmentIndex();
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
@@ -1157,7 +1157,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     synchronized void removePixelChain(final PixelChain pPixelChain) {
         mPixelChains.remove(pPixelChain);
-        indexSegments();
+        invalidateSegmentIndex();
     }
 
     private void resetInChain() {
