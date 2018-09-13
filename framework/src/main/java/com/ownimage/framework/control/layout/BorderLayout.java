@@ -25,7 +25,7 @@ public class BorderLayout extends ViewableBase<IViewable, IBorderView> {
 
     @Override
     public IBorderView createView() {
-        IBorderView view = ViewFactory.getInstance().createView(this);
+        final IBorderView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }

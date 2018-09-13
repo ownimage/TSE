@@ -63,17 +63,17 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     /**
      * The Height of the picture.
      */
-    private int mHeight;
+    private final int mHeight;
 
     /**
      * The Width of the picture.
      */
-    private int mWidth;
+    private final int mWidth;
 
     /**
      * The raw Image value.
      */
-    private BufferedImage mImage;
+    private final BufferedImage mImage;
 
 
     /**
@@ -161,7 +161,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      */
     @Override
     public PictureType clone() {
-        PictureType picture = new PictureType(getHeight(), getWidth());
+        final PictureType picture = new PictureType(getHeight(), getWidth());
         picture.setColors(getColors());
         return picture;
     }
@@ -175,8 +175,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @return the point
      */
     public Point convertPictureResolution(final Point pPoint) {
-        double x = pPoint.getX() * (getWidth() - 1);
-        double y = pPoint.getY() * (getHeight() - 1);
+        final double x = pPoint.getX() * (getWidth() - 1);
+        final double y = pPoint.getY() * (getHeight() - 1);
 
         return new Point(x, y);
     }
@@ -190,8 +190,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @return the integer point
      */
     public IntegerPoint convertToIntegerPoint(final Point pPoint) {
-        int x = (int) (pPoint.getX() * (getWidth() - 1));
-        int y = (int) (pPoint.getY() * (getHeight() - 1));
+        final int x = (int) (pPoint.getX() * (getWidth() - 1));
+        final int y = (int) (pPoint.getY() * (getHeight() - 1));
 
         return new IntegerPoint(x, y);
     }
@@ -210,8 +210,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     }
 
     public synchronized Optional<Color> getColor(final double pX, final double pY) {
-        int x = (int) (pX * mWidth);
-        int y = (int) (pY * mHeight);
+        final int x = (int) (pX * mWidth);
+        final int y = (int) (pY * mHeight);
         return getColor(x, y);
     }
 
@@ -292,7 +292,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @return the colors
      */
     public int[] getColors(final int[] pColors) {
-        int[] array;
+        final int[] array;
 
         if (pColors != null && pColors.length == mWidth * mHeight) {
             array = pColors;
@@ -391,7 +391,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     public int lock() {
         testIsLocked();
 
-        int key = (int) (Math.random() * Integer.MAX_VALUE);
+        final int key = (int) (Math.random() * Integer.MAX_VALUE);
         mLock = key;
         return key;
         // TODO should really use com.perception.util.Lock
@@ -403,14 +403,14 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFile the file
      * @throws Exception the exception
      */
-    public void save(final File pFile, ImageQuality pImageQuality) throws Exception {
+    public void save(final File pFile, final ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         mLogger.info("mImage.getType() = " + mImage.getType());
 
-        String fileName = pFile.getName();
+        final String fileName = pFile.getName();
         String extension = "";
-        int i = fileName.lastIndexOf('.');
+        final int i = fileName.lastIndexOf('.');
         if (i > 0) {
             extension = fileName.substring(i + 1);
         }
@@ -425,12 +425,12 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         final ImageWriteParam iwp = writer.getDefaultWriteParam();
 
         if ("jpg".equals(extension)) {
-            float quality = pImageQuality.getJPGQuality();
+            final float quality = pImageQuality.getJPGQuality();
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             iwp.setCompressionQuality(quality);
         }
 
-        BufferedImage imRGB = toBufferedImageOfType(mImage, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage imRGB = toBufferedImageOfType(mImage, BufferedImage.TYPE_INT_RGB);
 
         final FileImageOutputStream outputFile = new FileImageOutputStream(pFile);
         writer.setOutput(outputFile);
@@ -443,15 +443,15 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
     }
 
     // from https://stackoverflow.com/questions/44182400/how-to-convert-bufferedimage-rgba-to-bufferedimage-rgb
-    public static BufferedImage toBufferedImageOfType(BufferedImage original, int type) {
+    public static BufferedImage toBufferedImageOfType(final BufferedImage original, final int type) {
         if (original == null) {
             throw new IllegalArgumentException("original == null");
         }
         if (original.getType() == type) {
             return original;
         }
-        BufferedImage image = new BufferedImage(original.getWidth(), original.getHeight(), type);
-        Graphics2D g = image.createGraphics();
+        final BufferedImage image = new BufferedImage(original.getWidth(), original.getHeight(), type);
+        final Graphics2D g = image.createGraphics();
         try {
             g.setComposite(AlphaComposite.Src);
             g.drawImage(original, 0, 0, null);
@@ -467,7 +467,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFileName the name
      * @throws Exception the exception
      */
-    public void save(final String pFileName, ImageQuality pImageQuality) throws Exception {
+    public void save(final String pFileName, final ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFileName, "pFileName");
 
@@ -561,7 +561,7 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
             throw new IllegalArgumentException("pPoint must not be null");
         }
 
-        IntegerPoint point = convertToIntegerPoint(pPoint);
+        final IntegerPoint point = convertToIntegerPoint(pPoint);
 
         setColor(point, pColor);
     }
@@ -632,36 +632,36 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         mLock = null;
     }
 
-    public void forEach(BiConsumer<Integer, Integer> pFunction) {
-        Range2D range = new Range2D(getWidth(), getHeight());
+    public void forEach(final BiConsumer<Integer, Integer> pFunction) {
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEach(pFunction);
     }
 
-    public void forEachParallel(BiConsumer<Integer, Integer> pFunction) {
-        Range2D range = new Range2D(getWidth(), getHeight());
+    public void forEachParallel(final BiConsumer<Integer, Integer> pFunction) {
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEachParallel(pFunction);
     }
 
-    public void setColor(BiFunction<Integer, Integer, Color> pFunction) {
-        Range2D range = new Range2D(getWidth(), getHeight());
+    public void setColor(final BiFunction<Integer, Integer, Color> pFunction) {
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEachParallel((x, y) -> setColor(x, y, pFunction.apply(x, y)));
     }
 
     public void forEachDouble(final BiConsumer<Double, Double> pFunction) {
-        BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
-        Range2D range = new Range2D(getWidth(), getHeight());
+        final BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEach(function);
     }
 
     public void forEachDoubleParallel(final BiConsumer<Double, Double> pFunction) {
-        BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
-        Range2D range = new Range2D(getWidth(), getHeight());
+        final BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEachParallel(function);
     }
 
-    public void setColorDouble(BiFunction<Double, Double, Color> pFunction) {
-        BiConsumer<Integer, Integer> function = (x, y) -> setColor(x, y, pFunction.apply((double) x / getWidth(), (double) y / getHeight()));
-        Range2D range = new Range2D(getWidth(), getHeight());
+    public void setColorDouble(final BiFunction<Double, Double, Color> pFunction) {
+        final BiConsumer<Integer, Integer> function = (x, y) -> setColor(x, y, pFunction.apply((double) x / getWidth(), (double) y / getHeight()));
+        final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEachParallel(function);
     }
 

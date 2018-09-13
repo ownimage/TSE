@@ -30,14 +30,14 @@ public class StringControl extends ControlBase<StringControl, StringType, String
         super(pDisplayName, pPropertyName, pContainer, pValue);
     }
 
-    public static StringControl createTitle(String pTitle) {
+    public static StringControl createTitle(final String pTitle) {
         return new StringControl("Title", "title", NullContainer.NullContainer,
                 new StringType(pTitle, StringType.TITLE));
     }
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }

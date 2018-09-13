@@ -36,14 +36,14 @@ public class BaseBatchEngine implements IBatchEngine {
      * @param pSample     which sample do we want to get the value for
      * @return a double that represents the fractional value of the sample.
      */
-    private double getSamplePosition(int pValue, int pMax, int pOverSample, int pSample) {
-        double base = (double) pValue / pMax;
-        double offset = ((2 * pSample) + 1) / (2.0d * pOverSample * pMax);
+    private double getSamplePosition(final int pValue, final int pMax, final int pOverSample, final int pSample) {
+        final double base = (double) pValue / pMax;
+        final double offset = ((2 * pSample) + 1) / (2.0d * pOverSample * pMax);
         return base + offset;
     }
 
     @Override
-    public void next(final TransformResultBatch pBatch, int pOverSample) {
+    public void next(final TransformResultBatch pBatch, final int pOverSample) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 

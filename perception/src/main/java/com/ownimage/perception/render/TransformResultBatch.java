@@ -156,7 +156,7 @@ public class TransformResultBatch implements ITransformResultBatch {
     @Override
     public int getPercentComplete() {
         Framework.logEntry(Framework.mLogger);
-        int percent = (100 * mXCurrent) / mXMax;
+        final int percent = (100 * mXCurrent) / mXMax;
         Framework.logExit(Framework.mLogger, percent);
         return percent;
     }
@@ -180,7 +180,7 @@ public class TransformResultBatch implements ITransformResultBatch {
         if (mYCurrent < 0)
             throw new IllegalStateException(String.format("mYCurrent (%d) must be greater than 0.", mYCurrent));
 
-        boolean hasNext = mXCurrent < mXMax && mYCurrent < mYMax;
+        final boolean hasNext = mXCurrent < mXMax && mYCurrent < mYMax;
         if (hasNext) mPixelsProcessed += getBatchSize();
         if (mXCurrent == 0 && mYCurrent == 0) mStartTime = Calendar.getInstance();
 
@@ -190,7 +190,7 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logValue(mLogger, "mYMax", mYMax);
 
         if (!hasNext) {
-            long duration = Calendar.getInstance().getTimeInMillis() - mStartTime.getTimeInMillis();
+            final long duration = Calendar.getInstance().getTimeInMillis() - mStartTime.getTimeInMillis();
             mLogger.info(() -> String.format("Total batch (%s), batchSise=%d, millisecs=%d", mName, mPixelsProcessed, duration));
         }
 
@@ -233,22 +233,22 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logExit(mLogger);
     }
 
-    public void next(int pOverSample) {
+    public void next(final int pOverSample) {
         Framework.logEntry(mLogger);
         mCurrentOwner.next(this, pOverSample);
         Framework.logExit(mLogger);
     }
 
-    public void render(final PictureType pPicture, int pOverSample) {
+    public void render(final PictureType pPicture, final int pOverSample) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pPicture, "pPicture");
 
         moveTo(mRenderService.getBaseBatchEngine());
-        float divisor = pOverSample * pOverSample;
+        final float divisor = pOverSample * pOverSample;
 
         for (int i = 0; i < getBatchSize(); ) {
-            int x = mXPixel[i];
-            int y = mYPixel[i];
+            final int x = mXPixel[i];
+            final int y = mYPixel[i];
             float r = 0.0f;
             float g = 0.0f;
             float b = 0.0f;
@@ -261,7 +261,7 @@ public class TransformResultBatch implements ITransformResultBatch {
                     a += mA[i];
                     i++;
                 }
-            Color c = new Color(r / divisor, g / divisor, b / divisor, 1.0f);
+            final Color c = new Color(r / divisor, g / divisor, b / divisor, 1.0f);
             pPicture.setColor(x, y, c);
         }
         Framework.logExit(mLogger);
@@ -314,7 +314,7 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logExit(mLogger);
     }
 
-    public void setName(String pName) {
+    public void setName(final String pName) {
         mName = pName;
     }
 

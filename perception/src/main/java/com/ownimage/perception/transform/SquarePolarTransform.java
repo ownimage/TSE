@@ -77,7 +77,7 @@ public class SquarePolarTransform extends BaseTransform {
                 pRenderResult.setColor(getProperties().getColorOOB());
 
             } else {
-                Point point = new Point(fx, fy);
+                final Point point = new Point(fx, fy);
                 pRenderResult.setPoint(point);
             }
         } catch (final Exception pEx) {

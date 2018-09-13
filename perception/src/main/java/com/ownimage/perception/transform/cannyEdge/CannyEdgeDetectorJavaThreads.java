@@ -232,11 +232,11 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
         }
 
         if (properties.useJTP()) {
-            int threadCount = properties.getRenderThreadPoolSize(); // TODO looks like this could be better
+            final int threadCount = properties.getRenderThreadPoolSize(); // TODO looks like this could be better
             final Thread threads[] = new Thread[threadCount];
 
             for (int i = 0; i < threadCount; i++) {
-                NonMaximalSupressionThread runnable;
+                final NonMaximalSupressionThread runnable;
                 runnable = new NonMaximalSupressionThread(initX + i, maxX, initY, maxY, threadCount);
                 runnable.setName("CannyEdgeDetectorJavaThreads NMS Thread: " + i);
                 runnable.start();

@@ -71,7 +71,7 @@ public class UIEvent implements IUIEvent {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Key event.");
         }
 
-        UIEvent uiEvent = new UIEvent();
+        final UIEvent uiEvent = new UIEvent();
 
         uiEvent.mEventType = pEventType;
         uiEvent.mSource = pSource;
@@ -91,7 +91,7 @@ public class UIEvent implements IUIEvent {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Mouse event");
         }
 
-        UIEvent uiEvent = new UIEvent();
+        final UIEvent uiEvent = new UIEvent();
 
         uiEvent.mEventType = pEventType;
         uiEvent.mSource = pSource;
@@ -107,13 +107,13 @@ public class UIEvent implements IUIEvent {
         return uiEvent;
     }
 
-    public static UIEvent createMouseEvent(final IUIEvent pEvent, int pX, int pY) {
+    public static UIEvent createMouseEvent(final IUIEvent pEvent, final int pX, final int pY) {
         Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
         if (!pEvent.getEventType().isMouseEvent()) {
             throw new IllegalArgumentException("pEventType = " + pEvent.getEventType() + ", is not a valid Mouse event");
         }
 
-        UIEvent uiEvent = new UIEvent();
+        final UIEvent uiEvent = new UIEvent();
 
         uiEvent.mEventType = pEvent.getEventType();
         uiEvent.mSource = pEvent.getSource();
@@ -138,7 +138,7 @@ public class UIEvent implements IUIEvent {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid scroll event.");
         }
 
-        UIEvent uiEvent = new UIEvent();
+        final UIEvent uiEvent = new UIEvent();
 
         uiEvent.mEventType = pEventType;
         uiEvent.mSource = pSource;
@@ -177,25 +177,25 @@ public class UIEvent implements IUIEvent {
 
     @Override
     public double getNormalizedDeltaX() {
-        double dx = (double) mDeltaX / mWidth;
+        final double dx = (double) mDeltaX / mWidth;
         return dx;
     }
 
     @Override
     public double getNormalizedDeltaY() {
-        double dy = (double) mDeltaY / mHeight;
+        final double dy = (double) mDeltaY / mHeight;
         return dy;
     }
 
     @Override
     public double getNormalizedX() {
-        double x = (double) mX / mWidth;
+        final double x = (double) mX / mWidth;
         return x;
     }
 
     @Override
     public double getNormalizedY() {
-        double y = (double) mY / mHeight;
+        final double y = (double) mY / mHeight;
         return y;
     }
 
@@ -265,9 +265,9 @@ public class UIEvent implements IUIEvent {
 
     @Override
     public String toString() {
-        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         sb.append("mUIEvent:{");
         sb.append("mSource:" + mSource);
         sb.append(",mEventType:" + mEventType);

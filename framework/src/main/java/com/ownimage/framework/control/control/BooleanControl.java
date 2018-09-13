@@ -34,7 +34,7 @@ public class BooleanControl extends ControlBase<BooleanControl, BooleanType, IMe
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }

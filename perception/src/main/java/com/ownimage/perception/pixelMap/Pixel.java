@@ -34,7 +34,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
             new IntegerPoint(-1, 0), new IntegerPoint(0, 0), new IntegerPoint(1, 0), //
             new IntegerPoint(-1, 1), new IntegerPoint(0, 1), new IntegerPoint(1, 1) //
     };
-    private static int[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
+    private static final int[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
     private Point m_UHVW = null;
     transient private PixelMap mPixelMap;
 

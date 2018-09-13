@@ -102,7 +102,7 @@ public class SingleTransformResult implements ITransformResult {
     @Override
     public void setColor(final Color pColor) {
         Framework.checkParameterNotNull(mLogger, pColor, "pColor");
-        float[] c = pColor.getRGBComponents(null);
+        final float[] c = pColor.getRGBComponents(null);
         setRGBA(c[0], c[1], c[2], c[3]);
     }
 

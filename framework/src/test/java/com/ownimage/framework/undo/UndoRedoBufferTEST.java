@@ -31,8 +31,8 @@ public class UndoRedoBufferTEST {
     // should fail
     @Test(expected = IllegalStateException.class)
     public void savepoint_0_00() {
-        UndoRedoBuffer undoRedoBuffer = new UndoRedoBuffer(100);
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final UndoRedoBuffer undoRedoBuffer = new UndoRedoBuffer(100);
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
         undoRedoBuffer.redo();
     }
 
@@ -41,8 +41,8 @@ public class UndoRedoBufferTEST {
     // should fail
     @Test(expected = IllegalStateException.class)
     public void savepoint_0_01() {
-        UndoRedoBuffer undoRedoBuffer = new UndoRedoBuffer(100);
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final UndoRedoBuffer undoRedoBuffer = new UndoRedoBuffer(100);
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
         undoRedoBuffer.redo();
     }
 
@@ -62,21 +62,21 @@ public class UndoRedoBufferTEST {
     // rollforward
     @Test
     public void savepoint_0_02() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
-        IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
-        IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
-        IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
-        IntegerControl integer6 = new IntegerControl("x", "x", container, 6);
-        IntegerControl integer7 = new IntegerControl("x", "x", container, 7);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
+        final IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
+        final IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
+        final IntegerControl integer6 = new IntegerControl("x", "x", container, 6);
+        final IntegerControl integer7 = new IntegerControl("x", "x", container, 7);
 
         integer1.setValue(11);
 
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
 
         integer2.setValue(12);
         integer3.setValue(13);
@@ -106,7 +106,7 @@ public class UndoRedoBufferTEST {
 
         integer5.setValue(15);
 
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
 
         integer6.setValue(17);
         integer7.setValue(16);
@@ -138,28 +138,28 @@ public class UndoRedoBufferTEST {
     // rollforward
     @Test
     public void savepoint_0_03() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
-        IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
-        IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
-        IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
-        IntegerControl integer6 = new IntegerControl("x", "x", container, 6);
-        IntegerControl integer7 = new IntegerControl("x", "x", container, 7);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
+        final IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
+        final IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
+        final IntegerControl integer6 = new IntegerControl("x", "x", container, 6);
+        final IntegerControl integer7 = new IntegerControl("x", "x", container, 7);
 
         integer1.setValue(11);
 
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
 
         integer2.setValue(12);
         integer3.setValue(13);
 
         undoRedoBuffer.endSavepoint(savepoint1);
 
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
 
         integer6.setValue(16);
         integer7.setValue(17);
@@ -210,19 +210,19 @@ public class UndoRedoBufferTEST {
     // mismatched savepoints
     @Test(expected = IllegalArgumentException.class)
     public void savepoint_0_04() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
 
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
 
         integer1.setValue(11);
         integer2.setValue(12);
 
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
 
         undoRedoBuffer.endSavepoint(savepoint1);
     }
@@ -235,20 +235,20 @@ public class UndoRedoBufferTEST {
     // savepoint not active
     @Test(expected = IllegalArgumentException.class)
     public void savepoint_0_05() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
 
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
         undoRedoBuffer.endSavepoint(savepoint1);
 
         integer1.setValue(11);
         integer2.setValue(12);
 
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
         undoRedoBuffer.endSavepoint(savepoint1); // to throw error
     }
 
@@ -259,15 +259,15 @@ public class UndoRedoBufferTEST {
     // savepoints not matched
     @Test(expected = IllegalArgumentException.class)
     public void savepoint_0_06() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
 
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
         undoRedoBuffer.endSavepoint(savepoint1);
     }
 
@@ -284,21 +284,21 @@ public class UndoRedoBufferTEST {
     // rollforward
     @Test
     public void savepoint_0_07() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
-        IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
-        IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
-        IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
-        IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl integer1 = new IntegerControl("x", "x", container, 1);
+        final IntegerControl integer2 = new IntegerControl("x", "x", container, 2);
+        final IntegerControl integer3 = new IntegerControl("x", "x", container, 3);
+        final IntegerControl integer4 = new IntegerControl("x", "x", container, 4);
+        final IntegerControl integer5 = new IntegerControl("x", "x", container, 5);
 
         // update of object 1
         integer1.setValue(11);
 
         // savepoint 1
-        Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
+        final Id savepoint1 = undoRedoBuffer.startSavepoint("savepoint 1");
 
         // update of object 2
         integer2.setValue(12);
@@ -307,7 +307,7 @@ public class UndoRedoBufferTEST {
         integer3.setValue(13);
 
         // savepoint 2
-        Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
+        final Id savepoint2 = undoRedoBuffer.startSavepoint("savepoint 2");
 
         // update of object 4
         integer4.setValue(14);
@@ -370,7 +370,7 @@ public class UndoRedoBufferTEST {
         mUndoRedoActions = new UndoRedoActionASSISTANT[5];
 
         for (int i = 0; i < 5; i++) {
-            UndoRedoActionASSISTANT action = new UndoRedoActionASSISTANT("UndoRedoAction " + i);
+            final UndoRedoActionASSISTANT action = new UndoRedoActionASSISTANT("UndoRedoAction " + i);
             mUndoRedoActions[i] = action;
             mUndoRedoBuffer.add(action);
         }

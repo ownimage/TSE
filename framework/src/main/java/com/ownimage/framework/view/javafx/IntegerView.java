@@ -24,14 +24,14 @@ public class IntegerView extends ViewBase<IntegerControl> {
     public IntegerView(final IntegerControl pIntegerControl) {
         super(pIntegerControl);
 
-        int min = mControl.getMetaType().getMin();
-        int max = mControl.getMetaType().getMax();
-        int step = mControl.getMetaType().getStep();
+        final int min = mControl.getMetaType().getMin();
+        final int max = mControl.getMetaType().getMax();
+        final int step = mControl.getMetaType().getStep();
 
         // lost focus commiting value from
         // https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
-        SpinnerValueFactory<Integer> factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue(), step);
-        TextFormatter<Integer> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
+        final SpinnerValueFactory<Integer> factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, pIntegerControl.getValue(), step);
+        final TextFormatter<Integer> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
         mIntegerSpinner = new Spinner<>(min, max, mControl.getValue(), step);
         mIntegerSpinner.setValueFactory(factory);
         mIntegerSpinner.setEditable(true);

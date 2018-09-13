@@ -2,9 +2,9 @@ package com.ownimage.framework.opencl;
 
 public class MultiplyTEST implements ITransform {
 
-    private double mMultiply;
+    private final double mMultiply;
 
-    public MultiplyTEST(double pMultiply) {
+    public MultiplyTEST(final double pMultiply) {
         mMultiply = pMultiply;
     }
 
@@ -14,7 +14,7 @@ public class MultiplyTEST implements ITransform {
 
     }
 
-    public static double transformMultiply(double pDoubleParams, int[] pB, double pC) {
+    public static double transformMultiply(final double pDoubleParams, final int[] pB, final double pC) {
         return pDoubleParams * pC;
     }
 

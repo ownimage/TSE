@@ -39,11 +39,11 @@ public class BorderView extends ViewBase<BorderLayout> implements IBorderView {
     @Override
     public void redrawBottom() {
         runOnFXApplicationThread(() -> {
-            IViewable<?> viewable = mControl.getBottom();
+            final IViewable<?> viewable = mControl.getBottom();
             Node content = null;
 
             if (viewable != null) {
-                FXView view = (FXView) viewable.createView();
+                final FXView view = (FXView) viewable.createView();
                 content = view.getUI();
             }
 
@@ -54,11 +54,11 @@ public class BorderView extends ViewBase<BorderLayout> implements IBorderView {
     @Override
     public void redrawCenter() {
         runOnFXApplicationThread(() -> {
-            IViewable<?> viewable = mControl.getCenter();
+            final IViewable<?> viewable = mControl.getCenter();
             Node content = null;
 
             if (viewable != null) {
-                FXView view = (FXView) viewable.createView();
+                final FXView view = (FXView) viewable.createView();
                 content = view.getUI();
             }
 
@@ -69,11 +69,11 @@ public class BorderView extends ViewBase<BorderLayout> implements IBorderView {
     @Override
     public void redrawLeft() {
         runOnFXApplicationThread(() -> {
-            IViewable<?> viewable = mControl.getLeft();
+            final IViewable<?> viewable = mControl.getLeft();
             Node content = null;
 
             if (viewable != null) {
-                FXView view = (FXView) viewable.createView();
+                final FXView view = (FXView) viewable.createView();
                 content = view.getUI();
             }
 
@@ -84,11 +84,11 @@ public class BorderView extends ViewBase<BorderLayout> implements IBorderView {
     @Override
     public void redrawRight() {
         runOnFXApplicationThread(() -> {
-            IViewable<?> viewable = mControl.getRight();
+            final IViewable<?> viewable = mControl.getRight();
             Node content = null;
 
             if (viewable != null) {
-                FXView view = (FXView) viewable.createView();
+                final FXView view = (FXView) viewable.createView();
                 content = view.getUI();
             }
 
@@ -99,11 +99,11 @@ public class BorderView extends ViewBase<BorderLayout> implements IBorderView {
     @Override
     public void redrawTop() {
         runOnFXApplicationThread(() -> {
-            IViewable<?> viewable = mControl.getTop();
+            final IViewable<?> viewable = mControl.getTop();
             Node content = null;
 
             if (viewable != null) {
-                FXView view = (FXView) viewable.createView();
+                final FXView view = (FXView) viewable.createView();
                 content = view.getUI();
             }
 

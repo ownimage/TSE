@@ -49,9 +49,9 @@ public class Line implements Serializable {
     }
 
     public double closestLambda(final Point pPoint) {
-        Vector pax = mA.minus(pPoint);
+        final Vector pax = mA.minus(pPoint);
 
-        double lambda = -pax.dot(mAB) / mAB.length2();
+        final double lambda = -pax.dot(mAB) / mAB.length2();
         return lambda;
     }
 
@@ -81,8 +81,8 @@ public class Line implements Serializable {
 
     public synchronized LinearEquation getLinearEquation() {
         if (mLinearEquation == null) {
-            double m = mAB.gradient();
-            double c = intersect(YAxis).getY();
+            final double m = mAB.gradient();
+            final double c = intersect(YAxis).getY();
             mLinearEquation = new LinearEquation(m, c);
         }
         return mLinearEquation;
@@ -109,11 +109,11 @@ public class Line implements Serializable {
 
     public Point intersect(final Line pLine) {
         try {
-            Matrix m = new Matrix(new double[][]{{getAB().getX(), -pLine.getAB().getX()}, {getAB().getY(), -pLine.getAB().getY()}});
-            Matrix b = new Matrix(new double[][]{{pLine.getA().getX() - getA().getX()}, {pLine.getA().getY() - getA().getY()}});
-            Matrix x = m.solve(b);
+            final Matrix m = new Matrix(new double[][]{{getAB().getX(), -pLine.getAB().getX()}, {getAB().getY(), -pLine.getAB().getY()}});
+            final Matrix b = new Matrix(new double[][]{{pLine.getA().getX() - getA().getX()}, {pLine.getA().getY() - getA().getY()}});
+            final Matrix x = m.solve(b);
             return mA.add(mAB.multiply(x.get(0, 0)));
-        } catch (RuntimeException pEx) {
+        } catch (final RuntimeException pEx) {
             return null;
         }
     }
@@ -123,11 +123,11 @@ public class Line implements Serializable {
     }
 
     public boolean isParallel(final Line pLine) {
-        double deltaX = mA.getX() - mB.getX();
-        double otherDeltaX = pLine.mA.getX() - pLine.mB.getX();
+        final double deltaX = mA.getX() - mB.getX();
+        final double otherDeltaX = pLine.mA.getX() - pLine.mB.getX();
 
-        double deltaY = mA.getY() - mB.getY();
-        double otherDeltaY = pLine.mA.getY() - pLine.mB.getY();
+        final double deltaY = mA.getY() - mB.getY();
+        final double otherDeltaY = pLine.mA.getY() - pLine.mB.getY();
 
         if (deltaX == 0 && otherDeltaX == 0) {
             return true;

@@ -30,13 +30,13 @@ public class MenuControl implements IMenuItem, IViewable {
 
     public static class Builder {
 
-        private MenuControl mMenuControl;
+        private final MenuControl mMenuControl;
 
         public Builder() {
             mMenuControl = new MenuControl();
         }
 
-        public Builder(MenuControl pMenuControl) {
+        public Builder(final MenuControl pMenuControl) {
             mMenuControl = new MenuControl();
             mMenuControl.mDisplayName = pMenuControl.mDisplayName;
             mMenuControl.mMenuItems.addAll(pMenuControl.mMenuItems);

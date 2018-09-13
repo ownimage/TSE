@@ -54,7 +54,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     private ControlSelector mControlSelector;
 
     private boolean mIsMutating = false;
-    private boolean mIsInitialized = false;
+    private final boolean mIsInitialized = false;
 
     public BaseTransform(final String pDisplayName, final String pPropertyName) {
         Framework.logEntry(mLogger);
@@ -71,10 +71,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         mUseTransform = new BooleanControl("Use Transform", "use", mContainer, true);
 
-        int previewSize = getProperties().getPreviewSize();
-        ColorProperty oob = getProperties().getColorOOBProperty();
-        PictureType preview = new PictureType(previewSize, previewSize);
-        Color c = new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+        final int previewSize = getProperties().getPreviewSize();
+        final ColorProperty oob = getProperties().getColorOOBProperty();
+        final PictureType preview = new PictureType(previewSize, previewSize);
+        final Color c = new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
         for (int x = 0; x < previewSize; x++) {
             for (int y = 0; y < previewSize; y++) {
                 preview.setColor(x, y, c);
@@ -92,7 +92,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
     @Override
     public void resizeInputPreview(final int pPreviewSize) {
-        PictureType preview = new PictureType(pPreviewSize);
+        final PictureType preview = new PictureType(pPreviewSize);
         mInputPreviewImage.setValue(preview);
     }
 
@@ -139,10 +139,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         ITransform t = null;
         try {
-            Class cl = getClass();
-            Constructor<?> cons = cl.getConstructor(Perception.class);
+            final Class cl = getClass();
+            final Constructor<?> cons = cl.getConstructor(Perception.class);
             t = (ITransform) cons.newInstance(getPerception());
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             throw new RuntimeException("Cannot create new instance." + pT);
         }
 
@@ -249,7 +249,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     public boolean isControlSelected(final IControl pControl) {
-        ControlSelector cs = getControlSelector();
+        final ControlSelector cs = getControlSelector();
         return cs != null && cs.isControlSelected(pControl);
     }
 
@@ -364,7 +364,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 
         for (int i = 0; i < pBatch.getBatchSize(); i++) {
-            ITransformResult rr = pBatch.getTransformResult(i);
+            final ITransformResult rr = pBatch.getTransformResult(i);
             transform(rr);
         }
 

@@ -31,7 +31,7 @@ public class SegmentFactory {
      * @param pP1         the point that the start and end gradient goes through
      * @return the curve approximation
      */
-    static public CurveSegment createTempCurveSegmentTowards(PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    static public CurveSegment createTempCurveSegmentTowards(final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
         try {
             final CurveSegment segment = new CurveSegment(pPixelChain, pSegmentIndex, pP1);
             if (segment.getA().length2() != 0) {
@@ -39,7 +39,7 @@ public class SegmentFactory {
             } else {
                 return null;
             }
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.severe(FrameworkLogger.throwableToString(pT));
         }
         return null;
@@ -50,26 +50,26 @@ public class SegmentFactory {
 
         try {
             // note that no checking is done that the parameters give a sensible DoubleCurve
-            CurveSegment startCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP1) {
+            final CurveSegment startCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP1) {
                 @Override
-                public IVertex getEndVertex(PixelChain pPixelChain) {
+                public IVertex getEndVertex(final PixelChain pPixelChain) {
                     return pMidVertex;
                 }
             };
-            CurveSegment endCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP2) {
+            final CurveSegment endCurve = new CurveSegment(pPixelChain, pSegmentIndex, pP2) {
                 @Override
-                public IVertex getStartVertex(PixelChain pPixelChain) {
+                public IVertex getStartVertex(final PixelChain pPixelChain) {
                     return pMidVertex;
                 }
             };
             return new DoubleCurveSegment(pPixelChain, startCurve, endCurve);
 
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             return null;
         }
     }
 
-    static public StraightSegment createTempStraightSegment(PixelChain pPixelChain, final int pSegmentIndex) {
+    static public StraightSegment createTempStraightSegment(final PixelChain pPixelChain, final int pSegmentIndex) {
         return new StraightSegment(pPixelChain, pSegmentIndex);
     }
 

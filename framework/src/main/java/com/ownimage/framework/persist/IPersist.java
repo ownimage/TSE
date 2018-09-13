@@ -26,7 +26,7 @@ public interface IPersist {
      * @param pId key
      * @return whether the pDB source contains the key
      */
-    default boolean canRead(IPersistDB pDB, String pId) {
+    default boolean canRead(final IPersistDB pDB, final String pId) {
         return false;
     }
 

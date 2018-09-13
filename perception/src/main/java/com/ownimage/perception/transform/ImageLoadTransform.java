@@ -45,7 +45,7 @@ public class ImageLoadTransform extends BaseTransform {
         Framework.logEntry(mLogger);
 
         mFile = pFile;
-        PictureType sourcePicture = new PictureType(mFile);
+        final PictureType sourcePicture = new PictureType(mFile);
         mSourcePicture = new PictureControl("Source Image", "sourceImage", new Container("x", "x", this::getUndoRedoBuffer), sourcePicture) //
                 .setTransient();
 
@@ -60,8 +60,8 @@ public class ImageLoadTransform extends BaseTransform {
 
     @Override
     public void resizeInputPreview(final int pPreviewSize) {
-        RectangleSize size = new RectangleSize(mSourcePicture.getValue()).scaleToSquare(pPreviewSize);
-        PictureType preview = new PictureType(size);
+        final RectangleSize size = new RectangleSize(mSourcePicture.getValue()).scaleToSquare(pPreviewSize);
+        final PictureType preview = new PictureType(size);
         preview.setColorDouble(
                 (x, y) -> mSourcePicture.getValue().getColor(x, y)
                         .orElseGet(() -> Services.getServices().getProperties().getColorOOB())
@@ -300,9 +300,9 @@ public class ImageLoadTransform extends BaseTransform {
 
     @Override
     public void transform(final ITransformResult pRenderResult) {
-        double x = pRenderResult.getX();
-        double y = pRenderResult.getY();
-        Color c = mSourcePicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
+        final double x = pRenderResult.getX();
+        final double y = pRenderResult.getY();
+        final Color c = mSourcePicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
         pRenderResult.setColor(c);
     }
 

@@ -99,7 +99,7 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
         getFactory().labelWidthProperty.addListener(this);
         setWidth();
 
-        int rightPadding = getFactory().labelRightPaddingProperty.intValue();
+        final int rightPadding = getFactory().labelRightPaddingProperty.intValue();
         getFactory().labelRightPaddingProperty.addListener(this);
 
         mLabel = new Label(mControl.getValue());
@@ -148,7 +148,7 @@ public class StringView extends ViewBase<StringControl> implements ChangeListene
     }
 
     private void setWidth() {
-        int width = getFactory().controlWidthProperty.getValue() + getFactory().labelWidthProperty.getValue();
+        final int width = getFactory().controlWidthProperty.getValue() + getFactory().labelWidthProperty.getValue();
         if (mWidth == null) {
             mWidth = new SimpleIntegerProperty(width);
         }

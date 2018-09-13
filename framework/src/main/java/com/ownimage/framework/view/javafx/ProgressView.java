@@ -24,9 +24,9 @@ public class ProgressView extends ViewBase<ProgressControl> {
     public ProgressView(final ProgressControl pProgressControl) {
         super(pProgressControl);
 
-        int min = mControl.getMetaType().getMin();
-        int max = mControl.getMetaType().getMax();
-        int step = mControl.getMetaType().getStep();
+        final int min = mControl.getMetaType().getMin();
+        final int max = mControl.getMetaType().getMax();
+        final int step = mControl.getMetaType().getStep();
 
         final ObservableValue<? extends Number> controlWidthProperty = FXViewFactory.getInstance().controlWidthProperty;
         final ObservableValue<? extends Number> labelWidthProperty = FXViewFactory.getInstance().labelWidthProperty;
@@ -52,8 +52,8 @@ public class ProgressView extends ViewBase<ProgressControl> {
         mProgressText.maxWidthProperty().bind(controlWidthProperty);
 
         if (!mControl.getShowLabel()) {
-            ChangeListener<Number> widthListener = (obs, oldValue, newValue) -> {
-                double width = labelWidthProperty.getValue().doubleValue() + controlWidthProperty.getValue().doubleValue();
+            final ChangeListener<Number> widthListener = (obs, oldValue, newValue) -> {
+                final double width = labelWidthProperty.getValue().doubleValue() + controlWidthProperty.getValue().doubleValue();
                 mProgressBar.prefWidthProperty().setValue(width);
                 mUI.prefWidthProperty().setValue(width);
             };
@@ -62,7 +62,7 @@ public class ProgressView extends ViewBase<ProgressControl> {
             widthListener.changed(null, null, null);
         }
 
-        StackPane stack = new StackPane(mProgressBar, mProgressText);
+        final StackPane stack = new StackPane(mProgressBar, mProgressText);
 
         if (mControl.getShowLabel()) mUI.getChildren().add(mLabel);
         mUI.getChildren().add(stack);

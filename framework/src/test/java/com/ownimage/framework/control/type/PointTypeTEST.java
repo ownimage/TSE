@@ -17,10 +17,10 @@ public class PointTypeTEST {
 
     @Test
     public void PointType_duplicate_00() {
-        PointType t = new PointType(Point.Point00);
-        PointType d = t.clone();
+        final PointType t = new PointType(Point.Point00);
+        final PointType d = t.clone();
         t.setValue(Point.Point11);
-        PointType d2 = t.clone();
+        final PointType d2 = t.clone();
 
         assertEquals(Point.Point00, d.getValue());
         assertEquals(Point.Point11, d2.getValue());
@@ -28,7 +28,7 @@ public class PointTypeTEST {
 
     @Test
     public void PointType_getString_00() {
-        PointType t = new PointType(new Point(0.1, 0.2));
+        final PointType t = new PointType(new Point(0.1, 0.2));
         assertEquals("0.1,0.2", t.getString());
 
         t.setValue(new Point(0.3, 0.4));
@@ -37,7 +37,7 @@ public class PointTypeTEST {
 
     @Test
     public void PointType_setString_00() {
-        PointType t = new PointType(Point.Point00);
+        final PointType t = new PointType(Point.Point00);
         t.setString("0.1,0.2");
         assertEquals(new Point(0.1, 0.2), t.getValue());
         t.setString("0.3,0.4");
@@ -46,8 +46,8 @@ public class PointTypeTEST {
 
     @Test
     public void PointType_toString_00() {
-        String expected = "PointType(x=0.1,y=0.2)";
-        PointType t = new PointType(new Point(0.1, 0.2));
+        final String expected = "PointType(x=0.1,y=0.2)";
+        final PointType t = new PointType(new Point(0.1, 0.2));
         assertEquals(expected, t.toString());
     }
 

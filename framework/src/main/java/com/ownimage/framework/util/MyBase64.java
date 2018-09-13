@@ -36,17 +36,17 @@ public class MyBase64 {
      * @param pBytes the byte array (not null)
      * @return the translated Base64 string (not null)
      */
-    public static String encode(byte[] pBytes) {
-        int size = pBytes.length;
-        char[] ar = new char[((size + 2) / 3) * 4];
+    public static String encode(final byte[] pBytes) {
+        final int size = pBytes.length;
+        final char[] ar = new char[((size + 2) / 3) * 4];
         int a = 0;
         int i = 0;
         while (i < size) {
-            byte b0 = pBytes[i++];
-            byte b1 = (i < size) ? pBytes[i++] : 0;
-            byte b2 = (i < size) ? pBytes[i++] : 0;
+            final byte b0 = pBytes[i++];
+            final byte b1 = (i < size) ? pBytes[i++] : 0;
+            final byte b2 = (i < size) ? pBytes[i++] : 0;
 
-            int mask = 0x3F;
+            final int mask = 0x3F;
             ar[a++] = ALPHABET[(b0 >> 2) & mask];
             ar[a++] = ALPHABET[((b0 << 4) | ((b1 & 0xFF) >> 4)) & mask];
             ar[a++] = ALPHABET[((b1 << 2) | ((b2 & 0xFF) >> 6)) & mask];
@@ -67,24 +67,24 @@ public class MyBase64 {
      * @param s the Base64 string (not null)
      * @return the byte array (not null)
      */
-    public static byte[] decode(String s) {
-        int delta = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
-        byte[] buffer = new byte[s.length() * 3 / 4 - delta];
-        int mask = 0xFF;
+    public static byte[] decode(final String s) {
+        final int delta = s.endsWith("==") ? 2 : s.endsWith("=") ? 1 : 0;
+        final byte[] buffer = new byte[s.length() * 3 / 4 - delta];
+        final int mask = 0xFF;
         int index = 0;
         for (int i = 0; i < s.length(); i += 4) {
-            int c0 = toInt[s.charAt(i)];
-            int c1 = toInt[s.charAt(i + 1)];
+            final int c0 = toInt[s.charAt(i)];
+            final int c1 = toInt[s.charAt(i + 1)];
             buffer[index++] = (byte) (((c0 << 2) | (c1 >> 4)) & mask);
             if (index >= buffer.length) {
                 return buffer;
             }
-            int c2 = toInt[s.charAt(i + 2)];
+            final int c2 = toInt[s.charAt(i + 2)];
             buffer[index++] = (byte) (((c1 << 4) | (c2 >> 2)) & mask);
             if (index >= buffer.length) {
                 return buffer;
             }
-            int c3 = toInt[s.charAt(i + 3)];
+            final int c3 = toInt[s.charAt(i + 3)];
             buffer[index++] = (byte) (((c2 << 6) | c3) & mask);
         }
         return buffer;
@@ -96,13 +96,13 @@ public class MyBase64 {
      * @param pBytes the bytes
      * @return the string
      */
-    public static String compressAndEncode(byte[] pBytes) {
-        Deflater compresser = new Deflater();
+    public static String compressAndEncode(final byte[] pBytes) {
+        final Deflater compresser = new Deflater();
         compresser.setInput(pBytes);
         compresser.finish();
 
-        ByteArrayOutputStream compressedOuput = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1000];
+        final ByteArrayOutputStream compressedOuput = new ByteArrayOutputStream();
+        final byte[] buffer = new byte[1000];
         int bufferLength;
         while ((bufferLength = compresser.deflate(buffer)) > 0) {
             compressedOuput.write(buffer, 0, bufferLength);
@@ -117,14 +117,14 @@ public class MyBase64 {
      * @return the byte[]
      * @throws DataFormatException the data format exception
      */
-    public static byte[] decodeAndDecompress(String s) throws DataFormatException {
-        byte[] compressedBytes = MyBase64.decode(s);
+    public static byte[] decodeAndDecompress(final String s) throws DataFormatException {
+        final byte[] compressedBytes = MyBase64.decode(s);
 
-        Inflater decompresser = new Inflater();
+        final Inflater decompresser = new Inflater();
         decompresser.setInput(compressedBytes);
 
-        ByteArrayOutputStream baosLines = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1000];
+        final ByteArrayOutputStream baosLines = new ByteArrayOutputStream();
+        final byte[] buffer = new byte[1000];
         int bufferLength;
         while ((bufferLength = decompresser.inflate(buffer)) > 0) {
             baosLines.write(buffer, 0, bufferLength);

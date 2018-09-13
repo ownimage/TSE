@@ -69,8 +69,8 @@ public class CircleMaskTransform extends BaseTransform {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
-        Point delta = pRenderResult.getPoint().minus(Point.Point0505);
-        double radius = delta.length();
+        final Point delta = pRenderResult.getPoint().minus(Point.Point0505);
+        final double radius = delta.length();
 
         if (radius > mRadius) {
             pRenderResult.setColor(mColor.getValue());
@@ -78,12 +78,12 @@ public class CircleMaskTransform extends BaseTransform {
         } else if (radius > mBlend) {
             double d = (radius - mBlend) / (mRadius - mBlend);
             d = 1.0d - d;
-            float a = (float) KMath.sigma(d);
-            Color c = mColor.getValue();
-            float r = c.getRed() / 256.0f;
-            float g = c.getGreen() / 256.0f;
-            float b = c.getBlue() / 256.0f;
-            Color cnew = new Color(r, g, b, a);
+            final float a = (float) KMath.sigma(d);
+            final Color c = mColor.getValue();
+            final float r = c.getRed() / 256.0f;
+            final float g = c.getGreen() / 256.0f;
+            final float b = c.getBlue() / 256.0f;
+            final Color cnew = new Color(r, g, b, a);
             pRenderResult.setColor(cnew);
         }
         Framework.logExit(mLogger);

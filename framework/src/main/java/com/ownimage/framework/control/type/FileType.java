@@ -52,7 +52,7 @@ public class FileType extends StringType {
 
     @Override
     public void setString(final String pValue) {
-        File file = new File(pValue);
+        final File file = new File(pValue);
 
         if (mFileControlType == FileControlType.DIRECTORY && !file.isDirectory()) {
             throw new IllegalArgumentException("The value supplied <" + pValue + "> is not a directory.");
@@ -75,7 +75,7 @@ public class FileType extends StringType {
         try {
             setString(pValue);
             return true;
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             return false;
         }
     }

@@ -44,22 +44,22 @@ public class MenuView implements IView {
     }
 
     private Menu createSubMenu(final MenuControl pMenu) {
-        Menu menu = new Menu(pMenu.getDisplayName());
+        final Menu menu = new Menu(pMenu.getDisplayName());
 
-        Iterator<IMenuItem> childIterator = pMenu.getChildIterator();
+        final Iterator<IMenuItem> childIterator = pMenu.getChildIterator();
         while (childIterator.hasNext()) {
-            IMenuItem child = childIterator.next();
+            final IMenuItem child = childIterator.next();
 
             if (child instanceof ActionControl) {
-                ActionControl actionControl = (ActionControl) child;
-                MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
+                final ActionControl actionControl = (ActionControl) child;
+                final MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
                 menu.getItems().add(menuItem.getUI());
                 mLogger.fine(() -> "Menu created: " + actionControl.getDisplayName());
 
             } else if (child instanceof MenuControl) {
-                MenuControl menuControl = (MenuControl) child;
+                final MenuControl menuControl = (MenuControl) child;
                 mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
-                MenuView subMenu = (MenuView) menuControl.createMenuView();
+                final MenuView subMenu = (MenuView) menuControl.createMenuView();
                 menu.getItems().add(subMenu.getUI());
             }
         }

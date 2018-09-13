@@ -45,11 +45,11 @@ public class ControlBaseTESTredoUndo {
 
     @Before
     public void setUp() throws Exception {
-        UndoRedoBuffer undobuffer = mUndoRedoBuffer;
+        final UndoRedoBuffer undobuffer = mUndoRedoBuffer;
         undobuffer.resetAndDestroyAllBuffers();
 
         mContainer = new Container("displayName", "propertyName", mUndoRedoBufferSource);
-        IntegerMetaType imt = new IntegerMetaType(0, 100, 10);
+        final IntegerMetaType imt = new IntegerMetaType(0, 100, 10);
         mInteger1 = new IntegerControl("x", "x", mContainer, 1, imt);
         mInteger2 = new IntegerControl("x", "x", mContainer, 2, imt);
 

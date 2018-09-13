@@ -67,7 +67,7 @@ public class ContainerTEST {
     // this is to simulate how controls/containers might be used to create the properties dialog editor
     @Test
     public void Container_PropertyTest_00() {
-        Property p = new Property("x", "x");
+        final Property p = new Property("x", "x");
 
         p.setBoolean(true);
         assertTrue("setBoolean 1", p.getBoolean());

@@ -53,23 +53,23 @@ public abstract class AppControlBase implements IAppControl {
     }
 
     protected IView createContentView() {
-        Container container = new Container("x", "x", this::getUndoRedoBuffer);
-        ColorControl colorControl = new ColorControl("x", "x", container, Color.ORANGE);
+        final Container container = new Container("x", "x", this::getUndoRedoBuffer);
+        final ColorControl colorControl = new ColorControl("x", "x", container, Color.ORANGE);
 
-        NamedTabs namedTabs = new NamedTabs("Test", "test");
+        final NamedTabs namedTabs = new NamedTabs("Test", "test");
         namedTabs.addTab("one", container);
         namedTabs.addTab("two", container);
         namedTabs.setSelectedIndex(1);
 
-        HSplitLayout hsplit = new HSplitLayout(namedTabs, namedTabs);
+        final HSplitLayout hsplit = new HSplitLayout(namedTabs, namedTabs);
 
         return hsplit.createView();
     }
 
     protected MenuControl createMenuView() {
-        Container menuContainer = new Container("AppControlBase", "AppControlBase", this::getUndoRedoBuffer);
+        final Container menuContainer = new Container("AppControlBase", "AppControlBase", this::getUndoRedoBuffer);
 
-        MenuControl menu = new MenuControl.Builder()
+        final MenuControl menu = new MenuControl.Builder()
                 .addMenu(
                         new MenuControl.Builder().setDisplayName("File")
                                 .addMenu(
@@ -92,11 +92,11 @@ public abstract class AppControlBase implements IAppControl {
         Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
         Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
-        Container dialogContainer = new Container(pTitle, "title", this::getUndoRedoBuffer);
+        final Container dialogContainer = new Container(pTitle, "title", this::getUndoRedoBuffer);
 
-        StringControl message = new StringControl("Message", "message", dialogContainer, new StringType(pMessage, StringType.LABEL));
-        ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
-        ActionControl cancel = ActionControl.create("Cancel", NullContainer, pCancelAction);
+        final StringControl message = new StringControl("Message", "message", dialogContainer, new StringType(pMessage, StringType.LABEL));
+        final ActionControl ok = ActionControl.create("OK", NullContainer, pOKAction);
+        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, pCancelAction);
 
         showDialog(dialogContainer, DialogOptions.NONE, cancel, ok);
 
@@ -115,7 +115,7 @@ public abstract class AppControlBase implements IAppControl {
         Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
         if (pFile.exists()) {
-            String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
+            final String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
             dialogOKCancel(pTitle, message, pOKAction, pCancelAction);
         } else {
             pOKAction.performAction();

@@ -26,19 +26,19 @@ public class GrafittiImp implements IGrafittiImp {
     }
 
     private javafx.scene.paint.Color convert(final Color pColor) {
-        double r = pColor.getRed() / 255.0d;
-        double g = pColor.getGreen() / 255.0d;
-        double b = pColor.getBlue() / 255.0d;
-        double a = pColor.getAlpha() / 255.0d;
+        final double r = pColor.getRed() / 255.0d;
+        final double g = pColor.getGreen() / 255.0d;
+        final double b = pColor.getBlue() / 255.0d;
+        final double a = pColor.getAlpha() / 255.0d;
         return new javafx.scene.paint.Color(r, g, b, a);
     }
 
     @Override
     public void drawCircle(final double pX, final double pY, final double pRadius, final Color pColor, final boolean pDashed) {
-        double x = (pX - pRadius) * mWidth;
-        double y = (1.0d - pY - pRadius) * mHeight;
-        double w = 2.0d * pRadius * mWidth;
-        double h = 2.0d * pRadius * mHeight;
+        final double x = (pX - pRadius) * mWidth;
+        final double y = (1.0d - pY - pRadius) * mHeight;
+        final double w = 2.0d * pRadius * mWidth;
+        final double h = 2.0d * pRadius * mHeight;
         setDashed(pDashed);
         mGraphicsContext.setStroke(convert(pColor));
         mGraphicsContext.strokeOval(x, y, w, h);
@@ -46,29 +46,29 @@ public class GrafittiImp implements IGrafittiImp {
 
     @Override
     public void clearRectangle(final double pX1, final double pY1, final double pX2, final double pY2) {
-        double x = pX1 * mWidth;
-        double w = (pX2 - pX1) * mWidth;
-        double y = (1.0 - pY2) * mHeight;
-        double h = (pY2 - pY1) * mHeight;
+        final double x = pX1 * mWidth;
+        final double w = (pX2 - pX1) * mWidth;
+        final double y = (1.0 - pY2) * mHeight;
+        final double h = (pY2 - pY1) * mHeight;
         mGraphicsContext.clearRect(x, y, w, h);
     }
 
     @Override
     public void drawFilledRectangle(final double pX1, final double pY1, final double pX2, final double pY2, final Color pColor) {
-        double x = pX1 * mWidth;
-        double w = (pX2 - pX1) * mWidth;
-        double y = (1.0 - pY2) * mHeight;
-        double h = (pY2 - pY1) * mHeight;
+        final double x = pX1 * mWidth;
+        final double w = (pX2 - pX1) * mWidth;
+        final double y = (1.0 - pY2) * mHeight;
+        final double h = (pY2 - pY1) * mHeight;
         mGraphicsContext.setFill(convert(pColor));
         mGraphicsContext.fillRect(x, y, w, h);
     }
 
     @Override
     public void drawLine(final double pX1, final double pY1, final double pX2, final double pY2, final Color pColor, final boolean pDashed) {
-        double x1 = pX1 * mWidth;
-        double x2 = pX2 * mWidth;
-        double y1 = (1.0 - pY1) * mHeight;
-        double y2 = (1.0 - pY2) * mHeight;
+        final double x1 = pX1 * mWidth;
+        final double x2 = pX2 * mWidth;
+        final double y1 = (1.0 - pY1) * mHeight;
+        final double y2 = (1.0 - pY2) * mHeight;
         setDashed(pDashed);
         mGraphicsContext.setStroke(convert(pColor));
         mGraphicsContext.strokeLine(x1, y1, x2, y2);
@@ -76,15 +76,15 @@ public class GrafittiImp implements IGrafittiImp {
 
     @Override
     public void drawString(final String pLabel, final double pX, final double pY) {
-        double x = pX * mWidth;
-        double y = (1.0 - pY) * mHeight;
-        FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
-        double w = fm.computeStringWidth(pLabel);
-        double h = fm.getAscent() + fm.getDescent(); // fm.getLineHeight() gets the leading as well
-        double d = fm.getMaxDescent();
+        final double x = pX * mWidth;
+        final double y = (1.0 - pY) * mHeight;
+        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
+        final double w = fm.computeStringWidth(pLabel);
+        final double h = fm.getAscent() + fm.getDescent(); // fm.getLineHeight() gets the leading as well
+        final double d = fm.getMaxDescent();
 
-        double xpadding = 3;
-        double ypadding = 1;
+        final double xpadding = 3;
+        final double ypadding = 1;
 
         mGraphicsContext.setFill(convert(Color.WHITE));
         mGraphicsContext.fillRect(x, y - (h + 2 * ypadding), w + 2 * xpadding, h + 2 * ypadding);
@@ -105,16 +105,16 @@ public class GrafittiImp implements IGrafittiImp {
 
     @Override
     public void setFontSize(final double pFontSize) {
-        FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
-        double existingHieght = fm.getAscent() + fm.getDescent();
-        double newSize = mGraphicsContext.getFont().getSize() * pFontSize / existingHieght;
-        Font font = new Font(newSize);
+        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
+        final double existingHieght = fm.getAscent() + fm.getDescent();
+        final double newSize = mGraphicsContext.getFont().getSize() * pFontSize / existingHieght;
+        final Font font = new Font(newSize);
         mGraphicsContext.setFont(font);
     }
 
     @Override
     public void setPenWidth(final double pPenWidth) {
-        double width = pPenWidth * mWidth;
+        final double width = pPenWidth * mWidth;
         mGraphicsContext.setLineWidth(width);
     }
 

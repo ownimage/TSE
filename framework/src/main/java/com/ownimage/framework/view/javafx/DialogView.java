@@ -52,14 +52,14 @@ public class DialogView implements IDialogView {
             Framework.checkParameterNotNull(mLogger, mViewable, "pViewable");
             Framework.checkParameterNotNull(mLogger, mDialogOptions, "pDialogOptions");
 
-            HashMap<ButtonType, ActionControl> buttonMap = new HashMap<>();
-            FXView content = (FXView) (mViewable.createView());
-            Node contentUI = content.getUI();
-            Dialog<ActionControl> mDialog = new Dialog<>();
+            final HashMap<ButtonType, ActionControl> buttonMap = new HashMap<>();
+            final FXView content = (FXView) (mViewable.createView());
+            final Node contentUI = content.getUI();
+            final Dialog<ActionControl> mDialog = new Dialog<>();
 
             // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
             // themselves which would mean that the mDialog would need to change size as the controls change value.
-            ChangeListener<? super Number>
+            final ChangeListener<? super Number>
                     widthListener = (observable, oldValue, newValue) ->
                     mDialog.setWidth(mDialog.getWidth() + newValue.doubleValue() - oldValue.doubleValue());
 
@@ -73,12 +73,12 @@ public class DialogView implements IDialogView {
             mDialog.initOwner(AppControlView.getInstance().getPrimaryStage());
 
             //set the icon
-            Stage stage = (Stage) mDialog.getDialogPane().getScene().getWindow();
+            final Stage stage = (Stage) mDialog.getDialogPane().getScene().getWindow();
             stage.getIcons().add(AppControlView.getInstance().getApplicationIcon());
             mDialogOptions.getCompleteFunction().ifPresent(cf -> stage.setOnCloseRequest(x -> cf.performAction()));
 
-            for (ActionControl action : mButtons) {
-                ButtonType button = new ButtonType(action.getDisplayName(), ButtonBar.ButtonData.OK_DONE);
+            for (final ActionControl action : mButtons) {
+                final ButtonType button = new ButtonType(action.getDisplayName(), ButtonBar.ButtonData.OK_DONE);
                 buttonMap.put(button, action);
                 mDialog.getDialogPane().getButtonTypes().add(button);
             }
@@ -100,24 +100,24 @@ public class DialogView implements IDialogView {
                     }
                 }
                 if (mViewable instanceof IUIEventListener) {
-                    IUIEventListener listener = (IUIEventListener) mViewable;
-                    UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyPressed, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    final IUIEventListener listener = (IUIEventListener) mViewable;
+                    final UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyPressed, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyPressed(event);
                 }
             });
 
             mDialog.getDialogPane().setOnKeyReleased(pKE -> {
                 if (mViewable instanceof IUIEventListener) {
-                    IUIEventListener listener = (IUIEventListener) mViewable;
-                    UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyReleased, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    final IUIEventListener listener = (IUIEventListener) mViewable;
+                    final UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyReleased, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyReleased(event);
                 }
             });
 
             mDialog.getDialogPane().setOnKeyTyped(pKE -> {
                 if (mViewable instanceof IUIEventListener) {
-                    IUIEventListener listener = (IUIEventListener) mViewable;
-                    UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyTyped, null, pKE.getCharacter().toUpperCase(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    final IUIEventListener listener = (IUIEventListener) mViewable;
+                    final UIEvent event = UIEvent.createKeyEvent(UIEvent.EventType.KeyTyped, null, pKE.getCharacter().toUpperCase(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyTyped(event);
                 }
             });

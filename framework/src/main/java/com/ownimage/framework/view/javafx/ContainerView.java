@@ -32,21 +32,21 @@ public class ContainerView extends ViewBase<IContainer> {
         mUI = new VBox();
 
         if (mControl.hasTitle()) {
-            StringControl title = StringControl.createTitle(mControl.getDisplayName());
+            final StringControl title = StringControl.createTitle(mControl.getDisplayName());
             mUI.getChildren().add(((FXView) title.createView()).getUI());
         }
 
-        Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
+        final Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
         while (children.hasNext()) {
-            IViewable<?> child = children.next();
+            final IViewable<?> child = children.next();
 
-            Node childView = ((FXView) (child.createView())).getUI();
+            final Node childView = ((FXView) (child.createView())).getUI();
             if (child instanceof IControl) {
                 childView.setVisible(((IControl) child).isVisible()); // TODO these should align with ViewBase
                 childView.setManaged(((IControl) child).isVisible());
             }
 
-            HBox hbox = new HBox();
+            final HBox hbox = new HBox();
             hbox.setAlignment(Pos.TOP_LEFT);
             hbox.getChildren().addAll(childView);
 

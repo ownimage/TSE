@@ -11,7 +11,7 @@ import java.util.List;
 public class KColor {
 
 
-    private Color mColor;
+    private final Color mColor;
 
     public KColor(final Color pColor) {
         this(pColor, false);
@@ -90,7 +90,7 @@ public class KColor {
      * @return new Color
      */
     public static Color fade(final Color pColor1, final Color pColor2, final double pAmount) {
-        float amount = (float) pAmount;
+        final float amount = (float) pAmount;
         final float[] c1 = pColor1.getComponents(new float[4]);
         final float[] c2 = pColor2.getComponents(new float[4]);
         final float red = relativeColor(c1[0], c1[3], c2[0], c2[3] * amount);
@@ -101,7 +101,7 @@ public class KColor {
     }
 
     private static float relativeColor(final float c1, final float a1, final float c2, final float a2) {
-        float omaa = (1.0f - a1) * a2;
+        final float omaa = (1.0f - a1) * a2;
         return (c1 * a1 + c2 * omaa);
     }
 

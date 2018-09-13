@@ -34,9 +34,9 @@ public class ScrollView extends ViewBase<ScrollLayout> {
     }
 
     private void createView() {
-        IViewable<?> content = mControl.getContent();
-        FXView view = (FXView) content.createView();
-        Node node = view.getUI();
+        final IViewable<?> content = mControl.getContent();
+        final FXView view = (FXView) content.createView();
+        final Node node = view.getUI();
         mUI = new ScrollPane(node);
         mUI.setHbarPolicy(convertScrollBarPolicy(mControl.getHorizPolicy()));
         mUI.setVbarPolicy(convertScrollBarPolicy(mControl.getVertPolicy()));

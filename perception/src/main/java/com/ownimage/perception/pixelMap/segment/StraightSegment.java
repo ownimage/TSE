@@ -18,7 +18,7 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
 
     private final LineSegment mLineSegment;
 
-    StraightSegment(PixelChain pPixelChain, final int pSegmentIndex) {
+    StraightSegment(final PixelChain pPixelChain, final int pSegmentIndex) {
         super(pSegmentIndex);
         final Point a = getStartUHVWPoint(pPixelChain);
         final Point b = getEndUHVWPoint(pPixelChain);
@@ -26,12 +26,12 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     }
 
     @Override
-    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
         super.graffiti(pPixelChain, pGraphics);
     }
 
     @Override
-    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, final double pMultiplier) {
         final double lambda = mLineSegment.closestLambda(pPoint);
         final double position = getStartPosition() + lambda * getLength(pPixelChain);
         final double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
@@ -39,17 +39,17 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     }
 
     @Override
-    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         return mLineSegment.isCloserThan(pPoint, pTolerance);
     }
 
     @Override
-    public double closestLambda(final Point pPoint, PixelChain pPixelChain) {
+    public double closestLambda(final Point pPoint, final PixelChain pPixelChain) {
         return mLineSegment.closestLambda(pPoint);
     }
 
     @Override
-    public double distance(PixelChain pPixelChain, final Point pUVHWPoint) {
+    public double distance(final PixelChain pPixelChain, final Point pUVHWPoint) {
         return mLineSegment.distance(pUVHWPoint);
     }
 
@@ -58,42 +58,42 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     }
 
     @Override
-    public Vector getEndTangentVector(PixelChain pPixelChain) {
+    public Vector getEndTangentVector(final PixelChain pPixelChain) {
         return getAB().normalize();
     }
 
     @Override
-    public double getLength(PixelChain pPixelChain) {
+    public double getLength(final PixelChain pPixelChain) {
         return getAB().length();
     }
 
     @Override
-    public double getMaxX(PixelChain pPixelChain) {
+    public double getMaxX(final PixelChain pPixelChain) {
         return mLineSegment.getMaxX();
     }
 
     @Override
-    public double getMaxY(PixelChain pPixelChain) {
+    public double getMaxY(final PixelChain pPixelChain) {
         return mLineSegment.getMaxY();
     }
 
     @Override
-    public double getMinX(PixelChain pPixelChain) {
+    public double getMinX(final PixelChain pPixelChain) {
         return mLineSegment.getMinX();
     }
 
     @Override
-    public double getMinY(PixelChain pPixelChain) {
+    public double getMinY(final PixelChain pPixelChain) {
         return mLineSegment.getMinY();
     }
 
     @Override
-    public Point getPointFromLambda(PixelChain pPixelChain, final double pLambda) {
+    public Point getPointFromLambda(final PixelChain pPixelChain, final double pLambda) {
         return mLineSegment.getPoint(pLambda);
     }
 
     @Override
-    public Vector getStartTangentVector(PixelChain pPixelChain) {
+    public Vector getStartTangentVector(final PixelChain pPixelChain) {
         return getAB().minus().normalize();
     }
 

@@ -57,7 +57,7 @@ public class PointControl extends ControlBase<PointControl, PointType, IMetaType
     @Override
     public synchronized IView createView() { // TODO can we push this into the base class
         if (mViewable == null) {
-            StringControl label = new StringControl("label", "label", NullContainer.NullContainer, new StringType(getDisplayName(), new StringMetaType(StringMetaType.DisplayType.LABEL)));
+            final StringControl label = new StringControl("label", "label", NullContainer.NullContainer, new StringType(getDisplayName(), new StringMetaType(StringMetaType.DisplayType.LABEL)));
             mViewable = new VFlowLayout(label, mX, mY);
         }
 
@@ -99,7 +99,7 @@ public class PointControl extends ControlBase<PointControl, PointType, IMetaType
 
     @Override
     public boolean setValue(final Point pValue, final IView pView, final boolean pIsMutating) {
-        boolean result = super.setValue(pValue, pView, pIsMutating);
+        final boolean result = super.setValue(pValue, pView, pIsMutating);
         mX.setValue(pValue.getX());
         mY.setValue(pValue.getY());
         return result;

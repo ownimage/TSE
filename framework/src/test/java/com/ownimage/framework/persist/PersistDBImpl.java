@@ -9,15 +9,15 @@ public class PersistDBImpl implements IPersistDB {
 
     public final static Logger mLogger = Framework.getLogger();
 
-    private TreeMap<String, String> values = new TreeMap<String, String>();
+    private final TreeMap<String, String> values = new TreeMap<String, String>();
 
     @Override
-    public String read(String pId) {
+    public String read(final String pId) {
         return values.get(pId);
     }
 
     @Override
-    public void write(String pId, String pValue) {
+    public void write(final String pId, final String pValue) {
         values.put(pId, pValue);
         mLogger.fine(() -> String.format("PersistDBImpl.write(%s, %s)", pId, pValue));
     }

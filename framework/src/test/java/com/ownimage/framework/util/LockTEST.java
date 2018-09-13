@@ -23,8 +23,8 @@ public class LockTEST {
     // Test allows space in name
     @Test
     public void Lock_0_00() {
-        Lock lock1 = new Lock();
-        Lock lock2 = new Lock();
+        final Lock lock1 = new Lock();
+        final Lock lock2 = new Lock();
 
         assertFalse("not same", lock1 == lock2);
         assertFalse("not equal", lock1.equals(lock2));

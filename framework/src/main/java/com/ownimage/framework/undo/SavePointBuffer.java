@@ -33,7 +33,7 @@ public class SavePointBuffer implements IUndoRedoAction {
     public synchronized void add(final IUndoRedoAction pAction) {
 
         if (mLocked) {
-            String msg = "SavePointBuffer " + getDescription() + " has been locked.  add is not allowed.";
+            final String msg = "SavePointBuffer " + getDescription() + " has been locked.  add is not allowed.";
             mLogger.log(Level.SEVERE, msg);
             throw new IllegalStateException(msg);
         }
@@ -62,13 +62,13 @@ public class SavePointBuffer implements IUndoRedoAction {
     @Override
     public synchronized void redo() {
         if (!mLocked) {
-            String msg = "SavePointBuffer " + getDescription() + " has been not been locked.  redo is not allowed.";
+            final String msg = "SavePointBuffer " + getDescription() + " has been not been locked.  redo is not allowed.";
             mLogger.log(Level.SEVERE, msg);
             throw new IllegalStateException(msg);
         }
 
         if (mCanUndo) {
-            String msg = "SavePointBuffer " + getDescription() + " has not had undo called last.  redo is not allowed.";
+            final String msg = "SavePointBuffer " + getDescription() + " has not had undo called last.  redo is not allowed.";
             mLogger.log(Level.SEVERE, msg);
             throw new IllegalStateException(msg);
         }
@@ -81,13 +81,13 @@ public class SavePointBuffer implements IUndoRedoAction {
     @Override
     public synchronized void undo() {
         if (!mLocked) {
-            String msg = "SavePointBuffer " + getDescription() + " has been not been locked.  undo is not allowed.";
+            final String msg = "SavePointBuffer " + getDescription() + " has been not been locked.  undo is not allowed.";
             mLogger.log(Level.SEVERE, msg);
             throw new IllegalStateException(msg);
         }
 
         if (!mCanUndo) {
-            String msg = "SavePointBuffer " + getDescription() + " has not had redo called last.  undo is not allowed.";
+            final String msg = "SavePointBuffer " + getDescription() + " has not had redo called last.  undo is not allowed.";
             mLogger.log(Level.SEVERE, msg);
             throw new IllegalStateException(msg);
         }

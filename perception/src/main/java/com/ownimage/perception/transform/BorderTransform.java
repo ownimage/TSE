@@ -38,8 +38,8 @@ public class BorderTransform extends BaseTransform {
     public BorderTransform(final Perception pPerception) {
         super("Border", "border");
 
-        DoubleMetaType modelZeroHalf = new DoubleMetaType(0.0d, 0.5d, 0.05d, DisplayType.BOTH);
-        DoubleMetaType modelHalfOne = new DoubleMetaType(0.5d, 1d, 0.05d, DisplayType.BOTH);
+        final DoubleMetaType modelZeroHalf = new DoubleMetaType(0.0d, 0.5d, 0.05d, DisplayType.BOTH);
+        final DoubleMetaType modelHalfOne = new DoubleMetaType(0.5d, 1d, 0.05d, DisplayType.BOTH);
         mTopControl = new DoubleControl("Top", "top", getContainer(), 1.0d, modelHalfOne);
         mLeftControl = new DoubleControl("Left", "left", getContainer(), 0.0d, modelZeroHalf);
         mRightControl = new DoubleControl("Right", "right", getContainer(), 1.0d, modelHalfOne);
@@ -75,14 +75,14 @@ public class BorderTransform extends BaseTransform {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
-        double x = pRenderResult.getX();
-        double y = pRenderResult.getY();
+        final double x = pRenderResult.getX();
+        final double y = pRenderResult.getY();
 
         if (y < mBottom || y > mTop || x < mLeft || x > mRight) {
             pRenderResult.setColor(mBorderColor);
         }
 
-        Point pOut = new Point( //
+        final Point pOut = new Point( //
                                 (x - mLeft) / (mRight - mLeft), //
                                 (y - mBottom) / (mTop - mBottom) //
         );

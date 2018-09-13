@@ -36,7 +36,7 @@ public class ControlBaseTEST {
     // pDisplayName must not be null
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_0_00() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>(null, "propertyName", mContainer, type);
     }
 
@@ -44,7 +44,7 @@ public class ControlBaseTEST {
     // pDisplayName must not be 0 length
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_0_01() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("", "propertyName", mContainer, type);
     }
 
@@ -52,7 +52,7 @@ public class ControlBaseTEST {
     // pDisplayName must allow spaces
     @Test
     public void ControlBase_0_02() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("display name", "propertyName", mContainer, type);
     }
 
@@ -60,7 +60,7 @@ public class ControlBaseTEST {
     // pPropertyName must not be null
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_00() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", null, mContainer, type);
     }
 
@@ -68,7 +68,7 @@ public class ControlBaseTEST {
     // pPropertyName must not be 0 length
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_01() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "", mContainer, type);
     }
 
@@ -76,7 +76,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_02() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a.b", mContainer, type);
     }
 
@@ -84,7 +84,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_03() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a!b", mContainer, type);
     }
 
@@ -92,7 +92,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_04() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a<b", mContainer, type);
     }
 
@@ -100,7 +100,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_05() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a>b", mContainer, type);
     }
 
@@ -108,7 +108,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_06() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a,b", mContainer, type);
     }
 
@@ -116,7 +116,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_07() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a?b", mContainer, type);
     }
 
@@ -124,7 +124,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_08() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a=b", mContainer, type);
     }
 
@@ -132,7 +132,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_09() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a b", mContainer, type);
     }
 
@@ -140,7 +140,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_10() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a\tb", mContainer, type);
     }
 
@@ -148,7 +148,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_11() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a\nb", mContainer, type);
     }
 
@@ -156,7 +156,7 @@ public class ControlBaseTEST {
     // pPropertyName must only contain characters a-zA-Z
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_12() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "a\\b", mContainer, type);
     }
 
@@ -164,7 +164,7 @@ public class ControlBaseTEST {
     // pDisplayName must allow spaces
     @Test
     public void ControlBase_1_13() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("display Name", "a", mContainer, type);
     }
 
@@ -172,7 +172,7 @@ public class ControlBaseTEST {
     // pDisplayName must not allow special characters
     @Test(expected = IllegalArgumentException.class)
     public void ControlBase_1_14() {
-        IntegerType type = new IntegerType(1);
+        final IntegerType type = new IntegerType(1);
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("display.Name", "a", mContainer, type);
     }
 
@@ -183,10 +183,10 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_addControlValidator_0_00() {
-        DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
-        ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
-        ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
-        ContolValidatorASSISTANT<DoubleControl> v3 = new ContolValidatorASSISTANT<DoubleControl>(); // control test
+        final DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
+        final ContolValidatorASSISTANT<DoubleControl> v3 = new ContolValidatorASSISTANT<DoubleControl>(); // control test
 
         dc.addControlValidator(v1);
         dc.addControlValidator(v2);
@@ -209,9 +209,9 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_addControlValidator_0_01() {
-        DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
-        ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
-        ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
+        final DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
 
         v1.setReturnValue(false);
 
@@ -234,14 +234,14 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_addControlValidator_0_02() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
 
-        DoubleControl dc = new DoubleControl("x", "x", container, 0.5);
-        ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
-        ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
+        final DoubleControl dc = new DoubleControl("x", "x", container, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
 
         container.addControlValidator(v1);
         container.addControlValidator(v2);
@@ -264,14 +264,14 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_addControlValidator_0_03() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container container = new Container("x", "x", mUndoRedoBufferSource);
+        final Container container = new Container("x", "x", mUndoRedoBufferSource);
 
-        DoubleControl dc = new DoubleControl("x", "x", container, 0.5);
-        ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
-        ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
+        final DoubleControl dc = new DoubleControl("x", "x", container, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<DoubleControl>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<DoubleControl>();
 
         v1.setReturnValue(false);
 
@@ -321,8 +321,8 @@ public class ControlBaseTEST {
     // should return a new object
     @Test
     public void ControlBase_clone_0_00() {
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(mContainer);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(mContainer);
         assertFalse("should return a new object", clone == mControlBase);
     }
 
@@ -330,8 +330,8 @@ public class ControlBaseTEST {
     // should return correct class
     @Test
     public void ControlBase_clone_0_01() {
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(mContainer);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(mContainer);
         assertTrue("should return correct class", clone.getClass() == original.getClass());
     }
 
@@ -339,12 +339,12 @@ public class ControlBaseTEST {
     // should use new container
     @Test
     public void ControlBase_clone_0_02() {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
-        Container cloneContainer = new Container("x", "x", mUndoRedoBufferSource);
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(cloneContainer);
+        final Container cloneContainer = new Container("x", "x", mUndoRedoBufferSource);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(cloneContainer);
         assertTrue("original should have container", mControlBase.getContainer() == mContainer);
         assertTrue("copy should not have container", clone.getContainer() == cloneContainer);
     }
@@ -359,8 +359,8 @@ public class ControlBaseTEST {
     // should return same value
     @Test
     public void ControlBase_clone_0_03() {
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(mContainer);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(mContainer);
         assertTrue("should same value", clone.getValue() == original.getValue());
     }
 
@@ -368,8 +368,8 @@ public class ControlBaseTEST {
     // should return copy of type - value independence
     @Test
     public void ControlBase_clone_0_04() {
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(mContainer);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(mContainer);
 
         assertTrue("original should have value 1", original.getValue() == 1);
         original.setValue(2);
@@ -380,11 +380,11 @@ public class ControlBaseTEST {
     // public C clone() {
     // should return a empty change set
     public void ControlBase_clone_0_05() {
-        ControlChangeListenerASSISTANT origListener = new ControlChangeListenerASSISTANT();
-        ControlChangeListenerASSISTANT cloneListener = new ControlChangeListenerASSISTANT();
+        final ControlChangeListenerASSISTANT origListener = new ControlChangeListenerASSISTANT();
+        final ControlChangeListenerASSISTANT cloneListener = new ControlChangeListenerASSISTANT();
 
-        IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
-        IntegerControl clone = original.clone(mContainer);
+        final IntegerControl original = new IntegerControl("displayName", "displayValue", mContainer, 1);
+        final IntegerControl clone = original.clone(mContainer);
 
         original.addControlChangeListener(origListener);
         clone.addControlChangeListener(cloneListener);
@@ -404,7 +404,7 @@ public class ControlBaseTEST {
     //
     @Test(expected = UnsupportedOperationException.class)
     public void ControlBase_createView_0_00() {
-        IView view = mControlBase.createView();
+        final IView view = mControlBase.createView();
     }
 
     // public R getValidateValue() {
@@ -417,7 +417,7 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_fireControlChangeEvent_0_01() {
-        ControlChangeListenerASSISTANT listener = new ControlChangeListenerASSISTANT();
+        final ControlChangeListenerASSISTANT listener = new ControlChangeListenerASSISTANT();
         mControlBase.addControlChangeListener(listener);
         assertFalse("should not have fired", listener.getHasFired());
 
@@ -436,8 +436,8 @@ public class ControlBaseTEST {
     //
     @Test
     public void ControlBase_getContainer_0_01() {
-        IntegerType type = new IntegerType(1);
-        ControlBase controlBase = new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "propertyName", mContainer, type);
+        final IntegerType type = new IntegerType(1);
+        final ControlBase controlBase = new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "propertyName", mContainer, type);
         assertTrue("Container", controlBase.getContainer() == mContainer);
     }
 
@@ -491,8 +491,8 @@ public class ControlBaseTEST {
     @Test
     public void ControlBase_setEnabled_0_00() {
         // TODO should be replicated into each of the controls, e.g. BooleanControl
-        DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
-        ViewASSISTANT view = (ViewASSISTANT) control.createView();
+        final DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
+        final ViewASSISTANT view = (ViewASSISTANT) control.createView();
 
         assertTrue("should be created true", control.isEnabled());
         assertTrue("should be created true", view.isEnabled());
@@ -517,7 +517,7 @@ public class ControlBaseTEST {
     @Test
     public void ControlBase_setTransient_0_00() {
         // TODO should be replicated into each of the controls, e.g. BooleanControl
-        DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
+        final DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
 
         assertTrue("should be created true", control.isPersistent());
 
@@ -530,8 +530,8 @@ public class ControlBaseTEST {
     @Test
     public void ControlBase_setVisible_0_00() {
         // TODO should be replicated into each of the controls, e.g. BooleanControl
-        DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
-        ViewASSISTANT view = (ViewASSISTANT) control.createView();
+        final DoubleControl control = new DoubleControl("x", "x", mContainer, 1);
+        final ViewASSISTANT view = (ViewASSISTANT) control.createView();
 
         assertTrue("should be created true", control.isVisible());
         assertTrue("should be created true", view.isVisible());
@@ -554,17 +554,17 @@ public class ControlBaseTEST {
     @Before
     public void setUp() throws Exception {
         try {
-            IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-            UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+            final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+            final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
             mContainer = new Container("x", "x", mUndoRedoBufferSource);
 
             mViewFactory = new ViewFactoryASSISTANT();
             ViewFactoryDELEGATOR.setDelegate(mViewFactory);
-            IntegerType type = new IntegerType(1);
+            final IntegerType type = new IntegerType(1);
 
             mControlBase = new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("displayName", "propertyName", mContainer, type);
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             System.out.println(pT.getMessage());
             throw pT;
         }

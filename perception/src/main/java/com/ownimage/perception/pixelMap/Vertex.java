@@ -22,15 +22,15 @@ public class Vertex implements IVertex {
     private final static Logger mLogger = Framework.getLogger();
     private static final long serialVersionUID = 1L;
 
-    private int mVertexIndex;
-    private int mPixelIndex;
+    private final int mVertexIndex;
+    private final int mPixelIndex;
 
     private Vertex(final int pVertexIndex, final int pPixelIndex) {
         mVertexIndex = pVertexIndex;
         mPixelIndex = pPixelIndex;
     }
 
-    public static Vertex createVertex(PixelChain pPixelChain, int pVertexIndex, final int pPixelIndex) {
+    public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
         }
@@ -49,7 +49,7 @@ public class Vertex implements IVertex {
      * @param pPixelChain the Pixel Chain performing this operation
      */
     @Override
-    public Line calcTangent(PixelChain pPixelChain) {
+    public Line calcTangent(final PixelChain pPixelChain) {
         Line tangent;
         if (getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null) {
             tangent = null;
@@ -89,7 +89,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public ISegment getEndSegment(PixelChain pPixelChain) {
+    public ISegment getEndSegment(final PixelChain pPixelChain) {
         return pPixelChain.getSegment(mVertexIndex);
     }
 
@@ -99,17 +99,17 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Pixel getPixel(PixelChain pPixelChain) {
+    public Pixel getPixel(final PixelChain pPixelChain) {
         return pPixelChain.getPixel(mPixelIndex);
     }
 
     @Override
-    public ISegment getStartSegment(PixelChain pPixelChain) {
+    public ISegment getStartSegment(final PixelChain pPixelChain) {
         return pPixelChain.getSegment(mVertexIndex - 1);
     }
 
     @Override
-    public Point getUHVWPoint(PixelChain pPixelChain) {
+    public Point getUHVWPoint(final PixelChain pPixelChain) {
         return getPixel(pPixelChain).getUHVWPoint();
     }
 

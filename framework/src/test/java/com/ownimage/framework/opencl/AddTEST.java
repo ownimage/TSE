@@ -2,9 +2,9 @@ package com.ownimage.framework.opencl;
 
 public class AddTEST implements ITransform {
 
-    private double mAdd;
+    private final double mAdd;
 
-    public AddTEST(double pAdd) {
+    public AddTEST(final double pAdd) {
         mAdd = pAdd;
     }
 
@@ -14,7 +14,7 @@ public class AddTEST implements ITransform {
 
     }
 
-    public static double transformAdd(double pDoubleParams, int pIntParams[], double pC) {
+    public static double transformAdd(final double pDoubleParams, final int[] pIntParams, final double pC) {
         return pDoubleParams + pC;
     }
 

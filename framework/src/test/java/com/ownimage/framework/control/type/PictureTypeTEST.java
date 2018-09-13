@@ -17,10 +17,10 @@ import static org.junit.Assert.*;
 
 public class PictureTypeTEST implements IUndoRedoBufferProvider {
 
-    private static Color mTestColor1 = Color.CYAN;
-    private static Color mTestColor2 = Color.RED;
+    private static final Color mTestColor1 = Color.CYAN;
+    private static final Color mTestColor2 = Color.RED;
     private PictureType mPicture;
-    private ImageQuality mImageQuality = new ImageQuality(0.95f);
+    private final ImageQuality mImageQuality = new ImageQuality(0.95f);
 
     private final Container mContainer = new Container("PictureTypeTEST", "PictureTypeTEST", this);
     private final ColorProperty mOOB = new ColorControl("mOOB", "mOOB", mContainer, Color.CYAN).getProperty();
@@ -56,8 +56,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public Point convertPictureResolution(final Point pPoint) {
     public void PictureType_convertPictureResolution_00() {
-        Point point = new Point(0.17d, 0.22d);
-        Point out = mPicture.convertPictureResolution(point);
+        final Point point = new Point(0.17d, 0.22d);
+        final Point out = mPicture.convertPictureResolution(point);
         assertEquals("x should match", 0.17d * (mPicture.getWidth() - 1), out.getX(), 0.0d);
         assertEquals("y should match", 0.22d * (mPicture.getHeight() - 1), out.getY(), 0.0d);
     }
@@ -65,8 +65,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public Point convertPictureResolution(final Point pPoint) {
     public void PictureType_convertPictureResolution_01() {
-        Point point = new Point(2.0d, 2.0d);
-        Point out = mPicture.convertPictureResolution(point);
+        final Point point = new Point(2.0d, 2.0d);
+        final Point out = mPicture.convertPictureResolution(point);
         assertEquals("x should match", 2.0d * (mPicture.getWidth() - 1), out.getX(), 0.0d);
         assertEquals("y should match", 2.0d * (mPicture.getHeight() - 1), out.getY(), 0.0d);
     }
@@ -74,8 +74,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public IntegerPoint convertToIntegerPoint(final Point pPoint) {
     public void PictureType_convertToIntegerPoint_00() {
-        Point point = new Point(0.17d, 0.22d);
-        IntegerPoint ip = mPicture.convertToIntegerPoint(point);
+        final Point point = new Point(0.17d, 0.22d);
+        final IntegerPoint ip = mPicture.convertToIntegerPoint(point);
         assertEquals("x should match", (int) (0.17d * (mPicture.getWidth() - 1)), ip.getX());
         assertEquals("y should match", (int) (0.22d * (mPicture.getHeight() - 1)), ip.getY());
     }
@@ -83,8 +83,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public IntegerPoint convertToIntegerPoint(final Point pPoint) {
     public void PictureType_convertToIntegerPoint_01() {
-        Point point = new Point(2.0d, 2.0d);
-        IntegerPoint ip = mPicture.convertToIntegerPoint(point);
+        final Point point = new Point(2.0d, 2.0d);
+        final IntegerPoint ip = mPicture.convertToIntegerPoint(point);
         assertEquals("x should match", (int) (2.0d * (mPicture.getWidth() - 1)), ip.getX());
         assertEquals("y should match", (int) (2.0d * (mPicture.getHeight() - 1)), ip.getY());
     }
@@ -94,7 +94,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     public void PictureType_duplicate_00() {
         mPicture.setColor(25, 25, mTestColor1);
         mPicture.setColor(26, 26, mTestColor2);
-        PictureType duplicate = mPicture.clone();
+        final PictureType duplicate = mPicture.clone();
 
         assertEquals("Colours should match", mTestColor1, duplicate.getColor(25, 25).get());
         assertEquals("Colours should match", mTestColor2, duplicate.getColor(26, 26).get());
@@ -104,71 +104,71 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public synchronized Color getColor(final int pX, final int pY) {
     public void PictureType_getColor_00() {
-        Color expected = mTestColor1;
+        final Color expected = mTestColor1;
         mPicture.setColor(10, 10, expected);
-        Color actual = mPicture.getColor(10, 10).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(10, 10).orElseGet(() -> mOOB.getValue());
         assertEquals("Colors should match", actual, expected);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_01() {
-        Color expected = mTestColor1;
+        final Color expected = mTestColor1;
         mPicture.set360(true);
         mPicture.setColor(mPicture.getWidth(), 1, expected);
-        Color actual = mPicture.getColor(0, 1).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(0, 1).orElseGet(() -> mOOB.getValue());
         assertEquals("Colors should match", actual, expected);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_02() {
-        Color expected = mTestColor1;
+        final Color expected = mTestColor1;
         mPicture.set360(true);
         mPicture.setColor(0, 1, expected);
-        Color actual = mPicture.getColor(mPicture.getWidth(), 1).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(mPicture.getWidth(), 1).orElseGet(() -> mOOB.getValue());
         assertEquals("Colors should match", actual, expected);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_03() {
-        Color expected = mTestColor1;
+        final Color expected = mTestColor1;
         mPicture.set360(true);
         mPicture.setColor(10, 1, expected);
-        Color actual = mPicture.getColor(mPicture.getWidth() + 10, 1).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(mPicture.getWidth() + 10, 1).orElseGet(() -> mOOB.getValue());
         assertEquals("Colors should match", actual, expected);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_04() {
-        Color expected = mOOB.getValue();
-        Color actual = mPicture.getColor(1, -1).orElseGet(() -> mOOB.getValue());
+        final Color expected = mOOB.getValue();
+        final Color actual = mPicture.getColor(1, -1).orElseGet(() -> mOOB.getValue());
         assertEquals("Should be out of bounds", expected, actual);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_05() {
-        Color expected = mOOB.getValue();
-        Color actual = mPicture.getColor(1, mPicture.getHeight()).orElseGet(() -> mOOB.getValue());
+        final Color expected = mOOB.getValue();
+        final Color actual = mPicture.getColor(1, mPicture.getHeight()).orElseGet(() -> mOOB.getValue());
         assertEquals("Should be out of bounds", expected, actual);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_06() {
-        Color expected = mOOB.getValue();
-        Color actual = mPicture.getColor(-1, 1).orElseGet(() -> mOOB.getValue());
+        final Color expected = mOOB.getValue();
+        final Color actual = mPicture.getColor(-1, 1).orElseGet(() -> mOOB.getValue());
         assertEquals("Should be out of bounds", expected, actual);
     }
 
     @Test
     // public synchronized void getColor(final int pX, final int pY) {
     public void PictureType_getColor_07() {
-        Color expected = mOOB.getValue();
-        Color actual = mPicture.getColor(mPicture.getWidth(), 1).orElseGet(() -> mOOB.getValue());
+        final Color expected = mOOB.getValue();
+        final Color actual = mPicture.getColor(mPicture.getWidth(), 1).orElseGet(() -> mOOB.getValue());
         assertEquals("Should be out of bounds", expected, actual);
     }
 
@@ -181,9 +181,9 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public Color getColor(final IntegerPoint pPoint) {
     public void PictureType_getColor_11() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
+        final IntegerPoint ip = new IntegerPoint(10, 10);
         mPicture.setColor(ip, mTestColor1);
-        Color actual = mPicture.getColor(ip).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(ip).orElseGet(() -> mOOB.getValue());
         assertTrue("colors match", mTestColor1.equals(actual));
     }
 
@@ -196,24 +196,24 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public Color getColor(final IntegerPoint pPoint) {
     public void PictureType_getColor_21() {
-        Point p = new Point(0.23d, 0.45d);
+        final Point p = new Point(0.23d, 0.45d);
         mPicture.setColor(p, mTestColor1);
-        Color actual = mPicture.getColor(p).orElseGet(() -> mOOB.getValue());
+        final Color actual = mPicture.getColor(p).orElseGet(() -> mOOB.getValue());
         assertTrue("colors match", mTestColor1.equals(actual));
     }
 
     @Test
     // public int[] getColors() {
     public void PictureType_getColors_00() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
         picture1.setColor(ip, mTestColor1);
 
-        PictureType picture2 = new PictureType(width, height);
+        final PictureType picture2 = new PictureType(width, height);
         picture2.setColors(picture1.getColors());
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
@@ -223,16 +223,16 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public int[] getColors(final int[] pColors) {
     public void PictureType_getColors_10() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
-        int[] small = new int[]{1, 2, 3};
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
+        final int[] small = new int[]{1, 2, 3};
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
         picture1.setColor(ip, mTestColor1);
 
-        PictureType picture2 = new PictureType(width, height);
+        final PictureType picture2 = new PictureType(width, height);
         picture2.setColors(picture1.getColors(small));
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
@@ -242,17 +242,17 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public int[] getColors(final int[] pColors) {
     public void PictureType_getColors_11() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
-        int[] correct = new int[width * height];
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
+        final int[] correct = new int[width * height];
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
         ;
         picture1.setColor(ip, mTestColor1);
 
-        PictureType picture2 = new PictureType(width, height);
+        final PictureType picture2 = new PictureType(width, height);
         picture2.setColors(picture1.getColors(correct));
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
@@ -262,16 +262,16 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public int[] getColors(final int[] pColors) {
     public void PictureType_getColors_12() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
-        int[] large = new int[2 * width * height];
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
+        final int[] large = new int[2 * width * height];
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
         picture1.setColor(ip, mTestColor1);
 
-        PictureType picture2 = new PictureType(width, height);
+        final PictureType picture2 = new PictureType(width, height);
         picture2.setColors(picture1.getColors(large));
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
@@ -320,7 +320,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     public void PictureType_isLocked_00() {
         assertFalse("created false", mPicture.isLocked());
 
-        int key = mPicture.lock();
+        final int key = mPicture.lock();
         assertTrue("set true", mPicture.isLocked());
 
         mPicture.unlock(key);
@@ -332,13 +332,13 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     public void PictureType_lock_00() {
         assertFalse("created unlocked", mPicture.isLocked());
 
-        int key1 = mPicture.lock();
+        final int key1 = mPicture.lock();
         assertTrue("isLocked", mPicture.isLocked());
 
         mPicture.unlock(key1);
         assertFalse("created unlocked", mPicture.isLocked());
 
-        int key2 = mPicture.lock();
+        final int key2 = mPicture.lock();
         assertTrue("isLocked", mPicture.isLocked());
 
         assertTrue("Keys should not match", key1 != key2);
@@ -347,24 +347,24 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test(expected = IllegalStateException.class)
     // public int lock() {
     public void PictureType_lock_01() {
-        int key1 = mPicture.lock();
-        int key2 = mPicture.lock();
+        final int key1 = mPicture.lock();
+        final int key2 = mPicture.lock();
     }
 
     @Test
     // public void save(final File file) throws Exception {
     public void PictureType_save_00() throws Exception {
-        File tempFile = File.createTempFile("picture", ".gif");
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
+        final File tempFile = File.createTempFile("picture", ".gif");
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
         picture1.setColor(ip, mTestColor1);
         picture1.save(tempFile, mImageQuality);
 
-        PictureType picture2 = new PictureType(tempFile);
+        final PictureType picture2 = new PictureType(tempFile);
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
         assertTrue("Colors should match", picture1.getColor(ip).get().equals(picture2.getColor(ip).get()));
@@ -381,19 +381,19 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public void save(final String name) throws Exception {
     public void PictureType_save_10() throws Exception {
-        File tempFile = File.createTempFile("picture", ".jpg");
-        String tmpFileName = tempFile.getAbsolutePath();
+        final File tempFile = File.createTempFile("picture", ".jpg");
+        final String tmpFileName = tempFile.getAbsolutePath();
         System.out.println(tmpFileName);
-        IntegerPoint ip = new IntegerPoint(101, 99);
-        int width = 203;
-        int height = 201;
+        final IntegerPoint ip = new IntegerPoint(101, 99);
+        final int width = 203;
+        final int height = 201;
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", mTestColor1.equals(picture1.getColor(ip).get()));
         picture1.setColor(ip, mTestColor1);
         picture1.save(tmpFileName, mImageQuality);
 
-        PictureType picture2 = new PictureType(tmpFileName);
+        final PictureType picture2 = new PictureType(tmpFileName);
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
         picture2.save(tmpFileName, mImageQuality);
@@ -406,14 +406,14 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public void save(final String name) throws Exception {
     public void PictureType_save_11() throws Exception {
-        File tempFile = File.createTempFile("picture", ".gif");
-        String tmpFileName = tempFile.getAbsolutePath();
+        final File tempFile = File.createTempFile("picture", ".gif");
+        final String tmpFileName = tempFile.getAbsolutePath();
         System.out.println(tmpFileName);
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         assertFalse("Colors should not match to start with", picture1.getColor(ip).get().equals(mPicture.getColor(ip)));
         for (int x = 0; x < picture1.getWidth(); x++) {
             for (int y = 0; y < picture1.getHeight(); y++) {
@@ -422,7 +422,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
         }
         picture1.save(tmpFileName, mImageQuality);
 
-        PictureType picture2 = new PictureType(tmpFileName);
+        final PictureType picture2 = new PictureType(tmpFileName);
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
         picture2.save(tmpFileName, mImageQuality);
@@ -434,8 +434,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test(expected = IllegalArgumentException.class)
     // public void save(final String name) throws Exception {
     public void PictureType_save_12() throws Exception {
-        File tempFile = File.createTempFile("picture", ".non");
-        String tmpFileName = tempFile.getAbsolutePath();
+        final File tempFile = File.createTempFile("picture", ".non");
+        final String tmpFileName = tempFile.getAbsolutePath();
         tempFile.delete();
         mPicture.save(tmpFileName, mImageQuality);
     }
@@ -443,8 +443,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test(expected = IllegalArgumentException.class)
     // public void save(final String name) throws Exception {
     public void PictureType_save_13() throws Exception {
-        File tempFile = File.createTempFile("picture", "");
-        String tmpFileName = tempFile.getAbsolutePath();
+        final File tempFile = File.createTempFile("picture", "");
+        final String tmpFileName = tempFile.getAbsolutePath();
         System.out.println(tmpFileName);
         tempFile.delete();
         mPicture.save(tmpFileName, mImageQuality);
@@ -497,28 +497,28 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     // public void setColor(final IntegerPoint pPoint, final Color pColor) {
     public void PictureType_setColor_10() {
         mPicture.lock();
-        IntegerPoint point = new IntegerPoint(10, 10);
+        final IntegerPoint point = new IntegerPoint(10, 10);
         mPicture.setColor(point, mTestColor1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // public void setColor(final IntegerPoint pPoint, final Color pColor) {
     public void PictureType_setColor_11() {
-        IntegerPoint point = new IntegerPoint(10, 10);
+        final IntegerPoint point = new IntegerPoint(10, 10);
         mPicture.setColor((IntegerPoint) null, mTestColor1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // public void setColor(final IntegerPoint pPoint, final Color pColor) {
     public void PictureType_setColor_12() {
-        IntegerPoint point = new IntegerPoint(10, 10);
+        final IntegerPoint point = new IntegerPoint(10, 10);
         mPicture.setColor(point, null);
     }
 
     @Test
     // public void setColor(final IntegerPoint pPoint, final Color pColor) {
     public void PictureType_setColor_13() {
-        IntegerPoint point = new IntegerPoint(10, 10);
+        final IntegerPoint point = new IntegerPoint(10, 10);
 
         assertFalse("starting colurs must be different", mTestColor1.equals(mPicture.getColor(point).get()));
         mPicture.setColor(point, mTestColor1);
@@ -529,28 +529,28 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     // public void setColor(final Point pPoint, final Color pColor) {
     public void PictureType_setColor_20() {
         mPicture.lock();
-        Point point = new Point(0.1, 0.1);
+        final Point point = new Point(0.1, 0.1);
         mPicture.setColor(point, mTestColor1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // public void setColor(final Point pPoint, final Color pColor) {
     public void PictureType_setColor_21() {
-        Point point = new Point(0.1, 0.1);
+        final Point point = new Point(0.1, 0.1);
         mPicture.setColor((Point) null, mTestColor1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // public void setColor(final Point pPoint, final Color pColor) {
     public void PictureType_setColor_22() {
-        Point point = new Point(0.1, 0.1);
+        final Point point = new Point(0.1, 0.1);
         mPicture.setColor(point, null);
     }
 
     @Test(expected = IllegalStateException.class)
     // public void setColors(int[] pColors) {
     public void PictureType_setColors_00() {
-        int[] colours = new int[]{1, 2, 3};
+        final int[] colours = new int[]{1, 2, 3};
         mPicture.lock();
         mPicture.setColors(colours);
     }
@@ -558,29 +558,29 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test(expected = IllegalArgumentException.class)
     // public void setColors(int[] pColors) {
     public void PictureType_setColors_01() {
-        int[] colours = null;
+        final int[] colours = null;
         mPicture.setColors(colours);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // public void setColors(int[] pColors) {
     public void PictureType_setColors_02() {
-        int[] colours = new int[]{1, 2, 3};
+        final int[] colours = new int[]{1, 2, 3};
         mPicture.setColors(colours);
     }
 
     @Test
     // public void setColors(int[] pColors) {
     public void PictureType_setColors_03() {
-        IntegerPoint ip = new IntegerPoint(10, 10);
-        int width = 37;
-        int height = 47;
+        final IntegerPoint ip = new IntegerPoint(10, 10);
+        final int width = 37;
+        final int height = 47;
 
-        PictureType picture1 = new PictureType(width, height);
+        final PictureType picture1 = new PictureType(width, height);
         picture1.setColor(ip, mTestColor1);
         assertFalse("Colors should not match to start with", mTestColor1.equals(mPicture.getColor(ip).get()));
 
-        PictureType picture2 = new PictureType(width, height);
+        final PictureType picture2 = new PictureType(width, height);
         picture2.setColors(picture1.getColors());
         assertTrue("width correct", picture2.getWidth() == width);
         assertTrue("height correct", picture2.getHeight() == height);
@@ -596,7 +596,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test(expected = UnsupportedOperationException.class)
     // public void setValue(PictureType pValue) {
     public void PictureType_setValue() {
-        PictureType picture = new PictureType(27, 28);
+        final PictureType picture = new PictureType(27, 28);
         mPicture.setValue(picture);
     }
 

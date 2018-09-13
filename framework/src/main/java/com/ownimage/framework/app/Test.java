@@ -17,12 +17,12 @@ public class Test {
     DoubleProperty prop = new SimpleDoubleProperty(2.0);
 
 
-    public static void main(String[] args) throws InterruptedException {
-        Test test = new Test();
+    public static void main(final String[] args) throws InterruptedException {
+        final Test test = new Test();
         test(test);
     }
 
-    public static void test(Test test) throws InterruptedException {
+    public static void test(final Test test) throws InterruptedException {
         test.print();
         //test.view = null;
         System.gc();
@@ -41,8 +41,8 @@ public class Test {
         printRef(viewRef);
     }
 
-    public void printRef(WeakReference<DoubleProperty> r) {
-        DoubleProperty v = r.get();
+    public void printRef(final WeakReference<DoubleProperty> r) {
+        final DoubleProperty v = r.get();
         if (v == null) System.out.println("WeakReference null");
         else System.out.println(v.get());
     }

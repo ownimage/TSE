@@ -47,11 +47,11 @@ public class ColorView extends ViewBase<ColorControl> {
     }
 
     private javafx.scene.paint.Color getFxColor() {
-        Color awtColor = mControl.getValue();
-        double r = awtColor.getRed() / 255.0d;
-        double g = awtColor.getGreen() / 255.0d;
-        double b = awtColor.getBlue() / 255.0d;
-        double a = awtColor.getAlpha() / 255.0d;
+        final Color awtColor = mControl.getValue();
+        final double r = awtColor.getRed() / 255.0d;
+        final double g = awtColor.getGreen() / 255.0d;
+        final double b = awtColor.getBlue() / 255.0d;
+        final double a = awtColor.getAlpha() / 255.0d;
         return new javafx.scene.paint.Color(r, g, b, a);
     }
 
@@ -62,8 +62,8 @@ public class ColorView extends ViewBase<ColorControl> {
 
     private void setControlValue() {
         runOnFXApplicationThread(() -> {
-            javafx.scene.paint.Color c = mColorPicker.getValue();
-            Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+            final javafx.scene.paint.Color c = mColorPicker.getValue();
+            final Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
             mControl.setValue(color, this, false);
         });
     }

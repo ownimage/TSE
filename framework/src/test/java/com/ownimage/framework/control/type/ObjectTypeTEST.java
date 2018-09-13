@@ -42,30 +42,30 @@ public class ObjectTypeTEST {
     @Test(expected = IllegalArgumentException.class)
     // construct null meta model
     public void ObjectType_01() {
-        ObjectType<TestObject> test = new ObjectType<TestObject>(mValid, null);
+        final ObjectType<TestObject> test = new ObjectType<TestObject>(mValid, null);
         assertTrue("error", false);
     }
 
     @Test
     // construct with meta model
     public void ObjectType_02() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test = new ObjectType<TestObject>(mValid, metaModel);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // construct with meta model with invalid value
     public void ObjectType_03() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test = new ObjectType<TestObject>(mInvalid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test = new ObjectType<TestObject>(mInvalid, metaModel);
     }
 
     @Test
     // clone
     public void ObjectType_clone_01() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
-        ObjectType<TestObject> test2 = test1.clone();
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectType<TestObject> test2 = test1.clone();
         assertTrue("Meta Model must match", test1.getMetaModel() == test2.getMetaModel());
         assertTrue("Value must match", test1.getValue() == test2.getValue());
     }
@@ -73,24 +73,24 @@ public class ObjectTypeTEST {
     @Test
     // valid
     public void ObjectType_getString_01() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         assertTrue("getString", "valid".equals(test1.getString()));
     }
 
     @Test
     // valid
     public void ObjectType_getValue_01() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         assertTrue("getValue", mValid == test1.getValue());
     }
 
     @Test
     // valid
     public void ObjectType_setString_01() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         test1.setString("other");
         assertTrue("getValue", mOther == test1.getValue());
     }
@@ -98,8 +98,8 @@ public class ObjectTypeTEST {
     @Test(expected = IllegalArgumentException.class)
     // invalid
     public void ObjectType_setString_02() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         test1.setString("XXX");
         assertTrue("getValue", mOther == test1.getValue());
     }
@@ -107,8 +107,8 @@ public class ObjectTypeTEST {
     @Test
     // valid
     public void ObjectType_setValue_01() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         test1.setValue(mOther);
         assertTrue("setValue", mOther == test1.getValue());
     }
@@ -116,8 +116,8 @@ public class ObjectTypeTEST {
     @Test
     // valid
     public void ObjectType_setValue_02() {
-        ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
-        ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
+        final ObjectMetaType<TestObject> metaModel = new ObjectMetaType<>(mValidList, true);
+        final ObjectType<TestObject> test1 = new ObjectType<TestObject>(mValid, metaModel);
         assertFalse("setValue", test1.setValue(mInvalid));
         assertTrue("setValue", mValid == test1.getValue());
     }

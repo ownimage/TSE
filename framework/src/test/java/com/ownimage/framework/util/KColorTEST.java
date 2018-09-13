@@ -21,11 +21,11 @@ public class KColorTEST {
 
 
     private void runTest(final Color color1, final Color color2, final double amount, final Color expected) {
-        Color actual = KColor.fade(color1, color2, amount);
+        final Color actual = KColor.fade(color1, color2, amount);
         assertEquals(expected, actual);
     }
 
-    private void assertEquals(Color expected, Color actual) {
+    private void assertEquals(final Color expected, final Color actual) {
         Assert.assertEquals(expected, actual);
         Assert.assertEquals(expected.getAlpha(), actual.getAlpha());
     }

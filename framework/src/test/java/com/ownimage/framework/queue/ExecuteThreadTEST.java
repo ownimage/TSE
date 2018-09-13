@@ -84,7 +84,7 @@ public class ExecuteThreadTEST {
      */
     @Test(expected = NullPointerException.class)
     public void test01_nullJob() {
-        ExecuteThread et = new ExecuteThread(null);
+        final ExecuteThread et = new ExecuteThread(null);
     }
 
     /**
@@ -92,8 +92,8 @@ public class ExecuteThreadTEST {
      */
     @Test
     public void test02_getJob() {
-        IJob job = new Job("myJob", Priority.NORMAL);
-        ExecuteThread et = new ExecuteThread(job);
+        final IJob job = new Job("myJob", Priority.NORMAL);
+        final ExecuteThread et = new ExecuteThread(job);
         assertEquals(job, et.getJob());
     }
 
@@ -107,9 +107,9 @@ public class ExecuteThreadTEST {
      */
     @Test
     public void test03a_run() throws InterruptedException {
-        JobTEST job = new JobTEST("myJob", Priority.NORMAL);
+        final JobTEST job = new JobTEST("myJob", Priority.NORMAL);
         assertEquals(job.getStatus(), Status.CREATED);
-        ExecuteThread et = new ExecuteThread(job);
+        final ExecuteThread et = new ExecuteThread(job);
         et.start();
         et.join(); // implicit test that the thread has ended
         assertFalse(Thread.currentThread() == job.getThread());
@@ -124,10 +124,10 @@ public class ExecuteThreadTEST {
      */
     @Test
     public void test03b_run() throws InterruptedException {
-        IllegalStateException rte = new IllegalStateException("runtime excpetion");
-        JobTEST job = new JobTEST("myJob", Priority.NORMAL);
+        final IllegalStateException rte = new IllegalStateException("runtime excpetion");
+        final JobTEST job = new JobTEST("myJob", Priority.NORMAL);
         job.setError(rte);
-        ExecuteThread et = new ExecuteThread(job);
+        final ExecuteThread et = new ExecuteThread(job);
         et.start();
         et.join(); // implicit test that the thread has ended
         assertFalse(Thread.currentThread() == job.getThread());

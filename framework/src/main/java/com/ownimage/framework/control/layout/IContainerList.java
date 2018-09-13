@@ -26,9 +26,9 @@ public interface IContainerList extends IViewable<ISingleSelectView> {
 
     default void setSelectedIndex(final String pSelectedIndex) {
         try {
-            int index = Integer.parseInt(pSelectedIndex);
+            final int index = Integer.parseInt(pSelectedIndex);
             setSelectedIndex(index);
-        } catch (RuntimeException pRE) {
+        } catch (final RuntimeException pRE) {
         }
     }
 

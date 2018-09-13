@@ -12,14 +12,14 @@ import com.ownimage.framework.view.factory.ViewFactory;
 
 public class ViewFactoryDELEGATOR implements IViewFactory {
 
-    private static ViewFactoryDELEGATOR mViewFactorySingleton = new ViewFactoryDELEGATOR();
+    private static final ViewFactoryDELEGATOR mViewFactorySingleton = new ViewFactoryDELEGATOR();
     private IViewFactory mCurrentDelegatee;
 
     public static void setDelegate(final IViewFactory pDelegatee) {
         try {
             mViewFactorySingleton.mCurrentDelegatee = pDelegatee;
             ViewFactory.setViewFactory(mViewFactorySingleton);
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             if (ViewFactory.getInstance() != mViewFactorySingleton) {
                 throw new IllegalStateException("Have not been able to set the ViewFactory delegate");
             }

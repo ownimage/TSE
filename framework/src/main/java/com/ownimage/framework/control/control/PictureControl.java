@@ -48,14 +48,14 @@ public class PictureControl
 
     @Override
     public IView createView() {
-        IPictureView view = ViewFactory.getInstance().createView(this);
+        final IPictureView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
 
     public void drawGrafitti(final IGrafittiImp pGrafittiImp) {
         if (mGrafitti != null) {
-            GrafittiHelper grafittiHelper = new GrafittiHelper(pGrafittiImp);
+            final GrafittiHelper grafittiHelper = new GrafittiHelper(pGrafittiImp);
             mGrafitti.grafitti(grafittiHelper);
         }
     }
@@ -72,12 +72,12 @@ public class PictureControl
         mViews.invokeAll(view -> view.drawGrafitti(this::drawGrafitti));
     }
 
-    public void updateGrafitti(IGrafitti pGrafitti) {
+    public void updateGrafitti(final IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
         mViews.invokeAll(view -> view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
     }
 
-    public void drawCursor(IGrafitti pGrafitti) {
+    public void drawCursor(final IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
         mViews.invokeAll(view -> view.drawCursor(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
     }
@@ -121,7 +121,7 @@ public class PictureControl
         Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
 
         mLogger.fine(() -> String.format("uiEvent type=%s, isDragging=%s", pEvent.getEventType(), mIsDragging));
-        LocalTime start = LocalTime.now();
+        final LocalTime start = LocalTime.now();
 
         if (mUIEventListener != null) {
             switch (pEvent.getEventType()) {
@@ -169,8 +169,8 @@ public class PictureControl
             }
 
 
-            LocalTime end = LocalTime.now();
-            long elapsed = ChronoUnit.MICROS.between(start, end);
+            final LocalTime end = LocalTime.now();
+            final long elapsed = ChronoUnit.MICROS.between(start, end);
             mLogger.fine(String.format("%s took %s ms", pEvent.getEventType(), elapsed));
         }
 

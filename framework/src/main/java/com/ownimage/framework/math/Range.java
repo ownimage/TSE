@@ -16,16 +16,16 @@ public class Range {
     private double mMin;
     private double mMax;
 
-    public Range(double pMin, double pMax) {
+    public Range(final double pMin, final double pMax) {
         setMin(pMin);
         setMax(pMax);
     }
 
-    private void setMin(double pMin) {
+    private void setMin(final double pMin) {
         mMin = pMin;
     }
 
-    private void setMax(double pMax) {
+    private void setMax(final double pMax) {
         mMax = pMax;
     }
 
@@ -37,30 +37,30 @@ public class Range {
         return mMax;
     }
 
-    public double getFraction(double pX) {
+    public double getFraction(final double pX) {
         return (pX - getMin()) / (getMax() - getMin());
     }
 
-    public double getBoundedFraction(double pX) {
-        double fraction = getFraction(pX);
+    public double getBoundedFraction(final double pX) {
+        final double fraction = getFraction(pX);
         return fraction < 0.0d ? 0.0d : fraction > 1.0d ? 1.0d : fraction;
     }
 
-    public double getBoundedValue(double pX) {
-        double fraction = getBoundedFraction(pX);
+    public double getBoundedValue(final double pX) {
+        final double fraction = getBoundedFraction(pX);
         return getValue(fraction);
     }
 
-    private double getValue(double pFraction) {
+    private double getValue(final double pFraction) {
         return getMin() + pFraction * (getMax() - getMin());
     }
 
-    public boolean contains(double pX) {
+    public boolean contains(final double pX) {
         return getMin() <= pX && pX <= getMax();
     }
 
-    public double getValue(double pX, Range pFromRange) {
-        double fraction = pFromRange.getFraction(pX);
+    public double getValue(final double pX, final Range pFromRange) {
+        final double fraction = pFromRange.getFraction(pX);
         return getValue(fraction);
     }
 

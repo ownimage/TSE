@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class Counter {
 
-    private static Logger mLogger = Framework.getLogger();
+    private static final Logger mLogger = Framework.getLogger();
 
     private int mCount;
     private int mMax;
@@ -20,7 +20,7 @@ public class Counter {
     public Counter() {
     }
 
-    public Counter(int pMax) {
+    public Counter(final int pMax) {
         Framework.checkParameterGreaterThan(mLogger, pMax, 0, "pMax");
         mMax = pMax;
     }
@@ -36,7 +36,7 @@ public class Counter {
 
     public float getPercent() {
         if (mMax == 0) throw new RuntimeException("Cannot get percentage for Counter when max value has not been set");
-        float percent = 100.0f * mCount / mMax;
+        final float percent = 100.0f * mCount / mMax;
         return percent > 100.0f ? 100.0f : percent;
     }
 

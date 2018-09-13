@@ -32,7 +32,7 @@ public class NumericRuntimeException extends RuntimeException {
 	 * @param message
 	 *            Detail message.
 	 */
-	public NumericRuntimeException(String message) {
+    public NumericRuntimeException(final String message) {
 		super(message);
 	}
 
@@ -43,7 +43,7 @@ public class NumericRuntimeException extends RuntimeException {
 	 * @param cause
 	 *            Cause.
 	 */
-	public NumericRuntimeException(Throwable cause) {
+    public NumericRuntimeException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -51,7 +51,7 @@ public class NumericRuntimeException extends RuntimeException {
 	 * Construct a new numeric runtime exception with the given detail message
 	 * and the given cause.
 	 */
-	public NumericRuntimeException(String message, Throwable cause) {
+    public NumericRuntimeException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

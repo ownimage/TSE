@@ -16,10 +16,10 @@ public class BooleanTypeTEST {
 
     @Test
     public void BooleanType_duplicate_00() {
-        BooleanType t = new BooleanType(false);
-        BooleanType d = t.clone();
+        final BooleanType t = new BooleanType(false);
+        final BooleanType d = t.clone();
         t.setValue(true);
-        BooleanType d2 = t.clone();
+        final BooleanType d2 = t.clone();
 
         assertEquals(false, d.getValue());
         assertEquals(true, d2.getValue());
@@ -27,7 +27,7 @@ public class BooleanTypeTEST {
 
     @Test
     public void BooleanType_getString_00() {
-        BooleanType t = new BooleanType(true);
+        final BooleanType t = new BooleanType(true);
         assertEquals("true", t.getString());
 
         t.setValue(false);
@@ -36,7 +36,7 @@ public class BooleanTypeTEST {
 
     @Test
     public void BooleanType_setString_00() {
-        BooleanType t = new BooleanType(false);
+        final BooleanType t = new BooleanType(false);
         t.setString("true");
         assertEquals(true, t.getValue());
         t.setString("false");
@@ -45,8 +45,8 @@ public class BooleanTypeTEST {
 
     @Test
     public void BooleanType_toString_00() {
-        String expected = "BooleanType(value=false)";
-        BooleanType t = new BooleanType(false);
+        final String expected = "BooleanType(value=false)";
+        final BooleanType t = new BooleanType(false);
         assertEquals(expected, t.toString());
     }
 

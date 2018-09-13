@@ -146,7 +146,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNullOrEmpty(mLogger, pString, "pString");
 
-        Id id = new Id(pString);
+        final Id id = new Id(pString);
         if (mSavePoint == null) {
             mSavePoint = new SavePointBuffer(pString, id);
             mSavePointIds = new Vector<Id>();
@@ -181,7 +181,7 @@ public class UndoRedoBuffer implements IUndoRedoBuffer, IUndoRedoBufferProvider 
     }
 
     public String stackToString() {
-        StringBuilder sb = new StringBuilder("mStack");
+        final StringBuilder sb = new StringBuilder("mStack");
         mStack.forEach(a -> sb.append("\n").append(a));
         return sb.toString();
     }

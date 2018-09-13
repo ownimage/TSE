@@ -15,7 +15,7 @@ import com.ownimage.perception.transformSequence.TransformSequence;
 public class Services {
 
     public final static Logger mLogger = Framework.getLogger();
-    private static Services mServices;
+    private static final Services mServices;
 
     private Perception mPerception;
     private Properties mProperties;
@@ -56,7 +56,7 @@ public class Services {
     }
 
     static {
-        Services services = new Services();
+        final Services services = new Services();
         services.mProperties = new Properties();
         services.mUndoRedoBuffer = new UndoRedoBuffer(100);
         mServices = services;

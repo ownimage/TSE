@@ -59,13 +59,13 @@ public class Perception extends AppControlBase {
     private BorderLayout mBorderLayout;
 
     // Properties actions
-    private ActionControl mPropertiesSave = new ActionControl("Save", "propertiesSave", NullContainer, this::propertiesSave);
-    private ActionControl mPropertiesSaveAs = new ActionControl("Save As", "propertiesSaveAs", NullContainer, this::propertiesSaveAs);
-    private ActionControl mPropertiesSaveDefault = new ActionControl("Save Default", "propertiesSaveDefault", NullContainer, this::propertiesSaveDefault);
+    private final ActionControl mPropertiesSave = new ActionControl("Save", "propertiesSave", NullContainer, this::propertiesSave);
+    private final ActionControl mPropertiesSaveAs = new ActionControl("Save As", "propertiesSaveAs", NullContainer, this::propertiesSaveAs);
+    private final ActionControl mPropertiesSaveDefault = new ActionControl("Save Default", "propertiesSaveDefault", NullContainer, this::propertiesSaveDefault);
 
     // Logging actions
-    private ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
-    private ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
+    private final ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
+    private final ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
 
 
     private String mFilename;
@@ -92,7 +92,7 @@ public class Perception extends AppControlBase {
         return Services.getServices().getTransformSequence();
     }
 
-    private IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
+    private final IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
         String filename = f.getString();
         mLogger.info(() -> "filename = " + filename);
         fileOpen(f.getFile());
@@ -105,8 +105,8 @@ public class Perception extends AppControlBase {
         mBorderLayout = new BorderLayout();
 
         if (getTransformSequence() != null) {
-            ScrollLayout scrollableOutputPreview = new ScrollLayout(mOutputPreviewControl);
-            HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollableOutputPreview);
+            final ScrollLayout scrollableOutputPreview = new ScrollLayout(mOutputPreviewControl);
+            final HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollableOutputPreview);
             mBorderLayout.setCenter(hSplitLayout);
         }
 
@@ -118,9 +118,9 @@ public class Perception extends AppControlBase {
     protected MenuControl createMenuView() {
         Framework.logEntry(mLogger);
 
-        Container menuContainer = new Container("MainMenu", "mainMenu", this::getUndoRedoBuffer);
+        final Container menuContainer = new Container("MainMenu", "mainMenu", this::getUndoRedoBuffer);
 
-        MenuControl menu = new MenuControl.Builder()
+        final MenuControl menu = new MenuControl.Builder()
                 .addMenu(new MenuControl.Builder().setDisplayName("File")
                                  .addAction(new ActionControl("Open", "fileOpen", menuContainer, this::fileOpen))
                                  .addAction(new ActionControl("Save", "fileSave", menuContainer, this::fileSave))
@@ -200,8 +200,8 @@ public class Perception extends AppControlBase {
             transformOpenDefault();
         }
 
-        ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
-        HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
+        final ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
+        final HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
         mBorderLayout.setCenter(hSplitLayout);
 
         if (!getProperties().useAutoLoadTransformFile()) {
@@ -233,8 +233,8 @@ public class Perception extends AppControlBase {
     private void fileSave() {
         Framework.logEntry(mLogger);
 
-        String filename = getSaveFilename();
-        File file = new File(filename);
+        final String filename = getSaveFilename();
+        final File file = new File(filename);
         fileSaveShowPreview(() -> fileSave(file));
 
         Framework.logExit(mLogger);
@@ -265,7 +265,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         fileSaveShowPreview(() -> {
-            FileControl outputFile = FileControl.createFileSave("Image Save As", NullContainer, getSaveFilename());
+            final FileControl outputFile = FileControl.createFileSave("Image Save As", NullContainer, getSaveFilename());
             outputFile.addControlChangeListener((c, m) -> new Thread(() -> fileSaveUnchecked(outputFile.getFile())).start());
             // fileSaveUnchecked is ok here as the file chooser save will have the confirm overwrite dialog.);
             outputFile.showDialog();
@@ -282,9 +282,9 @@ public class Perception extends AppControlBase {
     private void fileSaveUnchecked(final File pFile) {
         mLogger.info(() -> "fileSaveUnchecked");
 
-        ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
+        final ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
         }).setEnabled(false);
-        ProgressControl progress = ProgressControl.builder("Progress", "progress", NullContainer)
+        final ProgressControl progress = ProgressControl.builder("Progress", "progress", NullContainer)
                 .withCompleteAction(() -> ok.setEnabled(true))
                 .build();
         showDialog(progress, DialogOptions.NONE, ok);
@@ -332,11 +332,11 @@ public class Perception extends AppControlBase {
     private void fileSaveShowPreview(final IAction pAction) {
         Framework.logEntry(mLogger);
 
-        Container displayContainer = new Container("File Save", "fileSave", this::getUndoRedoBuffer);
-        StrongReference<PictureType> preview = new StrongReference<>();
+        final Container displayContainer = new Container("File Save", "fileSave", this::getUndoRedoBuffer);
+        final StrongReference<PictureType> preview = new StrongReference<>();
         getResizedPictureTypeIfNeeded(getSavePreviewSize(), null).ifPresent(preview::set);
-        ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-        ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
+        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
+        final ActionControl ok = ActionControl.create("OK", NullContainer, pAction);
         getRenderService().
                 getRenderJobBuilder("Perception::fileSaveShowPreview", preview.get(), getTransformSequence().getLastTransform())
                 .withControlObject(preview.get())
@@ -361,12 +361,12 @@ public class Perception extends AppControlBase {
             return "UNKONWN";
         }
 
-        int i = mFilename.lastIndexOf('.');
+        final int i = mFilename.lastIndexOf('.');
         if (i <= 0) {
             return "UNKONWN";
         }
 
-        String stem = mFilename.substring(0, i);
+        final String stem = mFilename.substring(0, i);
 
         Framework.logExit(mLogger, stem);
         return stem;
@@ -384,7 +384,7 @@ public class Perception extends AppControlBase {
     private String getLoggingFilename() {
         Framework.logEntry(mLogger);
 
-        String logingFilename;
+        final String logingFilename;
         if (mFilename != null) {
             logingFilename = new File(mFilename).getParent() + File.separator + "logging.properties";
         } else {
@@ -405,7 +405,7 @@ public class Perception extends AppControlBase {
     private String getPropertyFilename() {
         Framework.logEntry(mLogger);
 
-        String filename = getFilenameStem() + ".properties";
+        final String filename = getFilenameStem() + ".properties";
 
         Framework.logExit(mLogger, filename);
         return filename;
@@ -421,14 +421,14 @@ public class Perception extends AppControlBase {
 
     private String getSaveFilename() {
         Framework.logEntry(mLogger);
-        String filename = getFilenameStem() + "-transform.jpg";
+        final String filename = getFilenameStem() + "-transform.jpg";
         Framework.logExit(mLogger, filename);
         return filename;
     }
 
     private String getTransformFilename() {
         Framework.logEntry(mLogger);
-        String filename = getFilenameStem() + ".transform";
+        final String filename = getFilenameStem() + ".transform";
         Framework.logExit(mLogger, filename);
         return filename;
     }
@@ -443,7 +443,7 @@ public class Perception extends AppControlBase {
                 propertiesSetSystemDefault();
             }
 
-        } catch (Exception pT) {
+        } catch (final Exception pT) {
             propertiesSetSystemDefault();
             // throw new FrameworkException(this, Level.SEVERE, "Cannot run initProperties", pT);
         }
@@ -470,7 +470,7 @@ public class Perception extends AppControlBase {
 
     private void loggingOpen() {
         Framework.logEntry(mLogger);
-        FileControl fileControl = FileControl.createFileOpen("Open Logging settings", NullContainer, mLoggingPropertiesFilename);
+        final FileControl fileControl = FileControl.createFileOpen("Open Logging settings", NullContainer, mLoggingPropertiesFilename);
         fileControl.addControlChangeListener((c, m) -> FrameworkLogger.getInstance().read(fileControl.getValue()));
         FrameworkLogger.getInstance().read(fileControl.getValue());
         Framework.logExit(mLogger);
@@ -494,9 +494,9 @@ public class Perception extends AppControlBase {
     private void loggingSaveAs() {
         Framework.logEntry(mLogger);
 
-        FileControl fileControl = FileControl.createFileSave("Logging Save As", NullContainer, getLoggingFilename());
+        final FileControl fileControl = FileControl.createFileSave("Logging Save As", NullContainer, getLoggingFilename());
         fileControl.showDialog();
-        File file = fileControl.getFile();
+        final File file = fileControl.getFile();
         loggingSaveUnchecked(file);
 
         Framework.logExit(mLogger);
@@ -505,7 +505,7 @@ public class Perception extends AppControlBase {
     private void loggingSaveDefault() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getLoggingDefaultFilename());
+        final File file = new File(getLoggingDefaultFilename());
         loggingSave(file);
 
         Framework.logExit(mLogger);
@@ -535,17 +535,17 @@ public class Perception extends AppControlBase {
 
     private void propertiesEdit() {
         Framework.logEntry(mLogger);
-        int previousPreviewSize = getPreviewSize();
+        final int previousPreviewSize = getPreviewSize();
 
         final UndoRedoBuffer undoRedoBuffer = getProperties().getUndoRedoBuffer();
-        Id id = undoRedoBuffer.startSavepoint("Edit");
+        final Id id = undoRedoBuffer.startSavepoint("Edit");
 
-        IAction success = () -> {
+        final IAction success = () -> {
             undoRedoBuffer.endSavepoint(id);
             if (previousPreviewSize != getPreviewSize()) this.refreshPreviews();
         };
-        ActionControl ok = ActionControl.create("OK", NullContainer, success);
-        ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> {
+        final ActionControl ok = ActionControl.create("OK", NullContainer, success);
+        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> {
             undoRedoBuffer.endSavepoint(id);
             undoRedoBuffer.undo();
         });
@@ -566,7 +566,7 @@ public class Perception extends AppControlBase {
     private void propertiesOpen() {
         Framework.logEntry(mLogger);
 
-        FileControl propertyFile = FileControl.createFileOpen("Properties Open", NullContainer, getPropertyFilename());
+        final FileControl propertyFile = FileControl.createFileOpen("Properties Open", NullContainer, getPropertyFilename());
         propertyFile.addControlChangeListener((c, m) -> propertiesOpen(propertyFile.getFile()));
         propertyFile.showDialog();
 
@@ -577,11 +577,11 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
-        try (FileInputStream fos = new FileInputStream(pFile)) {
-            PersistDB db = new PersistDB();
+        try (final FileInputStream fos = new FileInputStream(pFile)) {
+            final PersistDB db = new PersistDB();
             db.load(fos);
             getProperties().read(db, "");
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
 
@@ -591,7 +591,7 @@ public class Perception extends AppControlBase {
     private synchronized void propertiesOpenDefault() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getPropertyFilename());
+        final File file = new File(getPropertyFilename());
         propertiesOpen(file);
 
         Framework.logExit(mLogger);
@@ -600,7 +600,7 @@ public class Perception extends AppControlBase {
     private synchronized void propertiesOpenSystemDefault() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getPropertySystemDefaultFilename());
+        final File file = new File(getPropertySystemDefaultFilename());
         propertiesOpen(file);
 
         Framework.logExit(mLogger);
@@ -610,11 +610,11 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         try {
-            PersistDB db = new PersistDB();
-            Properties newProps = new Properties();
+            final PersistDB db = new PersistDB();
+            final Properties newProps = new Properties();
             newProps.write(db, "properties");
             getProperties().read(db, "properties");
-        } catch (IOException pIOE) {
+        } catch (final IOException pIOE) {
             // TODO defautl
         }
         Framework.logExit(mLogger);
@@ -623,7 +623,7 @@ public class Perception extends AppControlBase {
     private void propertiesSave() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getPropertyFilename());
+        final File file = new File(getPropertyFilename());
         propertiesSave(file);
 
         Framework.logExit(mLogger);
@@ -641,7 +641,7 @@ public class Perception extends AppControlBase {
     private void propertiesSaveAs() {
         Framework.logEntry(mLogger);
 
-        FileControl propertyFile = FileControl.createFileSave("Properties Save As", NullContainer, getPropertyFilename());
+        final FileControl propertyFile = FileControl.createFileSave("Properties Save As", NullContainer, getPropertyFilename());
         propertyFile.addControlChangeListener((c, m) -> propertiesSaveUnchecked(propertyFile.getFile()));
         propertyFile.showDialog();
 
@@ -651,7 +651,7 @@ public class Perception extends AppControlBase {
     private void propertiesSaveDefault() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getPropertySystemDefaultFilename());
+        final File file = new File(getPropertySystemDefaultFilename());
         propertiesSave(file);
 
         Framework.logExit(mLogger);
@@ -690,7 +690,7 @@ public class Perception extends AppControlBase {
      * Creates a blank picture of the correct ratio based on the getHeight()/getWidth of the last transform, with a max height and width from getPreviewSize().
      */
     private void resizePreviewControlIfNeeded() {
-        int size = getPreviewSize();
+        final int size = getPreviewSize();
         if (getTransformSequence() == null || getTransformSequence().getLastTransform() == null) {
             mOutputPreviewControl.setValue(new PictureType(size));
         } else {
@@ -707,9 +707,9 @@ public class Perception extends AppControlBase {
      * @param pCurrent if supplied specifies the size of the current PictureType
      * @return Optional representing the correctly sized PictureType or Optional.empty if the picture size was OK.
      */
-    private Optional<PictureType> getResizedPictureTypeIfNeeded(int pNewSize, final PictureType pCurrent) {
-        RectangleSize requiredRatio = getTransformSequence().getLastTransform().getSize();
-        RectangleSize requiredSize = requiredRatio.scaleToSquare(pNewSize);
+    private Optional<PictureType> getResizedPictureTypeIfNeeded(final int pNewSize, final PictureType pCurrent) {
+        final RectangleSize requiredRatio = getTransformSequence().getLastTransform().getSize();
+        final RectangleSize requiredSize = requiredRatio.scaleToSquare(pNewSize);
         if (pCurrent == null || !requiredSize.equals(pCurrent.getSize())) {
             return Optional.of(new PictureType(requiredSize));
         }
@@ -731,7 +731,7 @@ public class Perception extends AppControlBase {
     private void transformOpen() {
         Framework.logEntry(mLogger);
 
-        FileControl transformFile = FileControl.createFileOpen("Transform Open", NullContainer, getTransformFilename());
+        final FileControl transformFile = FileControl.createFileOpen("Transform Open", NullContainer, getTransformFilename());
         transformFile.addControlChangeListener((c, m) -> transformOpen(transformFile.getFile()));
         transformFile.showDialog();
 
@@ -744,7 +744,7 @@ public class Perception extends AppControlBase {
 
         try {
             getTransformSequence().read(pFile);
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "Error", pT);
         }
 
@@ -754,7 +754,7 @@ public class Perception extends AppControlBase {
     private synchronized void transformOpenDefault() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getTransformFilename());
+        final File file = new File(getTransformFilename());
         transformOpen(file);
 
         Framework.logExit(mLogger);
@@ -763,7 +763,7 @@ public class Perception extends AppControlBase {
     private void transformSave() {
         Framework.logEntry(mLogger);
 
-        File file = new File(getTransformFilename());
+        final File file = new File(getTransformFilename());
         transformSave(file);
 
         Framework.logExit(mLogger);
@@ -781,7 +781,7 @@ public class Perception extends AppControlBase {
     private void transformSaveAs() {
         Framework.logEntry(mLogger);
 
-        FileControl transformFile = FileControl.createFileSave("Transform Save As", NullContainer, getTransformFilename());
+        final FileControl transformFile = FileControl.createFileSave("Transform Save As", NullContainer, getTransformFilename());
         transformFile.addControlChangeListener((c, m) -> transformSaveUnchecked(((FileControl) c).getFile()));
         transformFile.showDialog();
 
@@ -793,12 +793,12 @@ public class Perception extends AppControlBase {
         Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         Framework.logParams(mLogger, "pFile.getAbsolutePath()", pFile.getAbsolutePath());
 
-        try (FileOutputStream fos = new FileOutputStream(pFile)) {
-            PersistDB db = new PersistDB();
+        try (final FileOutputStream fos = new FileOutputStream(pFile)) {
+            final PersistDB db = new PersistDB();
             getTransformSequence().write(db, "transform");
             db.store(fos, "Perception Transform");
 
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             throw new FrameworkException(this, Level.SEVERE, "Error", pT);
         }
 

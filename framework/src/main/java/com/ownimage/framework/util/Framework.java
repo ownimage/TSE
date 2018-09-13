@@ -46,14 +46,14 @@ public class Framework {
     }
 
     private static void checkParameterMessage(final Logger pLogger, final String pMessage, final String pName, final int pA, final int pB) {
-        String msg = String.format(pMessage, pName, pA, pB);
+        final String msg = String.format(pMessage, pName, pA, pB);
         pLogger.log(Level.SEVERE, msg);
         throw new IllegalArgumentException(msg);
     }
 
     public static void checkParameterNotNull(final Logger pLogger, final Object pObject, final String pName) {
         if (pObject == null) {
-            String message = pName + " must not be null";
+            final String message = pName + " must not be null";
             mLogger.warning(message);
             throw new IllegalArgumentException(message);
         }
@@ -62,7 +62,7 @@ public class Framework {
     public static void checkParameterNotNullOrEmpty(final Logger pLogger, final String pString, final String pName) {
         checkParameterNotNull(pLogger, pString, pName);
         if ("".equals(pString)) {
-            String message = pName + " must not be an empty string.";
+            final String message = pName + " must not be an empty string.";
             mLogger.warning(message);
             throw new IllegalArgumentException(message);
         }
@@ -70,7 +70,7 @@ public class Framework {
 
     public static void checkStateNotNull(final Logger pLogger, final Object pObject, final String pName) {
         if (pObject == null) {
-            String message = pName + " must not be null";
+            final String message = pName + " must not be null";
             mLogger.warning(message);
             throw new IllegalStateException(message);
         }
@@ -78,7 +78,7 @@ public class Framework {
 
     public static void checkStateNoChangeOnceSet(final Logger pLogger, final Object pObject, final String pName) {
         if (pObject != null) {
-            String message = pName + " cannot be changed once set";
+            final String message = pName + " cannot be changed once set";
             mLogger.warning(message);
             throw new IllegalStateException(message);
         }
@@ -86,11 +86,11 @@ public class Framework {
 
     public static Logger getLogger() {
         try {
-            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-            StackTraceElement stackTraceElement = stackTraceElements[2];
-            String fdClassName = stackTraceElement.getClassName();
+            final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            final StackTraceElement stackTraceElement = stackTraceElements[2];
+            final String fdClassName = stackTraceElement.getClassName();
             return Logger.getLogger(fdClassName);
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);
         }
         return Logger.getLogger("");
@@ -105,15 +105,15 @@ public class Framework {
     public static void logEntry(final Logger pLogger) {
         try {
             if (pLogger.isLoggable(Level.FINEST)) {
-                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-                StackTraceElement stackTraceElement = stackTraceElements[2];
-                String methodName = stackTraceElement.getMethodName();
-                String fdClassName = stackTraceElement.getClassName();
-                String[] names = fdClassName.split("\\.");
-                String className = names[names.length - 1];
+                final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+                final StackTraceElement stackTraceElement = stackTraceElements[2];
+                final String methodName = stackTraceElement.getMethodName();
+                final String fdClassName = stackTraceElement.getClassName();
+                final String[] names = fdClassName.split("\\.");
+                final String className = names[names.length - 1];
                 pLogger.log(Level.FINEST, className + ":" + methodName + " entered.");
             }
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);
         }
     }
@@ -121,15 +121,15 @@ public class Framework {
     public static void logExit(final Logger pLogger) {
         try {
             if (pLogger.isLoggable(Level.FINEST)) {
-                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-                StackTraceElement stackTraceElement = stackTraceElements[2];
-                String methodName = stackTraceElement.getMethodName();
-                String fdClassName = stackTraceElement.getClassName();
-                String[] names = fdClassName.split("\\.");
-                String className = names[names.length - 1];
+                final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+                final StackTraceElement stackTraceElement = stackTraceElements[2];
+                final String methodName = stackTraceElement.getMethodName();
+                final String fdClassName = stackTraceElement.getClassName();
+                final String[] names = fdClassName.split("\\.");
+                final String className = names[names.length - 1];
                 pLogger.log(Level.FINEST, className + ":" + methodName + " exited.");
             }
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);
         }
     }
@@ -137,15 +137,15 @@ public class Framework {
     public static void logExit(final Logger pLogger, final Object pValue) {
         try {
             if (pLogger.isLoggable(Level.FINE)) {
-                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-                StackTraceElement stackTraceElement = stackTraceElements[2];
-                String methodName = stackTraceElement.getMethodName();
-                String fdClassName = stackTraceElement.getClassName();
-                String[] names = fdClassName.split("\\.");
-                String className = names[names.length - 1];
+                final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+                final StackTraceElement stackTraceElement = stackTraceElements[2];
+                final String methodName = stackTraceElement.getMethodName();
+                final String fdClassName = stackTraceElement.getClassName();
+                final String[] names = fdClassName.split("\\.");
+                final String className = names[names.length - 1];
                 pLogger.log(Level.FINE, className + ":" + methodName + " exited with " + pValue + ".");
             }
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "UNEXPECTED ERROR", pT);
         }
     }

@@ -41,7 +41,7 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -51,16 +51,16 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
     public boolean setValue(final Object pObject) {
         Framework.checkParameterNotNull(mLogger, pObject, "pObject");
 
-        R rObject = (R) pObject;
-        boolean b = super.setValue(rObject);
+        final R rObject = (R) pObject;
+        final boolean b = super.setValue(rObject);
         return b;
     }
 
     // this is required as the UI can not support the Generic type
     @Override
     public boolean setValue(final Object pObject, final IView pView, final boolean pIsMutating) {
-        R rObject = (R) pObject;
-        boolean b = super.setValue(rObject, pView, pIsMutating);
+        final R rObject = (R) pObject;
+        final boolean b = super.setValue(rObject, pView, pIsMutating);
         return b;
     }
 }

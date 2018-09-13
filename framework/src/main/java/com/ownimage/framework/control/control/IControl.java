@@ -228,7 +228,7 @@ public interface IControl<C, T, M, R> extends IMouseControl, IPersist, IViewable
 
     void removeEnabledListener(IEnabledListener pListener);
 
-    default boolean isOneOf(IControl<?, ?, ?, ?>... pControls) {
+    default boolean isOneOf(final IControl<?, ?, ?, ?>... pControls) {
         return Arrays.asList(pControls).contains(this);
     }
 }

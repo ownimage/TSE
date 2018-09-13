@@ -54,7 +54,7 @@ public class IntegerType extends TypeBase<IntegerMetaType, Integer> {
     }
 
     public void setNormalizedValue(final double pValue) {
-        Integer value = getMetaModel().getValueForNormalizedValue(pValue);
+        final Integer value = getMetaModel().getValueForNormalizedValue(pValue);
         setValue(value);
     }
 

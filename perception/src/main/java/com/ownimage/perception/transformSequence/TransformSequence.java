@@ -59,7 +59,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     private Vector<ITransform> mTransforms;
     private int mSelectedIndex;
-    private BorderLayout mBorderLayout = new BorderLayout();
+    private final BorderLayout mBorderLayout = new BorderLayout();
 
     private final ActionControl mUpAction;
     private final ActionControl mDownAction;
@@ -82,15 +82,15 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
         mTransforms = new Vector<>();
 
-        ImageLoadTransform ilt = new ImageLoadTransform(pPerception, pFile);
+        final ImageLoadTransform ilt = new ImageLoadTransform(pPerception, pFile);
         mTransforms.add(ilt);
     }
 
     private void addAction() {
         Framework.logEntry(mLogger);
 
-        ObjectControl<ITransform> transformControl = new ObjectControl<>("Select Transform", "transform", NullContainer, getAvailableTransforms().get(0), getAvailableTransforms());
-        ActionControl okAction = ActionControl.create("OK", NullContainer, () -> addTransform(transformControl.getValue()));
+        final ObjectControl<ITransform> transformControl = new ObjectControl<>("Select Transform", "transform", NullContainer, getAvailableTransforms().get(0), getAvailableTransforms());
+        final ActionControl okAction = ActionControl.create("OK", NullContainer, () -> addTransform(transformControl.getValue()));
         mPerception.showDialog(transformControl, DialogOptions.NONE, okAction);
         Framework.logExit(mLogger);
     }
@@ -109,8 +109,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
-        ITransform transform = pTransform.duplicate();
-        int index = getSelectedIndex() + 1;
+        final ITransform transform = pTransform.duplicate();
+        final int index = getSelectedIndex() + 1;
         mTransforms.add(index, transform);
         setPreviousTransforms();
         redraw();
@@ -122,7 +122,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     @Override
     public ISingleSelectView createView() {
-        ISingleSelectView view = ViewFactory.getInstance().createView(this);
+        final ISingleSelectView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -132,8 +132,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 0, "Cannot move ImageLoadTransform.  mSelectedIndex");
         Framework.checkParameterLessThan(mLogger, mSelectedIndex, mTransforms.size(), "Cannot move the last transform down.  mSelectedIndex");
 
-        int newIndex = mSelectedIndex + 1;
-        ITransform transform = mTransforms.remove(mSelectedIndex);
+        final int newIndex = mSelectedIndex + 1;
+        final ITransform transform = mTransforms.remove(mSelectedIndex);
         mTransforms.add(newIndex, transform);
         setPreviousTransforms();
         redraw();
@@ -149,20 +149,20 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     @Override
     public IContainer getContainer(final int pTab) {
-        ITransform transform = mTransforms.get(pTab);
-        IContainer controls = transform.getControls();
+        final ITransform transform = mTransforms.get(pTab);
+        final IContainer controls = transform.getControls();
         return controls;
     }
 
     public IViewable<?> getContent() {
 
-        HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
+        final HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
 
-        BorderLayout buttonPanelAccordionLayout = new BorderLayout();
+        final BorderLayout buttonPanelAccordionLayout = new BorderLayout();
         buttonPanelAccordionLayout.setTop(buttonLayout);
         buttonPanelAccordionLayout.setCenter(this);
 
-        ITransform transform = getSelectedTransform();
+        final ITransform transform = getSelectedTransform();
 
         mBorderLayout.setCenter(transform.getContent());
         mBorderLayout.setRight(buttonPanelAccordionLayout);
@@ -217,9 +217,9 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         return true;
     }
 
-    public void read(File pFile) throws Exception {
-        try (FileInputStream fos = new FileInputStream(pFile)) {
-            PersistDB db = new PersistDB();
+    public void read(final File pFile) throws Exception {
+        try (final FileInputStream fos = new FileInputStream(pFile)) {
+            final PersistDB db = new PersistDB();
             db.load(fos);
             read(db, "transform");
         }
@@ -229,13 +229,13 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
     public void read(final IPersistDB pDB, final String pId) {
         Framework.logEntry(mLogger);
 
-        Vector<ITransform> save = mTransforms;
+        final Vector<ITransform> save = mTransforms;
         mTransforms = new Vector<>();
         mTransforms.add(save.firstElement());
         try {
             int i = 0;
             do {
-                String transformName = pDB.read("transform." + i + ".name");
+                final String transformName = pDB.read("transform." + i + ".name");
                 mLogger.info("transform." + i + ".name=" + transformName);
                 if (transformName == null) {
                     break;
@@ -243,8 +243,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
                 if (i == 0) { // imageLoad
                     mTransforms.get(0).read(pDB, "transform.0");
                 } else {
-                    ITransform template = mAvailableTransformNameMap.get(transformName);
-                    ITransform transform = template.duplicate();
+                    final ITransform template = mAvailableTransformNameMap.get(transformName);
+                    final ITransform transform = template.duplicate();
                     transform.read(pDB, "transform." + i);
                     mTransforms.add(transform);
                 }
@@ -254,7 +254,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             setPreviousTransforms();
             setSelectedIndex(pDB.read(pId + ".selectedContainer"));
             redraw();
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             mTransforms = save;
             throw new RuntimeException("Transform->Open failed.", pT);
 
@@ -326,11 +326,11 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
 
     @Override
-    public void setSelectedIndex(IContainer pContainer) {
+    public void setSelectedIndex(final IContainer pContainer) {
         if (!(pContainer instanceof ITransform))
             throw new IllegalArgumentException("pContainer is not instanceof ITransform");
 
-        int index = mTransforms.indexOf(pContainer);
+        final int index = mTransforms.indexOf(pContainer);
         if (index >= 0) {
             setSelectedIndex(index);
         }
@@ -353,8 +353,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             mSelectedIndex = pIndex;
             invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
 
-            ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
-            IViewable<?> content = transform.getContent();
+            final ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
+            final IViewable<?> content = transform.getContent();
             mBorderLayout.setCenter(content);
             transform.refreshInputPreview();
 
@@ -370,8 +370,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.logEntry(mLogger);
         Framework.checkParameterGreaterThan(mLogger, mSelectedIndex, 1, "Cannot move ImageLoadTransform, or the first transform after that up.  mSelectedIndex");
 
-        int newIndex = mSelectedIndex - 1;
-        ITransform transform = mTransforms.remove(mSelectedIndex);
+        final int newIndex = mSelectedIndex - 1;
+        final ITransform transform = mTransforms.remove(mSelectedIndex);
         mTransforms.add(newIndex, transform);
         setPreviousTransforms();
         redraw();
@@ -383,7 +383,7 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
 
     @Override
     public void write(final IPersistDB pDB, final String pId) throws IOException {
-        ITransform[] transforms = mTransforms.toArray(new ITransform[mTransforms.size()]);
+        final ITransform[] transforms = mTransforms.toArray(new ITransform[mTransforms.size()]);
         for (int i = 0; i < transforms.length; i++) {
             transforms[i].write(pDB, pId + "." + i);
         }

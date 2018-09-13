@@ -125,7 +125,7 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -260,8 +260,8 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
         Framework.logExit(mLogger);
     }
 
-    public Container newContainer(String pDisplayName, String pPropertyName, boolean pListenForEvents) {
-        Container container = new Container(pDisplayName, pPropertyName, this, this);
+    public Container newContainer(final String pDisplayName, final String pPropertyName, final boolean pListenForEvents) {
+        final Container container = new Container(pDisplayName, pPropertyName, this, this);
         if (pListenForEvents) {
             container.addControlChangeListener(this);
             container.addControlValidator(this);

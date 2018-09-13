@@ -64,7 +64,7 @@ public class ExecuteThread extends Thread {
                 mLogger.finest("TERMINATED");
             }
 
-        } catch (Throwable pThrowable) {
+        } catch (final Throwable pThrowable) {
             mJob.error(pThrowable);
             mLogger.finest("mJob.error() - DONE");
             Framework.logThrowable(mLogger, Level.SEVERE, pThrowable);

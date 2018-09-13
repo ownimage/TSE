@@ -20,12 +20,12 @@ public class OutputTransform extends BaseTransform {
     @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
 
-    private BooleanControl mUseCustomSize;
-    private IntegerControl mWidth;
-    private IntegerControl mHeight;
-    private ObjectControl<Size> mOutputSize;
-    private IntegerControl mDPI;
-    private IntegerControl mOversample;
+    private final BooleanControl mUseCustomSize;
+    private final IntegerControl mWidth;
+    private final IntegerControl mHeight;
+    private final ObjectControl<Size> mOutputSize;
+    private final IntegerControl mDPI;
+    private final IntegerControl mOversample;
 
     private enum Size {
         A4Portrait("A4-Portrait", 210.0d, 297.0d, Unit.MM),
@@ -41,16 +41,16 @@ public class OutputTransform extends BaseTransform {
         Imperial20x16Portrait("20\"x16\"P", 4800, 6000, Unit.PIXEL),
         Metric1000x500mm("1000mmx500mm", 1000, 500, Unit.MM);
 
-        private String mName;
-        private double mHeight;
-        private double mWidth;
-        private Unit mUnit;
+        private final String mName;
+        private final double mHeight;
+        private final double mWidth;
+        private final Unit mUnit;
 
         public enum Unit {
             MM, INCH, PIXEL
         }
 
-        Size(String pName, double pWidth, double pHeight, Unit pUnit) {
+        Size(final String pName, final double pWidth, final double pHeight, final Unit pUnit) {
             mName = pName;
             mHeight = pHeight;
             mWidth = pWidth;
@@ -61,15 +61,15 @@ public class OutputTransform extends BaseTransform {
             return mName;
         }
 
-        public int getHeight(int pDPI) {
+        public int getHeight(final int pDPI) {
             return getSize(mHeight, pDPI);
         }
 
-        public int getWidth(int pDPI) {
+        public int getWidth(final int pDPI) {
             return getSize(mWidth, pDPI);
         }
 
-        private int getSize(double pLength, int pDPI) {
+        private int getSize(final double pLength, final int pDPI) {
             switch (mUnit) {
                 case PIXEL:
                     return (int) pLength;
@@ -91,9 +91,9 @@ public class OutputTransform extends BaseTransform {
     public OutputTransform(final Perception pPerception) {
         super("Output", "output");
 
-        IntegerMetaType outputMetaModel = new IntegerMetaType(100, 20000, 50);
-        IntegerMetaType dpiMetaModel = new IntegerMetaType(30, 1000, 50);
-        IntegerMetaType oversampleMetaModel = new IntegerMetaType(1, 3, 1);
+        final IntegerMetaType outputMetaModel = new IntegerMetaType(100, 20000, 50);
+        final IntegerMetaType dpiMetaModel = new IntegerMetaType(30, 1000, 50);
+        final IntegerMetaType oversampleMetaModel = new IntegerMetaType(1, 3, 1);
 
         mUseCustomSize = new BooleanControl("Use custom size", "useCustomSize", getContainer(), false);
         mWidth = new IntegerControl("Image out width", "imageOutWidth", getContainer(), 1000, outputMetaModel).setEnabled(false);
@@ -110,8 +110,8 @@ public class OutputTransform extends BaseTransform {
             if (!mUseCustomSize.getValue()) {
                 try {
                     setMutating(true);
-                    String sizeString = mOutputSize.getString();
-                    int dpi = mDPI.getValue();
+                    final String sizeString = mOutputSize.getString();
+                    final int dpi = mDPI.getValue();
                     mHeight.setValue(mOutputSize.getValue().getHeight(dpi));
                     mWidth.setValue(mOutputSize.getValue().getWidth(dpi));
                 } finally {
@@ -130,7 +130,7 @@ public class OutputTransform extends BaseTransform {
     }
 
     private void setUIState() {
-        boolean useCustomSize = mUseCustomSize.getValue();
+        final boolean useCustomSize = mUseCustomSize.getValue();
         mHeight.setEnabled(useCustomSize);
         mWidth.setEnabled(useCustomSize);
         mOutputSize.setEnabled(!useCustomSize);

@@ -114,7 +114,7 @@ public class CubicEquation {
     }
 
     public synchronized Root solve() {
-        Cubic cubic = new Cubic();
+        final Cubic cubic = new Cubic();
         cubic.solve(mA, mB, mC, mD);
         return new Root(cubic.nRoots, cubic.x1, cubic.x2, cubic.x3);
     }

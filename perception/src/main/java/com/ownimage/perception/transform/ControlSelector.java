@@ -96,8 +96,8 @@ public class ControlSelector implements IUIEventListener {
         Framework.logEntry(mLogger);
         mDragging = false;
 
-        IMouseControl xControl = getXControl();
-        IMouseControl yControl = getYControl();
+        final IMouseControl xControl = getXControl();
+        final IMouseControl yControl = getYControl();
 
         if (xControl == yControl) { // here we have an XY control so only need to call dragStart once
             xControl.dragEnd();
@@ -132,8 +132,8 @@ public class ControlSelector implements IUIEventListener {
         Framework.logEntry(mLogger);
         mDragging = true;
 
-        IMouseControl xControl = getXControl();
-        IMouseControl yControl = getYControl();
+        final IMouseControl xControl = getXControl();
+        final IMouseControl yControl = getYControl();
 
         if (xControl == yControl) { // here we have an XY control so only need to call dragStart once
             xControl.dragStart();
@@ -162,7 +162,7 @@ public class ControlSelector implements IUIEventListener {
     private void setXControlValue(final double pValue) {
         Framework.logEntry(mLogger);
 
-        IMouseControl xControl = getXControl();
+        final IMouseControl xControl = getXControl();
         if (xControl != null) {
             xControl.drag(pValue);
         }
@@ -186,7 +186,7 @@ public class ControlSelector implements IUIEventListener {
     private void setYControlValue(final double pValue) {
         Framework.logEntry(mLogger);
 
-        IMouseControl yControl = getYControl();
+        final IMouseControl yControl = getYControl();
         if (yControl != null) {
             yControl.drag(pValue);
         }

@@ -24,104 +24,104 @@ public class PixelMapTest {
     @Test
     public void genericNullTest() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "N E       ",
                 "  NEEEEN  ",
                 "E    N    "
         };
 
         // WHEN
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(actual, input);
     }
 
     @Test
     public void process02_thin_01() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "E E       ",
                 "  EEEEEE  ",
                 "E    E    "
         };
-        String[] expected = {
+        final String[] expected = {
                 "E N       ",
                 "   EE EE  ",
                 "E    E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process02_thin(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
     @Test
     public void process04a_removeLoneNodes_01() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 " N  ",
                 "    ",
                 "N N "
         };
-        String[] expected = {
+        final String[] expected = {
                 "    ",
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
 
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
     @Test
     public void process04a_removeLoneNodes_02() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "N E       ",
                 "  NEEEEN  ",
                 "E    N    "
         };
-        String[] expected = {
+        final String[] expected = {
                 "  E       ",
                 "  NEEEEN  ",
                 "E    N    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
     @Test
     public void process04a_removeLoneNodes_03() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "    ",
                 " N  ",
                 "    "
         };
-        String[] expected = {
+        final String[] expected = {
                 "    ",
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process01_reset(null);
         pixelMap.process02_thin(null);
         pixelMap.process03_generateNodes(null);
@@ -130,7 +130,7 @@ public class PixelMapTest {
         pixelMap.process04a_removeLoneNodes(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -138,23 +138,23 @@ public class PixelMapTest {
     @Test
     public void process03_generateNodes() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "E E       ",
                 "   EE EE  ",
                 "E E  E    "
         };
-        String[] expected = {
+        final String[] expected = {
                 "N N       ",
                 "   NE EN  ",
                 "N N  E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
 
         // WHEN
         pixelMap.process03_generateNodes(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
@@ -162,80 +162,80 @@ public class PixelMapTest {
     @Test
     public void process04b_removeBristles_01() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "E E       ",
                 "   EE EE  ",
                 "E E  E    "
         };
-        String[] expected = {
+        final String[] expected = {
                 "N         ",
                 "   NE EN  ",
                 "N    E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
 
         // WHEN
         pixelMap.process04b_removeBristles(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
     @Test
     public void process04b_removeBristles_02() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "           ",
                 " E E       ",
                 "    EE EE  ",
                 " E E  E    ",
                 "           ",
         };
-        String[] expected = {
+        final String[] expected = {
                 "           ",
                 " N         ",
                 "    NE EN  ",
                 " N    E    ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
 
         // WHEN
         pixelMap.process04b_removeBristles(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
     @Test
     public void process04b_removeBristles_03() {
         // GIVEN
-        String[] input = {
+        final String[] input = {
                 "    N      ",
                 "    E      ",
                 "    N      ",
                 "   N EEEN  ",
                 "           ",
         };
-        String[] expected = {
+        final String[] expected = {
                 "    N      ",
                 "    E      ",
                 "    E      ",
                 "     EEEN  ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
 
         // WHEN
         pixelMap.process04b_removeBristles(null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 

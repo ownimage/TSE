@@ -62,17 +62,17 @@ public class ActionView extends ViewBase<ActionControl> {
         mButton.prefWidthProperty().bind(FXViewFactory.getInstance().smallButtonWidthProperty);
 
         try {
-            URL url = getClass().getResource(mControl.getImageName());
-            InputStream stream = url.openStream();
-            Image image = new Image(stream);
+            final URL url = getClass().getResource(mControl.getImageName());
+            final InputStream stream = url.openStream();
+            final Image image = new Image(stream);
             mButton.setGraphic(new javafx.scene.image.ImageView(image));
 
-        } catch (IOException pEx) {
+        } catch (final IOException pEx) {
             mLogger.severe(pEx.getMessage());
             mLogger.severe(FrameworkLogger.throwableToString(pEx));
         }
 
-        Tooltip tooltip = new Tooltip(mControl.getDisplayName());
+        final Tooltip tooltip = new Tooltip(mControl.getDisplayName());
         Tooltip.install(mButton, tooltip);
 
         mUI.getChildren().addAll(mButton);

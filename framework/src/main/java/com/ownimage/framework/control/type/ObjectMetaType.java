@@ -54,7 +54,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
 
     public R fromString(final String pString) {
         Framework.logEntry(mLogger);
-        R value = mMap.get(pString);
+        final R value = mMap.get(pString);
         if (value == null) {
             throw new IllegalArgumentException("pValue = " + pString + ", does not map to any known value.");
         }
@@ -63,7 +63,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
 
     public Collection<R> getAllowedValues() {
         Framework.logEntry(mLogger);
-        Vector<R> values = new Vector<R>(mVals);
+        final Vector<R> values = new Vector<R>(mVals);
         return values;
     }
 
@@ -75,7 +75,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
      */
     public String getString(final Object pObject) {
         Framework.logEntry(mLogger);
-        R rObject = (R) pObject;
+        final R rObject = (R) pObject;
         return rObject.toString();
     }
 
@@ -97,7 +97,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
     @Override
     public boolean isValid(final R pValue) {
         Framework.logEntry(mLogger);
-        boolean valid = mVals.contains(pValue);
+        final boolean valid = mVals.contains(pValue);
         return valid;
     }
 
@@ -109,7 +109,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
      */
     public void setString(final ObjectType<R> pObjectType, final String pValue) {
         Framework.logEntry(mLogger);
-        R value = mMap.get(pValue);
+        final R value = mMap.get(pValue);
         if (value == null) {
             throw new IllegalArgumentException("pValue = " + pValue + ", does not map to any known value.");
         }

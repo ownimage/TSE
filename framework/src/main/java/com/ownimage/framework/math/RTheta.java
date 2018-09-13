@@ -20,7 +20,7 @@ public class RTheta {
         , BottomLeft(Point.Point00) //
         , BottomRight(Point.Point10);
 
-        private Point mPoint;
+        private final Point mPoint;
 
         Quadrant(final Point pPoint) {
             mPoint = pPoint;

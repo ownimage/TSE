@@ -40,15 +40,15 @@ public class WoodcutTransform extends BaseTransform {
 
     public WoodcutTransform(final Perception pPerception) {
         super("Wood Cut", "woodCut");
-        PictureType etch = new PictureType(100, mLines.getValue());
+        final PictureType etch = new PictureType(100, mLines.getValue());
         mEtchPicture = new PictureControl("Etch", "etch", NullContainer, etch);
 
     }
 
     private void createEtch() {
         mLogger.info("createEtch");
-        int w = getWidth();
-        PictureType etch = new PictureType(w, mLines.getValue());
+        final int w = getWidth();
+        final PictureType etch = new PictureType(w, mLines.getValue());
         mEtchPicture.setValue(etch);
         Services.getServices().getRenderService()
                 .getRenderJobBuilder("WoodCutTransform::createEtch", mEtchPicture, getPreviousTransform())
@@ -73,13 +73,13 @@ public class WoodcutTransform extends BaseTransform {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
-        double x = pRenderResult.getX();
-        double y = pRenderResult.getY();
+        final double x = pRenderResult.getX();
+        final double y = pRenderResult.getY();
 
-        Color ct = mEtchPicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
-        double thickness = mScale.getValue() * ((255 - ct.getRed()) / 512.0f);
+        final Color ct = mEtchPicture.getValue().getColor(x, y).orElseGet(() -> Services.getServices().getProperties().getColorOOB());
+        final double thickness = mScale.getValue() * ((255 - ct.getRed()) / 512.0f);
 
-        double lines = mLines.getValue();
+        final double lines = mLines.getValue();
         double yl = (y - 0.5d / lines) * lines; // the y value in the lines space (-.5 to lines - .5)
         if (yl < -0.5d) {
             yl = -0.5d;
@@ -90,8 +90,8 @@ public class WoodcutTransform extends BaseTransform {
             mLogger.log(Level.SEVERE, "yl should be < lines-0.5d, but is " + yl);
         }
 
-        double line = Math.round(yl);
-        double delta = yl - line;
+        final double line = Math.round(yl);
+        final double delta = yl - line;
 
         if (thickness > mMinThickness.getValue() && Math.abs(delta) < thickness) {
             if (delta >= 0.0d) {
@@ -100,10 +100,10 @@ public class WoodcutTransform extends BaseTransform {
                 pRenderResult.setColor(mBottomLineColor.getValue());
             }
         } else if (mUseBackground.getValue()) {
-            float[] b = mBackground.getValue().getColorComponents(null);
-            double t = mBackgroundTransparency.getValue();
-            float a = (float) t;
-            Color c = new Color(b[0], b[1], b[2], a);
+            final float[] b = mBackground.getValue().getColorComponents(null);
+            final double t = mBackgroundTransparency.getValue();
+            final float a = (float) t;
+            final Color c = new Color(b[0], b[1], b[2], a);
             pRenderResult.setColor(c);
         }
         Framework.logExit(mLogger);

@@ -62,7 +62,7 @@ public class ColorTypeTEST {
     @Test
     public void ColorType_setString_00() {
         Color color;
-        ColorType type = new ColorType(Color.BLACK);
+        final ColorType type = new ColorType(Color.BLACK);
 
         color = Color.RED;
         type.setString(String.valueOf(color.getRGB()));

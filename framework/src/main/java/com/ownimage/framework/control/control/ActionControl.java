@@ -68,14 +68,14 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
     }
 
     public IView createMenuItemView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createMenuItemView(this);
+        final IView view = ViewFactory.getInstance().createMenuItemView(this);
         addView(view);
         return view;
     }
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -118,13 +118,13 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
      * @param pDoAfter  action to do after normal action is carried out
      * @return a new ActionControl
      */
-    public ActionControl doWrap(IAction pDoBefore, IAction pDoAfter) {
-        IAction action = () -> {
+    public ActionControl doWrap(final IAction pDoBefore, final IAction pDoAfter) {
+        final IAction action = () -> {
             if (pDoBefore != null) pDoBefore.performAction();
             performAction();
             if (pDoAfter != null) pDoAfter.performAction();
         };
-        ActionControl ac = new ActionControl(getDisplayName(), getPropertyName(), NullContainer, action);
+        final ActionControl ac = new ActionControl(getDisplayName(), getPropertyName(), NullContainer, action);
         ac.mFullSize = this.mFullSize;
         ac.mImageName = this.mImageName;
         return ac;
@@ -136,7 +136,7 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
      * @param pDoBefore action to do before normal action is carried out
      * @return a new ActionControl
      */
-    public ActionControl doBefore(IAction pDoBefore) {
+    public ActionControl doBefore(final IAction pDoBefore) {
         return doWrap(pDoBefore, null);
     }
 
@@ -146,7 +146,7 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
      * @param pDoAfter action to do after normal action is carried out
      * @return a new ActionControl
      */
-    public ActionControl doAfter(IAction pDoAfter) {
+    public ActionControl doAfter(final IAction pDoAfter) {
         return doWrap(pDoAfter, null);
     }
 

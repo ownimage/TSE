@@ -30,7 +30,7 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     private CurveSegment mStartCurve;
     private CurveSegment mEndCurve;
 
-    DoubleCurveSegment(PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
+    DoubleCurveSegment(final PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
         super(pStartCurve.getSegmentIndex());
         mStartCurve = pStartCurve;
         mStartTangent = mStartCurve.getStartTangent(pPixelChain);
@@ -44,17 +44,17 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     }
 
     @Override
-    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, final double pMultiplier) {
         return mStartCurve.closerThanActual(pTransformSource, pPixelChain, pPoint, pMultiplier) || mEndCurve.closerThanActual(pTransformSource, pPixelChain, pPoint, pMultiplier);
     }
 
     @Override
-    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         return mStartCurve.closerThan(pPixelChain, pPoint, pTolerance) || mEndCurve.closerThan(pPixelChain, pPoint, pTolerance);
     }
 
     @Override
-    public double closestLambda(final Point pPoint, PixelChain pPixelChain) {
+    public double closestLambda(final Point pPoint, final PixelChain pPixelChain) {
         final double lambda1 = mStartCurve.closestLambda(pPoint, pPixelChain);
         final double lambda2 = mEndCurve.closestLambda(pPoint, pPixelChain);
 
@@ -71,47 +71,47 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     }
 
     @Override
-    public double distance(PixelChain pPixelChain, final Point pUVHWPoint) {
+    public double distance(final PixelChain pPixelChain, final Point pUVHWPoint) {
         return Math.min(mStartCurve.distance(pPixelChain, pUVHWPoint), mEndCurve.distance(pPixelChain, pUVHWPoint));
     }
 
     @Override
-    public Line getEndTangent(PixelChain pPixelChain) {
+    public Line getEndTangent(final PixelChain pPixelChain) {
         return mEndTangent;
     }
 
     @Override
-    public Vector getEndTangentVector(PixelChain pPixelChain) {
+    public Vector getEndTangentVector(final PixelChain pPixelChain) {
         return mEndTangent.getAB();
     }
 
     @Override
-    public double getLength(PixelChain pPixelChain) {
+    public double getLength(final PixelChain pPixelChain) {
         return mStartCurve.getLength(pPixelChain) + mEndCurve.getLength(pPixelChain);
     }
 
     @Override
-    public double getMaxX(PixelChain pPixelChain) {
+    public double getMaxX(final PixelChain pPixelChain) {
         return Math.max(mStartCurve.getMaxX(pPixelChain), mEndCurve.getMaxX(pPixelChain));
     }
 
     @Override
-    public double getMaxY(PixelChain pPixelChain) {
+    public double getMaxY(final PixelChain pPixelChain) {
         return Math.max(mStartCurve.getMaxY(pPixelChain), mEndCurve.getMaxY(pPixelChain));
     }
 
     @Override
-    public double getMinX(PixelChain pPixelChain) {
+    public double getMinX(final PixelChain pPixelChain) {
         return Math.min(mStartCurve.getMinX(pPixelChain), mEndCurve.getMinX(pPixelChain));
     }
 
     @Override
-    public double getMinY(PixelChain pPixelChain) {
+    public double getMinY(final PixelChain pPixelChain) {
         return Math.min(mStartCurve.getMinY(pPixelChain), mEndCurve.getMinY(pPixelChain));
     }
 
     @Override
-    public Point getPointFromLambda(PixelChain pPixelChain, final double pLambda) {
+    public Point getPointFromLambda(final PixelChain pPixelChain, final double pLambda) {
         if (pLambda < 0.5d) {
             final double lambda = 2.0d * pLambda;
             return mStartCurve.getPointFromLambda(pPixelChain, lambda);
@@ -122,17 +122,17 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     }
 
     @Override
-    public Line getStartTangent(PixelChain pPixelChain) {
+    public Line getStartTangent(final PixelChain pPixelChain) {
         return mStartTangent;
     }
 
     @Override
-    public Vector getStartTangentVector(PixelChain pPixelChain) {
+    public Vector getStartTangentVector(final PixelChain pPixelChain) {
         return mStartTangent.getAB();
     }
 
     @Override
-    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
         pGraphics.grafittiControlLine(mStartCurve.getP0(pPixelChain), mStartCurve.getP1());
         pGraphics.grafittiControlLine(mStartCurve.getP1(), mEndCurve.getP1());
         pGraphics.grafittiControlLine(mEndCurve.getP1(), mEndCurve.getP2(pPixelChain));
@@ -144,7 +144,7 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     }
 
     @Override
-    protected void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+    protected void setStartPosition(final PixelChain pPixelChain, final double pStartPosition) {
         mStartCurve.setStartPosition(pPixelChain, pStartPosition);
         mEndCurve.setStartPosition(pPixelChain, pStartPosition + mStartCurve.getLength(pPixelChain));
     }
@@ -168,7 +168,7 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
      *
      * @param pSegmentIndex the new segment index for this copy.
      */
-    protected void setSegmentIndex(int pSegmentIndex) {
+    protected void setSegmentIndex(final int pSegmentIndex) {
         super.setSegmentIndex(pSegmentIndex);
         mStartCurve = mStartCurve.withSegmentIndex(pSegmentIndex);
         mEndCurve = mEndCurve.withSegmentIndex(pSegmentIndex);

@@ -75,7 +75,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mLineTolerance =
             new DoubleControl("Line Tolerance", "lineTolerance", getContainer(), 1.2d, 0.1d, 10.0d);
 
-    private DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
+    private final DoubleMetaType meta = new DoubleMetaType(0.1, 100, 5, DoubleMetaType.DisplayType.SPINNER);
     private final DoubleControl mLineCurvePreference =
             new DoubleControl("Curve Preference", "curvePreference", getContainer(), 1.2, meta);//1.2d, 0.1d, 100.0d);
 
@@ -250,16 +250,16 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void generateEdges() {
-        ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
-        ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
+        final ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
+        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
         getGenerateEdgesDialog().showDialog(cancel, ok);
     }
 
     private void generateEdgesOK() {
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
-        PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
-        PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
+        final PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
+        final PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
         Services.getServices().getRenderService()
                 .getRenderJobBuilder("CannyEdgeTransform::generateEdgesOK", inputPictureControl, getPreviousTransform())
                 .withCompleteAction(() -> {
@@ -272,7 +272,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void setPreviousTransform(ITransform pPreviousTransform) {
+    public void setPreviousTransform(final ITransform pPreviousTransform) {
         try {
             setMutating(true);
             super.setPreviousTransform(pPreviousTransform);
@@ -292,8 +292,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     public synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info(() -> "edit pixelmap OK"));
-            ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
+            final ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info(() -> "edit pixelmap OK"));
+            final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
             mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
         }
         return mEditPixelMapDialog;
@@ -468,7 +468,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
         // TODO need to change the 360 value to one that is generated from something
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
-        PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
+        final PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
         if (pixelMap.canRead(pDB, pId + "." + getPropertyName())) {
             pixelMap.read(pDB, pId + "." + getPropertyName());
             setPixelMap(pixelMap);
@@ -579,7 +579,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public void grafitti(final GrafittiHelper pGrafittiHelper) {
-        Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
+        final Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
         pGrafittiHelper.drawRectangle(r, Services.getServices().getPerception().getProperties().getColor1());
     }
 
@@ -591,7 +591,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
             PixelMap pixelMap = null;
             SplitTimer.split("regeneratePixelMap() start");
-            ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
+            final ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
             try {
                 detector.setSourceImage(inputPicture.getValue());
                 detector.process(getProgressControl().reset());
@@ -619,7 +619,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     }
 
-    public void setPixelMap(PixelMap pPixelMap) {
+    public void setPixelMap(final PixelMap pPixelMap) {
         mPixelMap = pPixelMap;
         mEditPixelMapDialog = null;
         mEditPixelMapButton.setEnabled(mPixelMap != null);
@@ -635,10 +635,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
         getPixelMap().ifPresent(pixelMap -> pixelMap.transform(pRenderResult));
 
-        float whiteFade = mWhiteFade.getValue().floatValue();
+        final float whiteFade = mWhiteFade.getValue().floatValue();
         if (whiteFade != 0.0f) {
-            Color color = pRenderResult.getColor();
-            Color actual = KColor.fade(color, Color.WHITE, whiteFade);
+            final Color color = pRenderResult.getColor();
+            final Color actual = KColor.fade(color, Color.WHITE, whiteFade);
             pRenderResult.setColor(actual);
         }
     }

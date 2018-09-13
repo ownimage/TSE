@@ -24,7 +24,7 @@ public class HSplitLayout extends ViewableBase<IViewable, IView> {
 
     @Override
     public IView createView() {
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }

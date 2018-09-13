@@ -90,31 +90,31 @@ public class Cubic {
 	 *                (unchecked exception) Thrown if <TT>a</TT> is 0; in other
 	 *                words, the coefficients do not represent a cubic equation.
 	 */
-	public void solve(double a, double b, double c, double d) {
+    public void solve(double a, double b, double c, final double d) {
 		// Verify preconditions.
 		if (a == 0.0) {
 			throw new DomainException("Cubic.solve(): a = 0");
 		}
 
 		// Normalize coefficients.
-		double denom = a;
+        final double denom = a;
 		a = b / denom;
 		b = c / denom;
 		c = d / denom;
 
 		// Commence solution.
-		double a_over_3 = a / 3.0;
-		double Q = (3 * b - a * a) / 9.0;
-		double Q_CUBE = Q * Q * Q;
-		double R = (9 * a * b - 27 * c - 2 * a * a * a) / 54.0;
-		double R_SQR = R * R;
-		double D = Q_CUBE + R_SQR;
+        final double a_over_3 = a / 3.0;
+        final double Q = (3 * b - a * a) / 9.0;
+        final double Q_CUBE = Q * Q * Q;
+        final double R = (9 * a * b - 27 * c - 2 * a * a * a) / 54.0;
+        final double R_SQR = R * R;
+        final double D = Q_CUBE + R_SQR;
 
 		if (D < 0.0) {
 			// Three unequal real roots.
 			nRoots = 3;
-			double theta = Math.acos(R / Math.sqrt(-Q_CUBE));
-			double SQRT_Q = Math.sqrt(-Q);
+            final double theta = Math.acos(R / Math.sqrt(-Q_CUBE));
+            final double SQRT_Q = Math.sqrt(-Q);
 			x1 = 2.0 * SQRT_Q * Math.cos(theta / 3.0) - a_over_3;
 			x2 = 2.0 * SQRT_Q * Math.cos((theta + TWO_PI) / 3.0) - a_over_3;
 			x3 = 2.0 * SQRT_Q * Math.cos((theta + FOUR_PI) / 3.0) - a_over_3;
@@ -122,16 +122,16 @@ public class Cubic {
 		} else if (D > 0.0) {
 			// One real root.
 			nRoots = 1;
-			double SQRT_D = Math.sqrt(D);
-			double S = Math.cbrt(R + SQRT_D);
-			double T = Math.cbrt(R - SQRT_D);
+            final double SQRT_D = Math.sqrt(D);
+            final double S = Math.cbrt(R + SQRT_D);
+            final double T = Math.cbrt(R - SQRT_D);
 			x1 = (S + T) - a_over_3;
 			x2 = Double.NaN;
 			x3 = Double.NaN;
 		} else {
 			// Three real roots, at least two equal.
 			nRoots = 3;
-			double CBRT_R = Math.cbrt(R);
+            final double CBRT_R = Math.cbrt(R);
 			x1 = 2 * CBRT_R - a_over_3;
 			x2 = x3 = CBRT_R - a_over_3;
 			sortRoots();
@@ -145,17 +145,17 @@ public class Cubic {
 	 */
 	private void sortRoots() {
 		if (x1 < x2) {
-			double tmp = x1;
+            final double tmp = x1;
 			x1 = x2;
 			x2 = tmp;
 		}
 		if (x2 < x3) {
-			double tmp = x2;
+            final double tmp = x2;
 			x2 = x3;
 			x3 = tmp;
 		}
 		if (x1 < x2) {
-			double tmp = x1;
+            final double tmp = x1;
 			x1 = x2;
 			x2 = tmp;
 		}
@@ -168,14 +168,14 @@ public class Cubic {
 	 * <P>
 	 * Usage: java Cubic <I>a</I> <I>b</I> <I>c</I> <I>d</I>
 	 */
-	public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
 		if (args.length != 4)
 			usage();
-		double a = Double.parseDouble(args[0]);
-		double b = Double.parseDouble(args[1]);
-		double c = Double.parseDouble(args[2]);
-		double d = Double.parseDouble(args[3]);
-		Cubic cubic = new Cubic();
+        final double a = Double.parseDouble(args[0]);
+        final double b = Double.parseDouble(args[1]);
+        final double c = Double.parseDouble(args[2]);
+        final double d = Double.parseDouble(args[3]);
+        final Cubic cubic = new Cubic();
 		cubic.solve(a, b, c, d);
 		System.out.println("x1 = " + cubic.x1);
 		if (cubic.nRoots == 3) {

@@ -18,9 +18,9 @@ public class ApplicationEventQueue {
 
     public final static Logger mLogger = Framework.getLogger();
 
-    private BlockingQueue<IAction> mUIEventQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<IAction> mUIEventQueue = new LinkedBlockingQueue<>();
 
-    private static ApplicationEventQueue mInstance = new ApplicationEventQueue();
+    private static final ApplicationEventQueue mInstance = new ApplicationEventQueue();
 
     public ApplicationEventQueue() {
         startEventQueue();
@@ -30,7 +30,7 @@ public class ApplicationEventQueue {
         return mInstance;
     }
 
-    public void queueEvent(IAction pAction) {
+    public void queueEvent(final IAction pAction) {
         mUIEventQueue.offer(pAction);
         mLogger.fine(() -> String.format("#adding mUIEventQueue.size() = %s", mUIEventQueue.size()));
     }
@@ -38,14 +38,14 @@ public class ApplicationEventQueue {
     private void processEventQueue() {
         while (true) {
             try {
-                IAction action = mUIEventQueue.poll(10, TimeUnit.SECONDS);
+                final IAction action = mUIEventQueue.poll(10, TimeUnit.SECONDS);
                 if (action != null) {
                     mLogger.fine(() -> String.format("removing mUIEventQueue.size() = %s", mUIEventQueue.size()));
                     action.performAction();
                 } else {
                     mLogger.fine(() -> "is alive: " + Thread.currentThread());
                 }
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 mLogger.info("Queue generatedAction");
                 mLogger.fine(() -> FrameworkLogger.throwableToString(e));
             }

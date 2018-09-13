@@ -35,7 +35,7 @@ public class GrafittiHelper {
 
     public void drawFilledRectangle(final Point pBottomLeft, final Point pTopRight,
                                     final Color pColor) {
-        Rectangle r = new Rectangle(pBottomLeft, pTopRight);
+        final Rectangle r = new Rectangle(pBottomLeft, pTopRight);
         drawFilledRectangle(r, pColor);
     }
 
@@ -115,7 +115,7 @@ public class GrafittiHelper {
 
     public void drawRectangle(final Point pBottomLeft, final Point pTopRight, final Color pColor,
                               final boolean pDashed) {
-        Rectangle r = new Rectangle(pBottomLeft, pTopRight);
+        final Rectangle r = new Rectangle(pBottomLeft, pTopRight);
         drawRectangle(r, pColor, pDashed);
     }
 
@@ -134,8 +134,8 @@ public class GrafittiHelper {
     public void drawSlider(final double pValue, final Orientation pOrientation, final double pPosn,
                            final Color pColor,
                            final boolean pDashed) {
-        double width = 0.02d;
-        double height = 0.01d;
+        final double width = 0.02d;
+        final double height = 0.01d;
         if (pOrientation == Orientation.Horizontal) {
             drawHorizontalLine(pPosn, pColor, pDashed);
             drawFilledRectangle(pValue - height, pPosn - width, pValue + height, pPosn + width,
@@ -183,7 +183,7 @@ public class GrafittiHelper {
 
     public void drawVerticalLineWithLabel(final DoubleControl pControl, final Color pColor,
                                           final boolean pDashed) {
-        double x = pControl.getNormalizedValue();
+        final double x = pControl.getNormalizedValue();
         drawVerticalLine(x, pColor, pDashed);
         drawString(pControl, x, 0);
     }

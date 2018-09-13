@@ -41,7 +41,7 @@ public class ContainerList implements IContainerList {
 
     @Override
     public ISingleSelectView createView() {
-        ISingleSelectView view = ViewFactory.getInstance().createView(this);
+        final ISingleSelectView view = ViewFactory.getInstance().createView(this);
         mViews.addListener(view);
         return view;
     }
@@ -74,8 +74,8 @@ public class ContainerList implements IContainerList {
     }
 
     @Override
-    public void setSelectedIndex(IContainer pContainer) {
-        int index = mContainers.indexOf(pContainer);
+    public void setSelectedIndex(final IContainer pContainer) {
+        final int index = mContainers.indexOf(pContainer);
         if (index >= 0) {
             setSelectedIndex(index);
             return;

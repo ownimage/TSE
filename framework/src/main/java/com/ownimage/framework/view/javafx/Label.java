@@ -23,7 +23,7 @@ public class Label extends javafx.scene.control.Label implements ChangeListener<
         maxWidthProperty().bind(getFactory().labelWidthProperty);
         minWidthProperty().bind(getFactory().labelWidthProperty);
 
-        int rightPadding = getFactory().labelRightPaddingProperty.intValue();
+        final int rightPadding = getFactory().labelRightPaddingProperty.intValue();
         changed(getFactory().labelRightPaddingProperty, 0, rightPadding);
         getFactory().labelRightPaddingProperty.addListener(this);
 

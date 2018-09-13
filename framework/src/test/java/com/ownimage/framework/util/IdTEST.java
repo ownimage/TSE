@@ -24,9 +24,9 @@ public class IdTEST {
     // Test allows space in name
     @Test
     public void Id_0_00() {
-        Id id1 = new Id("test");
-        Id id2 = new Id("test");
-        Id id3 = new Id("test2");
+        final Id id1 = new Id("test");
+        final Id id2 = new Id("test");
+        final Id id3 = new Id("test2");
 
         assertFalse("not same", id1 == id2);
         assertFalse("not equal", id1.equals(id2));

@@ -15,10 +15,10 @@ public class MutableMap2D<T> {
 
     private final int mWidth;
     private final int mHeight;
-    private Object[][] mData;
+    private final Object[][] mData;
 
 
-    public MutableMap2D(int pX, int pY, T pDefaultValue) {
+    public MutableMap2D(final int pX, final int pY, final T pDefaultValue) {
         Framework.checkParameterGreaterThan(mLogger, pX, 0, "pX");
         Framework.checkParameterGreaterThan(mLogger, pY, 0, "pY");
 
@@ -28,12 +28,12 @@ public class MutableMap2D<T> {
         new Range2D(pX, pY).forEach((x, y) -> mData[x][y] = pDefaultValue);
     }
 
-    public T get(int pX, int pY) {
+    public T get(final int pX, final int pY) {
         checkXY(pX, pY);
         return (T) mData[pX][pY];
     }
 
-    public MutableMap2D set(int pX, int pY, T pValue) {
+    public MutableMap2D set(final int pX, final int pY, final T pValue) {
         checkXY(pX, pY);
         mData[pX][pY] = pValue;
         return this;
@@ -43,7 +43,7 @@ public class MutableMap2D<T> {
         return this;
     }
 
-    private void checkXY(int pX, int pY) {
+    private void checkXY(final int pX, final int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
         Framework.checkParameterLessThan(mLogger, pX, mWidth, "pX");

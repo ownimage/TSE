@@ -46,7 +46,7 @@ public class ObjectStringMetaType extends ObjectMetaType<String> {
     @Override
     public String fromString(final String pString) {
         Framework.logEntry(mLogger);
-        String string;
+        final String string;
 
         if (mAllowUserDefinedValue) {
             string = pString;
@@ -64,7 +64,7 @@ public class ObjectStringMetaType extends ObjectMetaType<String> {
     @Override
     public boolean isValid(final String pValue) {
         Framework.logEntry(mLogger);
-        boolean valid = mAllowUserDefinedValue || mVals.contains(pValue);
+        final boolean valid = mAllowUserDefinedValue || mVals.contains(pValue);
         return valid;
     }
 

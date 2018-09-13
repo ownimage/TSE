@@ -15,8 +15,8 @@ public class SplitTimer {
     private static Date mPrevious = new Date();
 
     public static void split(final String pMessage) {
-        Date now = new Date();
-        float miliseconds = now.getTime() - mPrevious.getTime();
+        final Date now = new Date();
+        final float miliseconds = now.getTime() - mPrevious.getTime();
         mLogger.info(() -> miliseconds + " " + now + " " + pMessage);
         mPrevious = now;
     }

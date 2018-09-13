@@ -100,7 +100,7 @@ public class PixelChain implements Serializable, Cloneable {
      * @param pPixelMap the pixelMap
      * @param pOtherChain the other chain
      */
-    private void add(PixelMap pPixelMap, final PixelChain pOtherChain) {
+    private void add(final PixelMap pPixelMap, final PixelChain pOtherChain) {
         validate("add");
         pOtherChain.validate("add pOtherChain");
         mLogger.fine(() -> String.format("this.mPixels.size() = %s", mPixels.size()));
@@ -168,8 +168,8 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
 
-    void approximate(IPixelMapTransformSource pTransformSource) {
-        double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+    void approximate(final IPixelMapTransformSource pTransformSource) {
+        final double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
         mSegments = new Vector<>();
         approximate01_straightLines(tolerance);
         approximate02_refineCorners();
@@ -187,7 +187,7 @@ public class PixelChain implements Serializable, Cloneable {
             return;
         }
 
-        IVertex startVertex = Vertex.createVertex(this, 0, 0);
+        final IVertex startVertex = Vertex.createVertex(this, 0, 0);
         setStartVertex(startVertex);
 
         int maxIndex = 0;
@@ -197,9 +197,9 @@ public class PixelChain implements Serializable, Cloneable {
         int endIndex = 1;
 
         while (endIndex < mPixels.size()) {
-            int vertexIndex = mVertexes.size();
+            final int vertexIndex = mVertexes.size();
             mVertexes.add(null);
-            int segmentIndex = mSegments.size();
+            final int segmentIndex = mSegments.size();
             mSegments.add(null);
 
             for (int index = endIndex; index < mPixels.size(); index++) {
@@ -229,9 +229,9 @@ public class PixelChain implements Serializable, Cloneable {
         for (final ISegment segment : mSegments) {
             if (segment == mSegments.lastElement()) return;
 
-            int firstSegmentIndex = segment.getSegmentIndex();
-            int secondSegmentIndex = firstSegmentIndex + 1;
-            int midVertexIndex = secondSegmentIndex;
+            final int firstSegmentIndex = segment.getSegmentIndex();
+            final int secondSegmentIndex = firstSegmentIndex + 1;
+            final int midVertexIndex = secondSegmentIndex;
 
             IVertex midVertex = getVertex(midVertexIndex);
             ISegment firstSegment = segment;
@@ -454,19 +454,19 @@ public class PixelChain implements Serializable, Cloneable {
 
     }
 
-    PixelChain indexSegments(PixelMap pPixelMap) {
+    PixelChain indexSegments(final PixelMap pPixelMap) {
         try {
-            PixelChain pixelChainClone = (PixelChain) clone();
+            final PixelChain pixelChainClone = (PixelChain) clone();
             double startPosition = 0.0d;
             for (final ISegment segment : pixelChainClone.mSegments) {
-                ISegment segmentClone = segment.withStartPosition(pixelChainClone, startPosition);
+                final ISegment segmentClone = segment.withStartPosition(pixelChainClone, startPosition);
                 pPixelMap.index(pixelChainClone, segmentClone);
                 pixelChainClone.mSegments.set(segment.getSegmentIndex(), segmentClone);
                 startPosition += segment.getLength(pixelChainClone);
             }
             pixelChainClone.setLength(startPosition);
             return pixelChainClone;
-        } catch (CloneNotSupportedException pCNSE) {
+        } catch (final CloneNotSupportedException pCNSE) {
             throw new RuntimeException("Clone not supported", pCNSE);
         }
     }
@@ -506,7 +506,7 @@ public class PixelChain implements Serializable, Cloneable {
      * @param pOtherChain the other chain
      * @param pNode       the node
      */
-    void merge(PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
+    void merge(final PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
         if (!(getStartNode() == pNode || getEndNode() == pNode) || !(pOtherChain.getStartNode() == pNode || pOtherChain.getEndNode() == pNode)) {
             throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
         }
@@ -526,12 +526,12 @@ public class PixelChain implements Serializable, Cloneable {
         add(pPixelMap, pOtherChain);
     }
 
-    private void refine(IPixelMapTransformSource pSource) {
+    private void refine(final IPixelMapTransformSource pSource) {
         refine01_matchCurves(pSource);
         refine03_matchDoubleCurves(pSource);
     }
 
-    private void refine01_matchCurves(IPixelMapTransformSource pSource) {
+    private void refine01_matchCurves(final IPixelMapTransformSource pSource) {
 
         if (mSegments.size() == 1) {
             return;
@@ -627,18 +627,18 @@ public class PixelChain implements Serializable, Cloneable {
                 try {
                     // // method 1 - looking at blending the gradients
                     try {
-                        Line startTangent = currentSegment.getStartVertex(this).calcTangent(this);
-                        Line endTangent = currentSegment.getEndVertex(this).calcTangent(this);
+                        final Line startTangent = currentSegment.getStartVertex(this).calcTangent(this);
+                        final Line endTangent = currentSegment.getEndVertex(this).calcTangent(this);
 
                         if (startTangent != null && endTangent != null) {
                             Point p1 = startTangent.intersect(endTangent);
                             if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
-                                Line newStartTangent = new Line(p1, currentSegment.getStartVertex(this).getUHVWPoint(this));
-                                Line newEndTangent = new Line(p1, currentSegment.getEndVertex(this).getUHVWPoint(this));
+                                final Line newStartTangent = new Line(p1, currentSegment.getStartVertex(this).getUHVWPoint(this));
+                                final Line newEndTangent = new Line(p1, currentSegment.getEndVertex(this).getUHVWPoint(this));
                                 p1 = newStartTangent.intersect(newEndTangent);
                                 // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
                                 final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(this, currentSegment.getSegmentIndex(), p1);
-                                double candidateError = candidateSegment.calcError(this);
+                                final double candidateError = candidateSegment.calcError(this);
 
                                 if (isValid(candidateSegment) && candidateError < lowestError) {
                                     lowestError = candidateError;
@@ -647,7 +647,7 @@ public class PixelChain implements Serializable, Cloneable {
                                 // }
                             }
                         }
-                    } catch (Throwable pT) {
+                    } catch (final Throwable pT) {
                         mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                     } finally {
                         mSegments.set(currentSegment.getSegmentIndex(), bestSegment);
@@ -662,7 +662,7 @@ public class PixelChain implements Serializable, Cloneable {
         validate("refine01_matchCurves");
     }
 
-    private Line getDCStartTangent(ISegment pSegment) {
+    private Line getDCStartTangent(final ISegment pSegment) {
         if (pSegment == null) {
             throw new IllegalArgumentException("Segment must not be null.");
         }
@@ -675,7 +675,7 @@ public class PixelChain implements Serializable, Cloneable {
         return startVertex.calcTangent(this);
     }
 
-    private Line getDCEndTangent(ISegment pSegment) {
+    private Line getDCEndTangent(final ISegment pSegment) {
         if (pSegment == null) {
             throw new IllegalArgumentException("Segment must not be null.");
         }
@@ -690,14 +690,14 @@ public class PixelChain implements Serializable, Cloneable {
 
 
     private PixelChain copy() {
-        PixelChain copy = new PixelChain(mStartNode);
+        final PixelChain copy = new PixelChain(mStartNode);
         copy.mEndNode = mEndNode;
         copy.mPixels = mPixels;
         copy.mThickness = mThickness;
         return copy;
     }
 
-    private void refine03_matchDoubleCurves(IPixelMapTransformSource pSource) {
+    private void refine03_matchDoubleCurves(final IPixelMapTransformSource pSource) {
         if (mSegments.size() == 1) return;
         for (final ISegment currentSegment : mSegments) {
             if (currentSegment instanceof CurveSegment) continue;
@@ -720,24 +720,24 @@ public class PixelChain implements Serializable, Cloneable {
                     for (int i = 1; i < currentSegment.getPixelLength(this) - 1; i++) { // first and last pixel will throw an error and are equivalent to the straight line
                         final Vertex midVertex = Vertex.createVertex(this, mVertexes.size(), startVertex.getPixelIndex() + i);
 
-                        Point closestStart = startTangent.closestPoint(midVertex.getUHVWPoint(this));
-                        Line startLine = new Line(startVertex.getUHVWPoint(this), closestStart);
+                        final Point closestStart = startTangent.closestPoint(midVertex.getUHVWPoint(this));
+                        final Line startLine = new Line(startVertex.getUHVWPoint(this), closestStart);
 
-                        Point closestEnd = endTangent.closestPoint(midVertex.getUHVWPoint(this));
-                        Line endLine = new Line(endVertex.getUHVWPoint(this), closestEnd);
+                        final Point closestEnd = endTangent.closestPoint(midVertex.getUHVWPoint(this));
+                        final Line endLine = new Line(endVertex.getUHVWPoint(this), closestEnd);
                         // should check that lambdas are the correct sign
 
                         for (double sigma = 0.3d; sigma < 0.7d; sigma += 0.1d) {
                             try {
                                 // try from start
-                                Point p1 = startLine.getPoint(sigma);
-                                Point p2 = new Line(p1, midVertex.getUHVWPoint(this)).intersect(endLine);
+                                final Point p1 = startLine.getPoint(sigma);
+                                final Point p2 = new Line(p1, midVertex.getUHVWPoint(this)).intersect(endLine);
                                 if (p2 != null) {
-                                    double closestLambda = endLine.closestLambda(p2);
+                                    final double closestLambda = endLine.closestLambda(p2);
 
                                     if (closestLambda > 0.1d && closestLambda < 1.2d) {
 
-                                        ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
+                                        final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
                                         mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
                                         if (isValid(candidateCurve)) {
                                             final double candidateError = candidateCurve.calcError(this);
@@ -754,13 +754,13 @@ public class PixelChain implements Serializable, Cloneable {
 
                             // try from end
                             try {
-                                Point p2 = endLine.getPoint(sigma);
-                                Point p1 = new Line(p2, midVertex.getUHVWPoint(this)).intersect(startLine);
-                                double closestLambda = startLine.closestLambda(p2);
+                                final Point p2 = endLine.getPoint(sigma);
+                                final Point p1 = new Line(p2, midVertex.getUHVWPoint(this)).intersect(startLine);
+                                final double closestLambda = startLine.closestLambda(p2);
 
                                 if (p1 != null && 0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
 
-                                    ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
+                                    final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
                                     mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
                                     if (isValid(candidateCurve)) {
                                         final double candidateError = candidateCurve.calcError(this);
@@ -803,7 +803,7 @@ public class PixelChain implements Serializable, Cloneable {
         final int maxPixelIndex = mPixels.size() - 1;
 
         Collections.reverse(mPixels);
-        Vector<IVertex> vertexes = new Vector<>();
+        final Vector<IVertex> vertexes = new Vector<>();
         final Vector<ISegment> stnemges = new Vector<>();
 
         for (int i = mVertexes.size() - 1; i >= 0; i--) {
@@ -903,7 +903,7 @@ public class PixelChain implements Serializable, Cloneable {
         return sb.toString();
     }
 
-    void validate(String pMethodName) {
+    void validate(final String pMethodName) {
         try {
             if (getStartVertex().getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
@@ -959,20 +959,20 @@ public class PixelChain implements Serializable, Cloneable {
                 if (mVertexes.lastElement().getEndSegment(this) != null) throw new RuntimeException("wrong end vertex");
             }
             for (int i = 0; i < mVertexes.size(); i++) {
-                IVertex v = mVertexes.get(i);
+                final IVertex v = mVertexes.get(i);
                 if (i != 0 && v.getStartSegment(this) != mSegments.get(i - 1))
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 if (i != mVertexes.size() - 1 && v.getEndSegment(this) != mSegments.get(i))
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
             }
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             printVertexs();
             throw pT;
         }
     }
 
     private void printVertexs() {
-        StringBuilder sb = new StringBuilder()
+        final StringBuilder sb = new StringBuilder()
                 .append(String.format("mVertexes.size() = %s, mSegments.size() = %s", mVertexes.size(), mSegments.size()))
                 .append("\nArrray\n");
 
@@ -998,18 +998,18 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.size();
     }
 
-    ISegment getSegment(int i) {
+    ISegment getSegment(final int i) {
         if (mSegments.size() <= i || i < 0) return null;
         return mSegments.get(i);
     }
 
-    public IVertex getVertex(int i) {
+    public IVertex getVertex(final int i) {
         if (mVertexes.size() <= i || i < 0) return null;
         return mVertexes.get(i);
     }
 
-    void setInChain(boolean pValue) {
-        for (Pixel pixel : mPixels) {
+    void setInChain(final boolean pValue) {
+        for (final Pixel pixel : mPixels) {
             pixel.setInChain(pValue);
         }
     }
@@ -1025,13 +1025,13 @@ public class PixelChain implements Serializable, Cloneable {
                 .forEach(p -> p.setEdge(false));
     }
 
-    void setVisited(boolean pValue) {
-        for (Pixel pixel : mPixels) {
+    void setVisited(final boolean pValue) {
+        for (final Pixel pixel : mPixels) {
             pixel.setVisited(pValue);
         }
     }
 
-    public void delete(PixelMap pPixelMap) {
+    public void delete(final PixelMap pPixelMap) {
         pPixelMap.removePixelChain(this);
         setInChain(false);
         setVisited(false);

@@ -22,11 +22,11 @@ public class FXPerception extends AppControlView {
 
         FXViewFactory.setAsViewFactory();
 
-        Perception app = Services.getServices().getPerception();
+        final Perception app = Services.getServices().getPerception();
         setAppControl(app);
         launch(pArgs);
 
-        Image applicationIcon = new Image(app.getClass().getResourceAsStream("/icon/tse2.png"));
+        final Image applicationIcon = new Image(app.getClass().getResourceAsStream("/icon/tse2.png"));
         getAppControlView().setApplicationIcon(applicationIcon);
 
         app.fileOpen((new File("NY2.jpg")));

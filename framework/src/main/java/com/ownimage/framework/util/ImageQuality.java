@@ -7,9 +7,9 @@ package com.ownimage.framework.util;
 
 public class ImageQuality {
 
-    private float mJPGQuality;
+    private final float mJPGQuality;
 
-    public ImageQuality(float pJPGQuality) {
+    public ImageQuality(final float pJPGQuality) {
         mJPGQuality = pJPGQuality;
     }
 

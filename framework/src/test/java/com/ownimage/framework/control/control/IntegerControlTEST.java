@@ -303,8 +303,8 @@ public class IntegerControlTEST {
 
     @Before
     public void setUp() throws Exception {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
         mContainer = new Container("x", "x", mUndoRedoBufferSource);
     }

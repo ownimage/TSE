@@ -26,11 +26,11 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         mSegmentIndex = pSegmentIndex;
     }
 
-    protected void setSegmentIndex(int pSegmentIndex) {
+    protected void setSegmentIndex(final int pSegmentIndex) {
         mSegmentIndex = pSegmentIndex;
     }
 
-    protected void setStartPosition(double pStartPosition) {
+    protected void setStartPosition(final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
@@ -56,7 +56,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return mSegmentIndex;
     }
 
-    public boolean closerThan(PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
@@ -74,44 +74,44 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public int getEndIndex(PixelChain pPixelChain) {
+    public int getEndIndex(final PixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex + 1).getPixelIndex();
     }
 
     @Override
-    public Line getEndTangent(PixelChain pPixelChain) {
+    public Line getEndTangent(final PixelChain pPixelChain) {
         return new Line(getEndUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain).add(getEndTangentVector(pPixelChain)));
     }
 
     @Override
-    public Point getEndUHVWPoint(PixelChain pPixelChain) {
+    public Point getEndUHVWPoint(final PixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getUHVWPoint(pPixelChain);
     }
 
     @Override
-    public IVertex getEndVertex(PixelChain pPixelChain) {
+    public IVertex getEndVertex(final PixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
-    public double getMaxX(PixelChain pPixelChain) {
+    public double getMaxX(final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMaxY(PixelChain pPixelChain) {
+    public double getMaxY(final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinX(PixelChain pPixelChain) {
+    public double getMinX(final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinY(PixelChain pPixelChain) {
+    public double getMinY(final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getPixelLength(PixelChain pPixelChain) {
-        int length;
+    public int getPixelLength(final PixelChain pPixelChain) {
+        final int length;
 
         if (getStartIndex(pPixelChain) == 0) {
             length = 1 + getEndIndex(pPixelChain);
@@ -123,7 +123,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public int getStartIndex(PixelChain pPixelChain) {
+    public int getStartIndex(final PixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPixelIndex();
     }
 
@@ -132,22 +132,22 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public Line getStartTangent(PixelChain pPixelChain) {
+    public Line getStartTangent(final PixelChain pPixelChain) {
         return new Line(getStartUHVWPoint(pPixelChain), getStartUHVWPoint(pPixelChain).add(getStartTangentVector(pPixelChain)));
     }
 
     @Override
-    public Point getStartUHVWPoint(PixelChain pPixelChain) {
+    public Point getStartUHVWPoint(final PixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getUHVWPoint(pPixelChain);
     }
 
     @Override
-    public IVertex getStartVertex(PixelChain pPixelChain) {
+    public IVertex getStartVertex(final PixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex);
     }
 
     @Override
-    public void graffiti(PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
         pGraphics.grafittiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
     }
 
@@ -161,7 +161,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return true;
     }
 
-    protected void setStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+    protected void setStartPosition(final PixelChain pPixelChain, final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
@@ -171,25 +171,25 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public T withSegmentIndex(int pSegmentIndex) {
+    public T withSegmentIndex(final int pSegmentIndex) {
         if (pSegmentIndex == mSegmentIndex) return (T) this;
         try {
-            T clone = (T) clone();
+            final T clone = (T) clone();
             clone.setSegmentIndex(pSegmentIndex);
             return (T) this;
-        } catch (CloneNotSupportedException pCNSE) {
+        } catch (final CloneNotSupportedException pCNSE) {
             throw new RuntimeException("Cannot clone", pCNSE);
         }
     }
 
     @Override
-    public T withStartPosition(PixelChain pPixelChain, final double pStartPosition) {
+    public T withStartPosition(final PixelChain pPixelChain, final double pStartPosition) {
         if (pStartPosition == mStartPosition) return (T) this;
         try {
-            T clone = (T) clone();
+            final T clone = (T) clone();
             clone.setStartPosition(pPixelChain, pStartPosition);
             return clone;
-        } catch (CloneNotSupportedException pCNSE) {
+        } catch (final CloneNotSupportedException pCNSE) {
             throw new RuntimeException("Cannot clone", pCNSE);
         }
     }

@@ -48,7 +48,7 @@ public class Rectangle implements Serializable {
 		if (this == obj) { return true; }
 		if (obj == null) { return false; }
 		if (getClass() != obj.getClass()) { return false; }
-		Rectangle other = (Rectangle) obj;
+        final Rectangle other = (Rectangle) obj;
 		if (Double.doubleToLongBits(mX1) != Double.doubleToLongBits(other.mX1)) { return false; }
 		if (Double.doubleToLongBits(mX2) != Double.doubleToLongBits(other.mX2)) { return false; }
 		if (Double.doubleToLongBits(mY1) != Double.doubleToLongBits(other.mY1)) { return false; }

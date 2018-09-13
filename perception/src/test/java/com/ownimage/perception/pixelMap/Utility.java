@@ -9,18 +9,18 @@ public class Utility {
         return createMap(map, null);
     }
 
-    public static PixelMap createMap(final String[] map, IPixelMapTransformSource transformSource) {
-        PixelMap pixelMap = new PixelMap(map[0].length(), map.length, true, transformSource);
+    public static PixelMap createMap(final String[] map, final IPixelMapTransformSource transformSource) {
+        final PixelMap pixelMap = new PixelMap(map[0].length(), map.length, true, transformSource);
         setMap(pixelMap, map);
         return pixelMap;
     }
 
     public static String[] getMap(final PixelMap pixelMap) {
-        String[] map = new String[pixelMap.getHeight()];
+        final String[] map = new String[pixelMap.getHeight()];
         for (int y = 0; y < pixelMap.getHeight(); y++) {
-            StringBuffer row = new StringBuffer();
+            final StringBuffer row = new StringBuffer();
             for (int x = 0; x < pixelMap.getWidth(); x++) {
-                Pixel p = pixelMap.getPixelAt(x, y);
+                final Pixel p = pixelMap.getPixelAt(x, y);
                 if (p.isNode()) row.append("N");
                 else if (p.isEdge()) row.append("E");
                 else row.append(" ");
@@ -34,7 +34,7 @@ public class Utility {
         if (map.length != pixelMap.getHeight())
             throw new IllegalArgumentException("map.length != pixelMap.getHeight()");
         int y = 0;
-        for (String string : map) {
+        for (final String string : map) {
             if (string.length() != pixelMap.getWidth())
                 throw new IllegalArgumentException("string.length() != pixelMap.getWidth() with:" + string + ", y=" + y);
             for (int x = 0; x < string.length(); x++) {
@@ -62,14 +62,14 @@ public class Utility {
      * @param expected
      * @param actual
      */
-    public static void assertMapEquals(String[] expected, String[] actual) {
+    public static void assertMapEquals(final String[] expected, final String[] actual) {
         if (expected == null) fail("a must not be null");
         if (actual == null) fail("b must not be null");
         if (expected.length != actual.length) fail("a and b must be the same size");
         if (expected.length == 0) return;
-        int len = expected[0].length();
-        StringBuffer expectedBuffer = new StringBuffer();
-        StringBuffer actualBuffer = new StringBuffer();
+        final int len = expected[0].length();
+        final StringBuffer expectedBuffer = new StringBuffer();
+        final StringBuffer actualBuffer = new StringBuffer();
         for (int i = 0; i < expected.length; i++) {
             if (expected[i].contains("\n")) fail("a contains newline in string " + i);
             if (actual[i].contains("\n")) fail("b contains newline in string " + i);

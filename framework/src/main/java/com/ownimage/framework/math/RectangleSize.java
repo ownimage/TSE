@@ -13,8 +13,8 @@ import java.util.Objects;
 public class RectangleSize {
 
 
-    private int mWidth;
-    private int mHeight;
+    private final int mWidth;
+    private final int mHeight;
 
     public RectangleSize(final int pWidth, final int pHeight) {
         this.mWidth = pWidth;
@@ -51,7 +51,7 @@ public class RectangleSize {
         return Objects.hash(mWidth, mHeight);
     }
 
-    public RectangleSize scaleToSquare(int pSize) {
+    public RectangleSize scaleToSquare(final int pSize) {
         if (mWidth >= mHeight) {
             return new RectangleSize(pSize, mHeight * pSize / mWidth);
         } else {

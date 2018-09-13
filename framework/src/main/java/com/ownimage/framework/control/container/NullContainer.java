@@ -37,7 +37,7 @@ public class NullContainer implements IContainer {
     }
 
     @Override
-    public void addContainer(IContainer pChild, boolean pListenForEvents) {
+    public void addContainer(final IContainer pChild, final boolean pListenForEvents) {
         mContainer.addContainer(pChild, pListenForEvents);
     }
 

@@ -64,8 +64,8 @@ public class PolarCoordinates {
      * @return the polar coordinate
      */
     public RTheta getPolarCoordinate(final Point pPoint) {
-        Point delta = pPoint.minus(mCentre);
-        double r = delta.length() / mScale;
+        final Point delta = pPoint.minus(mCentre);
+        final double r = delta.length() / mScale;
 
         double theta = Math.atan(delta.getX() / delta.getY());
         if (delta.getY() < 0) {

@@ -187,7 +187,7 @@ public class KMath {
      * @return the modulus
      */
     public static int mod(final int x, final int y) {
-        int result = x % y;
+        final int result = x % y;
         return result < 0 ? result + y : result;
     }
 

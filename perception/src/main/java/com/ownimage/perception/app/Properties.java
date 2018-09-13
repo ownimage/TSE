@@ -97,17 +97,17 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     @Override
     public IView createView() {
-        NamedTabs view = new NamedTabs("Properties", "properties");
+        final NamedTabs view = new NamedTabs("Properties", "properties");
 
-        VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
-        VFlowLayout sizes = new VFlowLayout(mPreviewSize, mSavePreviewSize);
-        VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
+        final VFlowLayout defaults = new VFlowLayout(mUseDefaultPropertyFile, mUseDefaultLoggingFile, mAutoLoadTransformFile);
+        final VFlowLayout sizes = new VFlowLayout(mPreviewSize, mSavePreviewSize);
+        final VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
 
-        NamedTabs transformsTab = new NamedTabs("Transforms", "transforms");
+        final NamedTabs transformsTab = new NamedTabs("Transforms", "transforms");
         transformsTab.addTab("CannyEdge", new VFlowLayout(mCETEPMDPreviewSize, mCETEPMDZoom, mCETEPMDEdgeColor, mCETEPMDNodeColor));
 
-        VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
-        VFlowLayout output = new VFlowLayout(mJPGQuality);
+        final VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
+        final VFlowLayout output = new VFlowLayout(mJPGQuality);
 
         view.addTab("Defaults", defaults);
         view.addTab("Sizes", sizes);
@@ -277,22 +277,22 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     }
 
     public void write(final File pFile, final String pComment) {
-        try (FileOutputStream fos = new FileOutputStream(pFile)) {
-            PersistDB db = new PersistDB();
+        try (final FileOutputStream fos = new FileOutputStream(pFile)) {
+            final PersistDB db = new PersistDB();
             write(db, "");
             db.store(fos, pComment);
 
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             throw new FrameworkException(this, Level.SEVERE, "Unable to write properties", pT);
         }
     }
 
     public void reset() {
         try {
-            PersistDB db = new PersistDB();
+            final PersistDB db = new PersistDB();
             new Properties().write(db, "");
             read(db, "");
-        } catch (Throwable pT) {
+        } catch (final Throwable pT) {
             throw new FrameworkException(this, Level.SEVERE, "Unable to reset properties", pT);
         }
     }

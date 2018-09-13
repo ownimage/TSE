@@ -77,21 +77,21 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     private UIEvent createMouseEvent(final EventType pEventType, final MouseEvent pME) {
-        int width = mControl.getValue().getWidth();
-        int height = mControl.getValue().getHeight();
-        int x = (int) pME.getX();
-        int y = (int) (height - pME.getY());
-        UIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
+        final int width = mControl.getValue().getWidth();
+        final int height = mControl.getValue().getHeight();
+        final int x = (int) pME.getX();
+        final int y = (int) (height - pME.getY());
+        final UIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
         return event;
     }
 
     private UIEvent createScrollEvent(final ScrollEvent pSE) {
-        int width = mControl.getValue().getWidth();
-        int height = mControl.getValue().getHeight();
-        int x = (int) pSE.getX();
-        int y = (int) (height - pSE.getY());
-        int scroll = (int) Math.signum(pSE.getDeltaY());
-        UIEvent event = UIEvent.createMouseScrollEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
+        final int width = mControl.getValue().getWidth();
+        final int height = mControl.getValue().getHeight();
+        final int x = (int) pSE.getX();
+        final int y = (int) (height - pSE.getY());
+        final int scroll = (int) Math.signum(pSE.getDeltaY());
+        final UIEvent event = UIEvent.createMouseScrollEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
         return event;
     }
 
@@ -106,12 +106,12 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
             if (pME.getClickCount() == 1) {
                 mLogger.finest("createMouseEvent Click");
-                UIEvent event = createMouseEvent(EventType.Click, pME);
+                final UIEvent event = createMouseEvent(EventType.Click, pME);
                 queueApplicationEvent(() -> mControl.uiEvent(event));
             }
             if (pME.getClickCount() == 2) {
                 mLogger.finest("createMouseEvent DoubleClick");
-                UIEvent event = createMouseEvent(EventType.DoubleClick, pME);
+                final UIEvent event = createMouseEvent(EventType.DoubleClick, pME);
                 queueApplicationEvent(() -> mControl.uiEvent(event));
             }
         }
@@ -119,27 +119,27 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private void mouseDraggedEvent(final MouseEvent pME) {
         Framework.logEntry(mLogger);
-        UIEvent event = createMouseEvent(EventType.Drag, pME);
+        final UIEvent event = createMouseEvent(EventType.Drag, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mousePressedEvent(final MouseEvent pME) {
-        UIEvent event = createMouseEvent(EventType.MouseDown, pME);
+        final UIEvent event = createMouseEvent(EventType.MouseDown, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseReleasedEvent(final MouseEvent pME) {
-        UIEvent event = createMouseEvent(EventType.MouseUp, pME);
+        final UIEvent event = createMouseEvent(EventType.MouseUp, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseMovedEvent(final MouseEvent pME) {
-        UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
+        final UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     @Override
-    public void drawGrafitti(Consumer<IGrafittiImp> pGrafitti) {
+    public void drawGrafitti(final Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> {
             mGrafittiContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
             pGrafitti.accept(mGrafittiImp);
@@ -147,7 +147,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     @Override
-    public void drawCursor(Consumer<IGrafittiImp> pGrafitti) {
+    public void drawCursor(final Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> {
             mCursorContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
             pGrafitti.accept(mCursorImp);
@@ -155,7 +155,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     @Override
-    public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti) {
+    public void updateGrafitti(final Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> pGrafitti.accept(mGrafittiImp));
     }
 
@@ -172,26 +172,26 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private void scrollEvent(final ScrollEvent pSE) {
         Framework.logEntry(mLogger);
-        UIEvent event = createScrollEvent(pSE);
+        final UIEvent event = createScrollEvent(pSE);
         queueApplicationEvent(() -> mControl.uiEvent(event));
         Framework.logExit(mLogger);
     }
 
     private void updatePicture() {
-        BufferedImage bufferedImage = mControl.getValue().getBufferedImage();
+        final BufferedImage bufferedImage = mControl.getValue().getBufferedImage();
         mImage = SwingFXUtils.toFXImage(bufferedImage, null);
 
-        ImageView imageView = new ImageView();
+        final ImageView imageView = new ImageView();
         imageView.setImage(mImage);
 
-        double width = mImage.getWidth();
-        double height = mImage.getHeight();
+        final double width = mImage.getWidth();
+        final double height = mImage.getHeight();
 
-        Canvas grafittiCanvas = new Canvas(width, height);
+        final Canvas grafittiCanvas = new Canvas(width, height);
         mGrafittiContext = grafittiCanvas.getGraphicsContext2D();
         mGrafittiImp = new GrafittiImp(mGrafittiContext, width, height);
 
-        Canvas cursorCanvas = new Canvas(width, height);
+        final Canvas cursorCanvas = new Canvas(width, height);
         mCursorContext = cursorCanvas.getGraphicsContext2D();
         mCursorImp = new GrafittiImp(mCursorContext, width, height);
 

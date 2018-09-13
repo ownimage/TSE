@@ -25,7 +25,7 @@ public class RotateTransform extends BaseTransform {
     public static enum Rotate {
         Free(0.0d), None(0.0d), CCW(0.75d), CW(0.25d), By180(0.5d);
 
-        private double m01;
+        private final double m01;
 
         private Rotate(final double p01) {
             m01 = p01;
@@ -131,7 +131,7 @@ public class RotateTransform extends BaseTransform {
     }
 
     private void pointRotate(final ITransformResult pRenderResult) {
-        Point in = new Point(pRenderResult.getX(), pRenderResult.getY());
+        final Point in = new Point(pRenderResult.getX(), pRenderResult.getY());
         Point delta = in.minus(Point.Point0505);
         if (mExtend) {
             delta = delta.multiply(mScale);

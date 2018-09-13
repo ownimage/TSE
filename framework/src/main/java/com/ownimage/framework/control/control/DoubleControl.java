@@ -56,7 +56,7 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
 
     @Override
     public IView createView() {
-        IDoubleView view = ViewFactory.getInstance().createView(this);
+        final IDoubleView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -68,13 +68,13 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
 
     @Override
     public boolean setNormalizedValue(final double pNormalizedValue) {
-        DoubleMetaType metaType = getMetaType();
+        final DoubleMetaType metaType = getMetaType();
 
         if (metaType == null) {
             throw new IllegalStateException("Cannot setNormalizedValue for an IntegerControl that does not have an IntegerMetaType.");
         }
 
-        Double value = metaType.getValueForNormalizedValue(pNormalizedValue);
+        final Double value = metaType.getValueForNormalizedValue(pNormalizedValue);
         setValue(value);
         return true;
     }
@@ -100,7 +100,7 @@ public class DoubleControl extends ControlBase<DoubleControl, DoubleType, Double
                     mDisplayType = DoubleMetaType.DisplayType.valueOf(value);
                 }
             }
-        } catch (RuntimeException pRE) {
+        } catch (final RuntimeException pRE) {
             mLogger.severe(String.format("ERROR in getting displayType for %s, value read is %s", pId, value));
         }
     }

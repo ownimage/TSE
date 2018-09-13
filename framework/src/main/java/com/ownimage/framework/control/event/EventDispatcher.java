@@ -67,10 +67,10 @@ public class EventDispatcher<L> {
 
     public void removeListener(final L pListener) {
         // using the iterator model as it prevents concurrent modification exceptions
-        Iterator<WeakReference<L>> listenerIterator = mListeners.iterator();
+        final Iterator<WeakReference<L>> listenerIterator = mListeners.iterator();
         while (listenerIterator.hasNext()) {
-            WeakReference<L> listenerRef = listenerIterator.next();
-            L listener = listenerRef.get();
+            final WeakReference<L> listenerRef = listenerIterator.next();
+            final L listener = listenerRef.get();
             if (listener == null || listener == pListener) {
                 listenerIterator.remove();
             }

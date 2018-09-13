@@ -17,7 +17,7 @@ public class SegmentGrafittiHelper implements ISegmentGrafittiHelper {
     final GrafittiHelper mGrafittiHelper;
     final Function<Point, Point> mTranslate;
 
-    public SegmentGrafittiHelper(GrafittiHelper pGrafittiHelper, Function<Point, Point> pTranslate) {
+    public SegmentGrafittiHelper(final GrafittiHelper pGrafittiHelper, final Function<Point, Point> pTranslate) {
         mGrafittiHelper = pGrafittiHelper;
         mTranslate = pTranslate;
     }
@@ -28,7 +28,7 @@ public class SegmentGrafittiHelper implements ISegmentGrafittiHelper {
     }
 
     @Override
-    public void grafittLine(final Point p1, final Point p2, Color pColor) {
+    public void grafittLine(final Point p1, final Point p2, final Color pColor) {
         mGrafittiHelper.drawLine(mTranslate.apply(p1), mTranslate.apply(p2), pColor);
     }
 

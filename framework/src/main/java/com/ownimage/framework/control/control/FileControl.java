@@ -44,14 +44,14 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
 
     @Override
     public IView createView() { // TODO can we push this into the base class
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
 
     public synchronized File getFile() {
         if (mFile == null) {
-            String file = getValue();
+            final String file = getValue();
             mFile = file != null ? new File(file) : null;
         }
         return mFile;

@@ -46,21 +46,21 @@ public class Quadrilateral {
     private double distance(final LineSegment pAB, final LineSegment pDC, final Point pPoint, final boolean pParallel) {
         double u = 0.0d;
 
-        Vector abNormal = pAB.getNormal();
-        double a = pAB.getA().toVector().dot(abNormal);
-        double b = pDC.getA().toVector().dot(abNormal);
+        final Vector abNormal = pAB.getNormal();
+        final double a = pAB.getA().toVector().dot(abNormal);
+        final double b = pDC.getA().toVector().dot(abNormal);
         if (pParallel || pAB.isParallel(pDC)) { // parallel
-            double p = pPoint.toVector().dot(abNormal);
+            final double p = pPoint.toVector().dot(abNormal);
             u = (p - a) / (b - a);
         } else { // need intersection method
-            Point intersect1 = pAB.intersect(pDC);
-            Line line = new Line(intersect1, pPoint);
+            final Point intersect1 = pAB.intersect(pDC);
+            final Line line = new Line(intersect1, pPoint);
             if (line.isParallel(pAB)) {
                 u = 0.0d;
             } else {
-                Line ad = new Line(pAB.getA(), pDC.getA());
-                Point intersect2 = line.intersect(ad);
-                double p = intersect2.toVector().dot(abNormal);
+                final Line ad = new Line(pAB.getA(), pDC.getA());
+                final Point intersect2 = line.intersect(ad);
+                final double p = intersect2.toVector().dot(abNormal);
                 u = (p - a) / (b - a);
             }
         }
@@ -68,21 +68,21 @@ public class Quadrilateral {
     }
 
     public Point mapFromQuadrilateral(final Quadrilateral mFromQuad, final Point pPoint) {
-        Point interim = mFromQuad.mapToUnitSquare(pPoint);
-        Point rv = mapFromUnitSquare(interim);
+        final Point interim = mFromQuad.mapToUnitSquare(pPoint);
+        final Point rv = mapFromUnitSquare(interim);
         return rv;
     }
 
     public Point mapFromUnitSquare(final Point pPoint) {
-        Point bottom = mAB.getPoint(pPoint.getX());
-        Point top = mDC.getPoint(pPoint.getX());
-        LineSegment vertical = new LineSegment(bottom, top);
+        final Point bottom = mAB.getPoint(pPoint.getX());
+        final Point top = mDC.getPoint(pPoint.getX());
+        final LineSegment vertical = new LineSegment(bottom, top);
         return vertical.getPoint(pPoint.getY());
     }
 
     public Point mapToQuadrilateral(final Quadrilateral mToQuad, final Point pPoint) {
-        Point interim = mapToUnitSquare(pPoint);
-        Point rv = mToQuad.mapFromUnitSquare(interim);
+        final Point interim = mapToUnitSquare(pPoint);
+        final Point rv = mToQuad.mapFromUnitSquare(interim);
         return rv;
     }
 
@@ -97,8 +97,8 @@ public class Quadrilateral {
     }
 
     public Point mapToUnitSquare(final Point pPoint, final boolean pParallel) {
-        double u = distance(mAD, mBC, pPoint, pParallel);
-        double v = distance(mAB, mDC, pPoint, pParallel);
+        final double u = distance(mAD, mBC, pPoint, pParallel);
+        final double v = distance(mAB, mDC, pPoint, pParallel);
         return new Point(u, v);
     }
 

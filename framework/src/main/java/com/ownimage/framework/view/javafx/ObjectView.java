@@ -29,15 +29,15 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
     public final static Logger mLogger = Framework.getLogger();
 
     private final HBox mUI;
-    private ComboBox<Object> mCombobox;
+    private final ComboBox<Object> mCombobox;
     private boolean mAllowUpdates = true;
 
     public ObjectView(final ObjectControl pObjectControl) {
         super(pObjectControl);
 
-        ObjectMetaType<?> meta = mControl.getMetaType();
-        ObservableList<Object> items = FXCollections.observableArrayList(meta.getAllowedValues());
-        FilteredList<Object> filteredItems = new FilteredList<>(items, p -> true);
+        final ObjectMetaType<?> meta = mControl.getMetaType();
+        final ObservableList<Object> items = FXCollections.observableArrayList(meta.getAllowedValues());
+        final FilteredList<Object> filteredItems = new FilteredList<>(items, p -> true);
 
         mCombobox = new ComboBox<>();
         mCombobox.setEditable(meta.isFilterable());
@@ -52,7 +52,7 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
                     mLogger.log(Level.FINEST, "runLater newValue = " + pNewValue);
                     if (selected == null || !selected.equals(editor.getText())) {
                         filteredItems.setPredicate(item -> {
-                            String itemString = meta.getString(item);
+                            final String itemString = meta.getString(item);
                             return itemString.toUpperCase().contains(pNewValue.toUpperCase());
                         });
                     }
@@ -64,14 +64,14 @@ public class ObjectView extends ViewBase<ObjectControl<?>> {
             @Override
             public Object fromString(final String pString) {
                 mLogger.fine(() -> "fromString pString = " + pString);
-                Object value = meta.fromString(pString);
+                final Object value = meta.fromString(pString);
                 return value;
             }
 
             @Override
             public String toString(final Object pObject) {
                 mLogger.finest(() -> "toString pObject = " + pObject);
-                String string = (pObject != null) ? meta.getString(pObject) : "";
+                final String string = (pObject != null) ? meta.getString(pObject) : "";
                 mLogger.finest(() -> "toString return = " + pObject);
                 return string;
             }

@@ -168,7 +168,7 @@ public class RuleOfThirdsTransform extends BaseTransform {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
-        Point point = pRenderResult.getPoint();
+        final Point point = pRenderResult.getPoint();
 
         // Map mX
         double xLowerThird = 0.0d;

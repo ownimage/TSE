@@ -82,9 +82,9 @@ public class QuadraticEquation {
 
 	public synchronized Root solve() {
 		if (mRoot == null) {
-			double sqrt = Math.sqrt(mB * mB - 4.0d * mA * mC);
-			double upper = (-mB + sqrt) / (2.0d * mA);
-			double lower = (-mB - sqrt) / (2.0d * mA);
+            final double sqrt = Math.sqrt(mB * mB - 4.0d * mA * mC);
+            final double upper = (-mB + sqrt) / (2.0d * mA);
+            final double lower = (-mB - sqrt) / (2.0d * mA);
 			mRoot = new Root(upper, lower);
 		}
 		return mRoot;

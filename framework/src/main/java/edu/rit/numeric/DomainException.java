@@ -31,7 +31,7 @@ public class DomainException extends NumericRuntimeException {
 	 * @param message
 	 *            Detail message.
 	 */
-	public DomainException(String message) {
+    public DomainException(final String message) {
 		super(message);
 	}
 
@@ -42,7 +42,7 @@ public class DomainException extends NumericRuntimeException {
 	 * @param cause
 	 *            Cause.
 	 */
-	public DomainException(Throwable cause) {
+    public DomainException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -50,7 +50,7 @@ public class DomainException extends NumericRuntimeException {
 	 * Construct a new domain exception with the given detail message and the
 	 * given cause.
 	 */
-	public DomainException(String message, Throwable cause) {
+    public DomainException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 }

@@ -22,7 +22,7 @@ public class ObjectType<R> extends TypeBase<ObjectMetaType<R>, R> {
 
     @Override
     public void setString(final String pValue) {
-        ObjectMetaType<R> meta = getMetaModel();
+        final ObjectMetaType<R> meta = getMetaModel();
         if (meta != null) {
             meta.setString(this, pValue);
         }

@@ -30,18 +30,18 @@ public interface IAppControlView {
         };
 
         public static class Builder {
-            private DialogOptions mDialogOptions = new DialogOptions();
+            private final DialogOptions mDialogOptions = new DialogOptions();
 
             private Builder() {
             }
 
             public DialogOptions build() {
-                DialogOptions dialogOptions = new DialogOptions();
+                final DialogOptions dialogOptions = new DialogOptions();
                 dialogOptions.mCompleteFunction = mDialogOptions.mCompleteFunction;
                 return dialogOptions;
             }
 
-            public Builder withCompleteFunction(IAction pCompleteFunciton) {
+            public Builder withCompleteFunction(final IAction pCompleteFunciton) {
                 Framework.checkParameterNotNull(mLogger, pCompleteFunciton, "pCompleteFunction");
                 mDialogOptions.mCompleteFunction = pCompleteFunciton;
                 return this;

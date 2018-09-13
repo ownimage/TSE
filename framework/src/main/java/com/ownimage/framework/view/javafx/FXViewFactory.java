@@ -24,7 +24,7 @@ import java.util.Vector;
 
 public class FXViewFactory implements IViewFactory {
 
-    private static FXViewFactory mFXViewFactory = new FXViewFactory();
+    private static final FXViewFactory mFXViewFactory = new FXViewFactory();
 
     private final Vector<IControlChangeListener<?>> mListeners = new Vector<>();
 
@@ -218,7 +218,7 @@ public class FXViewFactory implements IViewFactory {
 
     @Override
     public void showDialog(final FileControl pFileControl) {
-        AppControlView app = AppControlView.getInstance();
+        final AppControlView app = AppControlView.getInstance();
         app.showDialog(pFileControl);
     }
 

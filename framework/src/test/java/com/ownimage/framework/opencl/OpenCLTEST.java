@@ -7,9 +7,9 @@ public class OpenCLTEST {
 
     class TestKernel extends Kernel {
 
-        private double[] pResult = new double[10000];
-        private double[] pAdd = new double[1];
-        private double[] pMul = new double[1];
+        private final double[] pResult = new double[10000];
+        private final double[] pAdd = new double[1];
+        private final double[] pMul = new double[1];
 
         public TestKernel() {
             super();
@@ -30,7 +30,7 @@ public class OpenCLTEST {
             // TODO pResult[i] = MultiplyTEST.mul(pMul, pResult[i]);
         }
 
-        public void print(int i) {
+        public void print(final int i) {
             System.out.println("pResult[" + i + "]=" + pResult[i]);
         }
 
@@ -41,7 +41,7 @@ public class OpenCLTEST {
 
     @Test
     public void openCL_test01() {
-        TestKernel kernel = new TestKernel();
+        final TestKernel kernel = new TestKernel();
         kernel.execute(10000);
         System.out.println("ExecutionMode:" + kernel.getExecutionMode());
         kernel.get();

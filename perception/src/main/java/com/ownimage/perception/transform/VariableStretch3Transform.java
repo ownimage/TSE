@@ -220,8 +220,8 @@ public class VariableStretch3Transform extends BaseTransform implements IControl
         try {
             final boolean valid = mHighControl.getValidateValue() > mLowControl.getValidateValue();
             return valid;
-        } catch (Throwable pt) {
-            int a = 1;
+        } catch (final Throwable pt) {
+            final int a = 1;
             return false;
         }
     }

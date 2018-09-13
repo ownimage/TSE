@@ -30,26 +30,26 @@ public class ImmutableLayerMap2D<T> {
         private WeakReference<Object> mOwner;
         private final Collection<WeakReference<Map2DLayer>> mHigherLayers = new Vector<>();
 
-        private Map2DLayer(Map2DLayer pDown) {
+        private Map2DLayer(final Map2DLayer pDown) {
             mLowerLayer = pDown;
             mAllLayers.add(new WeakReference<>(this));
         }
 
-        private T get(Long pKey) {
+        private T get(final Long pKey) {
             synchronized (Map2DLayer.this) {
-                T layerValue = mChanges.get(pKey);
+                final T layerValue = mChanges.get(pKey);
                 if (layerValue != null) return layerValue;
                 if (mLowerLayer != null) return mLowerLayer.get(pKey);
                 return mDefaultValue;
             }
         }
 
-        private ImmutableMap2D set(Long key, T pValue) {
+        private ImmutableMap2D set(final Long key, final T pValue) {
             synchronized (Map2DLayer.this) {
-                T existingValue = get(key);
+                final T existingValue = get(key);
                 if (Objects.equals(existingValue, pValue)) return getImmutable();
-                Map2DLayer layer = new Map2DLayer(this);
-                ImmutableMap2D version = new ImmutableMap2D(layer);
+                final Map2DLayer layer = new Map2DLayer(this);
+                final ImmutableMap2D version = new ImmutableMap2D(layer);
                 layer.setOwner(version);
                 layer.mChanges.put(key, pValue);
                 addHigherLayer(layer);
@@ -58,15 +58,15 @@ public class ImmutableLayerMap2D<T> {
         }
 
         private Map2D getMap2D() {
-            Map2DLayer layer = new Map2DLayer(this);
-            Map2D map = new Map2D(layer);
+            final Map2DLayer layer = new Map2DLayer(this);
+            final Map2D map = new Map2D(layer);
             layer.setOwner(map);
             return map;
         }
 
-        private void modify(Long key, T pValue) {
+        private void modify(final Long key, final T pValue) {
             synchronized (Map2DLayer.this) {
-                T lowerValue = mLowerLayer == null ? mDefaultValue : mLowerLayer.get(key);
+                final T lowerValue = mLowerLayer == null ? mDefaultValue : mLowerLayer.get(key);
                 if (Objects.equals(pValue, lowerValue))
                     mChanges.remove(key);
                 else mChanges.put(key, pValue);
@@ -86,12 +86,12 @@ public class ImmutableLayerMap2D<T> {
             return version;
         }
 
-        private void addHigherLayer(Map2DLayer pLayer) {
+        private void addHigherLayer(final Map2DLayer pLayer) {
             if (pLayer == null) return;
             mHigherLayers.add(new WeakReference<>(pLayer));
         }
 
-        private void removeHigherLayer(Map2DLayer pLayer) {
+        private void removeHigherLayer(final Map2DLayer pLayer) {
             mHigherLayers.removeIf(l -> l.get() == pLayer);
         }
 
@@ -105,12 +105,12 @@ public class ImmutableLayerMap2D<T> {
             }
         }
 
-        private int layerCount(int pCount) {
+        private int layerCount(final int pCount) {
             if (mLowerLayer == null) return pCount;
             return mLowerLayer.layerCount(pCount + 1);
         }
 
-        private void setOwner(Object pOwner) {
+        private void setOwner(final Object pOwner) {
             mOwner = new WeakReference<>(pOwner);
         }
 
@@ -126,7 +126,7 @@ public class ImmutableLayerMap2D<T> {
             mHigherLayers.removeIf(l -> l.get() == null);
         }
 
-        private void compress(boolean pCompressAll) {
+        private void compress(final boolean pCompressAll) {
             // TODO what option to choose when there is a split above
             // option 1 do not compress ... means longer access time
             // option 2 compress up ... means more space
@@ -155,20 +155,20 @@ public class ImmutableLayerMap2D<T> {
 
         final Map2DLayer mLayer;
 
-        private ImmutableMap2D(Map2DLayer pLayer) {
+        private ImmutableMap2D(final Map2DLayer pLayer) {
             mLayer = pLayer;
         }
 
-        public T get(int pX, int pY) {
+        public T get(final int pX, final int pY) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            final Long key = generateKey(pX, pY);
             mLayer.compress(true);
             return mLayer.get(key);
         }
 
-        public ImmutableMap2D set(int pX, int pY, T pValue) {
+        public ImmutableMap2D set(final int pX, final int pY, final T pValue) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            final Long key = generateKey(pX, pY);
             mLayer.compress(true);
             return mLayer.set(key, pValue);
         }
@@ -194,31 +194,31 @@ public class ImmutableLayerMap2D<T> {
     public class Map2D {
         Map2DLayer mLayer;
 
-        private Map2D(Map2DLayer pLayer) {
+        private Map2D(final Map2DLayer pLayer) {
             mLayer = pLayer;
         }
 
-        public T get(int pX, int pY) {
+        public T get(final int pX, final int pY) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            final Long key = generateKey(pX, pY);
             return mLayer.get(key);
         }
 
-        public Map2D set(int pX, int pY, T pValue) {
+        public Map2D set(final int pX, final int pY, final T pValue) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            final Long key = generateKey(pX, pY);
             mLayer.modify(key, pValue);
             return this;
         }
 
         public ImmutableMap2D getImmutable() {
-            Map2DLayer existingLayer = mLayer;
+            final Map2DLayer existingLayer = mLayer;
 
-            Map2DLayer upperLayer = new Map2DLayer(mLayer);
+            final Map2DLayer upperLayer = new Map2DLayer(mLayer);
             upperLayer.setOwner(this);
             mLayer = upperLayer;
 
-            ImmutableMap2D immutable = new ImmutableMap2D(existingLayer);
+            final ImmutableMap2D immutable = new ImmutableMap2D(existingLayer);
             existingLayer.setOwner(immutable);
 
             return immutable;
@@ -235,7 +235,7 @@ public class ImmutableLayerMap2D<T> {
 
     }
 
-    public ImmutableLayerMap2D(int pX, int pY, T pDefaultValue) {
+    public ImmutableLayerMap2D(final int pX, final int pY, final T pDefaultValue) {
         Framework.checkParameterGreaterThan(mLogger, pX, 0, "pX");
         Framework.checkParameterGreaterThan(mLogger, pY, 0, "pY");
 
@@ -245,27 +245,27 @@ public class ImmutableLayerMap2D<T> {
     }
 
     public ImmutableMap2D getImmutable() {
-        Map2DLayer layer = new Map2DLayer(null);
-        ImmutableMap2D immutable = new ImmutableMap2D(layer);
+        final Map2DLayer layer = new Map2DLayer(null);
+        final ImmutableMap2D immutable = new ImmutableMap2D(layer);
         layer.setOwner(immutable);
         return immutable;
     }
 
     public Map2D getMutable() {
-        Map2DLayer layer = new Map2DLayer(null);
-        Map2D map = new Map2D(layer);
+        final Map2DLayer layer = new Map2DLayer(null);
+        final Map2D map = new Map2D(layer);
         layer.setOwner(map);
         return map;
     }
 
-    private void checkXY(int pX, int pY) {
+    private void checkXY(final int pX, final int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
         Framework.checkParameterLessThan(mLogger, pX, mWidth, "pX");
         Framework.checkParameterLessThan(mLogger, pY, mHeight, "pY");
     }
 
-    private HashMap<Long, T> merge(HashMap<Long, T> pChanges, HashMap<Long, T> pLowerChanges, Map2DLayer pBeyondLower) {
+    private HashMap<Long, T> merge(final HashMap<Long, T> pChanges, final HashMap<Long, T> pLowerChanges, final Map2DLayer pBeyondLower) {
         return (pChanges.size() >= pLowerChanges.size())
                 ? mergeUp(pChanges, pLowerChanges, pBeyondLower)
                 : mergeDown(pChanges, pLowerChanges, pBeyondLower);
@@ -280,11 +280,11 @@ public class ImmutableLayerMap2D<T> {
      * @param pBeyondLower  the layer below which is needed to check for redundant changes
      * @return the pChanges object
      */
-    private HashMap<Long, T> mergeUp(HashMap<Long, T> pChanges, HashMap<Long, T> pLowerChanges, Map2DLayer pBeyondLower) {
+    private HashMap<Long, T> mergeUp(final HashMap<Long, T> pChanges, final HashMap<Long, T> pLowerChanges, final Map2DLayer pBeyondLower) {
         mLogger.finest("MERGE UP");
         pLowerChanges.forEach((k, v) -> {
-            T layerValue = pChanges.get(k);
-            T beyondLowerValue = pBeyondLower == null ? mDefaultValue : pBeyondLower.get(k);
+            final T layerValue = pChanges.get(k);
+            final T beyondLowerValue = pBeyondLower == null ? mDefaultValue : pBeyondLower.get(k);
             if (Objects.equals(layerValue, beyondLowerValue)) pChanges.remove(k);
             else pChanges.putIfAbsent(k, v);
 
@@ -301,11 +301,11 @@ public class ImmutableLayerMap2D<T> {
      * @param pBeyondLower  the layer below which is needed to check for redundant changes
      * @return the pLowerChanges object
      */
-    private HashMap<Long, T> mergeDown(HashMap<Long, T> pChanges, HashMap<Long, T> pLowerChanges, Map2DLayer pBeyondLower) {
+    private HashMap<Long, T> mergeDown(final HashMap<Long, T> pChanges, final HashMap<Long, T> pLowerChanges, final Map2DLayer pBeyondLower) {
         mLogger.finest("MERGE DOWN");
         pChanges.forEach((k, v) -> {
-            T lowerValue = pLowerChanges.get(k);
-            T beyondLowerValue = pBeyondLower == null ? mDefaultValue : pBeyondLower.get(k);
+            final T lowerValue = pLowerChanges.get(k);
+            final T beyondLowerValue = pBeyondLower == null ? mDefaultValue : pBeyondLower.get(k);
             if (!Objects.equals(v, beyondLowerValue)) pLowerChanges.put(k, v);
             else if (lowerValue != null) pLowerChanges.remove(k);
         });
@@ -318,16 +318,16 @@ public class ImmutableLayerMap2D<T> {
 
     private void compressAll() {
         mAllLayers.removeIf(weak -> {
-            Map2DLayer layer = weak.get();
+            final Map2DLayer layer = weak.get();
             return layer == null || layer.mOwner.get() == null;
         });
         mAllLayers.forEach(weak -> {
-            Map2DLayer layer = weak.get();
+            final Map2DLayer layer = weak.get();
             if (layer != null) layer.compress(false);
         });
     }
 
-    private Long generateKey(int pX, int pY) {
+    private Long generateKey(final int pX, final int pY) {
         return (long) pX * mWidth + pY;
     }
 }

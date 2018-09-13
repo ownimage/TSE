@@ -334,7 +334,7 @@ public class DoubleControlTEST {
         final DoubleType t = new DoubleType(0.5);
         final DoubleControl d = new DoubleControl("x", "y", c, t);
 
-        double validateValue = 0.0d;
+        final double validateValue = 0.0d;
         class Validator implements IControlValidator {
 
             private double mValidateValue = 0.0d;
@@ -349,7 +349,7 @@ public class DoubleControlTEST {
                 return false;
             }
         }
-        Validator v = new Validator();
+        final Validator v = new Validator();
         c.addControlValidator(v);
         d.setValue(0.6d);
         assertEquals("validate value should be set", 0.6d, v.getValidateValue(), 0.0d);
@@ -366,8 +366,8 @@ public class DoubleControlTEST {
 
     @Before
     public void setUp() throws Exception {
-        IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
-        UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
+        final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
+        final UndoRedoBuffer undoRedoBuffer = mUndoRedoBufferSource.getUndoRedoBuffer();
 
         mContainer = new Container("x", "x", mUndoRedoBufferSource);
     }
@@ -378,8 +378,8 @@ public class DoubleControlTEST {
 
     @Test
     public void DoubleControl_Test05_setNormalizedValue() {
-        DoubleType v = new DoubleType(0.1, new DoubleMetaType(0.1d, 0.7d));
-        DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, v);
+        final DoubleType v = new DoubleType(0.1, new DoubleMetaType(0.1d, 0.7d));
+        final DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, v);
 
         //DoubleControl d = new DoubleControl(5.0, m);
 
@@ -404,8 +404,8 @@ public class DoubleControlTEST {
 
     @Test
     public void DoubleControl_Test06_getNormalizedValue() {
-        DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
-        DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.1, m);
+        final DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
+        final DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.1, m);
 
         d.setValue(0.1d);
         assertEquals(0.0d, d.getNormalizedValue(), 0.0d);
@@ -423,9 +423,9 @@ public class DoubleControlTEST {
 
     @Test
     public void DoubleControl_Test08_toString() {
-        DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
-        DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.3, m);
-        String expected = "DoubleControl:(value=0.1, min=0.1, max=0.7)";
+        final DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
+        final DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.3, m);
+        final String expected = "DoubleControl:(value=0.1, min=0.1, max=0.7)";
 
         d.setValue(0.1d);
         assertEquals(expected, d.toString());
@@ -433,7 +433,7 @@ public class DoubleControlTEST {
 
     @Test
     public void DoubleControl_Test09_MetaModel_isValid() {
-        DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
+        final DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
 
         assertEquals(true, m.isValid(0.1d));
         assertEquals(true, m.isValid(0.5d));
@@ -445,7 +445,7 @@ public class DoubleControlTEST {
 
     @Test
     public void DoubleControl_Test04_duplicate() throws CloneNotSupportedException {
-        DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
+        final DoubleMetaType m = new DoubleMetaType(0.1d, 0.7d);
         DoubleControl d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.7, m);
 
         assertSame("Check expected MetaModel", m, d.getMetaType());
@@ -466,7 +466,7 @@ public class DoubleControlTEST {
         d = new DoubleControl("DC", "dc", NullContainer.NullContainer, 0.1d, m);
         assertEquals("Expected restricted to 0.1", 0.1d, d.getValue(), 0.0d);
 
-        DoubleControl d3 = d.clone(NullContainer.NullContainer);
+        final DoubleControl d3 = d.clone(NullContainer.NullContainer);
         assertSame("Check expected MetaModel", m, d3.getMetaType());
         assertEquals(0.1d, d3.getValue(), 0.0d);
     }

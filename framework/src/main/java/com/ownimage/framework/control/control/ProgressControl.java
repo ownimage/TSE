@@ -67,7 +67,7 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
             throw new IllegalArgumentException("pContainer MUST not be null.");
         }
 
-        ProgressControl pc = new ProgressControl(getDisplayName(), getPropertyName(), pContainer);
+        final ProgressControl pc = new ProgressControl(getDisplayName(), getPropertyName(), pContainer);
         pc.setValue(getValue());
         pc.mCompleteAction = mCompleteAction;
         pc.mShowLabel = mShowLabel;
@@ -76,7 +76,7 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
 
     @Override
     public IView createView() {
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -88,19 +88,19 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
 
     @Override
     public boolean setNormalizedValue(final double pNormalizedValue) {
-        IntegerMetaType metaType = getMetaType();
+        final IntegerMetaType metaType = getMetaType();
 
         if (metaType == null) {
             throw new IllegalStateException("Cannot setNormalizedValue for an IntegerControl that does not have an IntegerMetaType.");
         }
 
-        Integer value = metaType.getValueForNormalizedValue(pNormalizedValue);
+        final Integer value = metaType.getValueForNormalizedValue(pNormalizedValue);
         setValue(value);
         return true;
     }
 
     @Override
-    public void setProgress(String pProgressString, int pPercent) {
+    public void setProgress(final String pProgressString, final int pPercent) {
         Framework.logEntry(mLogger);
         Framework.logParams(Framework.mLogger, "pProgressString,pPercent", pProgressString, pPercent);
         mStarted = true;

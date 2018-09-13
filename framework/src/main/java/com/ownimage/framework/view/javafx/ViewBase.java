@@ -44,17 +44,17 @@ public class ViewBase<C extends IViewable> implements FXView {
     }
 
 
-    protected void runOnFXApplicationThread(Runnable pRunnable) {
+    protected void runOnFXApplicationThread(final Runnable pRunnable) {
         if (Platform.isFxApplicationThread()) pRunnable.run();
         else Platform.runLater(pRunnable);
     }
 
     public static Image getImage(final String pName) {
-        URL url = pName.getClass().getResource(pName);
-        try (InputStream stream = url.openStream()) {
-            Image image = new Image(stream);
+        final URL url = pName.getClass().getResource(pName);
+        try (final InputStream stream = url.openStream()) {
+            final Image image = new Image(stream);
             return image;
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             mLogger.severe("Unable to getImage for " + pName);
             Framework.logThrowable(mLogger, Level.SEVERE, ioe);
         }

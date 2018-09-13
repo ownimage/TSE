@@ -51,7 +51,7 @@ public class PolarTransform extends BaseTransform {
 
     @Override
     public void transform(final ITransformResult pRenderResult) {
-        Point in = new Point(pRenderResult.getX(), pRenderResult.getY());
+        final Point in = new Point(pRenderResult.getX(), pRenderResult.getY());
 
         double fx = 0;
         double fy = 0;

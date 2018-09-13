@@ -43,7 +43,7 @@ public class JTPBatchEngine extends BaseBatchEngine {
                     try {
                         terminated = mForkJoinPool.awaitTermination(10, TimeUnit.MILLISECONDS);
                         mLogger.severe("Still waiting");
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         mLogger.log(Level.SEVERE, "Waiting", e);
                     }
                 }
@@ -56,7 +56,7 @@ public class JTPBatchEngine extends BaseBatchEngine {
     }
 
     @Override
-    public synchronized void next(final TransformResultBatch pBatch, int pOverSample) {
+    public synchronized void next(final TransformResultBatch pBatch, final int pOverSample) {
         super.next(pBatch, pOverSample);
     }
 

@@ -62,7 +62,7 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
     }
 
     private void checkUniqueContainerPropertyName(final String pPropertyName) {
-        boolean exists = mTabNames.contains(pPropertyName);
+        final boolean exists = mTabNames.contains(pPropertyName);
         if (exists) {
             throw new IllegalArgumentException("pPropertyName = " + pPropertyName + ", already exists for a IContainer in this NamedTabs collection.");
         }
@@ -70,7 +70,7 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
 
     @Override
     public ISingleSelectView createView() {
-        ISingleSelectView view = ViewFactory.getInstance().createView(this);
+        final ISingleSelectView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }

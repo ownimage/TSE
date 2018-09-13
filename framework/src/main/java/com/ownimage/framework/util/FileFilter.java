@@ -15,24 +15,24 @@ public class FileFilter extends javax.swing.filechooser.FileFilter implements Fi
 
     public final static Logger mLogger = Framework.getLogger();
 
-    private Vector<String> mExtensions = new Vector<String>();
-    private boolean mAcceptDir;
+    private final Vector<String> mExtensions = new Vector<String>();
+    private final boolean mAcceptDir;
 
     public FileFilter() {
         this(true);
     }
 
-    public FileFilter(boolean pAcceptDir) {
+    public FileFilter(final boolean pAcceptDir) {
         mAcceptDir = pAcceptDir;
     }
 
     @Override
-    public boolean accept(File pFile) {
+    public boolean accept(final File pFile) {
         if (pFile.isDirectory()) {
             return mAcceptDir;
         }
 
-        String ext = getExtension(pFile);
+        final String ext = getExtension(pFile);
         return mExtensions.contains(ext);
     }
 
@@ -41,20 +41,20 @@ public class FileFilter extends javax.swing.filechooser.FileFilter implements Fi
         return mExtensions.toString();
     }
 
-    public void addExtension(String pExt) {
+    public void addExtension(final String pExt) {
         mExtensions.add(pExt.toLowerCase());
     }
 
-    public void addExtensions(String[] pExtensitons) {
-        for (String ext : pExtensitons) {
+    public void addExtensions(final String[] pExtensitons) {
+        for (final String ext : pExtensitons) {
             addExtension(ext);
         }
     }
 
-    public static String getExtension(File pFile) {
+    public static String getExtension(final File pFile) {
         String ext = null;
-        String s = pFile.getName();
-        int i = s.lastIndexOf('.');
+        final String s = pFile.getName();
+        final int i = s.lastIndexOf('.');
 
         if (i > 0 && i < s.length() - 1) {
             ext = s.substring(i + 1).toLowerCase();
@@ -63,7 +63,7 @@ public class FileFilter extends javax.swing.filechooser.FileFilter implements Fi
     }
 
     @Override
-    public boolean accept(File dir, String name) {
+    public boolean accept(final File dir, final String name) {
         return accept(new File(dir, name));
     }
 

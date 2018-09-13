@@ -96,8 +96,8 @@ public class Point implements Serializable {
 	}
 
 	public double distance(final Point pIn) {
-		Point delta = minus(pIn);
-		double distance = delta.length();
+        final Point delta = minus(pIn);
+        final double distance = delta.length();
 		return distance;
 	}
 
@@ -135,7 +135,7 @@ public class Point implements Serializable {
 	@Override
 	public boolean equals(final Object pObj) {
 		if (pObj instanceof Point) {
-			Point other = (Point) pObj;
+            final Point other = (Point) pObj;
 			return this.mX == other.mX && this.mY == other.mY;
 		}
 		return super.equals(pObj);
@@ -308,8 +308,8 @@ public class Point implements Serializable {
 	 * @return the point
 	 */
 	public Point rotate(final double pAngle) {
-		double x = getX() * Math.cos(pAngle) - getY() * Math.sin(pAngle);
-		double y = getY() * Math.cos(pAngle) + getX() * Math.sin(pAngle);
+        final double x = getX() * Math.cos(pAngle) - getY() * Math.sin(pAngle);
+        final double y = getY() * Math.cos(pAngle) + getX() * Math.sin(pAngle);
 		return new Point(x, y);
 	}
 

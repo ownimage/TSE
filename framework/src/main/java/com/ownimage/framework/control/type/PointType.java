@@ -48,9 +48,9 @@ public class PointType extends TypeBase<IMetaType<Point>, Point> {
      */
     @Override
     public void setString(final String pValue) {
-        String[] xy = pValue.split(",");
-        double x = Double.parseDouble(xy[0]);
-        double y = Double.parseDouble(xy[1]);
+        final String[] xy = pValue.split(",");
+        final double x = Double.parseDouble(xy[0]);
+        final double y = Double.parseDouble(xy[1]);
         mValue = new Point(x, y);
     }
 

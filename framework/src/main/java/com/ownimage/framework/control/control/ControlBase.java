@@ -133,7 +133,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
     }
 
     protected void createUndoRedoAction(final R pOldValue, final R pNewValue) {
-        IUndoRedoAction redo = new IUndoRedoAction() {
+        final IUndoRedoAction redo = new IUndoRedoAction() {
 
             private final boolean mOldDirtyFlag = isDirty();
 
@@ -379,7 +379,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pValue", pValue);
 
-        R originalValue = getValue();
+        final R originalValue = getValue();
 
         mValidateValue = pValue;
         boolean isValid = mEventDispatcher.fireControlValidate(this);
@@ -417,7 +417,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
      * @param pUndoEnabled whether this should participate or not
      * @return this control
      */
-    protected C setUndoEnabled(boolean pUndoEnabled) {
+    protected C setUndoEnabled(final boolean pUndoEnabled) {
         mUndoEnabled = pUndoEnabled;
         return (C) this;
     }
@@ -432,7 +432,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
 
     @Override
     public String toString() {
-        String className = this.getClass().getSimpleName();
+        final String className = this.getClass().getSimpleName();
 
         final StringBuffer buffer = new StringBuffer();
         buffer.append("{className:" + className);
@@ -465,27 +465,27 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
         }
     }
 
-    protected String getPrefix(String pId) {
+    protected String getPrefix(final String pId) {
         return pId == null || pId.length() == 0 ? "" : pId + ".";
     }
 
     @Override
-    public void addVisibileListener(IVisibileListener pListener) {
+    public void addVisibileListener(final IVisibileListener pListener) {
         mVisibilityDispatcher.addListener(pListener);
     }
 
     @Override
-    public void removeVisibleListener(IVisibileListener pListener) {
+    public void removeVisibleListener(final IVisibileListener pListener) {
         mVisibilityDispatcher.removeListener(pListener);
     }
 
     @Override
-    public void addEnabledListener(IEnabledListener pListener) {
+    public void addEnabledListener(final IEnabledListener pListener) {
         mEnabledDispatcher.addListener(pListener);
     }
 
     @Override
-    public void removeEnabledListener(IEnabledListener pListener) {
+    public void removeEnabledListener(final IEnabledListener pListener) {
         mEnabledDispatcher.removeListener(pListener);
     }
 }

@@ -16,8 +16,8 @@ public interface IUndoRedoBuffer {
         public void redo();
     }
 
-    default void add(String pDescription, Undo pUndo, Redo pRedo) {
-        IUndoRedoAction undoRedoAction = new IUndoRedoAction() {
+    default void add(final String pDescription, final Undo pUndo, final Redo pRedo) {
+        final IUndoRedoAction undoRedoAction = new IUndoRedoAction() {
             @Override
             public String getDescription() {
                 return pDescription;

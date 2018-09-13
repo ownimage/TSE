@@ -64,8 +64,8 @@ public class Vector extends Point {
      * @return the vector
      */
     public Vector normalize() {
-        double length = length();
-        Vector rv = divide(length).toVector();
+        final double length = length();
+        final Vector rv = divide(length).toVector();
         return rv;
     }
 

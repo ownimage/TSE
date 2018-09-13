@@ -28,11 +28,11 @@ public class VFlowView extends ViewBase<VFlowLayout> {
         mUI = new VBox();
         mUI.setPadding(new Insets(10, 0, 0, 0));
 
-        Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
+        final Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
         while (children.hasNext()) {
-            IViewable child = children.next();
+            final IViewable child = children.next();
 
-            HBox hbox = new HBox();
+            final HBox hbox = new HBox();
             hbox.setAlignment(Pos.TOP_LEFT);
             hbox.getChildren().add(((FXView) (child.createView())).getUI());
 

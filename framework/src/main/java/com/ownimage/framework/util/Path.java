@@ -17,10 +17,10 @@ public class Path {
     }
 
     public class Element {
-        private Point mPoint;
-        private Type mType;
+        private final Point mPoint;
+        private final Type mType;
 
-        public Element(Point pPoint, Type pType) {
+        public Element(final Point pPoint, final Type pType) {
             super();
             mPoint = pPoint;
             mType = pType;
@@ -44,26 +44,26 @@ public class Path {
 
     }
 
-    private Vector<Element> mPath = new Vector<Element>();
+    private final Vector<Element> mPath = new Vector<Element>();
 
     public Path() {
         moveTo(0.0d, 0.0d);
     }
 
-    public Path moveTo(double pX, double pY) {
+    public Path moveTo(final double pX, final double pY) {
         return moveTo(new Point(pX, pY));
     }
 
-    public Path moveTo(Point pPoint) {
+    public Path moveTo(final Point pPoint) {
         mPath.add(new Element(pPoint, Type.MoveTo));
         return this;
     }
 
-    public Path lineTo(double pX, double pY) {
+    public Path lineTo(final double pX, final double pY) {
         return lineTo(new Point(pX, pY));
     }
 
-    public Path lineTo(Point pPoint) {
+    public Path lineTo(final Point pPoint) {
         mPath.add(new Element(pPoint, Type.LineTo));
         return this;
     }

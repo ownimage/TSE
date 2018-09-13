@@ -26,9 +26,9 @@ public class NamedTabsView extends ViewBase<INamedTabs> implements ISingleSelect
         mUI = new TabPane();
         mUI.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-        for (String name : mControl.getTabNames()) {
+        for (final String name : mControl.getTabNames()) {
 
-            Tab tab = new Tab();
+            final Tab tab = new Tab();
             tab.setText(name);
             tab.setContent(((FXView) (mControl.getViewable(name).createView())).getUI());
 

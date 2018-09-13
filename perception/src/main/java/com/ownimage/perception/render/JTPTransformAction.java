@@ -46,13 +46,13 @@ public class JTPTransformAction extends RecursiveAction {
 
     private void doCompute() {
         for (int i = mStart; i < mStop; i++) {
-            ITransformResult result = mBatch.getTransformResult(i);
+            final ITransformResult result = mBatch.getTransformResult(i);
             mTransform.transform(result);
         }
     }
 
     private void doSplit() {
-        int half = (mStart + mStop) / 2;
+        final int half = (mStart + mStop) / 2;
         invokeAll(new JTPTransformAction(mTransform, mBatch, mThreadBatchSize, mStart, half), new JTPTransformAction(mTransform,
                                                                                                                      mBatch, mThreadBatchSize, half, mStop));
         // invokeAll(new JTPTransformAction(mTransform, mBatch, mThreadBatchSize, mStart, mStart + mThreadBatchSize),

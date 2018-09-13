@@ -45,7 +45,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private static int DEFAULT_SIZE = 200;
+    private static final int DEFAULT_SIZE = 200;
 
     private final CannyEdgeTransform mTransform;
     private final PictureControl mPreviewPicture;
@@ -116,7 +116,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     public ICannyEdgeDetector createCannyEdgeDetector(final CannyEdgeDetectorFactory.Type type) {
-        ICannyEdgeDetector detector = CannyEdgeDetectorFactory.createInstance(getTransform(), type);
+        final ICannyEdgeDetector detector = CannyEdgeDetectorFactory.createInstance(getTransform(), type);
         detector.setGaussianKernelRadius(mGaussianKernelRadius.getValue().floatValue());
         detector.setLowThreshold(mLowThreshold.getValue().floatValue() / 100.0f);
         detector.setHighThreshold(mHighThreshold.getValue().floatValue() / 100.0f);
@@ -127,8 +127,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     @Override
     public IView createView() {
-        HFlowLayout hflow = new HFlowLayout(mPreviewContainer, mControlContainer);
-        IView view = ViewFactory.getInstance().createView(hflow);
+        final HFlowLayout hflow = new HFlowLayout(mPreviewContainer, mControlContainer);
+        final IView view = ViewFactory.getInstance().createView(hflow);
         addView(view);
         return view;
     }
@@ -137,7 +137,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         SplitTimer.split("generatePreviewPictureFromData(final PixelMap pEdgeData) start");
         final int size = getSize();
 
-        PictureType preview;
+        final PictureType preview;
         if (mPreviewPicture == null || mPreviewPicture.getWidth() != size
                 || mPreviewPicture.getWidth() != size) {
             preview = new PictureType(size, size);
@@ -173,11 +173,11 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     public Rectangle getPreviewRectangle() {
-        double x1 = (double) getPreviewPositionX() / getTransform().getWidth();
-        double y1 = (double) getPreviewPositionY() / getTransform().getHeight();
-        double x2 = (double) (getPreviewPositionX() + getSize()) / getTransform().getWidth();
-        double y2 = (double) (getPreviewPositionY() + getSize()) / getTransform().getHeight();
-        Rectangle r = new Rectangle(x1, y1, x2, y2);
+        final double x1 = (double) getPreviewPositionX() / getTransform().getWidth();
+        final double y1 = (double) getPreviewPositionY() / getTransform().getHeight();
+        final double x2 = (double) (getPreviewPositionX() + getSize()) / getTransform().getWidth();
+        final double y2 = (double) (getPreviewPositionY() + getSize()) / getTransform().getHeight();
+        final Rectangle r = new Rectangle(x1, y1, x2, y2);
         return r;
     }
 
@@ -218,10 +218,10 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private PictureType updatePreview() {
         SplitTimer.split("updatePreview() start");
-        int size = getSize();
-        PictureType inputPicture = new PictureType(size, size);
-        PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
-        CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
+        final int size = getSize();
+        final PictureType inputPicture = new PictureType(size, size);
+        final PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
+        final CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
         crop.setPreviousTransform(getTransform().getPreviousTransform());
         crop.setCrop(getPreviewRectangle());
         Services.getServices().getRenderService().
@@ -236,7 +236,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private void updatePreview(final PictureType pInputPicture) {
         SplitTimer.split("updatePreview(final PictureType pInputPicture) start");
-        ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
+        final ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
         try {
             detector.setSourceImage(pInputPicture);
             detector.process(null);

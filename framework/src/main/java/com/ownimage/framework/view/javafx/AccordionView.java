@@ -22,7 +22,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
     private final BorderPane mUI = new BorderPane();
     private final ScrollPane mScroller = new ScrollPane();
 
-    private Accordion mAccordion = new Accordion();
+    private final Accordion mAccordion = new Accordion();
 
     public AccordionView(final IContainerList pContainerList) {
         super(pContainerList);
@@ -34,10 +34,10 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
         mAccordion.getPanes().clear();
 
         for (int i = 0, max = mControl.getCount(); i < max; i++) {
-            IContainer container = mControl.getContainer(i);
-            String name = container.getDisplayName();
-            Node content = ((FXView) container.createView()).getUI();
-            TitledPane pane = new TitledPane(name, content);
+            final IContainer container = mControl.getContainer(i);
+            final String name = container.getDisplayName();
+            final Node content = ((FXView) container.createView()).getUI();
+            final TitledPane pane = new TitledPane(name, content);
             mAccordion.getPanes().add(pane);
         }
 
@@ -47,7 +47,7 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
             @Override
             public void changed(final ObservableValue<? extends TitledPane> pOV, final TitledPane pOldValue, final TitledPane pNewValue) {
                 if (isNotMutating()) {
-                    int index = getIndex(pNewValue);
+                    final int index = getIndex(pNewValue);
                     new Thread(() -> mControl.setSelectedIndex(index, AccordionView.this)).start();
                 }
             }
@@ -86,13 +86,13 @@ public class AccordionView extends ViewBase<IContainerList> implements ISingleSe
                 throw new IllegalArgumentException("pInt = " + pInt + ".  pInt must be >= -1.");
             }
 
-            int numberOfPanes = mAccordion.getPanes().size();
+            final int numberOfPanes = mAccordion.getPanes().size();
             if (pInt >= numberOfPanes) {
                 throw new IllegalArgumentException("pInt = " + pInt + ".   mPanes.size() = " + numberOfPanes + " pInt must be < mPanes.size().");
             }
 
             if (pInt >= 0) {
-                TitledPane selected = mAccordion.getPanes().get(pInt);
+                final TitledPane selected = mAccordion.getPanes().get(pInt);
                 mAccordion.setExpandedPane(selected);
             } else {
                 mAccordion.setExpandedPane(null);

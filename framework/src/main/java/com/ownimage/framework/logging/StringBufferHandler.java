@@ -22,7 +22,7 @@ public class StringBufferHandler extends Handler {
     Formatter mFormatter = new PerceptionFormatter();
 
     @Override
-    public void publish(LogRecord pRecord) {
+    public void publish(final LogRecord pRecord) {
         mStringBuffer.append(mFormatter.format(pRecord));
     }
 

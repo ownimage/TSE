@@ -31,8 +31,8 @@ public class ColorControlTEST {
 
     @Test
     public void ColorControl_clone_0_00() {
-        Container container = new Container("x", "x", new IUndoRedoProviderASSISTANT());
-        ColorControl control = mColorControl.clone(container);
+        final Container container = new Container("x", "x", new IUndoRedoProviderASSISTANT());
+        final ColorControl control = mColorControl.clone(container);
         mColorControl.setValue(Color.PINK);
 
         assertEquals("diplayName", "Control Display Name", control.getDisplayName());
@@ -87,7 +87,7 @@ public class ColorControlTEST {
 
     @Test
     public void ColorControl_read_0_00() throws IOException {
-        IPersistDB db = new PersistDBImpl();
+        final IPersistDB db = new PersistDBImpl();
         mContainer.write(db, "container");
         mColorControl.setValue(Color.RED);
 

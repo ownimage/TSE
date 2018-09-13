@@ -55,20 +55,20 @@ public class SSpline {
     }
 
     double evaluateMixed(final double pX, final Point pA) {
-        double A = (pA.getX() * mGradient - pA.getY()) / (2.0d * pA.getX() * pA.getX() * pA.getX());
-        double C = (3.0d * pA.getY() - pA.getX() * mGradient) / (2 * pA.getX());
+        final double A = (pA.getX() * mGradient - pA.getY()) / (2.0d * pA.getX() * pA.getX() * pA.getX());
+        final double C = (3.0d * pA.getY() - pA.getX() * mGradient) / (2 * pA.getX());
 
-        CubicEquation cubic = new CubicEquation(A, 0.0d, C, 0.0d);
+        final CubicEquation cubic = new CubicEquation(A, 0.0d, C, 0.0d);
 
-        double gradient = mGradientRatio * pA.getY() / pA.getX();
+        final double gradient = mGradientRatio * pA.getY() / pA.getX();
 
         if (C >= gradient) {
             return cubic.evaluate(pX);
         }
 
         // else we need to calculate the line and spline
-        double dx = (3.0 * pA.getY() - 3.0d * gradient * pA.getX()) / (mGradient - gradient);
-        double x3 = pA.getX() - dx;
+        final double dx = (3.0 * pA.getY() - 3.0d * gradient * pA.getX()) / (mGradient - gradient);
+        final double x3 = pA.getX() - dx;
 
         // if in linear section
         if (pX < x3) {
@@ -76,9 +76,9 @@ public class SSpline {
         }
 
         // else fit spline
-        double A2 = (mGradient * dx - gradient * dx) / (3.0d * dx * dx * dx);
-        CubicEquation cubic2 = new CubicEquation(A2, 0.0d, gradient, 0.0d);
-        double y = x3 * gradient + cubic2.evaluate(pX - x3);
+        final double A2 = (mGradient * dx - gradient * dx) / (3.0d * dx * dx * dx);
+        final CubicEquation cubic2 = new CubicEquation(A2, 0.0d, gradient, 0.0d);
+        final double y = x3 * gradient + cubic2.evaluate(pX - x3);
         return y;
     }
 

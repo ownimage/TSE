@@ -71,14 +71,14 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     public static void launch(final String... pArgs) {
-        Runnable r = () -> Application.launch(AppControlView.class);
+        final Runnable r = () -> Application.launch(AppControlView.class);
         new Thread(r).start();
 
         try {
             while (mAppControlView == null) {
                 Thread.sleep(100);
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
 
         }
     }
@@ -99,14 +99,14 @@ public class AppControlView extends Application implements IAppControlView {
     @Override
     public void redraw() {
         Platform.runLater(() -> {
-            MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
+            final MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
 
-            IView content = mAppControl.getContent();
-            BorderPane border = new BorderPane();
+            final IView content = mAppControl.getContent();
+            final BorderPane border = new BorderPane();
             border.setTop(menuBar);
             border.setCenter(((FXView) (content)).getUI());
 
-            ScrollPane scroll = new ScrollPane(border);
+            final ScrollPane scroll = new ScrollPane(border);
             scroll.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
             scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
@@ -116,7 +116,7 @@ public class AppControlView extends Application implements IAppControlView {
 
             mPrimaryStage.setTitle(mAppControl.getTitle());
 
-            BorderPane root = new BorderPane();
+            final BorderPane root = new BorderPane();
             // root.setTop(menuBar);
             // Scene scene = new Scene(root, 600, 600);
             mPrimaryStage.setScene(mScene);
@@ -176,17 +176,17 @@ public class AppControlView extends Application implements IAppControlView {
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {
-        DirectoryChooser dirChooser = new DirectoryChooser();
+        final DirectoryChooser dirChooser = new DirectoryChooser();
         dirChooser.setTitle("Open Resource File");
 
-        File selectedDir = dirChooser.showDialog(mPrimaryStage);
+        final File selectedDir = dirChooser.showDialog(mPrimaryStage);
         if (selectedDir != null) {
             pFileControl.setValue(selectedDir.getAbsolutePath());
         }
     }
 
     public void showFileOpenChooserDialog(final FileControl pFileControl) {
-        FileChooser fileChooser = new FileChooser();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pFileControl.getDisplayName());
         fileChooser.getExtensionFilters().addAll(
                 // new ExtensionFilter("Text Files", "*.txt"),
@@ -201,7 +201,7 @@ public class AppControlView extends Application implements IAppControlView {
             fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
             fileChooser.setInitialFileName(pFileControl.getFile().getName());
         }
-        File selectedFile = fileChooser.showOpenDialog(mPrimaryStage);
+        final File selectedFile = fileChooser.showOpenDialog(mPrimaryStage);
         if (selectedFile != null) {
             pFileControl.setValue(selectedFile.getAbsolutePath());
         }
@@ -210,8 +210,8 @@ public class AppControlView extends Application implements IAppControlView {
     public void showFileSaveChooserDialog(final FileControl pFileControl) {
         Framework.checkParameterNotNull(mLogger, pFileControl, "pFileControl");
 
-        String originalAbsolutePath = pFileControl.getFile().getAbsolutePath();
-        FileChooser fileChooser = new FileChooser();
+        final String originalAbsolutePath = pFileControl.getFile().getAbsolutePath();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pFileControl.getDisplayName());
         fileChooser.getExtensionFilters().addAll(
                 // new ExtensionFilter("Text Files", "*.txt"),
@@ -226,7 +226,7 @@ public class AppControlView extends Application implements IAppControlView {
             fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
             fileChooser.setInitialFileName(pFileControl.getFile().getName());
         }
-        File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
+        final File selectedFile = fileChooser.showSaveDialog(mPrimaryStage);
 
         if (selectedFile != null) {
             if (!selectedFile.getAbsolutePath().equals(originalAbsolutePath)) {

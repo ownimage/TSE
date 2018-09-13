@@ -144,23 +144,23 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
                 }
 
             }
-        } catch (Throwable pEx) {
+        } catch (final Throwable pEx) {
             System.err.println(pEx.getMessage() + " at FrameworkLogger.init(String, String).");
         }
     }
 
     public void read(final String pFilename) {
-        File file = new File(pFilename);
+        final File file = new File(pFilename);
         read(file);
     }
 
-    public void read(File pFile) {
+    public void read(final File pFile) {
         System.out.println("Logging properties file:" + pFile.getAbsolutePath());
-        try (FileInputStream fstream = new FileInputStream(pFile)) {
-            java.util.Properties props = new java.util.Properties();
+        try (final FileInputStream fstream = new FileInputStream(pFile)) {
+            final java.util.Properties props = new java.util.Properties();
             props.load(fstream);
             read(props);
-        } catch (IOException pIOE) {
+        } catch (final IOException pIOE) {
             System.out.println(FrameworkLogger.throwableToString(pIOE));
             throw new FrameworkException(this, Level.SEVERE, "Cannot Open Logging settings from: " + pFile.getAbsolutePath(), pIOE);
         }
@@ -168,35 +168,35 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
 
     private void read(final java.util.Properties pProperties) {
 
-        String fileCountString = pProperties.getProperty(mFileCount.getPropertyName(), mFileCount.getString());
-        int fileCountNumber = Integer.parseInt(fileCountString);
+        final String fileCountString = pProperties.getProperty(mFileCount.getPropertyName(), mFileCount.getString());
+        final int fileCountNumber = Integer.parseInt(fileCountString);
         mFileCount.setValue(fileCountNumber);
 
-        String fileSizeString = pProperties.getProperty(mFileSize.getPropertyName(), mFileSize.getString());
-        int fileSizeNumber = Integer.parseInt(fileSizeString);
+        final String fileSizeString = pProperties.getProperty(mFileSize.getPropertyName(), mFileSize.getString());
+        final int fileSizeNumber = Integer.parseInt(fileSizeString);
         mFileCount.setValue(fileSizeNumber);
 
-        String fileAppendString = pProperties.getProperty(mFileAppend.getPropertyName(), mFileAppend.getString());
-        boolean fileAppend = Boolean.parseBoolean(fileAppendString);
+        final String fileAppendString = pProperties.getProperty(mFileAppend.getPropertyName(), mFileAppend.getString());
+        final boolean fileAppend = Boolean.parseBoolean(fileAppendString);
         mFileAppend.setValue(fileAppend);
 
-        String consoleLevelString = pProperties.getProperty(mConsoleLevel.getPropertyName(), mConsoleLevel.getString());
-        Level consoleLevel = Level.parse(consoleLevelString);
+        final String consoleLevelString = pProperties.getProperty(mConsoleLevel.getPropertyName(), mConsoleLevel.getString());
+        final Level consoleLevel = Level.parse(consoleLevelString);
         mConsoleLevel.setValue(consoleLevel);
         mConsoleHandler.setLevel(consoleLevel);
 
-        String dialogLevelString = pProperties.getProperty(mDialogLevel.getPropertyName(), mDialogLevel.getString());
-        Level dialogLevel = Level.parse(dialogLevelString);
+        final String dialogLevelString = pProperties.getProperty(mDialogLevel.getPropertyName(), mDialogLevel.getString());
+        final Level dialogLevel = Level.parse(dialogLevelString);
         mDialogLevel.setValue(dialogLevel);
         mDialogHandler.setLevel(dialogLevel);
 
-        String logFileLevelString = pProperties.getProperty(mLogFileLevel.getPropertyName(), mLogFileLevel.getString());
-        Level logFileLevel = Level.parse(logFileLevelString);
+        final String logFileLevelString = pProperties.getProperty(mLogFileLevel.getPropertyName(), mLogFileLevel.getString());
+        final Level logFileLevel = Level.parse(logFileLevelString);
         mLogFileLevel.setValue(logFileLevel);
         mLogFileHandler.setLevel(logFileLevel);
 
-        String frameworkLoggerName = mLogger.getName();
-        String frameworkLoggerLevel = pProperties.getProperty(frameworkLoggerName);
+        final String frameworkLoggerName = mLogger.getName();
+        final String frameworkLoggerLevel = pProperties.getProperty(frameworkLoggerName);
         if (isValidLevelString(frameworkLoggerLevel))
             setLevel(frameworkLoggerName, frameworkLoggerLevel);
 
@@ -207,7 +207,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
                 .forEach(e -> setLevel(e.getKey().toString(), e.getValue().toString()));
     }
 
-    private boolean isValidLevelString(String pLevel) {
+    private boolean isValidLevelString(final String pLevel) {
         return getLogLevels().stream().anyMatch(l -> l.toString().equals(pLevel));
     }
 
@@ -236,59 +236,59 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         setLevel(pName, level);
     }
 
-    public void showEditDialog(final IAppControlView mAppView, final String mPrefix, ActionControl... pButtons) {
+    public void showEditDialog(final IAppControlView mAppView, final String mPrefix, final ActionControl... pButtons) {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, mAppView, "mAppView");
         Framework.checkParameterNotNull(mLogger, mPrefix, "mPrefix");
 
-        Vector<String> loggerNames = new Vector<>();
-        Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
+        final Vector<String> loggerNames = new Vector<>();
+        final Enumeration<String> names = LogManager.getLogManager().getLoggerNames();
         while (names.hasMoreElements()) {
-            String name = names.nextElement();
+            final String name = names.nextElement();
             if (name != null && name.startsWith(mPrefix)) {
                 loggerNames.add(name);
             }
         }
         Collections.sort(loggerNames);
 
-        Container levels = new Container("Levels", "levels", NullContainer);
+        final Container levels = new Container("Levels", "levels", NullContainer);
 
-        ObjectStringMetaType loggerNameMetaModel = new ObjectStringMetaType(loggerNames, true, true);
-        ObjectType<String> loggerNameType = new ObjectType<>("", loggerNameMetaModel);
-        ObjectControl<String> loggerName = new ObjectControl<>("Loggers", "loggers", levels, loggerNameType);
+        final ObjectStringMetaType loggerNameMetaModel = new ObjectStringMetaType(loggerNames, true, true);
+        final ObjectType<String> loggerNameType = new ObjectType<>("", loggerNameMetaModel);
+        final ObjectControl<String> loggerName = new ObjectControl<>("Loggers", "loggers", levels, loggerNameType);
 
-        ObjectControl<Level> logLevel = new ObjectControl<>("Level", "level", levels, Level.INFO, getLogLevels());
+        final ObjectControl<Level> logLevel = new ObjectControl<>("Level", "level", levels, Level.INFO, getLogLevels());
 
         loggerName.addControlChangeListener((o, m) -> {
-            Logger logger = Logger.getLogger(loggerName.getValue());
-            Level level = logger.getLevel();
+            final Logger logger = Logger.getLogger(loggerName.getValue());
+            final Level level = logger.getLevel();
             if (level != null) {
                 logLevel.setValue(level);
             }
         });
 
         logLevel.addControlChangeListener((c, m) -> {
-            Logger logger = Logger.getLogger(loggerName.getValue());
-            Level level = logger.getLevel();
+            final Logger logger = Logger.getLogger(loggerName.getValue());
+            final Level level = logger.getLevel();
             if (!level.equals(logLevel.getValue())) {
                 setLevel(loggerName.getValue(), logLevel.getValue());
             }
         });
 
-        NamedTabs tabs = new NamedTabs("Edit Logging", "editLogging");
+        final NamedTabs tabs = new NamedTabs("Edit Logging", "editLogging");
         tabs.addTab(mFileHandlerPropertiesContainer);
         tabs.addTab(levels);
         tabs.setSelectedIndex(1);
 
         new ActionControl("Reset All", "resetAll", levels, () -> {
-            for (String name : loggerNames) {
+            for (final String name : loggerNames) {
                 setLevel(name, logLevel.getValue());
             }
         });
 
         final Vector<ActionControl> buttons = new Vector<>(Arrays.asList(pButtons));
         buttons.add(ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed")));
-        ActionControl[] buttonsArray = buttons.toArray(new ActionControl[buttons.size()]);
+        final ActionControl[] buttonsArray = buttons.toArray(new ActionControl[buttons.size()]);
 
         new DialogView(tabs, DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog closed.")).build(), null, buttonsArray).showModal();
         Framework.logExit(mLogger);
@@ -307,12 +307,12 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         }
     }
 
-    public void write(File pFile, String pComment) {
-        try (FileOutputStream fstream = new FileOutputStream(pFile)) {
-            PersistDB props = new PersistDB();
+    public void write(final File pFile, final String pComment) {
+        try (final FileOutputStream fstream = new FileOutputStream(pFile)) {
+            final PersistDB props = new PersistDB();
             write(props, "");
             props.store(fstream, pComment);
-        } catch (Exception pEx) {
+        } catch (final Exception pEx) {
             throw new FrameworkException(this, Level.SEVERE, "Cannot save Properties to: " + pFile.getAbsolutePath(), pEx);
         }
     }

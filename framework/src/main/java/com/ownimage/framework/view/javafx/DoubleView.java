@@ -26,8 +26,8 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
     private final static Logger mLogger = Framework.getLogger();
 
-    private static Image mSpinnerImage = getImage("/icon/spinner.png");
-    private static Image mSliderImage = getImage("/icon/slider.png");
+    private static final Image mSpinnerImage = getImage("/icon/spinner.png");
+    private static final Image mSliderImage = getImage("/icon/slider.png");
 
     private final HBox mUI;
     private final HBox mControlPanel;
@@ -42,14 +42,14 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         super(pDoubleControl);
         setMutating(true);
 
-        double min = mControl.getMetaType().getMin();
-        double max = mControl.getMetaType().getMax();
-        double value = mControl.getValue();
-        double step = mControl.getMetaType().getStep();
+        final double min = mControl.getMetaType().getMin();
+        final double max = mControl.getMetaType().getMax();
+        final double value = mControl.getValue();
+        final double step = mControl.getMetaType().getStep();
 
         // https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user
-        SpinnerValueFactory<Double> factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, pDoubleControl.getValue(), step);
-        TextFormatter<Double> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
+        final SpinnerValueFactory<Double> factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, pDoubleControl.getValue(), step);
+        final TextFormatter<Double> formatter = new TextFormatter<>(factory.getConverter(), factory.getValue());
         mSpinner = new Spinner<>(min, max, value, step);
         mSpinner.setValueFactory(factory);
         mSpinner.setEditable(mControl.isEnabled());
@@ -64,8 +64,8 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         mSlider.setDisable(!mControl.isEnabled());
         mSlider.valueProperty().addListener((observable, oldValue, newValue) -> setControlValueFromSlider(true));
         mSlider.onMouseReleasedProperty().setValue(event -> setControlValueFromSlider(false));
-        InvalidationListener sliderSizeListener = o -> {
-            int width = getFactory().controlWidthProperty.get() - getFactory().sliderValueWidthProperty.get();
+        final InvalidationListener sliderSizeListener = o -> {
+            final int width = getFactory().controlWidthProperty.get() - getFactory().sliderValueWidthProperty.get();
             mSlider.setMaxWidth(width);
             mSlider.setMinWidth(width);
             mSlider.setPrefWidth(width);
@@ -110,7 +110,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         return mUI;
     }
 
-    private void setControlValueFromSlider(boolean pIsMutating) {
+    private void setControlValueFromSlider(final boolean pIsMutating) {
         mLogger.log(Level.FINEST, "setControlValueFromSlider");
         try {
             if (mAllowUpdates) {
@@ -143,7 +143,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         }
     }
 
-    public void setDisplayType(DoubleMetaType.DisplayType pDisplayType) {
+    public void setDisplayType(final DoubleMetaType.DisplayType pDisplayType) {
         setMutating(true);
         try {
             runOnFXApplicationThread(() -> {

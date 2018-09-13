@@ -54,7 +54,7 @@ public class IntegerControl extends ControlBase<IntegerControl, IntegerType, Int
 
     @Override
     public IView createView() {
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         addView(view);
         return view;
     }
@@ -70,13 +70,13 @@ public class IntegerControl extends ControlBase<IntegerControl, IntegerType, Int
 
     @Override
     public boolean setNormalizedValue(final double pNormalizedValue) {
-        IntegerMetaType metaType = getMetaType();
+        final IntegerMetaType metaType = getMetaType();
 
         if (metaType == null) {
             throw new IllegalStateException("Cannot setNormalizedValue for an IntegerControl that does not have an IntegerMetaType.");
         }
 
-        Integer value = metaType.getValueForNormalizedValue(pNormalizedValue);
+        final Integer value = metaType.getValueForNormalizedValue(pNormalizedValue);
         setValue(value);
         return true;
     }

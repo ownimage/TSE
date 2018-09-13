@@ -118,8 +118,8 @@ public class CropTransform extends BaseTransform implements IControlValidator {
         Framework.logEntry(mLogger);
         Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
-        double x = pRenderResult.getX();
-        double y = pRenderResult.getY();
+        final double x = pRenderResult.getX();
+        final double y = pRenderResult.getY();
 
         final Point point = new Point( //
                                        mLeft + x * (mRight - mLeft), //

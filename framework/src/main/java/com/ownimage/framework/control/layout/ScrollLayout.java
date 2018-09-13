@@ -32,7 +32,7 @@ public class ScrollLayout implements IViewable<IView> {
 
     @Override
     public IView createView() {
-        IView view = ViewFactory.getInstance().createView(this);
+        final IView view = ViewFactory.getInstance().createView(this);
         return view;
     }
 

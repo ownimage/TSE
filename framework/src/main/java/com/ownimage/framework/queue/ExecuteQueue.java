@@ -19,7 +19,7 @@ public class ExecuteQueue {
 
     private final static Logger mLogger = Framework.getLogger();
 
-    private static ExecuteQueue mExecuteQueue = new ExecuteQueue();
+    private static final ExecuteQueue mExecuteQueue = new ExecuteQueue();
 
     /**
      * The job queue.
@@ -37,7 +37,7 @@ public class ExecuteQueue {
     private ExecuteQueue() {
         mQueue = new PriorityQueue<>((pJob1, pJob2) -> {
             // Note: this comparator imposes orderings that are inconsistent with equals.
-            int priorityOrder = pJob1.getPriority().ordinal() - pJob2.getPriority().ordinal();
+            final int priorityOrder = pJob1.getPriority().ordinal() - pJob2.getPriority().ordinal();
             if (priorityOrder != 0) {
                 return priorityOrder;
             }
@@ -46,7 +46,7 @@ public class ExecuteQueue {
                 return 0;
             }
 
-            int dateOrder = pJob1.getCreateDate().before(pJob2.getCreateDate()) ? 1 : -1;
+            final int dateOrder = pJob1.getCreateDate().before(pJob2.getCreateDate()) ? 1 : -1;
             return dateOrder;
         });
     }
@@ -70,7 +70,7 @@ public class ExecuteQueue {
     void runNext() {
         synchronized (mQueue) {
             // if something is already running then we are done
-            ExecuteThread runningThread = mRunningThread;
+            final ExecuteThread runningThread = mRunningThread;
 
             if (runningThread != Thread.currentThread()) {
                 if (runningThread != null && runningThread.isAlive()) {
@@ -104,7 +104,7 @@ public class ExecuteQueue {
         synchronized (mQueue) {
             pJob.queued();
 
-            ExecuteThread runningThread = mRunningThread;
+            final ExecuteThread runningThread = mRunningThread;
             if (runningThread != null && runningThread.getJob().getControlObject() != null && runningThread.getJob().getControlObject() == pJob.getControlObject()) {
                 runningThread.getJob().terminate();
             }

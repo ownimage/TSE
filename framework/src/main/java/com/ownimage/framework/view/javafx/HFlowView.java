@@ -24,9 +24,9 @@ public class HFlowView extends ViewBase<HFlowLayout> {
     private void createView() {
         mUI = new HBox();
 
-        Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
+        final Iterator<IViewable<?>> children = mControl.getViewableChildrenIterator();
         while (children.hasNext()) {
-            IViewable child = children.next();
+            final IViewable child = children.next();
             mUI.getChildren().add(((FXView) (child.createView())).getUI());
         }
     }

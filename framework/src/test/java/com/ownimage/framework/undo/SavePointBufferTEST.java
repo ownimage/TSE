@@ -37,24 +37,24 @@ public class SavePointBufferTEST {
     // normal
     @Test
     public void SavePointBuffer_00() {
-        SavePointBuffer b1 = new SavePointBuffer("test1", new Id("x"));
+        final SavePointBuffer b1 = new SavePointBuffer("test1", new Id("x"));
         assertEquals("equals", "test1", b1.getDescription());
 
-        SavePointBuffer b2 = new SavePointBuffer("test2", new Id("x"));
+        final SavePointBuffer b2 = new SavePointBuffer("test2", new Id("x"));
         assertEquals("equals", "test2", b2.getDescription());
     }
 
     // checks that once the buffer is locked nothing more can be added
     @Test
     public void SavePointBuffer_add_0_00() throws Exception {
-        IUndoRedoAction action = new UndoRedoActionASSISTANT("test");
+        final IUndoRedoAction action = new UndoRedoActionASSISTANT("test");
         FrameworkLogger.getInstance().init("logging.properties", "junit.log");
         FrameworkLogger.getInstance().clearLog();
         FrameworkLogger.getInstance().setLevel(Level.SEVERE);
         try {
             mSavePointBuffer.add(action);
-        } catch (IllegalStateException pE) {
-            String log = FrameworkLogger.getInstance().getLog();
+        } catch (final IllegalStateException pE) {
+            final String log = FrameworkLogger.getInstance().getLog();
             System.out.println(log);
             assertTrue(log.matches("^.*SEVERE.*com.ownimage.framework.undo.SavePointBuffer.*SavePointBuffer.*has been locked.  add is not allowed.\n"));
             return;
@@ -65,7 +65,7 @@ public class SavePointBufferTEST {
     // should fail cant redo until locked and undo called
     @Test(expected = IllegalStateException.class)
     public void SavePointBuffer_redo_0_00a() {
-        SavePointBuffer one = new SavePointBuffer("empty", new Id("x"));
+        final SavePointBuffer one = new SavePointBuffer("empty", new Id("x"));
         one.add(new UndoRedoActionASSISTANT("test"));
         one.redo();
     }
@@ -73,7 +73,7 @@ public class SavePointBufferTEST {
     // should fail cant redo until locked and undo called
     @Test(expected = IllegalStateException.class)
     public void SavePointBuffer_redo_0_00b() {
-        SavePointBuffer one = new SavePointBuffer("empty", new Id("x"));
+        final SavePointBuffer one = new SavePointBuffer("empty", new Id("x"));
         one.add(new UndoRedoActionASSISTANT("test"));
         one.lock();
         one.redo();
@@ -110,13 +110,13 @@ public class SavePointBufferTEST {
     // cant undo until locked
     @Test(expected = IllegalStateException.class)
     public void SavePointBuffer_undo_0_00() {
-        SavePointBuffer empty = new SavePointBuffer("empty", new Id("x"));
+        final SavePointBuffer empty = new SavePointBuffer("empty", new Id("x"));
         empty.undo();
     }
 
     @Test
     public void SavePointBuffer_undo_0_01() {
-        SavePointBuffer empty = new SavePointBuffer("empty", new Id("x"));
+        final SavePointBuffer empty = new SavePointBuffer("empty", new Id("x"));
         empty.lock();
         empty.undo();
     }
@@ -150,7 +150,7 @@ public class SavePointBufferTEST {
         mUndoRedoActions = new UndoRedoActionSequenceASSISTANT[5];
 
         for (int i = 0; i < 5; i++) {
-            UndoRedoActionSequenceASSISTANT action = new UndoRedoActionSequenceASSISTANT("UndoRedoAction " + i);
+            final UndoRedoActionSequenceASSISTANT action = new UndoRedoActionSequenceASSISTANT("UndoRedoAction " + i);
             mUndoRedoActions[i] = action;
             mSavePointBuffer.add(action);
         }

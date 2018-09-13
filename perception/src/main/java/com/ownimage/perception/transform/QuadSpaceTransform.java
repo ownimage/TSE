@@ -70,7 +70,7 @@ public class QuadSpaceTransform extends BaseTransform {
         final double x = pRenderResult.getX();
 
         try {
-            int segment;
+            final int segment;
             if (x < 0.25) {
                 segment = 0;
             } else if (x < 0.5) {

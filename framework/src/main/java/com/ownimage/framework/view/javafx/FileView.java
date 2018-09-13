@@ -34,7 +34,7 @@ public class FileView extends ViewBase {
         mButton = new Button();
         mButton.setOnAction((e) -> performAction());
 
-        HBox box = new HBox();
+        final HBox box = new HBox();
         box.getChildren().addAll(mTextField, mButton);
         box.prefWidthProperty().bind(FXViewFactory.getInstance().controlWidthProperty);
 
