@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.perception.math.LineSegment;
-import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.Vector;
+import com.ownimage.framework.math.LineSegment;
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 public class StraightSegment extends SegmentBase<StraightSegment> {

@@ -5,7 +5,7 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.perception.math.Point;
+import com.ownimage.framework.math.Point;
 
 import java.awt.*;
 

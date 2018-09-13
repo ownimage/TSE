@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.perception.math.Line;
-import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.Vector;
+import com.ownimage.framework.math.Line;
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.awt.*;

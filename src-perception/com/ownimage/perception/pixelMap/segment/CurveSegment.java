@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
+import com.ownimage.framework.math.*;
+import com.ownimage.framework.math.CubicEquation.Root;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.*;
-import com.ownimage.perception.math.CubicEquation.Root;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 import java.util.logging.Logger;

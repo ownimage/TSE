@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.render;
 
-import java.awt.*;
+import com.ownimage.framework.math.Point;
 
-import com.ownimage.perception.math.Point;
+import java.awt.*;
 
 public interface ITransformResult {
 

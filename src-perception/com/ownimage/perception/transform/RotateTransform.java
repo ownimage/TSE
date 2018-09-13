@@ -5,20 +5,15 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.util.logging.Logger;
-
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.ObjectControl;
+import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.math.KMath;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
-import com.ownimage.perception.control.grafitti.Path;
-import com.ownimage.perception.math.KMath;
-import com.ownimage.perception.math.Point;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 public class RotateTransform extends BaseTransform {
 

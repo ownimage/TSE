@@ -5,26 +5,16 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IGrafitti;
-import com.ownimage.framework.control.control.IMouseControl;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.math.KMath;
+import com.ownimage.framework.math.RectangleSize;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
@@ -32,11 +22,14 @@ import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.math.KMath;
-import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.IBatchEngine;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.ITransformResultBatch;
+
+import java.awt.*;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.logging.Logger;
 
 public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener {
 

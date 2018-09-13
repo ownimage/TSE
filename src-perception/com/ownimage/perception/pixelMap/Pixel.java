@@ -5,18 +5,13 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
+import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.util.Framework;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.IntegerPoint;
-import com.ownimage.perception.math.Point;
 
 /**
  * The class Pixel provides a wrapper about the byte level information contained in the raw PixelMap array. This can get and set

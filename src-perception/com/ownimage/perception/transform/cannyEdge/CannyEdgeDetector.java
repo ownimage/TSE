@@ -5,16 +5,16 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import java.awt.*;
-import java.util.Arrays;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.IProgressObserver;
+import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.transform.IPictureSource;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -397,7 +397,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setSourceImage(com.ownimage.perception.util.IPictureReadOnly)
+     * com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector#setSourceImage(com.ownimage.framework.util.IPictureReadOnly)
 	 */
 
 	// NOTE: It is quite feasible to replace the implementation of this method

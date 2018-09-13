@@ -5,22 +5,13 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.awt.*;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.queue.ExecuteQueue;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
@@ -30,11 +21,14 @@ import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.math.IntegerPoint;
-import com.ownimage.perception.math.Rectangle;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
+
+import java.awt.*;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 /**
  * This is an Edge Transform Control Container Dialog

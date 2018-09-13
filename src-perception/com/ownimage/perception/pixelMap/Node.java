@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.util.Vector;
+import com.ownimage.framework.math.IntegerPoint;
 
-import com.ownimage.perception.math.IntegerPoint;
+import java.util.Vector;
 
 // TODO: Auto-generated Javadoc
 

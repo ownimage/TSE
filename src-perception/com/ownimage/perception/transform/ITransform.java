@@ -7,8 +7,8 @@ package com.ownimage.perception.transform;
 
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.math.RectangleSize;
 import com.ownimage.framework.persist.IPersist;
-import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.IBatchTransform;
 
 public interface ITransform extends IBatchTransform, IPersist { // extends , IGrafitti, ITransformColor, IProgressObserver,

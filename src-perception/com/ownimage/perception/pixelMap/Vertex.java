@@ -5,10 +5,10 @@
  */
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.math.Line;
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.Line;
-import com.ownimage.perception.math.Point;
-import com.ownimage.perception.math.Vector;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 
 import java.util.logging.Logger;

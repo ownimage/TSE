@@ -5,11 +5,11 @@
  */
 package com.ownimage.perception.render;
 
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.util.Framework;
+
 import java.awt.*;
 import java.util.logging.Logger;
-
-import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.Point;
 
 public class SingleTransformResult implements ITransformResult {
 

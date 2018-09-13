@@ -5,20 +5,19 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.logging.Logger;
-
+import Jama.Matrix;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.event.IControlValidator;
+import com.ownimage.framework.math.KMath;
+import com.ownimage.framework.math.LinearEquation;
+import com.ownimage.framework.math.QuadraticEquation;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
-import com.ownimage.perception.math.KMath;
-import com.ownimage.perception.math.LinearEquation;
-import com.ownimage.perception.math.QuadraticEquation;
 import com.ownimage.perception.render.ITransformResult;
 
-import Jama.Matrix;
+import java.util.logging.Logger;
 
 public class VariableStretch3Transform extends BaseTransform implements IControlValidator {
 

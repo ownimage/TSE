@@ -6,7 +6,7 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.perception.math.Point;
+import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
 
 import java.awt.*;

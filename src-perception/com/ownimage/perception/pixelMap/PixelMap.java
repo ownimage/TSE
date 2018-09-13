@@ -6,19 +6,18 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.control.control.IProgressObserver;
+import com.ownimage.framework.math.KMath;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.*;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.math.KMath;
-import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.util.KColor;
 import io.vavr.Tuple2;
 
 import java.awt.*;

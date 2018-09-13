@@ -6,10 +6,10 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.math.Line;
+import com.ownimage.framework.math.LineSegment;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.Line;
-import com.ownimage.perception.math.LineSegment;
-import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.segment.*;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple4;

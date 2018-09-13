@@ -1,0 +1,65 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+package com.ownimage.framework.math;
+
+import com.ownimage.framework.util.Framework;
+
+import java.util.logging.Logger;
+
+public class QuarticEquation {
+
+
+    @SuppressWarnings("unused")
+    private final static Logger mLogger = Framework.getLogger();
+
+	double mA;
+	double mB;
+	double mC;
+	double mD;
+	double mE;
+
+	public QuarticEquation() {
+		this(0.0d, 0.0d, 0.0d, 0.0d, 0.0d);
+	}
+
+	public QuarticEquation(final double pA, final double pB, final double pC, final double pD, final double pE) {
+		mA = pA;
+		mB = pB;
+		mC = pC;
+		mD = pD;
+		mE = pE;
+	}
+
+	public QuarticEquation add(final QuarticEquation pQE) {
+		return new QuarticEquation(mA + pQE.mA, mB + pQE.mB, mC + pQE.mC, mD + pQE.mD, mE + pQE.mE);
+	}
+
+	public CubicEquation differentiate() {
+		return new CubicEquation(4.0d * mA, 3.0d * mB, 2.0 * mC, mD);
+	}
+
+	public QuarticEquation divide(final double pScale) {
+		return new QuarticEquation(mA / pScale, mB / pScale, mC / pScale, mD / pScale, mE / pScale);
+	}
+
+	public double evaluate(final double pX) {
+		return mA * pX * pX * pX * pX + mB * pX * pX * pX + mC * pX * pX + mD * pX + mE;
+	}
+
+	public QuarticEquation minus(final QuarticEquation pQE) {
+		return new QuarticEquation(mA - pQE.mA, mB - pQE.mB, mC - pQE.mC, mD - pQE.mD, mE - pQE.mE);
+	}
+
+	public QuarticEquation multiply(final double pScale) {
+		return new QuarticEquation(mA * pScale, mB * pScale, mC * pScale, mD * pScale, mE * pScale);
+	}
+
+	@Override
+	public String toString() {
+		return "QuarticEquation(" + mA + ", " + mB + ", " + mC + ", " + mD + ", " + mE + ")";
+	}
+
+}

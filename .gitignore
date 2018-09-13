@@ -1,12 +1,12 @@
 /bin/
 /javadoc/
 /doc/
-/.idea/*
-/.settings/
-/*.properties
-/*.jpg
-/*.transform
-.idea/workspace.xml
+**/.idea/**
+./.settings/**
+*.properties
+*.jpg
+*.transform
+
 default.properties
 logging.properties
 NY2-transform.jpg
@@ -42,4 +42,3 @@ Perception.log.8
 Perception.log.8.lck
 Perception.log.9
 Perception.log.9.lck
-.idea/workspace.xml

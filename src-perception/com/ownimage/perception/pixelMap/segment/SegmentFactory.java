@@ -6,8 +6,8 @@
 package com.ownimage.perception.pixelMap.segment;
 
 import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.math.Point;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 

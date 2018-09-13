@@ -17,6 +17,7 @@ import com.ownimage.framework.control.type.FileType.FileControlType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.math.RectangleSize;
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
@@ -25,7 +26,6 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
-import com.ownimage.perception.math.RectangleSize;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
 
