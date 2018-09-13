@@ -86,8 +86,8 @@ j  com.amd.aparapi.internal.kernel.KernelRunner.execute(Ljava/lang/String;Lcom/a
 j  com.amd.aparapi.Kernel.execute(Ljava/lang/String;Lcom/amd/aparapi/Range;I)Lcom/amd/aparapi/Kernel;+26
 j  com.amd.aparapi.Kernel.execute(Lcom/amd/aparapi/Range;I)Lcom/amd/aparapi/Kernel;+5
 j  com.amd.aparapi.Kernel.execute(II)Lcom/amd/aparapi/Kernel;+6
-j  com.ownimage.perception.opencl.TransformSequenceTEST$TransformSequence.transform()V+36
-j  com.ownimage.perception.opencl.TransformSequenceTEST.TrasnformSequence_TEST01()V+60
+j  com.ownimage.framework.opencl.TransformSequenceTEST$TransformSequence.transform()V+36
+j  com.ownimage.framework.opencl.TransformSequenceTEST.TrasnformSequence_TEST01()V+60
 v  ~StubRoutines::call_stub
 j  sun.reflect.NativeMethodAccessorImpl.invoke0(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+0
 j  sun.reflect.NativeMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;+87
@@ -249,7 +249,7 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -Dfile.encoding=Cp1252 
-java_command: org.eclipse.jdt.internal.junit.runner.RemoteTestRunner -version 3 -port 63751 -testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader -loaderpluginname org.eclipse.jdt.junit4.runtime -classNames com.ownimage.perception.opencl.TransformSequenceTEST
+java_command: org.eclipse.jdt.internal.junit.runner.RemoteTestRunner -version 3 -port 63751 -testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader -loaderpluginname org.eclipse.jdt.junit4.runtime -classNames com.ownimage.framework.opencl.TransformSequenceTEST
 Launcher Type: SUN_STANDARD
 
 Environment Variables:

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.9" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="com.ownimage.framework.control.control.ControlBase" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/ControlBase.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="112" width="180" x="701" y="135"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="com.ownimage.framework.control.container.Container" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/container/Container.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1117" y="-18"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="com.ownimage.framework.control.control.BooleanControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/BooleanControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="921" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="com.ownimage.framework.control.control.DoubleControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/DoubleControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="41" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="com.ownimage.framework.control.control.PictureControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/PictureControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="481" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="com.ownimage.framework.control.control.ColorControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/ColorControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="701" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="com.ownimage.framework.control.control.IntegerControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/IntegerControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="261" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="com.ownimage.framework.control.control.ActionControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/ActionControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="58" width="180" x="1141" y="287"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="true" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="9" language="java" name="com.ownimage.framework.control.control.IControl" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/control/IControl.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="873" y="-228"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="false"/>    
+    </display>  
+  </interface>  
+  <interface id="10" language="java" name="com.ownimage.framework.control.container.IContainer" project="Perception2" 
+    file="/Perception2/framework-src/com/ownimage/framework/control/container/IContainer.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="107" width="190" x="1608" y="-129"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="false"/>      
+      <operations public="true" package="true" protected="true" private="true" static="false"/>    
+    </display>  
+  </interface>  
+  <realization id="11">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="9"/>  
+  </realization>  
+  <generalization id="12">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <realization id="13">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="10"/>  
+  </realization>  
+  <generalization id="14">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="15">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="16">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="17">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="18">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <association id="19">    
+    <end type="SOURCE" refId="1" navigable="false" variant="ASSOCIATION">      
+      <attribute id="20" name="mContainer">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="21" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true" variant="ASSOCIATION"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="22">    
+    <end type="SOURCE" refId="2" navigable="false" variant="ASSOCIATION">      
+      <attribute id="23" name="mParent">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="24" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true" variant="ASSOCIATION"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="25">    
+    <end type="SOURCE" refId="2" navigable="false" variant="ASSOCIATION">      
+      <attribute id="26" name="mChlidControls">        
+        <position height="0" width="0" x="-578" y="-805"/>      
+      </attribute>      
+      <multiplicity id="27" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="-578" y="-805"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true" variant="ASSOCIATION"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="28">    
+    <end type="SOURCE" refId="2" navigable="false" variant="ASSOCIATION">      
+      <attribute id="29" name="mChildContainers">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="30" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true" variant="ASSOCIATION"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="false" 
+    sort-features="false" accessors="false" visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false" static="false"/>    
+    <operations public="false" package="false" protected="false" private="true" static="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

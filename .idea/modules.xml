@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/TSE.2017.iml" filepath="$PROJECT_DIR$/.idea/TSE.2017.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TSE.iml" filepath="$PROJECT_DIR$/TSE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/framework/framework.iml" filepath="$PROJECT_DIR$/framework/framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/perception/perception.iml" filepath="$PROJECT_DIR$/perception/perception.iml" />
     </modules>
   </component>
 </project>

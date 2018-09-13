@@ -1,0 +1,28 @@
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
+ */
+
+/
+/
+.tab *.tab-label {
+/ / -fx-rotate: 90;
+/ / /* note these are reversed because of the -fx-rotate*/
+/ / -fx-tab-min-width: 20 px;
+/ / -fx-tab-min-height: 150 px;
+/ /
+}
+
+/
+/
+.tab {
+/ / -fx-padding: 3 em 0.5 em 3 em 0.5 em;
+/ /
+}

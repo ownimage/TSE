@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AnalysisUIOptions">
-    <option name="ANALYZE_TEST_SOURCES" value="false" />
-    <option name="SCOPE_TYPE" value="8" />
-    <option name="CUSTOM_SCOPE_NAME" value="PixelMap" />
-  </component>
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java" line="253" mnemonic="1" />
-    <bookmark url="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/FileControl.java" line="75" mnemonic="2" />
-    <bookmark url="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/factory/IViewFactory.java" line="84" mnemonic="3" />
-    <bookmark url="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/factory/ViewFactory.java" line="190" mnemonic="4" />
-    <bookmark url="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/FXViewFactory.java" line="241" mnemonic="5" />
-  </component>
   <component name="BuildServerSettings">
     <option name="LOGIN" value="" />
     <option name="SERVER_URL" value="http://buildserver" />
@@ -34,350 +22,451 @@
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="removed PixelChain from Vertex">
+    <list default="true" id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Perception.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/ITestableLine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Intersect3D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Line.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/LineSegment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Point3D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/PolarCoordinates.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Quadrilateral.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/RTheta.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Range.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/SSpline.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Tuple3D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Vector3D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/app/Perception.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/app/Properties.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/app/Services.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/ClassDiagram.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/EqualizeValues.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/IVertex.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelConstants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegmentGrafittiHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/BaseBatchEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/IBatchEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/IBatchTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/ITransformResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/ITransformResultBatch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/JTPBatchEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/JTPTransformAction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/OpenCLBatchEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/RenderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/SingleTransformResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/TransformResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/TransformResultBatch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/BaseTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/BorderTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CannyEdgeTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CircleMaskTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/ControlSelector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CropTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/ITransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/ImageLoadTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/LayerCakeTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/OutputTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/PolarTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/QuadSpaceTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/RotateTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/RuleOfThirdsTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/SoftSquarePolarTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/SquarePolarTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/VariableStretch3Transform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/WoodcutTransform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorOpenCL.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/ICannyEdgeDetector.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/SegmentGrafittiHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transformSequence/TransformSequence.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/MultiContainers.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/Perception.vsd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/Property.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/Transform.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/Transform.useq" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/app.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/container.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/control.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/events.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/java/diagrams/types.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/down.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/fav.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/icon.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/minus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/new.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/plus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/slider.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/spinner.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/splash.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse2.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse2.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/tse_old.xcf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/main/resources/icon/up.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/stylesheet.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/TSE.2017.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/aparapi.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/vecmath.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/DONOTADDMutableMap2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/MutableMap2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Framework/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NY2.transform" beforeDir="false" afterPath="$PROJECT_DIR$/NY2.transform" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hs_err_pid5512.log" beforeDir="false" afterPath="$PROJECT_DIR$/hs_err_pid5512.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hs_err_pid8116.log" beforeDir="false" afterPath="$PROJECT_DIR$/hs_err_pid8116.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javadoc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/javadoc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logging.properties" beforeDir="false" afterPath="$PROJECT_DIR$/logging.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/ChangeLog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/CholeskyDecomposition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/CholeskyDecomposition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/EigenvalueDecomposition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/EigenvalueDecomposition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/LUDecomposition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/LUDecomposition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/Matrix.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/Matrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/QRDecomposition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/QRDecomposition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/SingularValueDecomposition.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/SingularValueDecomposition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/CholeskyDecomposition.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/EigenvalueDecomposition.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/LUDecomposition.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/Matrix.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/QRDecomposition.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/SingularValueDecomposition.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/package-frame.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/package-summary.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/Jama/package-tree.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/allclasses-frame.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/allclasses-noframe.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/constant-values.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/deprecated-list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/help-doc.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/index-all.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/overview-tree.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/package-list" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/resources/inherit.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/serialized-form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/doc/stylesheet.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/examples/MagicSquareExample.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/examples/MagicSquareExample.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/test/TestMatrix.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/test/TestMatrix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/util/Maths.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-Jama/Jama/util/Maths.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/Perception.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/control/grafitti/GraphicsHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/control/grafitti/IGrafitti.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/control/grafitti/IGraphics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/ITestableLine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Intersect3D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Line.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/LineSegment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Point3D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/PolarCoordinates.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Quadrilateral.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/RTheta.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Range.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/SSpline.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Tuple3D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/framework/math/Vector3D.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Properties.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Services.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/ClassDiagram.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/EqualizeValues.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IPixelMapTransformSource.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IVertex.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Node.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Pixel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelChain.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelConstants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Vertex.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/CurveSegment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/ISegment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/ISegmentGrafittiHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/StraightSegment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/BaseBatchEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/IBatchEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/IBatchTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/ITransformResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/ITransformResultBatch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/JTPBatchEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/JTPTransformAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/OpenCLBatchEngine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/RenderService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/SingleTransformResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/TransformResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/TransformResultBatch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BorderTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CircleMaskTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ControlSelector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CropTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ImageLoadTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/LayerCakeTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/OutputTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/PolarTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/QuadSpaceTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/RotateTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/RuleOfThirdsTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/SoftSquarePolarTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/SquarePolarTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/VariableStretch3Transform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/WoodcutTransform.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorOpenCL.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/ICannyEdgeDetector.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/SegmentGrafittiHelper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/com/ownimage/perception/view/javafx/app/FXPerception.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/MultiContainers.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/Perception.vsd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/Property.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/Transform.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/Transform.useq" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/app.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/container.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/control.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/events.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/diagrams/types.ucls" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/down.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/fav.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/icon.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/minus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/new.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/plus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/slider.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/spinner.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/splash.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse.gif" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse.xcf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse2.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse2.xcf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/tse_old.xcf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/icon/up.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-perception/stylesheet.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelChainTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelMapTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/Utility.java" beforeDir="false" />
     </list>
+    <ignored path="$PROJECT_DIR$/perception/target/" />
+    <ignored path="$PROJECT_DIR$/framework/target/" />
+    <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/TSE_2017$PixelTest.coverage" NAME="PixelTest Coverage Results" MODIFIED="1530711191686" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>com.ownimage.perception.pixelMap.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/TSE_2017$FXPerception.coverage" NAME="FXPerception Coverage Results" MODIFIED="1530632549935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>com.ownimage.perception.view.javafx.app.*</FILTER>
-    </SUITE>
-  </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
-    </option>
-    <expand />
-    <select />
-  </component>
-  <component name="ErrorTreeViewConfiguration">
-    <option name="hideWarnings" value="true" />
-    <option name="HIDE_WARNINGS" value="true" />
-  </component>
   <component name="FUSProjectUsageTrigger">
-    <session id="-590290645">
+    <session id="1010271881">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.closed" value="3" />
           <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.open.time.7" value="1" />
-          <entry key="project.open.time.8" value="2" />
-          <entry key="project.opened" value="5" />
+          <entry key="project.open.time.3" value="2" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="class" value="3" />
-          <entry key="java" value="83" />
-          <entry key="properties" value="1" />
+          <entry key="class" value="1" />
+          <entry key="java" value="30" />
+          <entry key="xml" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="3" />
-          <entry key="JAVA" value="83" />
-          <entry key="Properties" value="1" />
+          <entry key="CLASS" value="1" />
+          <entry key="JAVA" value="30" />
+          <entry key="XML" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="dummy" value="24" />
-          <entry key="java" value="11676" />
-          <entry key="txt" value="301" />
+          <entry key="java" value="55" />
+          <entry key="xml" value="82" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="11676" />
-          <entry key="PLAIN_TEXT" value="325" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.vcs.git.usages">
-        <counts>
-          <entry key="git.branch.checkout.remote" value="1" />
-          <entry key="git.branch.create.new" value="2" />
+          <entry key="JAVA" value="55" />
+          <entry key="XML" value="82" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="669">
-              <caret line="238" column="36" selection-start-line="238" selection-start-column="36" selection-end-line="238" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Vertex.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="31" column="7" lean-forward="true" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
+            <state>
+              <caret column="4" lean-forward="true" selection-start-column="4" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/util/MutableMap2D.java">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-              <folding>
-                <element signature="e#1089#1090#0" expanded="true" />
-                <element signature="e#1116#1117#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/view/javafx/app/FXPerception.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="31" column="7" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="677" column="29" selection-start-line="677" selection-start-column="29" selection-end-line="677" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2610">
-              <caret line="180" column="22" selection-start-line="180" selection-start-column="22" selection-end-line="180" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5544">
-              <caret line="377" selection-start-line="377" selection-end-line="377" />
-              <folding>
-                <element signature="e#11371#11372#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4968">
-              <caret line="377" column="27" selection-start-line="377" selection-start-column="27" selection-end-line="377" selection-end-column="27" />
-              <folding>
-                <element signature="e#7552#7553#0" expanded="true" />
-                <element signature="e#7608#7609#0" expanded="true" />
-                <element signature="e#7960#7961#0" expanded="true" />
-                <element signature="e#8013#8014#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/render/RenderService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="239">
-              <caret line="180" column="28" selection-start-line="180" selection-start-column="28" selection-end-line="180" selection-end-column="28" />
+            <state relative-caret-position="504">
+              <caret line="32" selection-start-line="32" selection-end-line="32" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#6674#6675#0" expanded="true" />
-                <element signature="e#6730#6731#0" expanded="true" />
-                <element signature="e#7916#7917#0" expanded="true" />
-                <element signature="e#7955#7956#0" expanded="true" />
-                <element signature="e#8501#8502#0" expanded="true" />
-                <element signature="e#8539#8540#0" expanded="true" />
-                <element signature="e#8589#8590#0" expanded="true" />
-                <element signature="e#8630#8631#0" expanded="true" />
-                <element signature="e#8672#8673#0" expanded="true" />
-                <element signature="e#8733#8734#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/math/Vector.java">
+        <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="576">
+              <caret line="38" column="121" selection-start-line="38" selection-start-column="121" selection-end-line="38" selection-end-column="121" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/OpenCLBatchEngine.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="e#0#368#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Intersect3D.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="90">
-              <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+              <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/RuleOfThirdsTransform.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="24" column="29" selection-start-line="24" selection-start-column="29" selection-end-line="24" selection-end-column="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="666">
+              <caret line="37" column="36" lean-forward="true" selection-start-line="37" selection-start-column="36" selection-end-line="37" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Line.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/framework/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="558">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/gov/nist/math/jama/1.0.3/jama-1.0.3.jar!/Jama/Matrix.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Interface" />
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>mStartVertex</find>
-      <find>PixelChain</find>
-      <find>public</find>
-      <find>getPixel(</find>
-      <find>Pixel</find>
-      <find>recalc</find>
-      <find>Run</find>
-      <find>PixelChain pP</find>
-      <find>add</find>
-      <find>PixelChain pPixelM</find>
-      <find>refine_01</find>
-      <find>ref</find>
-      <find>vertexChange</find>
-      <find>vert</find>
-      <find>vertexC</find>
-      <find>generate</find>
-      <find>mA =</find>
-      <find>mLineSegment =</find>
-      <find>startPos</find>
-      <find>avera</find>
-      <find>mControlPoint1</find>
-      <find>SegmentFactory</find>
-      <find>startPosition</find>
-      <find>System.err.println(pT);</find>
-      <find>mSegmentIndexValid</find>
-      <find>mSegmentIndex =</find>
-      <find>pPixelChain</find>
-      <find>mSegmentToPixelChainMap</find>
-      <find>gc</find>
-      <find>sync</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>this::</replace>
-      <replace>Framework</replace>
-      <replace>getValue</replace>
-      <replace>PixelMap pixelMap = Utility.createMap(input);</replace>
-      <replace>UIEventQueue.getInstance().queueEvent(event, mControl);</replace>
-      <replace>||</replace>
-      <replace>==</replace>
-      <replace>mLogger.info(() -&gt;</replace>
-      <replace>Logger mLogger = Framework.getLogger();</replace>
-      <replace>Framework.logEntry(mLogger)</replace>
-      <replace>Framework.logExit(mLogger)</replace>
-      <replace>Framework.logExit(mLogger);</replace>
-      <replace />
-      <replace>Framework.logEntry(mLogger);</replace>
-      <replace>getTransformSequence()</replace>
-      <replace>getProperties()</replace>
-      <replace>getRenderService()</replace>
-      <replace>new PictureType(</replace>
-      <replace>mLogger.fine</replace>
-      <replace>assertFalse(&quot;Colors should not match to start with&quot;, !mTestColor1.equals(mPicture.getColor(ip).get()));</replace>
-      <replace>.</replace>
-      <replace>pPixel</replace>
-      <replace>mMouseDragLastPixel</replace>
-      <replace>mMouseLastPixelPosition</replace>
-      <replace>defaultValue</replace>
-      <replace>.get()</replace>
-      <replace>immutable</replace>
-      <replace>mLogger.severe(() -&gt; FrameworkLogger.throwableToString(pT));</replace>
-      <replace>this</replace>
-    </replaceStrings>
-    <dirStrings>
-      <dir>P:\source\test\TSE.2017</dir>
-      <dir>P:\source\test\TSE.2017\src-framework\com\ownimage\framework\view\javafx</dir>
-      <dir>P:\source\test\TSE.2017\src-perception</dir>
-      <dir>P:\source\test\TSE.2017\src-framework</dir>
-    </dirStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/undo/IUndoRedoBufferProvider.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ProgressView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/app/AppControlBase.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/TransformResult.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/TransformResultBatch.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/Framework.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/Range2D.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IAppControlView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DialogView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/AppControlView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/FXViewFactory.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ApplicationEventQueue.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/ViewBase.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/DoubleView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/queue/ExecuteQueue.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/queue/ExecuteThread.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ColorControl.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/persist/IPersist.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/IPictureView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/PictureView.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/ImmutableMap2D.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/ImmutableVectorMap2D.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/logging/FrameworkLogger.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/GrafittiImp.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ActionControl.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Node.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Pixel.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/StraightSegment.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/CurveSegment.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/ISegment.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IVertex.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Vertex.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelChain.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentBase.java" />
-        <option value="$PROJECT_DIR$/test-framework-src/com/ownimage/framework/util/ImmutableLayerMap2DTest.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/ImmutableLayerMap2D.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/view/javafx/app/FXPerception.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java" />
-        <option value="$PROJECT_DIR$/src-perception/com/ownimage/perception/render/RenderService.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/DONOTADDMutableMap2D.java" />
-        <option value="$PROJECT_DIR$/src-framework/com/ownimage/framework/util/MutableMap2D.java" />
+        <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java" />
+        <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java" />
+        <option value="$PROJECT_DIR$/framework/pom.xml" />
+        <option value="$PROJECT_DIR$/perception/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java" />
       </list>
     </option>
   </component>
@@ -387,14 +476,13 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="NamedScopeManager">
-    <scope name="PixelMap" pattern="src:com.ownimage.perception.pixelMap..*" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="504" />
+    <option name="width" value="2808" />
+    <option name="height" value="2160" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="114" />
-    <option name="y" value="1" />
-    <option name="width" value="3729" />
-    <option name="height" value="2159" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -402,155 +490,96 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="framework" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
-              <item name="control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="view" type="462c0819:PsiDirectoryNode" />
-              <item name="javafx" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
-              <item name="segment" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="transform" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="src-perception" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="transform" type="462c0819:PsiDirectoryNode" />
-              <item name="cannyEdge" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="perception" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
+              <item name="perception" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="perception" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017 - Copy" type="462c0819:PsiDirectoryNode" />
+              <item name="perception" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="perception" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="queue" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-framework-src" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="framework" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-perception" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="test-perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE.2017" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -559,46 +588,27 @@
       </pane>
       <pane id="AndroidView" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="Downloaded.Files.Path.Enabled" value="false" />
-    <property name="Repository.Attach.JavaDocs" value="false" />
-    <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536129716449" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src-perception" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536845014045" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.2" />
-    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.gutterIcons" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="P:\source\test\TSE.2017\lib" />
-    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="com.ownimage.perception.util" />
+      <recent name="com.ownimage.framework.math" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="P:\source\test\TSE.2017\lib" />
-      <recent name="P:\source\test\TSE.2017\src-perception\com\ownimage\perception\pixelMap" />
-      <recent name="P:\source\test\TSE.2017\src-framework\com\ownimage\framework\util" />
-      <recent name="P:\source\test\TSE.2017\src-perception" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.ownimage.framework.util" />
-      <recent name="com.ownimage.framework.control.control" />
-      <recent name="com.ownimage.perception.app" />
-      <recent name="com.ownimage.framework.view" />
-      <recent name="com.ownimage.perception.util" />
-    </key>
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="com.ownimage.framework.control.control" />
-      <recent name="com.ownimage.framework.view.javafx" />
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="P:\source\test\TSE.2017 - Copy\perception\src\main\resources" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -613,663 +623,85 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.FXPerception">
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FXPerception" type="Application" factoryName="Application" nameIsGenerated="true">
+  <component name="RunManager">
+    <configuration name="FXPerception" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.ownimage.perception.view.javafx.app.FXPerception" />
-      <module name="TSE.2017" />
-      <option name="VM_PARAMETERS" value="-Xverify:none" />
+      <module name="perception" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.ownimage.perception.view.javafx.app.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <RunnerSettings RunnerId="Debug with VisualVM">
-        <option name="visualVMId" value="323526714473400" />
-      </RunnerSettings>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="Application" factoryName="Application">
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ImmutableLayerMap2DTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="TSE.2017" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.util" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.ImmutableLayerMap2DTest" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ImmutableLayerMap2DTest.add_immutable_to_mutable" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="TSE.2017" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.util" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.ImmutableLayerMap2DTest" />
-      <option name="METHOD_NAME" value="add_immutable_to_mutable" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ImmutableLayerMap2DTest.add_version_to_mutable_layer" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="TSE.2017" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.util" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.ImmutableLayerMap2DTest" />
-      <option name="METHOD_NAME" value="add_version_to_mutable_layer" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ImmutableLayerMap2DTest.change_mutable_layer_does_not_break_mutability" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="TSE.2017" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.util" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.ImmutableLayerMap2DTest" />
-      <option name="METHOD_NAME" value="change_mutable_layer_does_not_break_mutability" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ImmutableLayerMap2DTest.layerCount_2" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="TSE.2017" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.util" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.ImmutableLayerMap2DTest" />
-      <option name="METHOD_NAME" value="layerCount_2" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="test-framework-src ALL" type="JUnit" factoryName="JUnit">
-      <module name="TSE.2017" />
-      <option name="MAIN_CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="TEST_OBJECT" value="directory" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
-      <dir value="$PROJECT_DIR$/test-framework-src" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="test-perception ALL" type="JUnit" factoryName="JUnit">
-      <module name="TSE.2017" />
-      <option name="MAIN_CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="TEST_OBJECT" value="directory" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://%MODULE_WORKING_DIR%" />
-      <dir value="$PROJECT_DIR$/test-perception" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="TestNG" factoryName="TestNG">
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
-      <module name="" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
-      <option name="PROGRAM_PARAMETERS" />
-      <predefined_log_file id="idea.log" enabled="true" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <list>
-      <item itemvalue="Application.FXPerception" />
-      <item itemvalue="JUnit.test-perception ALL" />
-      <item itemvalue="JUnit.test-framework-src ALL" />
-      <item itemvalue="JUnit.ImmutableLayerMap2DTest" />
-      <item itemvalue="JUnit.ImmutableLayerMap2DTest.change_mutable_layer_does_not_break_mutability" />
-      <item itemvalue="JUnit.ImmutableLayerMap2DTest.add_version_to_mutable_layer" />
-      <item itemvalue="JUnit.ImmutableLayerMap2DTest.add_immutable_to_mutable" />
-      <item itemvalue="JUnit.ImmutableLayerMap2DTest.layerCount_2" />
-    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.ImmutableLayerMap2DTest.layerCount_2" />
-        <item itemvalue="JUnit.ImmutableLayerMap2DTest.add_immutable_to_mutable" />
-        <item itemvalue="JUnit.ImmutableLayerMap2DTest.add_version_to_mutable_layer" />
-        <item itemvalue="JUnit.ImmutableLayerMap2DTest.change_mutable_layer_does_not_break_mutability" />
-        <item itemvalue="JUnit.ImmutableLayerMap2DTest" />
+        <item itemvalue="Application.FXPerception" />
       </list>
     </recent_temporary>
-  </component>
-  <component name="StructureViewFactory">
-    <option name="AUTOSCROLL_MODE" value="false" />
-    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a7d529fb-a5b3-4f25-99cb-a980b68b43ce" name="Default" comment="" />
-      <created>1529677528198</created>
+      <changelist id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="" />
+      <created>1536833374625</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1529677528198</updated>
-      <workItem from="1529677529496" duration="1684000" />
-      <workItem from="1529992871287" duration="882000" />
-      <workItem from="1530171836091" duration="241000" />
-      <workItem from="1530184514011" duration="16551000" />
-      <workItem from="1530287606067" duration="43420000" />
-      <workItem from="1530684045972" duration="3113000" />
-      <workItem from="1530700286705" duration="28749000" />
-      <workItem from="1530789798817" duration="10873000" />
-      <workItem from="1531684587663" duration="14836000" />
-      <workItem from="1531744260288" duration="14272000" />
-      <workItem from="1531836339823" duration="27797000" />
-      <workItem from="1532009497628" duration="912000" />
-      <workItem from="1532014229554" duration="12120000" />
-      <workItem from="1532077374774" duration="42823000" />
-      <workItem from="1532524665734" duration="647000" />
-      <workItem from="1532530009508" duration="16985000" />
-      <workItem from="1532933170005" duration="1987000" />
-      <workItem from="1532944981192" duration="20012000" />
-      <workItem from="1533534001732" duration="8825000" />
-      <workItem from="1533551017414" duration="11985000" />
-      <workItem from="1533645143679" duration="25000" />
-      <workItem from="1533664299117" duration="3409000" />
-      <workItem from="1533710138398" duration="2122000" />
-      <workItem from="1533723035355" duration="79000" />
-      <workItem from="1533723686946" duration="515000" />
-      <workItem from="1533726106515" duration="617000" />
-      <workItem from="1533734357663" duration="13158000" />
-      <workItem from="1533806156380" duration="15157000" />
-      <workItem from="1533909149430" duration="66286000" />
-      <workItem from="1534311182418" duration="7757000" />
-      <workItem from="1534339977049" duration="14629000" />
-      <workItem from="1534484343678" duration="8769000" />
-      <workItem from="1534518978529" duration="12249000" />
-      <workItem from="1534829093351" duration="27833000" />
-      <workItem from="1535118873336" duration="1041000" />
-      <workItem from="1535173581062" duration="4802000" />
-      <workItem from="1535178487098" duration="9426000" />
-      <workItem from="1535730595871" duration="144000" />
-      <workItem from="1535872582205" duration="15646000" />
-      <workItem from="1535967426328" duration="19631000" />
-      <workItem from="1536055606194" duration="6462000" />
-      <workItem from="1536135272161" duration="620000" />
+      <updated>1536833374625</updated>
+      <workItem from="1536833379103" duration="780000" />
+      <workItem from="1536837002296" duration="1184000" />
+      <workItem from="1536839913221" duration="8000" />
+      <workItem from="1536841078745" duration="1396000" />
+      <workItem from="1536842538791" duration="817000" />
+      <workItem from="1536843641855" duration="1239000" />
     </task>
-    <task id="LOCAL-00003" summary="Issue #4 Add Output Transform">
-      <created>1533626415110</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1533626415110</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Issue #95 When you remove a transform it does not update the TransformSequence">
-      <created>1533711737575</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1533711737576</updated>
-    </task>
-    <task id="LOCAL-00005" summary="move isMutating to ViewBase">
-      <created>1533712099799</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1533712099799</updated>
-    </task>
-    <task id="LOCAL-00006" summary="removed the untidy mPanes member">
-      <created>1533712235138</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1533712235138</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Issue #95 When you remove a transform it does not update the TransformSequence">
-      <created>1533712638322</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1533712638322</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Issue #99 Preview should reflect aspect ratio of output">
-      <created>1533799603843</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1533799603843</updated>
-    </task>
-    <task id="LOCAL-00009" summary="Issue #99 Preview should reflect aspect ratio of output">
-      <created>1533805232042</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1533805232042</updated>
-    </task>
-    <task id="LOCAL-00010" summary="Issue #99 Preview should reflect aspect ratio of output">
-      <created>1533968032868</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1533968032868</updated>
-    </task>
-    <task id="LOCAL-00011" summary="Issue #32 Integer spinner not changing value on loss of focus">
-      <created>1533969627914</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1533969627914</updated>
-    </task>
-    <task id="LOCAL-00012" summary="Issue #32 https://stackoverflow.com/questions/32340476/manually-typing-in-text-in-javafx-spinner-is-not-updating-the-value-unless-user">
-      <created>1533971681315</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1533971681315</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Issue #106 Logging which properties file is being used, and general tidy up of logging">
-      <created>1534059905740</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1534059905740</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Issue #109 Remove Version from Files">
-      <created>1534060190180</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1534060190180</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Issue #110 Remove mClassname from Files, this is used in the entry and exit methods, but there are versions that do not use it">
-      <created>1534062827850</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1534062827851</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Issue #104 Further render requests on startup need to be eliminated&#10;       also #105 Logging and remove System.out">
-      <created>1534142847151</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1534142847151</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Issue #117 IntegerSpinner only goes up by 1">
-      <created>1534143496740</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1534143496740</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Issue #118 Canny lines are not enabled by default">
-      <created>1534144312829</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1534144312829</updated>
-    </task>
-    <task id="LOCAL-00019" summary="Issue #115 Logging levels edit should have a save default button on it and possibly a save As">
-      <created>1534151267445</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1534151267445</updated>
-    </task>
-    <task id="LOCAL-00020" summary="Issue #113 Should adopt a build approach for menus rather than the locked">
-      <created>1534174478744</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1534174478744</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Issue #122 Logging edit improvements">
-      <created>1534224761905</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1534224761905</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Issue #121 Move services out of Perception">
-      <created>1534233934776</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1534233934776</updated>
-    </task>
-    <task id="LOCAL-00023" summary="Issue #97 Should inject ColorProperty into PictureType or PictureService and not have it as a parameter to every constructor.">
-      <created>1534254901354</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1534254901354</updated>
-    </task>
-    <task id="LOCAL-00024" summary="Issue #103 TransformSequence read there are two loops to read values in from ... there probably should only be one">
-      <created>1534277472830</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1534277472830</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Issue #123 Initial input image is not rendered on file open ... it is always the ImageLoad">
-      <created>1534316737123</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1534316737123</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Issue #119 getResizedPictureTypeIfNeeded looks like the Optionals have gone awry in Perception">
-      <created>1534317802999</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1534317802999</updated>
-    </task>
-    <task id="LOCAL-00027" summary="Issue #124 Need to make previewSize in Perception a proper property&#10;Also make the app start, property change etc. work&#10;Tidying up properties lead to the ImageQuality">
-      <created>1534405161501</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1534405161501</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Issue #130 When opening and setSelected index is not first tranform it does not render the input preview properly">
-      <created>1534485510512</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1534485510512</updated>
-    </task>
-    <task id="LOCAL-00029" summary="Issue #129 Properties what is the difference between Save and SaveDefault, also these action should be put onto the edit dialog (as per the Logging edit)">
-      <created>1534494434486</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1534494434486</updated>
-    </task>
-    <task id="LOCAL-00030" summary="Issue #131 Undo Redo problem with properties">
-      <created>1534522305134</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1534522305134</updated>
-    </task>
-    <task id="LOCAL-00031" summary="Issue #102 On FileSave there should be some form of progress to show what is happening">
-      <created>1534686688802</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1534686688802</updated>
-    </task>
-    <task id="LOCAL-00032" summary="Issue #133 Canny Edge controls not opening in correct visible state">
-      <created>1534744354816</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1534744354816</updated>
-    </task>
-    <task id="LOCAL-00033" summary="Issue #116 replace !isMutating() with isNotMutating()">
-      <created>1534748225815</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1534748225815</updated>
-    </task>
-    <task id="LOCAL-00034" summary="Issue #111 Removal of main methods where not needed">
-      <created>1534748401512</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1534748401512</updated>
-    </task>
-    <task id="LOCAL-00035" summary="Issue #128 remove the deprecated getUndoRedo buffer and change all usages to an Optional&#10;Everything should be undoable by default so no optionals ... removed Optional and deprecated&#10;and Issue #57 Tidy up the undoredo buffers that exist everywhere in the system">
-      <created>1534833695968</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1534833695968</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Issue #132 FXViewFactory stores strong references with the bind &#10;.. does it ... it seems not ... need to choose one method to sync these changes from the FXView properties to the Views&#10;Not going to  change the colors as they are not updated dynamically at the moment">
-      <created>1534834634513</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1534834634513</updated>
-    </task>
-    <task id="LOCAL-00037" summary="Issue #52 Better Framwork checkParamterGreaterThanEqual messages etc. should be able to provide some boilerplate here">
-      <created>1534835555738</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1534835555738</updated>
-    </task>
-    <task id="LOCAL-00038" summary="Issue #55 Remove the references to the static deprecated Range2D methods">
-      <created>1534836333610</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1534836333610</updated>
-    </task>
-    <task id="LOCAL-00039" summary="Issue #63 Need to revisit all of the PixelMap etc methods and check that they use the latest stream/foreach paradigm and Optional&lt;Pixel as parameter and in EditPixelMapDialog">
-      <created>1535092776363</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1535092776363</updated>
-    </task>
-    <task id="LOCAL-00040" summary="Issue #139 Looks like lots of renders on Canny Edge Transform">
-      <created>1535180287980</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1535180287980</updated>
-    </task>
-    <task id="LOCAL-00041" summary="Issue #140 Fix Copyright text at the top of each file">
-      <created>1535184145248</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1535184145248</updated>
-    </task>
-    <task id="LOCAL-00042" summary="Issue #140 Fix Copyright text at the top of each file">
-      <created>1535218597325</created>
-      <option name="number" value="00042" />
-      <option name="presentableId" value="LOCAL-00042" />
-      <option name="project" value="LOCAL" />
-      <updated>1535218597325</updated>
-    </task>
-    <task id="LOCAL-00043" summary="Map2D">
-      <created>1535779808732</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1535779808732</updated>
-    </task>
-    <task id="LOCAL-00044" summary="Map2D">
-      <created>1535978809033</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1535978809033</updated>
-    </task>
-    <task id="LOCAL-00045" summary="Removed Pixel from Vertex">
-      <created>1535980637896</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1535980637896</updated>
-    </task>
-    <task id="LOCAL-00046" summary="remove Pixel/PixelChain dependencies from Segments">
-      <created>1536042644923</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1536042644923</updated>
-    </task>
-    <task id="LOCAL-00047" summary="make segments immutable">
-      <created>1536045329402</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1536045329403</updated>
-    </task>
-    <task id="LOCAL-00048" summary="remove unreachable code">
-      <created>1536072013050</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1536072013050</updated>
-    </task>
-    <task id="LOCAL-00049" summary="add PixelMap everywhere">
-      <created>1536089503158</created>
-      <option name="number" value="00049" />
-      <option name="presentableId" value="LOCAL-00049" />
-      <option name="project" value="LOCAL" />
-      <updated>1536089503158</updated>
-    </task>
-    <task id="LOCAL-00050" summary="added missing segment index">
-      <created>1536090324240</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1536090324241</updated>
-    </task>
-    <task id="LOCAL-00051" summary="removed PixelChain from Vertex">
-      <created>1536124272175</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1536124272175</updated>
-    </task>
-    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
-  <component name="TestHistory">
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 18s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 20s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 21s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 23s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 25s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 06m 58s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 09m 42s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 09m 44s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest - 2018.09.05 at 07h 11m 00s.xml">
-      <configuration name="ImmutableLayerMap2DTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ImmutableLayerMap2DTest_layerCount_2 - 2018.09.05 at 07h 13m 02s.xml">
-      <configuration name="ImmutableLayerMap2DTest.layerCount_2" configurationId="JUnit" />
-    </history-entry>
-  </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="594303000" />
+    <option name="totallyTimeSpent" value="5424000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="70" y="-7" width="2497" height="1455" extended-state="6" />
+    <frame x="336" y="0" width="1872" height="1440" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Capture Tool" order="0" />
-      <window_info id="UI Designer" order="1" />
-      <window_info active="true" content_ui="combo" id="Project" order="2" visible="true" weight="0.169881" />
-      <window_info id="Structure" order="3" weight="0.19942552" />
-      <window_info id="DB Browser" order="4" weight="0.41019285" />
-      <window_info id="Image Layers" order="5" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.35375276" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Designer" order="2" />
+      <window_info id="Image Layers" order="3" />
+      <window_info id="DB Browser" order="4" />
+      <window_info id="UI Designer" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info id="Designer" order="7" />
+      <window_info id="Capture Tool" order="7" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.39485627" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.41981846" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.30257186" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32976282" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32976282" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="DB Execution Console" order="7" />
-      <window_info anchor="bottom" id="TeamCity" order="8" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.31240544" />
-      <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
-      <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run with VisualVM" order="14" weight="0.009070295" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32976282" />
+      <window_info anchor="bottom" id="Run with VisualVM" order="11" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="13" />
+      <window_info anchor="bottom" id="TeamCity" order="14" />
       <window_info anchor="bottom" id="Debug with VisualVM" order="15" />
-      <window_info anchor="bottom" id="Inspection Results" order="16" weight="0.32980332" />
-      <window_info anchor="right" x="3161" y="1824" width="666" height="249" id="Documentation" order="0" type="FLOATING" visible="true" />
-      <window_info anchor="right" id="Commander" order="1" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Maven Projects" order="4" />
-      <window_info anchor="right" id="Database" order="5" weight="0.14526057" />
-      <window_info anchor="right" id="Palette&#9;" order="6" />
-      <window_info anchor="right" id="Capture Analysis" order="7" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Maven Projects" order="5" />
+      <window_info anchor="right" id="Database" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
       <window_info anchor="right" id="Theme Preview" order="8" />
-      <window_info anchor="right" id="Palette" order="9" />
-      <window_info anchor="right" id="Coverage" order="10" side_tool="true" visible="true" weight="0.16082542" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1278,688 +710,220 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Issue #123 Initial input image is not rendered on file open ... it is always the ImageLoad" />
-    <MESSAGE value="Issue #119 getResizedPictureTypeIfNeeded looks like the Optionals have gone awry in Perception" />
-    <MESSAGE value="Issue #124 Need to make previewSize in Perception a proper property&#10;Also make the app start, property change etc. work&#10;Tidying up properties lead to the ImageQuality" />
-    <MESSAGE value="Issue #130 When opening and setSelected index is not first tranform it does not render the input preview properly" />
-    <MESSAGE value="Issue #129 Properties what is the difference between Save and SaveDefault, also these action should be put onto the edit dialog (as per the Logging edit)" />
-    <MESSAGE value="Issue #131 Undo Redo problem with properties" />
-    <MESSAGE value="Issue #133 Canny Edge controls not opening in correct visible state" />
-    <MESSAGE value="Issue #116 replace !isMutating() with isNotMutating()" />
-    <MESSAGE value="Issue #111 Removal of main methods where not needed" />
-    <MESSAGE value="Issue #102 On FileSave there should be some form of progress to show what is happening" />
-    <MESSAGE value="Issue #128 remove the deprecated getUndoRedo buffer and change all usages to an Optional&#10;Everything should be undoable by default so no optionals ... removed Optional and deprecated&#10;and Issue #57 Tidy up the undoredo buffers that exist everywhere in the system" />
-    <MESSAGE value="Issue #132 FXViewFactory stores strong references with the bind &#10;.. does it ... it seems not ... need to choose one method to sync these changes from the FXView properties to the Views&#10;Not going to  change the colors as they are not updated dynamically at the moment" />
-    <MESSAGE value="Issue #52 Better Framwork checkParamterGreaterThanEqual messages etc. should be able to provide some boilerplate here" />
-    <MESSAGE value="Issue #55 Remove the references to the static deprecated Range2D methods" />
-    <MESSAGE value="Issue #63 Need to revisit all of the PixelMap etc methods and check that they use the latest stream/foreach paradigm and Optional&lt;Pixel as parameter and in EditPixelMapDialog" />
-    <MESSAGE value="Issue #139 Looks like lots of renders on Canny Edge Transform" />
-    <MESSAGE value="Issue #140 Fix Copyright text at the top of each file" />
-    <MESSAGE value="Map2D" />
-    <MESSAGE value="Removed Pixel from Vertex" />
-    <MESSAGE value="remove Pixel/PixelChain dependencies from Segments" />
-    <MESSAGE value="make segments immutable" />
-    <MESSAGE value="remove unreachable code" />
-    <MESSAGE value="add PixelMap everywhere" />
-    <MESSAGE value="added missing segment index" />
-    <MESSAGE value="removed PixelChain from Vertex" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed PixelChain from Vertex" />
-    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
-    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java</url>
-          <line>94</line>
-          <properties />
-          <option name="timeStamp" value="264" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java</url>
-          <line>239</line>
-          <properties />
-          <option name="timeStamp" value="265" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java</url>
-          <line>201</line>
-          <properties />
-          <option name="timeStamp" value="266" />
-        </line-breakpoint>
-      </breakpoints>
-      <breakpoints-dialog>
-        <breakpoints-dialog />
-      </breakpoints-dialog>
-    </breakpoint-manager>
-    <watches-manager>
-      <configuration name="Application">
-        <watch expression="getValue(33, 9)" language="JAVA" />
-        <watch expression="mData" language="JAVA" />
-      </configuration>
-    </watches-manager>
-  </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="watch">
-      <expression>
-        <expression-string>mLowerLayer.canMergeUp()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>mVersion.get()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>mLowerChanges</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>mChanges</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>mData</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>getValue(33, 9)</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>output</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>e</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>getUseTransform() ? mHeight.getValue() : getPreviousTransform().getHeight()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>getUseTransform() ? mWidth.getValue() : getPreviousTransform().getWidth()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
-    <expressions id="setValue">
-      <expression>
-        <expression-string>Optional.empty()</expression-string>
-        <language-id>JAVA</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
-  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/PictureControl.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/ViewBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="70" column="16" selection-start-line="70" selection-start-column="16" selection-end-line="70" selection-end-column="16" />
+        <state relative-caret-position="558">
+          <caret line="49" column="5" selection-start-line="49" selection-start-column="5" selection-end-line="49" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/math/IntegerPoint.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="453">
-          <caret line="88" selection-start-line="88" selection-end-line="88" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/Objects.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="57" column="26" selection-start-line="57" selection-start-column="26" selection-end-line="57" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/util/ImmutableVectorMap2D.java" />
-    <entry file="file://$PROJECT_DIR$/test-framework-src/com/ownimage/framework/util/ImmutableVectorMap2DTest.java" />
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/event/EventDispatcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="662">
-          <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="67" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/util/Framework.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="78" column="48" selection-start-line="78" selection-start-column="23" selection-end-line="78" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/logging/FrameworkException.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/DoubleView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/logging/StringBufferHandler.java">
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/IGraphics.java" />
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/IGrafitti.java" />
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/GraphicsHelper.java" />
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/ITestableLine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="36" column="18" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/logging/FrameworkLogger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="703">
-          <caret line="157" column="17" selection-start-line="157" selection-start-column="17" selection-end-line="157" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/net/URLClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5580">
-          <caret line="364" column="68" selection-start-line="364" selection-start-column="68" selection-end-line="364" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/ClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6696">
-          <caret line="435" selection-start-line="435" selection-end-line="435" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/vavr-0.9.2.jar!/io/vavr/collection/Vector.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3402">
-          <caret line="229" column="23" selection-start-line="229" selection-start-column="19" selection-end-line="229" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelMapTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="33" column="10" selection-start-line="33" selection-start-column="10" selection-end-line="33" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logging.properties">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/Vector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="365" column="19" selection-start-line="365" selection-start-column="19" selection-end-line="365" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/view/javafx/GrafittiImp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-684">
-          <caret line="9" column="34" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/ISegmentGrafittiHelper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="61" column="53" selection-start-line="61" selection-start-column="53" selection-end-line="61" selection-end-column="53" />
-          <folding>
-            <element signature="e#823#824#0" expanded="true" />
-            <element signature="e#852#853#0" expanded="true" />
-            <element signature="e#1082#1083#0" expanded="true" />
-            <element signature="e#1122#1123#0" expanded="true" />
-            <element signature="e#1352#1353#0" expanded="true" />
-            <element signature="e#1392#1393#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/util/AbstractCollection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="260" column="19" selection-start-line="260" selection-start-column="19" selection-end-line="260" selection-end-column="19" />
-          <folding>
-            <element signature="e#8767#8768#0" expanded="true" />
-            <element signature="e#8824#8825#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Pixel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="80" lean-forward="true" selection-start-line="80" selection-end-line="80" />
-          <folding>
-            <element signature="e#2266#2267#0" expanded="true" />
-            <element signature="e#2316#2317#0" expanded="true" />
-            <element signature="e#2579#2586#0" expanded="true" />
-            <element signature="e#2811#2812#0" expanded="true" />
-            <element signature="e#2860#2861#0" expanded="true" />
-            <element signature="e#3780#3781#0" expanded="true" />
-            <element signature="e#3818#3819#0" expanded="true" />
-            <element signature="e#4264#4265#0" expanded="true" />
-            <element signature="e#4312#4313#0" expanded="true" />
-            <element signature="e#4648#4649#0" expanded="true" />
-            <element signature="e#4687#4688#0" expanded="true" />
-            <element signature="e#4934#4941#0" expanded="true" />
-            <element signature="e#5325#5326#0" expanded="true" />
-            <element signature="e#5374#5375#0" expanded="true" />
-            <element signature="e#5404#5405#0" expanded="true" />
-            <element signature="e#5436#5437#0" expanded="true" />
-            <element signature="e#6200#6201#0" expanded="true" />
-            <element signature="e#6230#6231#0" expanded="true" />
-            <element signature="e#6260#6261#0" expanded="true" />
-            <element signature="e#6307#6308#0" expanded="true" />
-            <element signature="e#6350#6351#0" expanded="true" />
-            <element signature="e#6415#6416#0" expanded="true" />
-            <element signature="e#6707#6708#0" expanded="true" />
-            <element signature="e#6763#6764#0" expanded="true" />
-            <element signature="e#6812#6813#0" expanded="true" />
-            <element signature="e#6863#6864#0" expanded="true" />
-            <element signature="e#7140#7141#0" expanded="true" />
-            <element signature="e#7200#7201#0" expanded="true" />
-            <element signature="e#7252#7253#0" expanded="true" />
-            <element signature="e#7306#7307#0" expanded="true" />
-            <element signature="e#7622#7623#0" expanded="true" />
-            <element signature="e#7678#7679#0" expanded="true" />
-            <element signature="e#7717#7718#0" expanded="true" />
-            <element signature="e#7798#7799#0" expanded="true" />
-            <element signature="e#7828#7829#0" expanded="true" />
-            <element signature="e#7885#7886#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/jre/lib/rt.jar!/sun/security/krb5/internal/crypto/DesCbcCrcEType.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/render/JTPBatchEngine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1224">
-          <caret line="77" selection-start-line="77" selection-end-line="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1026">
-          <caret line="90" column="117" selection-start-line="90" selection-start-column="117" selection-end-line="90" selection-end-column="117" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test-perception/com/ownimage/perception/pixelMap/PixelChainTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="61" column="17" lean-forward="true" selection-start-line="61" selection-start-column="17" selection-end-line="61" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/math/ITestableLine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
+        <state relative-caret-position="126">
           <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="645">
-          <caret line="119" column="64" lean-forward="true" selection-start-line="119" selection-start-column="64" selection-end-line="119" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/StraightSegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="591">
-          <caret line="101" column="4" selection-start-line="101" selection-start-column="4" selection-end-line="101" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/CurveSegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="167" column="22" selection-start-line="167" selection-start-column="22" selection-end-line="167" selection-end-column="22" />
           <folding>
-            <element signature="e#5223#5224#0" expanded="true" />
-            <element signature="e#5248#5249#0" expanded="true" />
-            <element signature="e#5327#5328#0" expanded="true" />
-            <element signature="e#5371#5372#0" expanded="true" />
-            <element signature="e#6240#6241#0" expanded="true" />
-            <element signature="e#6293#6294#0" expanded="true" />
-            <element signature="e#6411#6412#0" expanded="true" />
-            <element signature="e#6456#6457#0" expanded="true" />
-            <element signature="e#6484#6485#0" expanded="true" />
-            <element signature="e#6510#6511#0" expanded="true" />
-            <element signature="e#6538#6539#0" expanded="true" />
-            <element signature="e#6589#6590#0" expanded="true" />
-            <element signature="e#6706#6707#0" expanded="true" />
-            <element signature="e#6751#6752#0" expanded="true" />
-            <element signature="e#7137#7138#0" expanded="true" />
-            <element signature="e#7189#7190#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/LineSegment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="110" selection-start-line="110" selection-end-line="127" selection-end-column="90" />
+        <state relative-caret-position="126">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
           <folding>
-            <element signature="e#4568#4569#0" expanded="true" />
-            <element signature="e#4602#4603#0" expanded="true" />
-            <element signature="e#4681#4682#0" expanded="true" />
-            <element signature="e#4723#4724#0" expanded="true" />
-            <element signature="e#5850#5851#0" expanded="true" />
-            <element signature="e#5886#5887#0" expanded="true" />
-            <element signature="e#5967#5968#0" expanded="true" />
-            <element signature="e#6011#6012#0" expanded="true" />
-            <element signature="e#6615#6616#0" expanded="true" />
-            <element signature="e#6672#6673#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/ISegment.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Point3D.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="717">
-          <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/IVertex.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="25" column="31" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="147" selection-start-line="147" selection-end-line="147" />
+        <state relative-caret-position="126">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
           <folding>
-            <element signature="e#2906#2907#0" expanded="true" />
-            <element signature="e#2944#2945#0" expanded="true" />
-            <element signature="e#2992#2993#0" expanded="true" />
-            <element signature="e#3030#3031#0" expanded="true" />
-            <element signature="e#3227#3228#0" expanded="true" />
-            <element signature="e#3269#3270#0" expanded="true" />
-            <element signature="e#3320#3321#0" expanded="true" />
-            <element signature="e#3347#3348#0" expanded="true" />
-            <element signature="e#3392#3393#0" expanded="true" />
-            <element signature="e#3449#3450#0" expanded="true" />
-            <element signature="e#3494#3495#0" expanded="true" />
-            <element signature="e#3551#3552#0" expanded="true" />
-            <element signature="e#3596#3597#0" expanded="true" />
-            <element signature="e#3653#3654#0" expanded="true" />
-            <element signature="e#3698#3699#0" expanded="true" />
-            <element signature="e#3755#3756#0" expanded="true" />
-            <element signature="e#4060#4061#0" expanded="true" />
-            <element signature="e#4100#4101#0" expanded="true" />
-            <element signature="e#4216#4217#0" expanded="true" />
-            <element signature="e#4253#4254#0" expanded="true" />
-            <element signature="e#4460#4461#0" expanded="true" />
-            <element signature="e#4504#4505#0" expanded="true" />
-            <element signature="e#4557#4558#0" expanded="true" />
-            <element signature="e#4586#4587#0" expanded="true" />
-            <element signature="e#5291#5292#0" expanded="true" />
-            <element signature="e#5348#5349#0" expanded="true" />
-            <element signature="e#5367#5368#0" expanded="true" />
-            <element signature="e#5432#5433#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/PolarCoordinates.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="354">
-          <caret line="324" column="5" lean-forward="true" selection-start-line="324" selection-start-column="5" selection-end-line="324" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelChain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="799" column="36" selection-start-line="799" selection-start-column="36" selection-end-line="799" selection-end-column="36" />
+        <state relative-caret-position="180">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
           <folding>
-            <element signature="e#2182#2189#0" expanded="true" />
-            <element signature="e#2244#2254#0" expanded="true" />
-            <element signature="e#2772#2773#0" expanded="true" />
-            <element signature="e#2811#2812#0" expanded="true" />
-            <element signature="e#4466#4473#0" expanded="true" />
-            <element signature="e#13384#13385#0" expanded="true" />
-            <element signature="e#13431#13432#0" expanded="true" />
-            <element signature="e#13457#13458#0" expanded="true" />
-            <element signature="e#13494#13495#0" expanded="true" />
-            <element signature="e#13862#13863#0" expanded="true" />
-            <element signature="e#13907#13908#0" expanded="true" />
-            <element signature="e#16733#16734#0" expanded="true" />
-            <element signature="e#16765#16766#0" expanded="true" />
-            <element signature="e#16797#16798#0" expanded="true" />
-            <element signature="e#16828#16829#0" expanded="true" />
-            <element signature="e#16870#16871#0" expanded="true" />
-            <element signature="e#16917#16918#0" expanded="true" />
-            <element signature="e#16958#16959#0" expanded="true" />
-            <element signature="e#17004#17005#0" expanded="true" />
-            <element signature="e#17038#17039#0" expanded="true" />
-            <element signature="e#17068#17069#0" expanded="true" />
-            <element signature="e#17539#17540#0" expanded="true" />
-            <element signature="e#17571#17572#0" expanded="true" />
-            <element signature="e#17788#17789#0" expanded="true" />
-            <element signature="e#17821#17822#0" expanded="true" />
-            <element signature="e#18263#18264#0" expanded="true" />
-            <element signature="e#18320#18321#0" expanded="true" />
-            <element signature="e#20510#20511#0" expanded="true" />
-            <element signature="e#20554#20555#0" expanded="true" />
-            <element signature="e#20739#20740#0" expanded="true" />
-            <element signature="e#20776#20777#0" expanded="true" />
-            <element signature="e#22577#22587#0" expanded="true" />
-            <element signature="e#33848#33858#0" expanded="true" />
-            <element signature="e#42152#42162#0" expanded="true" />
-            <element signature="e#43324#43325#0" expanded="true" />
-            <element signature="e#43357#43358#0" expanded="true" />
-            <element signature="e#44666#44667#0" expanded="true" />
-            <element signature="e#44704#44705#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/PixelMap.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Quadrilateral.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="108" column="23" selection-start-line="108" selection-start-column="23" selection-end-line="108" selection-end-column="23" />
+        <state relative-caret-position="126">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
           <folding>
-            <element signature="e#12478#12479#0" expanded="true" />
-            <element signature="e#12508#12509#0" expanded="true" />
-            <element signature="e#12546#12547#0" expanded="true" />
-            <element signature="e#12602#12603#0" expanded="true" />
-            <element signature="e#12642#12643#0" expanded="true" />
-            <element signature="e#12700#12701#0" expanded="true" />
-            <element signature="e#12846#12847#0" expanded="true" />
-            <element signature="e#12908#12909#0" expanded="true" />
-            <element signature="e#12948#12949#0" expanded="true" />
-            <element signature="e#13002#13003#0" expanded="true" />
-            <element signature="e#13040#13041#0" expanded="true" />
-            <element signature="e#13094#13095#0" expanded="true" />
-            <element signature="e#17915#17916#0" expanded="true" />
-            <element signature="e#17979#17980#0" expanded="true" />
-            <element signature="e#18471#18472#0" expanded="true" />
-            <element signature="e#18526#18527#0" expanded="true" />
-            <element signature="e#19522#19523#0" expanded="true" />
-            <element signature="e#19568#19569#0" expanded="true" />
-            <element signature="e#21798#21799#0" expanded="true" />
-            <element signature="e#21854#21855#0" expanded="true" />
-            <element signature="e#21894#21895#0" expanded="true" />
-            <element signature="e#21952#21953#0" expanded="true" />
-            <element signature="e#21994#21995#0" expanded="true" />
-            <element signature="e#22054#22055#0" expanded="true" />
-            <element signature="e#22094#22095#0" expanded="true" />
-            <element signature="e#22152#22153#0" expanded="true" />
-            <element signature="e#22192#22193#0" expanded="true" />
-            <element signature="e#22250#22251#0" expanded="true" />
-            <element signature="e#23629#23630#0" expanded="true" />
-            <element signature="e#23692#23693#0" expanded="true" />
-            <element signature="e#23828#23829#0" expanded="true" />
-            <element signature="e#23883#23884#0" expanded="true" />
-            <element signature="e#23920#23921#0" expanded="true" />
-            <element signature="e#23973#23974#0" expanded="true" />
-            <element signature="e#24009#24010#0" expanded="true" />
-            <element signature="e#24063#24064#0" expanded="true" />
-            <element signature="e#24123#24124#0" expanded="true" />
-            <element signature="e#24162#24163#0" expanded="true" />
-            <element signature="e#24201#24202#0" expanded="true" />
-            <element signature="e#24238#24239#0" expanded="true" />
-            <element signature="e#24970#24971#0" expanded="true" />
-            <element signature="e#24999#25000#0" expanded="true" />
-            <element signature="e#28789#28790#0" expanded="true" />
-            <element signature="e#28869#28870#0" expanded="true" />
-            <element signature="e#31600#31601#0" expanded="true" />
-            <element signature="e#31648#31649#0" expanded="true" />
-            <element signature="e#31720#31721#0" expanded="true" />
-            <element signature="e#31769#31770#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/RTheta.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/SSpline.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Tuple3D.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Vector3D.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Range.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
+          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test-framework-src/com/ownimage/framework/util/ImmutableLayerMap2DTest.java" />
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/util/ImmutableLayerMap2D.java" />
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/ITransform.java">
+    <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="46" column="9" selection-start-line="46" selection-start-column="9" selection-end-line="46" selection-end-column="9" />
+        <state relative-caret-position="4320">
+          <caret line="248" selection-start-line="14" selection-end-line="248" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ActionControl.java">
+    <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1602">
-          <caret line="101" selection-start-line="101" selection-end-line="101" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3910#3911#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/CannyEdgeTransform.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2610">
-          <caret line="180" column="22" selection-start-line="180" selection-start-column="22" selection-end-line="180" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/control/control/ControlBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5544">
-          <caret line="377" selection-start-line="377" selection-end-line="377" />
-          <folding>
-            <element signature="e#11371#11372#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transform/BaseTransform.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4968">
-          <caret line="377" column="27" selection-start-line="377" selection-start-column="27" selection-end-line="377" selection-end-column="27" />
-          <folding>
-            <element signature="e#7552#7553#0" expanded="true" />
-            <element signature="e#7608#7609#0" expanded="true" />
-            <element signature="e#7960#7961#0" expanded="true" />
-            <element signature="e#8013#8014#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/transformSequence/TransformSequence.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="669">
-          <caret line="238" column="36" selection-start-line="238" selection-start-column="36" selection-end-line="238" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/app/Perception.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="677" column="29" selection-start-line="677" selection-start-column="29" selection-end-line="677" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/render/RenderService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="180" column="28" selection-start-line="180" selection-start-column="28" selection-end-line="180" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#6674#6675#0" expanded="true" />
-            <element signature="e#6730#6731#0" expanded="true" />
-            <element signature="e#7916#7917#0" expanded="true" />
-            <element signature="e#7955#7956#0" expanded="true" />
-            <element signature="e#8501#8502#0" expanded="true" />
-            <element signature="e#8539#8540#0" expanded="true" />
-            <element signature="e#8589#8590#0" expanded="true" />
-            <element signature="e#8630#8631#0" expanded="true" />
-            <element signature="e#8672#8673#0" expanded="true" />
-            <element signature="e#8733#8734#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/math/Vector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
+        <state relative-caret-position="72">
           <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/view/javafx/app/FXPerception.java">
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/render/OpenCLBatchEngine.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="31" column="7" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
+        <state>
+          <folding>
+            <element signature="e#0#368#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-perception/com/ownimage/perception/pixelMap/Vertex.java">
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Intersect3D.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="31" column="7" lean-forward="true" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
+        <state relative-caret-position="90">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src-framework/com/ownimage/framework/util/MutableMap2D.java">
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/RuleOfThirdsTransform.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="24" column="29" selection-start-line="24" selection-start-column="29" selection-end-line="24" selection-end-column="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="576">
+          <caret line="38" column="121" selection-start-line="38" selection-start-column="121" selection-end-line="38" selection-end-column="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/gov/nist/math/jama/1.0.3/jama-1.0.3.jar!/Jama/Matrix.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/Line.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/framework/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="4" lean-forward="true" selection-start-column="4" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="666">
+          <caret line="37" column="36" lean-forward="true" selection-start-line="37" selection-start-column="36" selection-end-line="37" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
           <folding>
-            <element signature="e#1089#1090#0" expanded="true" />
-            <element signature="e#1116#1117#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1970,18 +934,6 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="Copyright.UI">
-        <settings>
-          <last-edited>Perception</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2016,7 +968,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>jdk1.8.0_181</last-edited>
+          <last-edited>10</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2028,7 +980,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>TSE.2017</last-edited>
+          <last-edited>framework</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2041,7 +993,7 @@
       </state>
       <state key="ProjectJDKs.UI">
         <settings>
-          <last-edited>1.8</last-edited>
+          <last-edited>1.8 (1)</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2053,7 +1005,7 @@
       </state>
       <state key="ProjectLibrariesConfigurable.UI">
         <settings>
-          <last-edited>aparapi</last-edited>
+          <last-edited>Maven: com.aparapi:aparapi-jni:1.4.1</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2061,21 +1013,6 @@
               </list>
             </option>
           </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ScopeChooserConfigurable.UI">
-        <settings>
-          <last-edited>PixelMap</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-          <order>
-            <scope name="PixelMap" />
-          </order>
         </settings>
       </state>
     </states>

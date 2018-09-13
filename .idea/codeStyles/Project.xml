@@ -24,11 +24,6 @@
         <option name="ITERATION_ELEMENTS_WRAPPING" value="chop_down_if_not_single" />
       </formatting-settings>
     </DBN-SQL>
-    <JavaCodeStyleSettings>
-      <option name="FIELD_NAME_PREFIX" value="m" />
-      <option name="STATIC_FIELD_NAME_PREFIX" value="m" />
-      <option name="PARAMETER_NAME_PREFIX" value="p" />
-    </JavaCodeStyleSettings>
     <DBN-PSQL>
       <case-options enabled="false">
         <option name="KEYWORD_CASE" value="lower" />
