@@ -199,7 +199,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             resetSegmentIndex();
 
             Vector<PixelChain> pixelChains = new Vector<>();
-            mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments()));
+            mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments(this)));
             mPixelChains = pixelChains;
         }
         Framework.logExit(mLogger);
@@ -653,7 +653,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return getShortLineThickness() / 1000d;
     }
 
-    public IPixelMapTransformSource getTransformSource() {
+    IPixelMapTransformSource getTransformSource() {
         return mTransformSource;
     }
 
@@ -709,7 +709,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             final Pixel pixel = getPixelAt(x, y);
             final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
             if (pSegment.closerThan(pPixelChain, centre, getUHVWHalfPixel().length())) {
-                getSegments(x, y).add(new Tuple2<PixelChain, ISegment>(pPixelChain, pSegment));
+                getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
             }
         });
 
@@ -759,7 +759,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         StrongReference<Boolean> result = new StrongReference<>(false);
         candidateSegments.stream()
-                .filter(tuple -> tuple._2().closerThanActual(tuple._1(), uhvw, pMultiplier))
+                .filter(tuple -> tuple._2().closerThanActual(mTransformSource, tuple._1(), uhvw, pMultiplier))
                 .findFirst()
                 .ifPresent(tuple -> result.set(true));
         return result.get();
@@ -797,7 +797,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void reapproximateAllChains() {
-        mPixelChains.stream().parallel().forEach(PixelChain::approximate);
+        mPixelChains.stream().parallel().forEach(pc -> pc.approximate(getTransformSource()));
     }
 
     public void process(final IProgressObserver pProgressObserver) {
@@ -867,16 +867,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         });
     }
 
-    public void setVisited(final Pixel pPixel, final boolean pValue) {
+    void setVisited(final Pixel pPixel, final boolean pValue) {
         setData(pPixel, pValue, VISITED);
     }
 
-    public void setInChain(final Pixel pPixel, final boolean pValue) {
+    void setInChain(final Pixel pPixel, final boolean pValue) {
         setData(pPixel, pValue, IN_CHAIN);
     }
 
 
-    public void setEdge(final Pixel pPixel, final boolean pValue) {
+    void setEdge(final Pixel pPixel, final boolean pValue) {
         if (pPixel.isEdge() == pValue) return; // ignore no change
 
         if (pPixel.isNode() && !pValue) {
@@ -904,7 +904,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                                         final Collection<PixelChain> chains = generateChains(node);
                                         addPixelChains(chains);
                                         chains.parallelStream()
-                                                .forEach(PixelChain::approximate);
+                                                .forEach(pc2 -> pc2.approximate(this.getTransformSource()));
                                     })
 
                             );
@@ -928,7 +928,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     final Collection<PixelChain> chains = generateChains(n);
                     addPixelChains(chains);
                     chains.parallelStream()
-                            .forEach(PixelChain::approximate);
+                            .forEach(pc -> pc.approximate(this.getTransformSource()));
                 });
             }
         }
@@ -944,7 +944,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         setData(pPixel, pValue, NODE);
     }
 
-    public boolean calcIsNode(Pixel pPixel) {
+    boolean calcIsNode(Pixel pPixel) {
         boolean shouldBeNode = false;
         if (pPixel.isEdge()) {
             // here we use transitions to eliminate double counting connected neighbours
@@ -1061,7 +1061,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Counter counter = new Counter(mPixelChains.size());
         reportProgress(pProgressObserver, "Refining ...", 0);
         mPixelChains.forEach(pc -> {
-            pc.approximate();
+            pc.approximate(getTransformSource());
             counter.increase();
             reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
         });
@@ -1125,7 +1125,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 final Vector<PixelChain> pixelChains = (Vector<PixelChain>) ois.readObject();
                 mPixelChains.removeAllElements();
                 mPixelChains.addAll(pixelChains);
-                mPixelChains.parallelStream().forEach(pc -> pc.setPixelMap(this));
 
                 mAllNodes.removeAllElements();
                 forEachPixel(p -> {
@@ -1141,7 +1140,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 mLogger.info("mPixelChains size() = " + mPixelChains.size());
 
                 for (final PixelChain chain : mPixelChains) {
-                    chain.indexSegments();
+                    chain.indexSegments(this);
                 }
 
                 mLogger.info("mSegmentCount = " + mSegmentCount);
@@ -1310,15 +1309,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void printCount() {
         class Counter {
             private int straight = 0;
-            int curve = 0;
+            private int curve = 0;
             private int doubleCurve = 0;
-            int other = 0;
+            private int other = 0;
 
             private void incOther() {
                 other++;
             }
 
-            void print() {
+            private void print() {
                 mLogger.info(() -> String.format("straight %d, curve %d, doubleCurve %d, other %d\n", straight, curve, doubleCurve, other));
             }
         }

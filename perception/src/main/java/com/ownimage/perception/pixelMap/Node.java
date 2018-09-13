@@ -25,14 +25,14 @@ public class Node extends Pixel {
     /**
      * The m pixel chains.
      */
-    private final Vector<PixelChain> mPixelChains = new Vector<PixelChain>();
+    private final Vector<PixelChain> mPixelChains = new Vector<>();
 
     /**
      * Instantiates a new node.
      *
      * @param pPixel the pixel
      */
-    public Node(final Pixel pPixel) {
+    Node(final Pixel pPixel) {
         super(pPixel);
     }
 
@@ -51,8 +51,7 @@ public class Node extends Pixel {
      * Instantiates a new node.
      *
      * @param pPixelMap the pixel map
-     * @param pX        the p x
-     * @param pY        the p y
+     * @param pPoint        the position on the map
      */
     public Node(final PixelMap pPixelMap, final IntegerPoint pPoint) {
         super(pPixelMap, pPoint.getX(), pPoint.getY());
@@ -63,7 +62,7 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    public void addPixelChain(final PixelChain pPixelChain) {
+    void addPixelChain(final PixelChain pPixelChain) {
         mPixelChains.add(pPixelChain);
     }
 
@@ -72,7 +71,7 @@ public class Node extends Pixel {
      *
      * @return the int
      */
-    public int countPixelChains() {
+    private int countPixelChains() {
         return mPixelChains.size();
     }
 
@@ -82,7 +81,7 @@ public class Node extends Pixel {
      * @param pN the p n
      * @return the pixel chain
      */
-    public PixelChain getPixelChain(final int pN) {
+    private PixelChain getPixelChain(final int pN) {
         if (pN > countPixelChains()) {
             throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
                                                        countPixelChains() + " chains.");
@@ -100,17 +99,17 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    public void removePixelChain(final PixelChain pPixelChain) {
+    void removePixelChain(final PixelChain pPixelChain) {
         mPixelChains.remove(pPixelChain);
     }
 
-    public void mergePixelChains() {
+    void mergePixelChains() {
         switch (countPixelChains()) {
             case 2:
                 final PixelChain chain0 = getPixelChain(0);
                 final PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    chain0.merge(chain1, this);
+                    chain0.merge(getPixelMap(), chain1, this);
                 }
                 break;
             case 3:

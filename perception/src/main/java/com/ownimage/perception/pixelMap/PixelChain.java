@@ -61,7 +61,6 @@ public class PixelChain implements Serializable, Cloneable {
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
-    transient private PixelMap mPixelMap;
     transient private double mLength;
     private Vector<Pixel> mPixels = new Vector<>();
     private Vector<ISegment> mSegments = new Vector<>();
@@ -82,7 +81,6 @@ public class PixelChain implements Serializable, Cloneable {
         }
 
         mThickness = Thickness.Normal;
-        mPixelMap = pStartNode.getPixelMap();
         setStartNode(pStartNode);
     }
 
@@ -91,10 +89,6 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     public boolean add(final Pixel pPixel) {
-        if (mPixelMap != pPixel.getPixelMap()) { //
-            throw new IllegalArgumentException("Pixel added does not come from the correct PixelMap");
-        }
-
         return mPixels.add(pPixel);
     }
 
@@ -103,9 +97,10 @@ public class PixelChain implements Serializable, Cloneable {
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the pOtherChain are all
      * LineApproximations.
      *
+     * @param pPixelMap the pixelMap
      * @param pOtherChain the other chain
      */
-    private void add(final PixelChain pOtherChain) {
+    private void add(PixelMap pPixelMap, final PixelChain pOtherChain) {
         validate("add");
         pOtherChain.validate("add pOtherChain");
         mLogger.fine(() -> String.format("this.mPixels.size() = %s", mPixels.size()));
@@ -121,10 +116,6 @@ public class PixelChain implements Serializable, Cloneable {
 
         validate("add");
         pOtherChain.validate("add");
-
-        if (getPixelMap() != pOtherChain.getPixelMap()) {
-            throw new IllegalArgumentException("PixelMap must be the same for both chains");
-        }
 
         if (!lastPixel().equals(pOtherChain.firstPixel())) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + pOtherChain);
@@ -149,7 +140,7 @@ public class PixelChain implements Serializable, Cloneable {
 
         mEndNode = pOtherChain.getEndNode(); // not using setEndNode here as this adds the Node pixel to the end of the pixelChain
         getEndNode().addPixelChain(this);
-        getPixelMap().removePixelChain(pOtherChain);
+        pPixelMap.removePixelChain(pOtherChain);
 
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out..mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
@@ -177,20 +168,13 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
 
-    public void approximate() {
-        //mLogger.info(() -> "PixelChain::approximate");
-        double tolerance = mPixelMap.getLineTolerance() / mPixelMap.getHeight();
-        //mLogger.info(() -> "tolerance " + tolerance);
+    void approximate(IPixelMapTransformSource pTransformSource) {
+        double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
         mSegments = new Vector<>();
         approximate01_straightLines(tolerance);
-        //mLogger.info(() -> "approximate01_straightLines - done");
         approximate02_refineCorners();
-        //mLogger.info(() -> "approximate02_refineCorners - done");
-        refine();
-        //mLogger.info(() -> "refine - done");
+        refine(pTransformSource);
         checkAllVertexesAttached();
-        //mLogger.info(() -> "checkAllVertexesAttached - done");
-        //mLogger.info(() -> "PixelChain::approximate - end");
     }
 
     void approximate01_straightLines(final double pTolerance) {
@@ -305,11 +289,11 @@ public class PixelChain implements Serializable, Cloneable {
         }
     }
 
-    public boolean contains(final Pixel pPixel) {
+    boolean contains(final Pixel pPixel) {
         return mPixels.contains(pPixel);
     }
 
-    public int count() {
+    int count() {
         return mPixels.size();
     }
 
@@ -317,20 +301,20 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.firstElement();
     }
 
-    private double getActualCurvedThickness(final IPixelMapTransformSource pLineInfo, final double pFraction) {
-        final double c = pLineInfo.getLineEndThickness() * getWidth();
-        final double a = c - getWidth();
+    private double getActualCurvedThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+        final double c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
+        final double a = c - getWidth(pTransformSource);
         final double b = -2.0 * a;
         return a * pFraction * pFraction + b * pFraction + c;
     }
 
-    private double getActualSquareThickness(final IPixelMapTransformSource pLineInfo, final double pFraction) {
-        return getWidth();
+    private double getActualSquareThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+        return getWidth(pTransformSource);
     }
 
-    private double getActualStraightThickness(final IPixelMapTransformSource pLineInfo, final double pFraction) {
-        final double min = pLineInfo.getLineEndThickness() * getWidth();
-        final double max = getWidth();
+    private double getActualStraightThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+        final double min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
+        final double max = getWidth(pTransformSource);
         return min + pFraction * (max - min);
     }
 
@@ -340,20 +324,19 @@ public class PixelChain implements Serializable, Cloneable {
      * @param pPosition the position
      * @return the actual thickness
      */
-    public double getActualThickness(final double pPosition) {
+    public double getActualThickness(final IPixelMapTransformSource pTransformSource, final double pPosition) {
         // TODO needs refinement should not really pass the pTolerance in as this can be determined from the PixelChain.
         // TODO this could be improved for performance
-        final IPixelMapTransformSource lineInfo = mPixelMap.getTransformSource();
-        final double fraction = getActualThicknessEndFraction(lineInfo, pPosition);
+        final double fraction = getActualThicknessEndFraction(pTransformSource, pPosition);
 
-        switch (lineInfo.getLineEndShape()) {
+        switch (pTransformSource.getLineEndShape()) {
             case Curved:
-                return getActualCurvedThickness(lineInfo, fraction);
+                return getActualCurvedThickness(pTransformSource, fraction);
             case Square:
-                return getActualSquareThickness(lineInfo, fraction);
+                return getActualSquareThickness(pTransformSource, fraction);
         }
         // fall through to straight
-        return getActualStraightThickness(lineInfo, fraction);
+        return getActualStraightThickness(pTransformSource, fraction);
     }
 
     /**
@@ -362,18 +345,18 @@ public class PixelChain implements Serializable, Cloneable {
      * @param pPosition the position
      * @return the actual thickness end fraction
      */
-    private double getActualThicknessEndFraction(final IPixelMapTransformSource pInfo, final double pPosition) {
+    private double getActualThicknessEndFraction(final IPixelMapTransformSource pTransformSource, final double pPosition) {
 
         final double end2 = getLength() - pPosition;
         final double closestEnd = Math.min(pPosition, end2);
 
-        if (pInfo.getLineEndLengthType() == CannyEdgeTransform.LineEndLengthType.Percent) {
+        if (pTransformSource.getLineEndLengthType() == CannyEdgeTransform.LineEndLengthType.Percent) {
             final double closestPercent = 100.0d * closestEnd / getLength();
-            return Math.min(closestPercent / pInfo.getLineEndLengthPercent(), 1.0d);
+            return Math.min(closestPercent / pTransformSource.getLineEndLengthPercent(), 1.0d);
         }
 
         // type is Pixels
-        final double fraction = pInfo.getHeight() * closestEnd / pInfo.getLineEndLengthPixel();
+        final double fraction = pTransformSource.getHeight() * closestEnd / pTransformSource.getLineEndLengthPixel();
         return Math.min(fraction, 1.0d);
 
     }
@@ -382,7 +365,7 @@ public class PixelChain implements Serializable, Cloneable {
         return mSegments;
     }
 
-    public Node getEndNode() {
+    Node getEndNode() {
         return mEndNode;
     }
 
@@ -404,16 +387,12 @@ public class PixelChain implements Serializable, Cloneable {
      * @param pIndex the index
      * @return the Pixel
      */
-    public Pixel getPixel(final int pIndex) {
+    Pixel getPixel(final int pIndex) {
         if (pIndex < 0 || pIndex > length()) {
             throw new IllegalArgumentException("pIndex, currently: " + pIndex + " must be between 0 and the length of mPixels, currently: " + length());
         }
 
         return mPixels.elementAt(pIndex);
-    }
-
-    private PixelMap getPixelMap() {
-        return mPixelMap;
     }
 
     public int getSegmentCount() {
@@ -423,7 +402,7 @@ public class PixelChain implements Serializable, Cloneable {
         return result;
     }
 
-    public Node getStartNode() {
+    Node getStartNode() {
         return mStartNode;
     }
 
@@ -433,15 +412,11 @@ public class PixelChain implements Serializable, Cloneable {
                 : null;
     }
 
-    public synchronized Thickness getThickness() {
+    synchronized Thickness getThickness() {
         if (mThickness == null) {
             mThickness = Thickness.Normal;
         }
         return mThickness;
-    }
-
-    private IPixelMapTransformSource getTransformSource() {
-        return getPixelMap().getTransformSource();
     }
 
     /**
@@ -458,19 +433,19 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.elementAt(pIndex).getUHVWPoint();
     }
 
-    private double getWidth() {
+    private double getWidth(final IPixelMapTransformSource pLineInfo) {
         Framework.logEntry(mLogger);
 
         double width = 0.0d;
         switch (getThickness()) {
             case Thin:
-                width = getPixelMap().getThinWidth();
+                width = pLineInfo.getShortLineThickness() / 1000.0d;
                 break;
             case Normal:
-                width = getPixelMap().getNormalWidth();
+                width = pLineInfo.getMediumLineThickness() / 1000.0d;
                 break;
             case Thick:
-                width = getPixelMap().getThickWidth();
+                width = pLineInfo.getLongLineThickness() / 1000.0d;
                 break;
         }
 
@@ -479,13 +454,13 @@ public class PixelChain implements Serializable, Cloneable {
 
     }
 
-    PixelChain indexSegments() {
+    PixelChain indexSegments(PixelMap pPixelMap) {
         try {
             PixelChain pixelChainClone = (PixelChain) clone();
             double startPosition = 0.0d;
             for (final ISegment segment : pixelChainClone.mSegments) {
                 ISegment segmentClone = segment.withStartPosition(pixelChainClone, startPosition);
-                getPixelMap().index(pixelChainClone, segmentClone);
+                pPixelMap.index(pixelChainClone, segmentClone);
                 pixelChainClone.mSegments.set(segment.getSegmentIndex(), segmentClone);
                 startPosition += segment.getLength(pixelChainClone);
             }
@@ -527,11 +502,11 @@ public class PixelChain implements Serializable, Cloneable {
     /**
      * Merges two pixel chains together that share a common Node. The result is one PixelChain with a vertex where the Node was. The chain will have correctly attached itself to the node at either
      * end. This needs to be done before after the segments are generated so that the vertex for the node can be created.
-     *
+     * @param pPixelMap the PixelMap
      * @param pOtherChain the other chain
      * @param pNode       the node
      */
-    public void merge(final PixelChain pOtherChain, final Node pNode) {
+    void merge(PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
         if (!(getStartNode() == pNode || getEndNode() == pNode) || !(pOtherChain.getStartNode() == pNode || pOtherChain.getEndNode() == pNode)) {
             throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
         }
@@ -548,15 +523,15 @@ public class PixelChain implements Serializable, Cloneable {
             throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
         }
 
-        add(pOtherChain);
+        add(pPixelMap, pOtherChain);
     }
 
-    void refine() {
-        refine01_matchCurves();
-        refine03_matchDoubleCurves();
+    private void refine(IPixelMapTransformSource pSource) {
+        refine01_matchCurves(pSource);
+        refine03_matchDoubleCurves(pSource);
     }
 
-    private void refine01_matchCurves() {
+    private void refine01_matchCurves(IPixelMapTransformSource pSource) {
 
         if (mSegments.size() == 1) {
             return;
@@ -567,7 +542,7 @@ public class PixelChain implements Serializable, Cloneable {
             // get error values from straight line to start the compare
             ISegment bestSegment = currentSegment;
             double lowestError = currentSegment.calcError(this);
-            lowestError *= getTransformSource().getLineCurvePreference();
+            lowestError *= pSource.getLineCurvePreference();
 
             if (currentSegment == mSegments.firstElement()) {
                 // first segment
@@ -722,7 +697,7 @@ public class PixelChain implements Serializable, Cloneable {
         return copy;
     }
 
-    private void refine03_matchDoubleCurves() {
+    private void refine03_matchDoubleCurves(IPixelMapTransformSource pSource) {
         if (mSegments.size() == 1) return;
         for (final ISegment currentSegment : mSegments) {
             if (currentSegment instanceof CurveSegment) continue;
@@ -737,7 +712,7 @@ public class PixelChain implements Serializable, Cloneable {
             // get error values from straight line to start the compare
             double lowestError = currentSegment.calcError(this);
             if (currentSegment instanceof StraightSegment) {
-                lowestError *= getTransformSource().getLineCurvePreference();
+                lowestError *= pSource.getLineCurvePreference();
             }
 
             try {
@@ -866,27 +841,6 @@ public class PixelChain implements Serializable, Cloneable {
 
     private void setLength(final double pLength) {
         mLength = pLength;
-    }
-
-    public void setPixelMap(final PixelMap pPixelMap) {
-        Framework.logEntry(mLogger);
-        Framework.logParams(mLogger, "pPixelMap", pPixelMap);
-
-        if (pPixelMap == null) {
-            throw new IllegalArgumentException("pPixelMap must not be null");
-        }
-        if (mPixelMap != null) {
-            throw new IllegalStateException("Trying to overwrite a non null mPixelMap value");
-        }
-
-        mPixelMap = pPixelMap;
-        for (final Pixel pixel : mPixels) {
-            pixel.setPixelMap(pPixelMap);
-        }
-
-        getStartNode().setPixelMap(pPixelMap);
-
-        Framework.logExit(mLogger);
     }
 
     private void setStartNode(final Node pNode) {
@@ -1040,7 +994,7 @@ public class PixelChain implements Serializable, Cloneable {
         mLogger.severe(sb::toString);
     }
 
-    public int getPixelLength() {
+    int getPixelLength() {
         return mPixels.size();
     }
 
@@ -1071,14 +1025,14 @@ public class PixelChain implements Serializable, Cloneable {
                 .forEach(p -> p.setEdge(false));
     }
 
-    public void setVisited(boolean pValue) {
+    void setVisited(boolean pValue) {
         for (Pixel pixel : mPixels) {
             pixel.setVisited(pValue);
         }
     }
 
-    public void delete() {
-        getPixelMap().removePixelChain(this);
+    public void delete(PixelMap pPixelMap) {
+        pPixelMap.removePixelChain(this);
         setInChain(false);
         setVisited(false);
         setEdge();

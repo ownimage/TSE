@@ -14,6 +14,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.QuarticEquation;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 public class CurveSegment extends SegmentBase<CurveSegment> {
@@ -33,10 +34,10 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
     }
 
     @Override
-    public boolean closerThanActual(final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
         final double lambda = closestLambda(pPoint, pPixelChain);
         final double position = getStartPosition() + lambda * getLength(pPixelChain);
-        final double actualThickness = getActualThickness(pPixelChain, position) * pMultiplier;
+        final double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
         return closerThan(pPixelChain, pPoint, actualThickness);
     }
 
@@ -162,7 +163,7 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
         return KMath.min(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
-    public Point getP0(PixelChain pPixelChain) {
+    Point getP0(PixelChain pPixelChain) {
         return getStartUHVWPoint(pPixelChain);
     }
 
@@ -180,7 +181,7 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
         return mP1;
     }
 
-    public Point getP2(PixelChain pPixelChain) {
+    Point getP2(PixelChain pPixelChain) {
         return getEndUHVWPoint(pPixelChain);
     }
 

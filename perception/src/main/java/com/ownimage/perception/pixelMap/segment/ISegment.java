@@ -10,6 +10,7 @@ import java.io.Serializable;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 
@@ -25,7 +26,7 @@ public interface ISegment<T> extends Serializable, Cloneable {
      */
     double calcError(final PixelChain pPixelChain);
 
-    boolean closerThanActual(final PixelChain pPixelChain, Point pPoint, double pMultiplier);
+    boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, Point pPoint, double pMultiplier);
 
     int getSegmentIndex();
 

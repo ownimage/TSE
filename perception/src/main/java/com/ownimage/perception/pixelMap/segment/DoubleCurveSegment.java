@@ -10,6 +10,7 @@ import java.awt.*;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
@@ -43,8 +44,8 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
     }
 
     @Override
-    public boolean closerThanActual(final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
-        return mStartCurve.closerThanActual(pPixelChain, pPoint, pMultiplier) || mEndCurve.closerThanActual(pPixelChain, pPoint, pMultiplier);
+    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+        return mStartCurve.closerThanActual(pTransformSource, pPixelChain, pPoint, pMultiplier) || mEndCurve.closerThanActual(pTransformSource, pPixelChain, pPoint, pMultiplier);
     }
 
     @Override

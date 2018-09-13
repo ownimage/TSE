@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 
@@ -62,8 +63,8 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
 
     public abstract double distance(PixelChain pPixelChain, final Point pUVHWPoint);
 
-    public double getActualThickness(final PixelChain pPixelChain, final double pPosition) {
-        return pPixelChain.getActualThickness(pPosition);
+    double getActualThickness(final IPixelMapTransformSource pSource, final PixelChain pPixelChain, final double pPosition) {
+        return pPixelChain.getActualThickness(pSource, pPosition);
     }
 
     public Point getControlPoint() {
@@ -126,7 +127,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return getStartVertex(pPixelChain).getPixelIndex();
     }
 
-    public double getStartPosition() {
+    double getStartPosition() {
         return mStartPosition;
     }
 

@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 
 public class StraightSegment extends SegmentBase<StraightSegment> {
@@ -30,10 +31,10 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     }
 
     @Override
-    public boolean closerThanActual(final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
+    public boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, final Point pPoint, double pMultiplier) {
         final double lambda = mLineSegment.closestLambda(pPoint);
         final double position = getStartPosition() + lambda * getLength(pPixelChain);
-        final double actualThickness = getActualThickness(pPixelChain, position) * pMultiplier;
+        final double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
         return closerThan(pPixelChain, pPoint, actualThickness);
     }
 
@@ -52,7 +53,7 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
         return mLineSegment.distance(pUVHWPoint);
     }
 
-    public Vector getAB() {
+    private Vector getAB() {
         return mLineSegment.getAB();
     }
 
