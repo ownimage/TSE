@@ -5,11 +5,11 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.io.Serializable;
-
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+
+import java.io.Serializable;
 
 /**
  * The Interface IVertex represends a joining point between two segments that approximate part of a PixelChain. The vertex is associated with a Pixel in the PixelChain i.e. it has an integer (x, y)
@@ -25,9 +25,9 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
     int getVertexIndex();
 
-    Line calcTangent(PixelChain pPixelChain);
+    Line calcTangent(PixelChain pPixelChain, final PixelMap pPixelMap);
 
-    Point getUHVWPoint(PixelChain pPixelChain);
+    Point getUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     Pixel getPixel(PixelChain pPixelChain);
 

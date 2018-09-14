@@ -5,44 +5,12 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.util.Counter;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.ImmutableLayerMap2D;
-import com.ownimage.framework.util.KColor;
-import com.ownimage.framework.util.MyBase64;
-import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.*;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
@@ -50,8 +18,18 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-
 import io.vavr.Tuple2;
+
+import java.awt.*;
+import java.io.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed through the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -67,13 +45,13 @@ import io.vavr.Tuple2;
  */
 public class PixelMap implements Serializable, IPersist, PixelConstants {
 
-    private static class AllNodes implements Iterable<Node>, Serializable {
+    private class AllNodes implements Iterable<Node>, Serializable {
         // note made this static so that when it is serialized there is not the attempt to serialize the parent.
 
         private final HashMap<Pixel, Node> mNodes = new HashMap<>();
 
         private Node add(final Pixel pPixel) {
-            pPixel.getPixelMap().setData(pPixel, true, NODE);
+            setData(pPixel, true, NODE);
             final Node node = new Node(pPixel);
             mNodes.put(pPixel, node);
             return node;
@@ -89,7 +67,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
 
         void remove(final Pixel pPixel) {
-            pPixel.getPixelMap().setData(pPixel, false, NODE);
+            setData(pPixel, false, NODE);
             mNodes.remove(pPixel);
         }
 
@@ -254,23 +232,23 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 mLogger.finest("pChain: " + pChain);
             }
 
-            if (pCurrentPixel.isNode()) {
-                pChain.setEndNode(getNode(pCurrentPixel));
+            if (pCurrentPixel.isNode(this)) {
+                pChain.setEndNode(this, getNode(pCurrentPixel));
                 Framework.logExit(mLogger);
                 return;
             }
 
             pChain.add(pCurrentPixel);
-            pCurrentPixel.setInChain(true);
-            pCurrentPixel.setVisited(true);
+            pCurrentPixel.setInChain(this, true);
+            pCurrentPixel.setVisited(this, true);
 
             // try to end quickly at a node to prevent bypassing
-            for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours()) {
+            for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours(this)) {
                 // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
                 // going back to the staring node.
                 // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
                 // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && !(pChain.count() == 2 &&
+                if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(pChain.count() == 2 &&
                         nodalNeighbour.equals(pChain.firstPixel()))) {
                     generateChain(pStartNode, nodalNeighbour, pChain);
                     Framework.logExit(mLogger);
@@ -284,7 +262,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 // going back to the staring node.
                 // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
                 // !neighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
+                if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
                     generateChain(pStartNode, neighbour, pChain);
                     Framework.logExit(mLogger);
                     return;
@@ -301,10 +279,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private Collection<PixelChain> generateChains(final Node pStartNode) {
         final Vector<PixelChain> chains = new Vector<>();
-        pStartNode.setVisited(true);
-        pStartNode.setInChain(true);
+        pStartNode.setVisited(this, true);
+        pStartNode.setInChain(this, true);
         pStartNode.getNeighbours().forEach(neighbour -> {
-            if (neighbour.isNode() || neighbour.isEdge() && !neighbour.isVisited()) {
+            if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
                 final PixelChain chain = new PixelChain(pStartNode);
                 generateChain(pStartNode, neighbour, chain);
                 if (chain.length() > 2) {
@@ -516,14 +494,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     @Deprecated
     public Pixel getPixelAt(final int pX, final int pY) {
-        return new Pixel(this, pX, pY);
+        return new Pixel(pX, pY);
     }
 
     public Optional<Pixel> getOptionalPixelAt(final int pX, final int pY) {
         if (0 > pY || pY >= getHeight()) return Optional.empty();
         if (!m360 && (0 > pX || pX >= getWidth())) return Optional.empty();
         final int x = modWidth(pX);
-        return Optional.of(new Pixel(this, x, pY));
+        return Optional.of(new Pixel(x, pY));
     }
 
     private Optional<Pixel> getOptionalPixelAt(final Point pPoint) {
@@ -552,7 +530,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Color result = pColor;
         if (getShowPixels()) {
             final Optional<Pixel> pixel = getOptionalPixelAt(pIn);
-            if (pixel.isPresent() && pixel.get().isEdge()) {
+            if (pixel.isPresent() && pixel.get().isEdge(this)) {
                 result = getPixelColor();
             }
         }
@@ -691,24 +669,24 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
         //
-        int minX = (int) Math.floor(pSegment.getMinX(pPixelChain) * getWidth() / mAspectRatio) - 1;
+        int minX = (int) Math.floor(pSegment.getMinX(this, pPixelChain) * getWidth() / mAspectRatio) - 1;
         minX = minX < 0 ? 0 : minX;
         minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
 
-        int maxX = (int) Math.ceil(pSegment.getMaxX(pPixelChain) * getWidth() / mAspectRatio) + 1;
+        int maxX = (int) Math.ceil(pSegment.getMaxX(this, pPixelChain) * getWidth() / mAspectRatio) + 1;
         maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
 
-        int minY = (int) Math.floor(pSegment.getMinY(pPixelChain) * getHeight()) - 1;
+        int minY = (int) Math.floor(pSegment.getMinY(this, pPixelChain) * getHeight()) - 1;
         minY = minY < 0 ? 0 : minY;
         minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
 
-        int maxY = (int) Math.ceil(pSegment.getMaxY(pPixelChain) * getHeight()) + 1;
+        int maxY = (int) Math.ceil(pSegment.getMaxY(this, pPixelChain) * getHeight()) + 1;
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
 
         new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
             final Pixel pixel = getPixelAt(x, y);
-            final Point centre = pixel.getUHVWPoint().add(getUHVWHalfPixel());
-            if (pSegment.closerThan(pPixelChain, centre, getUHVWHalfPixel().length())) {
+            final Point centre = pixel.getUHVWPoint(this).add(getUHVWHalfPixel());
+            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
                 getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
             }
         });
@@ -759,7 +737,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         final StrongReference<Boolean> result = new StrongReference<>(false);
         candidateSegments.stream()
-                .filter(tuple -> tuple._2().closerThanActual(mTransformSource, tuple._1(), uhvw, pMultiplier))
+                .filter(tuple -> tuple._2().closerThanActual(this, tuple._1(), mTransformSource, uhvw, pMultiplier))
                 .findFirst()
                 .ifPresent(tuple -> result.set(true));
         return result.get();
@@ -797,7 +775,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void reapproximateAllChains() {
-        mPixelChains.stream().parallel().forEach(pc -> pc.approximate(getTransformSource()));
+        mPixelChains.stream().parallel().forEach(pc -> pc.approximate(getTransformSource(), this));
     }
 
     public void process(final IProgressObserver pProgressObserver) {
@@ -861,7 +839,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     void process03_generateNodes(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         forEachPixel(pixel -> {
-            if (pixel.calcIsNode()) {
+            if (pixel.calcIsNode(this)) {
                 mAllNodes.add(pixel);
             }
         });
@@ -877,9 +855,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 
     void setEdge(final Pixel pPixel, final boolean pValue) {
-        if (pPixel.isEdge() == pValue) return; // ignore no change
+        if (pPixel.isEdge(this) == pValue) return; // ignore no change
 
-        if (pPixel.isNode() && !pValue) {
+        if (pPixel.isNode(this) && !pValue) {
             setNode(pPixel, false);
         }
 
@@ -895,16 +873,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             if (!pValue) { // turning pixel off
                 getPixelChains(pPixel).forEach(pc -> {
                     mPixelChains.remove(pc);
-                    pc.setInChain(false);
-                    pc.setVisited(false);
+                    pc.setInChain(this, false);
+                    pc.setVisited(this, false);
                     pc.streamPixels()
-                            .filter(Pixel::isNode)//pixel -> pixel.isNode())
-                            .forEach(pixel -> pixel.getNode()
+                            .filter(pPixel1 -> pPixel1.isNode(this))//pixel -> pixel.isNode())
+                            .forEach(pixel -> pixel.getNode(this)
                                     .ifPresent(node -> {
                                         final Collection<PixelChain> chains = generateChains(node);
                                         addPixelChains(chains);
                                         chains.parallelStream()
-                                                .forEach(pc2 -> pc2.approximate(this.getTransformSource()));
+                                                .forEach(pc2 -> pc2.approximate(this.getTransformSource(), this));
                                     })
 
                             );
@@ -913,7 +891,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 final Set<Node> nodes = new HashSet<>();
                 resetInChain();
                 resetVisited();
-                pPixel.getNode().ifPresent(nodes::add);
+                pPixel.getNode(this).ifPresent(nodes::add);
                 pPixel.getNeighbours()
                         .forEach(pixel -> {
                             getPixelChains(pixel)
@@ -922,23 +900,23 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                                         nodes.add(pc.getEndNode());
                                         removePixelChain(pc);
                                     });
-                            pixel.getNode().ifPresent(nodes::add); // this is the case where is is not in a chain
+                            pixel.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
                         });
-                nodes.stream().filter(Node::isNode).forEach(n -> {
+                nodes.stream().filter(pNode -> pNode.isNode(this)).forEach(n -> {
                     final Collection<PixelChain> chains = generateChains(n);
                     addPixelChains(chains);
                     chains.parallelStream()
-                            .forEach(pc -> pc.approximate(this.getTransformSource()));
+                            .forEach(pc -> pc.approximate(this.getTransformSource(), this));
                 });
             }
         }
     }
 
     private void setNode(final Pixel pPixel, final boolean pValue) {
-        if (pPixel.isNode() && !pValue) {
+        if (pPixel.isNode(this) && !pValue) {
             mAllNodes.remove(pPixel);
         }
-        if (!pPixel.isNode() && pValue) {
+        if (!pPixel.isNode(this) && pValue) {
             mAllNodes.add(pPixel);
         }
         setData(pPixel, pValue, NODE);
@@ -946,10 +924,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     boolean calcIsNode(final Pixel pPixel) {
         boolean shouldBeNode = false;
-        if (pPixel.isEdge()) {
+        if (pPixel.isEdge(this)) {
             // here we use transitions to eliminate double counting connected neighbours
             // also note the the number of transitions is twice the number of neighbours
-            final int transitionCount = pPixel.countEdgeNeighboursTransitions();
+            final int transitionCount = pPixel.countEdgeNeighboursTransitions(this);
             if (transitionCount != 4) {
                 shouldBeNode = true;
             }
@@ -963,12 +941,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     void process04a_removeLoneNodes(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         forEachPixel(pixel -> {
-            if (pixel.isNode()) {
+            if (pixel.isNode(this)) {
                 final Node node = getNode(pixel);
-                if (node.countEdgeNeighbours() == 0) {
-                    pixel.setEdge(false);
+                if (node.countEdgeNeighbours(this) == 0) {
+                    pixel.setEdge(this, false);
                     setNode(pixel, false);
-                    pixel.setVisited(false);
+                    pixel.setVisited(this, false);
                 }
             }
         });
@@ -979,29 +957,29 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         final HashSet<Pixel> toBeRemoved = new HashSet<>();
 
-        mAllNodes.forEach(node -> node.getNodeNeighbours().forEach(other -> {
-                              final Set<Pixel> nodeSet = node.allEdgeNeighbours();
-                              final Set<Pixel> otherSet = other.allEdgeNeighbours();
+        mAllNodes.forEach(node -> node.getNodeNeighbours(this).forEach(other -> {
+                    final Set<Pixel> nodeSet = node.allEdgeNeighbours(this);
+                    final Set<Pixel> otherSet = other.allEdgeNeighbours(this);
 
-                              nodeSet.remove(other);
-                              nodeSet.removeAll(otherSet);
+                    nodeSet.remove(other);
+                    nodeSet.removeAll(otherSet);
 
-                              otherSet.remove(node);
-                              otherSet.removeAll(nodeSet);
+                    otherSet.remove(node);
+                    otherSet.removeAll(nodeSet);
 
-                              if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-                                  // TODO should be a better check here to see whether it is better to remove the other node
-                                  toBeRemoved.add(node);
-                              }
-                          })
+                    if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                        // TODO should be a better check here to see whether it is better to remove the other node
+                        toBeRemoved.add(node);
+                    }
+                })
         );
 
         mAllNodes.removeAll(toBeRemoved);
         toBeRemoved
                 .forEach(pixel -> {
-                    pixel.setEdge(false);
-                    pixel.allEdgeNeighbours()
-                            .forEach(Pixel::calcIsNode);
+                    pixel.setEdge(this, false);
+                    pixel.allEdgeNeighbours(this)
+                            .forEach(pPixel -> pPixel.calcIsNode(this));
                 });
     }
 
@@ -1019,7 +997,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //                }
 //            }
             forEachPixel(pixel -> {
-                if (pixel.isUnVisitedEdge()) {
+                if (pixel.isUnVisitedEdge(this)) {
                     final Node node = mAllNodes.add(pixel);
                     mPixelChains.addAll(generateChains(node));
                 }
@@ -1039,8 +1017,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
 
         mPixelChains.forEach(pixelChain -> {
-            pixelChain.approximate01_straightLines(pMaxiLineTolerance);
-            pixelChain.approximate02_refineCorners();
+            pixelChain.approximate01_straightLines(this, pMaxiLineTolerance);
+            pixelChain.approximate02_refineCorners(this);
         });
         mLogger.info(() -> "process06_straightLinesRefineCorners - done");
         invalidateSegmentIndex();
@@ -1050,7 +1028,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         //for (final Node node : getAllNodes()) {
-        mAllNodes.stream().forEach(Node::mergePixelChains);
+        mAllNodes.stream().forEach(pNode -> pNode.mergePixelChains(this));
         mSegmentCount = 0;
 
         invalidateSegmentIndex();
@@ -1061,7 +1039,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final Counter counter = new Counter(mPixelChains.size());
         reportProgress(pProgressObserver, "Refining ...", 0);
         mPixelChains.forEach(pc -> {
-            pc.approximate(getTransformSource());
+            pc.approximate(getTransformSource(), this);
             counter.increase();
             reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
         });
@@ -1128,7 +1106,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
                 mAllNodes.removeAllElements();
                 forEachPixel(p -> {
-                    if (p.isNode()) mAllNodes.add(p);
+                    if (p.isNode(this)) mAllNodes.add(p);
                 });
 
                 bais = null;
@@ -1220,8 +1198,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (before != pValue) {
             Services.getServices().getUndoRedoBuffer()
                     .add("Pixel::setValue",
-                         () -> setValueNoUndo(pX, pY, before),
-                         () -> setValueNoUndo(pX, pY, pValue)
+                            () -> setValueNoUndo(pX, pY, before),
+                            () -> setValueNoUndo(pX, pY, pValue)
                     );
         }
         setValueNoUndo(pX, pY, pValue);
@@ -1269,18 +1247,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      * @return true, if the Pixel was thinned.
      */
     private boolean thin(final Pixel pPixel) {
-        if (!pPixel.isEdge()) {
+        if (!pPixel.isEdge(this)) {
             return false;
         }
 
         boolean canEliminate = false;
         for (final int[] set : eliminate) {
-            canEliminate |= pPixel.getNeighbour(set[0]).isEdge() && pPixel.getNeighbour(set[1]).isEdge() &&
-                    !pPixel.getNeighbour(set[2]).isEdge();
+            canEliminate |= pPixel.getNeighbour(set[0]).isEdge(this) && pPixel.getNeighbour(set[1]).isEdge(this) &&
+                    !pPixel.getNeighbour(set[2]).isEdge(this);
         }
 
         if (canEliminate) {
-            pPixel.setEdge(false);
+            pPixel.setEdge(this, false);
         }
         return canEliminate;
     }
@@ -1325,11 +1303,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final Counter counter = new Counter();
 
         mPixelChains.forEach(pc -> pc.getAllSegments().forEach(s -> {
-                                 if (s instanceof StraightSegment) {
-                                 } else if (s instanceof CurveSegment) {
-                                 } else if (s instanceof DoubleCurveSegment) {
-                                 } else counter.incOther();
-                             })
+                    if (s instanceof StraightSegment) {
+                    } else if (s instanceof CurveSegment) {
+                    } else if (s instanceof DoubleCurveSegment) {
+                    } else counter.incOther();
+                })
         );
 
         counter.print();

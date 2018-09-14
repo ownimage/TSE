@@ -5,10 +5,6 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import java.awt.*;
-import java.util.Arrays;
-import java.util.logging.Logger;
-
 import com.aparapi.Kernel;
 import com.aparapi.Range;
 import com.ownimage.framework.control.control.IProgressObserver;
@@ -17,6 +13,10 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -670,9 +670,8 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
      * Specifies the mData that will provide the luminance data in which edges will be detected. A source mData must be set before
      * the process method is called.
      *
-     * @param mData a source of luminance data
+     * @param image a source of luminance data
      */
-
     @Override
     public void setSourceImage(final IPictureSource image) {
         sourceImage = image;
@@ -693,7 +692,7 @@ public class CannyEdgeDetectorOpenCL extends Kernel implements ICannyEdgeDetecto
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean col = pixels[index] == -1;
-                mEdgeData.getPixelAt(x, y).setEdge(col);
+                mEdgeData.getPixelAt(x, y).setEdge(mEdgeData, col);
             }
         }
 

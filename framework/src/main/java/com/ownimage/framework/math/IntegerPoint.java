@@ -39,6 +39,10 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 		return mX == pOther.mX ? mY - pOther.mY : mX - pOther.mX;
 	}
 
+	public int hashCode() {
+		return java.util.Objects.hash(super.hashCode(), mX, mY);
+	}
+
 	@Override
 	public boolean equals(final Object pObj) {
 		boolean value = false;

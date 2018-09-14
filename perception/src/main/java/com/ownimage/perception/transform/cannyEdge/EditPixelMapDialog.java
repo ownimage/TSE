@@ -5,28 +5,9 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.IntStream;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IGrafitti;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
@@ -54,6 +35,15 @@ import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CropTransform;
 import com.ownimage.perception.transform.ITransform;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
 
@@ -139,7 +129,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, final ActionControl pOkAction, final ActionControl pCancelAction) {
         super(pDisplayName, pPropertyName, Services.getServices().getUndoRedoBuffer());
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+        Framework.checkParameterNotNull(mLogger, pPixelMap, "mPixelMap");
 
         mTransform = pTransform;
         mPixelMap = pPixelMap;
@@ -305,7 +295,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         final Range2D range = new Range2D(xMin, xMax, yMin, yMax);
         range.forEach((x, y) -> {
             final Pixel pixel = mPixelMap.getPixelAt(x, y);
-            if (pixel.isNode() || pixel.isEdge()) {
+            if (pixel.isNode(mPixelMap) || pixel.isEdge(mPixelMap)) {
                 grafittiPixel(pGrafittiHelper, pixel);
             }
         });
@@ -319,7 +309,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Color getPixelColor(final Pixel pPixel) {
-        return pPixel.isNode() ? mNodeColor.getValue() : mEdgeColor.getValue();
+        return pPixel.isNode(mPixelMap) ? mNodeColor.getValue() : mEdgeColor.getValue();
     }
 
     private Rectangle pixelToGrafittiRectangle(final Pixel pPixel) {
@@ -346,7 +336,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void grafittiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
         final SegmentGrafittiHelper segmentGrafittiHelper = new SegmentGrafittiHelper(pGrafittiHelper, this::UHVWtoView);
-        mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(pc, segmentGrafittiHelper));
+        mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(mPixelMap, pc, segmentGrafittiHelper));
     }
 
     private Point UHVWtoView(final Point pUHVW) {
@@ -420,12 +410,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private void actionPixelOn(final Pixel pPixel) {
-        pPixel.setEdge(true);
+        pPixel.setEdge(mPixelMap, true);
         mPictureControl.drawGrafitti();
     }
 
     synchronized private void actionPixelToggle(final Pixel pPixel) {
-        pPixel.setEdge(!pPixel.isEdge());
+        pPixel.setEdge(mPixelMap, !pPixel.isEdge(mPixelMap));
         mPictureControl.drawGrafitti();
     }
 
@@ -531,9 +521,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         new Range2D(pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size)
                 .forEach((x, y) ->
                                  mPixelMap.getOptionalPixelAt(x, y)
-                                         .filter(p -> pPixel.getUHVWPoint().distance(p.getUHVWPoint()) < radius)
-                                         .filter(Pixel::isEdge)
-                                         .ifPresent(p -> p.setEdge(false))
+                                         .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
+                                         .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
+                                         .ifPresent(p -> p.setEdge(mPixelMap, false))
                 );
         updateGrafitti();
     }
@@ -584,7 +574,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionDeletePixelChain(final Pixel pPixel) {
-        if (pPixel != null && pPixel.isEdge()) {
+        if (pPixel != null && pPixel.isEdge(mPixelMap)) {
             mPixelMap.getPixelChains(pPixel).forEach(pc -> pc.delete(mPixelMap));
         }
         mPictureControl.drawGrafitti();

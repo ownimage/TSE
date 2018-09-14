@@ -5,13 +5,13 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+
+import java.util.logging.Logger;
 
 /**
  * The Vertex class, this class is immutable. Note: this class has a natural ordering that is inconsistent with equals.
@@ -47,23 +47,24 @@ public class Vertex implements IVertex {
      * Calc tangent always generates a tangent line that goes in the direction of start to finish.
      *
      * @param pPixelChain the Pixel Chain performing this operation
+     * @param pPixelMap
      */
     @Override
-    public Line calcTangent(final PixelChain pPixelChain) {
+    public Line calcTangent(final PixelChain pPixelChain, final PixelMap pPixelMap) {
         Line tangent;
         if (getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null) {
             tangent = null;
         } else if (getStartSegment(pPixelChain) == null) {
-            tangent = getEndSegment(pPixelChain).getStartTangent(pPixelChain);
+            tangent = getEndSegment(pPixelChain).getStartTangent(pPixelMap, pPixelChain);
             tangent = tangent.getReverse();
         } else if (getEndSegment(pPixelChain) == null) {
-            tangent = getStartSegment(pPixelChain).getEndTangent(pPixelChain);
+            tangent = getStartSegment(pPixelChain).getEndTangent(pPixelMap, pPixelChain);
         } else {
-            final Point startTangentPoint = getStartSegment(pPixelChain).getEndTangent(pPixelChain).getPoint(1.0d);
-            final Point endTangentPoint = getEndSegment(pPixelChain).getStartTangent(pPixelChain).getPoint(1.0d);
+            final Point startTangentPoint = getStartSegment(pPixelChain).getEndTangent(pPixelMap, pPixelChain).getPoint(1.0d);
+            final Point endTangentPoint = getEndSegment(pPixelChain).getStartTangent(pPixelMap, pPixelChain).getPoint(1.0d);
             final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
 
-            tangent = new Line(getUHVWPoint(pPixelChain), getUHVWPoint(pPixelChain).add(tangentVector));
+            tangent = new Line(getUHVWPoint(pPixelMap, pPixelChain), getUHVWPoint(pPixelMap, pPixelChain).add(tangentVector));
         }
         return tangent;
     }
@@ -109,8 +110,8 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Point getUHVWPoint(final PixelChain pPixelChain) {
-        return getPixel(pPixelChain).getUHVWPoint();
+    public Point getUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+        return getPixel(pPixelChain).getUHVWPoint(pPixelMap);
     }
 
     @Override

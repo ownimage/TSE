@@ -5,18 +5,13 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The class Pixel provides a wrapper about the byte level information contained in the raw PixelMap array. This can get and set
@@ -36,23 +31,13 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     };
     private static final int[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
     private Point m_UHVW = null;
-    transient private PixelMap mPixelMap;
 
     protected Pixel(final Pixel pPixel) {
-        this(pPixel.getPixelMap(), pPixel.getX(), pPixel.getY());
-        setUHVWPoint(pPixel.getUHVWPoint());
+        this(pPixel.getX(), pPixel.getY());
     }
 
-    public Pixel(final PixelMap pPixelMap, final int pX, final int pY) {
+    public Pixel(final int pX, final int pY) {
         super(pX, pY);
-
-        // TODO this has been commented out to make the deep copy work ... the problem is that the save/load transform does not
-        // preserve the pixel map
-        // if (pPixelMap == null) {
-        // mLogger.severe("pPixelMap must not be mull");
-        // throw new IllegalArgumentException("pPixelMap must not be mull");
-        // }
-        mPixelMap = pPixelMap;
     }
 
     public Pixel(final PixelChain pPixelChain, final int pIndex) {
@@ -61,34 +46,34 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     @Override
     public Pixel add(final IntegerPoint pPoint) {
-        return new Pixel(getPixelMap(), getX() + pPoint.getX(), getY() + pPoint.getY());
+        return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
     }
 
-    public Set<Pixel> allEdgeNeighbours() {
+    public Set<Pixel> allEdgeNeighbours(final PixelMap pPixelMap) {
         final HashSet<Pixel> allNeighbours = new HashSet<Pixel>();
         for (final Pixel pixel : getNeighbours()) {
-            if (pixel.isEdge()) {
+            if (pixel.isEdge(pPixelMap)) {
                 allNeighbours.add(pixel);
             }
         }
         return allNeighbours;
     }
 
-    public boolean calcIsNode() {
-        return mPixelMap.calcIsNode(this);
+    public boolean calcIsNode(final PixelMap pPixelMap) {
+        return pPixelMap.calcIsNode(this);
     }
 
-    protected synchronized void calcUHVWPoint() {
-        final double y = (getY() + 0.5d) / getHeight();
-        final double x = (getX() + 0.5d) / getWidth();
+    protected synchronized void calcUHVWPoint(final PixelMap pPixelMap) {
+        final double y = (getY() + 0.5d) / getHeight(pPixelMap);
+        final double x = (getX() + 0.5d) / getWidth(pPixelMap);
         m_UHVW = new Point(x, y);
     }
 
-    public int countEdgeNeighbours() {
+    public int countEdgeNeighbours(final PixelMap pPixelMap) {
         int count = 0;
 
         for (final Pixel pixel : getNeighbours()) {
-            if (pixel.isEdge()) {
+            if (pixel.isEdge(pPixelMap)) {
                 count++;
             }
         }
@@ -96,15 +81,15 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return count;
     }
 
-    public int countEdgeNeighboursTransitions() {
+    public int countEdgeNeighboursTransitions(final PixelMap pPixelMap) {
         final int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
-        boolean currentState = getNeighbour(NW).isEdge();
+        boolean currentState = getNeighbour(NW).isEdge(pPixelMap);
 
         for (final int neighbour : loop) {
-            if (currentState != getNeighbour(neighbour).isEdge()) {
-                currentState = getNeighbour(neighbour).isEdge();
+            if (currentState != getNeighbour(neighbour).isEdge(pPixelMap)) {
+                currentState = getNeighbour(neighbour).isEdge(pPixelMap);
                 count++;
             }
         }
@@ -112,23 +97,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return count;
     }
 
-    @Override
-    public boolean equals(final Object pObj) {
-        if (pObj == null) return false;
-        if (pObj instanceof Pixel) {
-            final Pixel pixel = (Pixel) pObj;
-            if (getPixelMap() == pixel.getPixelMap()
-                    && getX() == pixel.getX()
-                    && getY() == pixel.getY()) {
-                return true;
-            }
-        }
-        return false;
 
-    }
-
-    private int getHeight() {
-        return getPixelMap().getHeight();
+    private int getHeight(final PixelMap pPixelMap) {
+        return pPixelMap.getHeight();
     }
 
     public Pixel getNeighbour(final int pN) {
@@ -150,7 +121,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Neighbours();
     }
 
-    public Vector<Pixel> getNodeNeighbours() {
+    public Vector<Pixel> getNodeNeighbours(final PixelMap pPixelMap) {
         Framework.logEntry(mLogger);
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("Pixel = " + this);
@@ -158,7 +129,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
         final Vector<Pixel> allNeighbours = new Vector<Pixel>();
         for (final Pixel pixel : getNeighbours()) {
-            if (pixel.isNode()) {
+            if (pixel.isNode(pPixelMap)) {
                 allNeighbours.add(pixel);
             }
         }
@@ -171,31 +142,14 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return allNeighbours;
     }
 
-    public int countNodeNeighbours() {
-        return getNodeNeighbours().size();
-    }
-
-    PixelMap getPixelMap() {
-        return mPixelMap;
-    }
-
-    public void setPixelMap(final PixelMap pPixelMap) {
-        if (pPixelMap == null) {
-            throw new IllegalArgumentException("pPixelMap must not be null");
-        }
-
-        // note below we allow values being set to the same value as nodes may be multiply set from different PixelChains
-        if (mPixelMap != null && mPixelMap != pPixelMap) {
-            throw new IllegalStateException("mPixelMap has already been set ... it can not be changed");
-        }
-
-        mPixelMap = pPixelMap;
+    public int countNodeNeighbours(final PixelMap pPixelMap) {
+        return getNodeNeighbours(pPixelMap).size();
     }
 
     // UHVW = unit height variable width
-    public synchronized Point getUHVWPoint() {
+    public synchronized Point getUHVWPoint(final PixelMap pPixelMap) {
         if (m_UHVW == null) {
-            calcUHVWPoint();
+            calcUHVWPoint(pPixelMap);
         }
         return m_UHVW;
     }
@@ -204,21 +158,16 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         m_UHVW = pUHVW;
     }
 
-    private int getWidth() {
-        return getPixelMap().getWidth();
+    private int getWidth(final PixelMap pPixelMap) {
+        return pPixelMap.getWidth();
     }
 
-    @Override
-    public int hashCode() {
-        return getPixelMap().getWidth() * getY() + getX();
+    public boolean isEdge(final PixelMap pPixelMap) {
+        return pPixelMap.getData(this, EDGE);
     }
 
-    public boolean isEdge() {
-        return getPixelMap().getData(this, EDGE);
-    }
-
-    public void setEdge(final boolean pValue) {
-        getPixelMap().setEdge(this, pValue);
+    public void setEdge(final PixelMap pPixelMap, final boolean pValue) {
+        pPixelMap.setEdge(this, pValue);
     }
 
     public boolean isFixed() {
@@ -230,8 +179,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 //        getPixelMap().setData(this, pValue, FIXED);
 //    }
 
-    public void setInChain(final boolean pValue) {
-        getPixelMap().setInChain(this, pValue);
+    public void setInChain(final PixelMap pPixelMap, final boolean pValue) {
+        pPixelMap.setInChain(this, pValue);
     }
 
     public boolean isNeighbour(final Pixel pPixel) {
@@ -240,24 +189,24 @@ public class Pixel extends IntegerPoint implements PixelConstants {
                 Math.max(Math.abs(pPixel.getX() - getX()), Math.abs(pPixel.getY() - getY())) < 2;
     }
 
-    public boolean isNode() {
-        return getPixelMap().getData(this, NODE);
+    public boolean isNode(final PixelMap pPixelMap) {
+        return pPixelMap.getData(this, NODE);
     }
 
-    public Optional<Node> getNode() {
-        return isNode() ? Optional.of(new Node(this)) : Optional.empty();
+    public Optional<Node> getNode(final PixelMap pPixelMap) {
+        return isNode(pPixelMap) ? Optional.of(new Node(this)) : Optional.empty();
     }
 
-    public boolean isUnVisitedEdge() {
-        return isEdge() && !isVisited();
+    public boolean isUnVisitedEdge(final PixelMap pPixelMap) {
+        return isEdge(pPixelMap) && !isVisited(pPixelMap);
     }
 
-    public boolean isVisited() {
-        return getPixelMap().getData(this, VISITED);
+    public boolean isVisited(final PixelMap pPixelMap) {
+        return pPixelMap.getData(this, VISITED);
     }
 
-    public void setVisited(final boolean pValue) {
-        getPixelMap().setVisited(this, pValue);
+    public void setVisited(final PixelMap pPixelMap, final boolean pValue) {
+        pPixelMap.setVisited(this, pValue);
     }
 
 //    public void printNeighbours(final int pSize) {

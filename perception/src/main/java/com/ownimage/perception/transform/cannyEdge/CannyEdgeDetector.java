@@ -5,16 +5,16 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import java.awt.*;
-import java.util.Arrays;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -92,7 +92,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     private float[] yGradient;
 
     private boolean mKeepRunning;
-    private PixelMap mEdgeData;
+    private PixelMap mPixelMap;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -318,7 +318,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 
     @Override
     public PixelMap getEdgeData() {
-        return mEdgeData;
+        return mPixelMap;
     }
 
     /*
@@ -594,8 +594,8 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     }
 
     @Override
-    public void setEdgeData(final PixelMap edgeData) {
-        mEdgeData = edgeData;
+    public void setEdgeData(final PixelMap pPixelMap) {
+        mPixelMap = pPixelMap;
     }
 
     @Override
@@ -652,15 +652,15 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     }
 
     private void writeEdges(final int pixels[]) {
-        if (mEdgeData == null || mEdgeData.getWidth() != width || mEdgeData.getHeight() != height) {
-            mEdgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
+        if (mPixelMap == null || mPixelMap.getWidth() != width || mPixelMap.getHeight() != height) {
+            mPixelMap = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
         }
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean edge = pixels[index] == -1;
-                mEdgeData.getPixelAt(x, y).setEdge(edge);
+                mPixelMap.getPixelAt(x, y).setEdge(mPixelMap, edge);
             }
         }
 

@@ -5,14 +5,15 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.PixelMap;
+
+import java.util.logging.Logger;
 
 public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> {
 
@@ -35,11 +36,11 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public double calcError(final PixelChain pPixelChain) {
+    public double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            final Point uhvw = pPixelChain.getUHVWPoint(i);
-            final double distance = distance(pPixelChain, uhvw);
+            final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);
+            final double distance = distance(pPixelMap, pPixelChain, uhvw);
 
             error += distance * distance;
         }
@@ -56,12 +57,12 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return mSegmentIndex;
     }
 
-    public boolean closerThan(final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public abstract double distance(PixelChain pPixelChain, final Point pUVHWPoint);
+    public abstract double distance(final PixelMap pPixelMap, PixelChain pPixelChain, final Point pUVHWPoint);
 
     double getActualThickness(final IPixelMapTransformSource pSource, final PixelChain pPixelChain, final double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
@@ -79,13 +80,13 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public Line getEndTangent(final PixelChain pPixelChain) {
-        return new Line(getEndUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain).add(getEndTangentVector(pPixelChain)));
+    public Line getEndTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+        return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
     @Override
-    public Point getEndUHVWPoint(final PixelChain pPixelChain) {
-        return getEndVertex(pPixelChain).getUHVWPoint(pPixelChain);
+    public Point getEndUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+        return getEndVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
     }
 
     @Override
@@ -93,19 +94,19 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
-    public double getMaxX(final PixelChain pPixelChain) {
+    public double getMaxX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMaxY(final PixelChain pPixelChain) {
+    public double getMaxY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinX(final PixelChain pPixelChain) {
+    public double getMinX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinY(final PixelChain pPixelChain) {
+    public double getMinY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
@@ -132,13 +133,13 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public Line getStartTangent(final PixelChain pPixelChain) {
-        return new Line(getStartUHVWPoint(pPixelChain), getStartUHVWPoint(pPixelChain).add(getStartTangentVector(pPixelChain)));
+    public Line getStartTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+        return new Line(getStartUHVWPoint(pPixelMap, pPixelChain), getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain)));
     }
 
     @Override
-    public Point getStartUHVWPoint(final PixelChain pPixelChain) {
-        return getStartVertex(pPixelChain).getUHVWPoint(pPixelChain);
+    public Point getStartUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+        return getStartVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
     }
 
     @Override
@@ -147,21 +148,21 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public void graffiti(final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.grafittiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain));
+    public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+        pGraphics.grafittiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
     }
 
-    public boolean noPixelFurtherThan(final PixelChain pPixelChain, final double pDistance) {
+    public boolean noPixelFurtherThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            final Point uhvw = pPixelChain.getUHVWPoint(i);
-            if (distance(pPixelChain, uhvw) > pDistance) {
+            final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);
+            if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {
                 return false;
             }
         }
         return true;
     }
 
-    protected void setStartPosition(final PixelChain pPixelChain, final double pStartPosition) {
+    protected void setStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
@@ -183,11 +184,11 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     }
 
     @Override
-    public T withStartPosition(final PixelChain pPixelChain, final double pStartPosition) {
+    public T withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
         if (pStartPosition == mStartPosition) return (T) this;
         try {
             final T clone = (T) clone();
-            clone.setStartPosition(pPixelChain, pStartPosition);
+            clone.setStartPosition(pPixelMap, pPixelChain, pStartPosition);
             return clone;
         } catch (final CloneNotSupportedException pCNSE) {
             throw new RuntimeException("Cannot clone", pCNSE);

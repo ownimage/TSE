@@ -5,19 +5,8 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.awt.*;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
@@ -35,6 +24,11 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
+
+import java.awt.*;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 /**
  * This is an Edge Transform Control Container Dialog
@@ -133,8 +127,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         return view;
     }
 
-    private void generatePreviewPictureFromData(final PixelMap pEdgeData) {
-        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pEdgeData) start");
+    private void generatePreviewPictureFromData(final PixelMap pPixelMap) {
+        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) start");
         final int size = getSize();
 
         final PictureType preview;
@@ -149,7 +143,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         final Color background = getProperties().getPixelMapBGColor();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                if (pEdgeData.getPixelAt(x, y).isEdge()) {
+                if (pPixelMap.getPixelAt(x, y).isEdge(pPixelMap)) {
                     preview.setColor(x, y, foreground);
                 } else {
                     preview.setColor(x, y, background);
@@ -157,7 +151,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
             }
         }
         mPreviewPicture.setValue(preview);
-        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pEdgeData) end");
+        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) end");
     }
 
     private int getDefaultSize() {

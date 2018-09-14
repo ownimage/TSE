@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.util.Vector;
-
 import com.ownimage.framework.math.IntegerPoint;
+
+import java.util.Vector;
 
 // TODO: Auto-generated Javadoc
 
@@ -44,7 +44,7 @@ public class Node extends Pixel {
      * @param pY        the p y
      */
     public Node(final PixelMap pPixelMap, final int pX, final int pY) {
-        super(pPixelMap, pX, pY);
+        super(pX, pY);
     }
 
     /**
@@ -54,7 +54,7 @@ public class Node extends Pixel {
      * @param pPoint        the position on the map
      */
     public Node(final PixelMap pPixelMap, final IntegerPoint pPoint) {
-        super(pPixelMap, pPoint.getX(), pPoint.getY());
+        super(pPoint.getX(), pPoint.getY());
     }
 
     /**
@@ -103,13 +103,13 @@ public class Node extends Pixel {
         mPixelChains.remove(pPixelChain);
     }
 
-    void mergePixelChains() {
+    void mergePixelChains(final PixelMap pPixelMap) {
         switch (countPixelChains()) {
             case 2:
                 final PixelChain chain0 = getPixelChain(0);
                 final PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    chain0.merge(getPixelMap(), chain1, this);
+                    chain0.merge(pPixelMap, chain1, this);
                 }
                 break;
             case 3:

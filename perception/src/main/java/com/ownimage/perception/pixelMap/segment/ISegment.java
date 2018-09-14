@@ -5,14 +5,15 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import java.io.Serializable;
-
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.PixelMap;
+
+import java.io.Serializable;
 
 public interface ISegment<T> extends Serializable, Cloneable {
 
@@ -24,15 +25,15 @@ public interface ISegment<T> extends Serializable, Cloneable {
      *
      * @return the sum of the distances.
      */
-    double calcError(final PixelChain pPixelChain);
+    double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain);
 
-    boolean closerThanActual(final IPixelMapTransformSource pTransformSource, final PixelChain pPixelChain, Point pPoint, double pMultiplier);
+    boolean closerThanActual(final PixelMap pPixelMap, final PixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
     int getSegmentIndex();
 
-    boolean closerThan(PixelChain pPixelChain, Point pPoint, double pTolerance);
+    boolean closerThan(final PixelMap pPixelMap, PixelChain pPixelChain, Point pPoint, double pTolerance);
 
-    double closestLambda(final Point pPoint, PixelChain pPixelChain);
+    double closestLambda(final Point pPoint, PixelChain pPixelChain, final PixelMap pPixelMap);
 
     /**
      * Gets the end index (into the mPixels) of this segment.
@@ -42,23 +43,25 @@ public interface ISegment<T> extends Serializable, Cloneable {
      */
     int getEndIndex(PixelChain pPixelChain);
 
-    Line getEndTangent(PixelChain pPixelChain);
+    Line getEndTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the end tangent.
      *
+     * @param pPixelMap
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
-    Vector getEndTangentVector(PixelChain pPixelChain);
+    Vector getEndTangentVector(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the end uhvw point.
      *
+     * @param pPixelMap
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
-    Point getEndUHVWPoint(PixelChain pPixelChain);
+    Point getEndUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the end Vertex of this segment.
@@ -68,11 +71,11 @@ public interface ISegment<T> extends Serializable, Cloneable {
      */
     IVertex getEndVertex(PixelChain pPixelChain);
 
-    double getLength(PixelChain pPixelChain);
+    double getLength(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     int getPixelLength(PixelChain pPixelChain);
 
-    Point getPointFromLambda(PixelChain pPixelChain, double pT);
+    Point getPointFromLambda(final PixelMap pPixelMap, PixelChain pPixelChain, double pT);
 
     /**
      * Gets the start index (into the mPixels) of this segment.
@@ -82,23 +85,27 @@ public interface ISegment<T> extends Serializable, Cloneable {
      */
     int getStartIndex(PixelChain pPixelChain);
 
-    Line getStartTangent(PixelChain pPixelChain);
+    Line getStartTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
      *
+     *
+     * @param pPixelMap
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start tangent
      */
-    Vector getStartTangentVector(PixelChain pPixelChain);
+    Vector getStartTangentVector(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the start uhvw point.
      *
+     *
+     * @param pPixelMap
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
-    Point getStartUHVWPoint(PixelChain pPixelChain);
+    Point getStartUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     /**
      * Gets the start Vertex of this segment.
@@ -108,17 +115,17 @@ public interface ISegment<T> extends Serializable, Cloneable {
      */
     IVertex getStartVertex(PixelChain pPixelChain);
 
-    void graffiti(PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
+    void graffiti(final PixelMap pPixelMap, PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
-    double getMaxX(PixelChain pPixelChain);
+    double getMaxX(final PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMaxY(PixelChain pPixelChain);
+    double getMaxY(final PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMinX(PixelChain pPixelChain);
+    double getMinX(final PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMinY(PixelChain pPixelChain);
+    double getMinY(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     ISegment withSegmentIndex(int pSegmentIndex); // for future use I might want to move a segment
 
-    ISegment withStartPosition(PixelChain pPixelChain, double pStartPosition);
+    ISegment withStartPosition(final PixelMap pPixelMap, PixelChain pPixelChain, double pStartPosition);
 }
