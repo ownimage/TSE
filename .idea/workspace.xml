@@ -24,11 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="Issue #182 SegmentBase implements 2 withXXX methods, it should leave the implementation to the child classes so that I can make segmentIndex and startPosition final.  This also covers making mStartCurve and mEndCurve final in DoubleCurveSegment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/perception/target/" />
     <ignored path="$PROJECT_DIR$/framework/target/" />
@@ -83,28 +81,28 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="class" value="7" />
-          <entry key="java" value="2664" />
+          <entry key="java" value="3508" />
           <entry key="txt" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CLASS" value="7" />
-          <entry key="JAVA" value="2664" />
+          <entry key="JAVA" value="3508" />
           <entry key="PLAIN_TEXT" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="2" />
-          <entry key="java" value="34" />
+          <entry key="java" value="38" />
           <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="2" />
-          <entry key="JAVA" value="34" />
+          <entry key="JAVA" value="38" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
@@ -127,17 +125,105 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5">
-              <caret line="100" column="5" lean-forward="true" selection-start-line="100" selection-start-column="5" selection-end-line="100" selection-end-column="5" />
+            <state relative-caret-position="474">
+              <caret line="1100" column="33" lean-forward="true" selection-start-line="1100" selection-start-column="33" selection-end-line="1100" selection-end-column="33" />
               <folding>
-                <element signature="e#1668#1669#0" expanded="true" />
-                <element signature="e#1710#1711#0" expanded="true" />
-                <element signature="e#2669#2670#0" expanded="true" />
-                <element signature="e#2724#2725#0" expanded="true" />
+                <element signature="e#3616#3617#0" expanded="true" />
+                <element signature="e#3658#3659#0" expanded="true" />
+                <element signature="e#3898#3899#0" expanded="true" />
+                <element signature="e#3941#3942#0" expanded="true" />
+                <element signature="e#3988#3989#0" expanded="true" />
+                <element signature="e#4030#4031#0" expanded="true" />
+                <element signature="e#4081#4082#0" expanded="true" />
+                <element signature="e#4139#4140#0" expanded="true" />
+                <element signature="e#5277#5278#0" expanded="true" />
+                <element signature="e#5332#5333#0" expanded="true" />
+                <element signature="e#5369#5370#0" expanded="true" />
+                <element signature="e#5424#5425#0" expanded="true" />
+                <element signature="e#11992#11993#0" expanded="true" />
+                <element signature="e#12022#12023#0" expanded="true" />
+                <element signature="e#12061#12062#0" expanded="true" />
+                <element signature="e#12117#12118#0" expanded="true" />
+                <element signature="e#12157#12158#0" expanded="true" />
+                <element signature="e#12215#12216#0" expanded="true" />
+                <element signature="e#12362#12363#0" expanded="true" />
+                <element signature="e#12424#12425#0" expanded="true" />
+                <element signature="e#12465#12466#0" expanded="true" />
+                <element signature="e#12519#12520#0" expanded="true" />
+                <element signature="e#12558#12559#0" expanded="true" />
+                <element signature="e#12612#12613#0" expanded="true" />
+                <element signature="e#17429#17430#0" expanded="true" />
+                <element signature="e#17493#17494#0" expanded="true" />
+                <element signature="e#17191#17192#0" expanded="true" />
+                <element signature="e#17246#17247#0" expanded="true" />
+                <element signature="e#18243#18244#0" expanded="true" />
+                <element signature="e#18283#18284#0" expanded="true" />
+                <element signature="e#20629#20630#0" expanded="true" />
+                <element signature="e#20685#20686#0" expanded="true" />
+                <element signature="e#20726#20727#0" expanded="true" />
+                <element signature="e#20784#20785#0" expanded="true" />
+                <element signature="e#20827#20828#0" expanded="true" />
+                <element signature="e#20887#20888#0" expanded="true" />
+                <element signature="e#20928#20929#0" expanded="true" />
+                <element signature="e#20986#20987#0" expanded="true" />
+                <element signature="e#21027#21028#0" expanded="true" />
+                <element signature="e#21085#21086#0" expanded="true" />
+                <element signature="e#22465#22466#0" expanded="true" />
+                <element signature="e#22528#22529#0" expanded="true" />
+                <element signature="e#22665#22666#0" expanded="true" />
+                <element signature="e#22720#22721#0" expanded="true" />
+                <element signature="e#22757#22758#0" expanded="true" />
+                <element signature="e#22810#22811#0" expanded="true" />
+                <element signature="e#22846#22847#0" expanded="true" />
+                <element signature="e#22900#22901#0" expanded="true" />
+                <element signature="e#22953#22954#0" expanded="true" />
+                <element signature="e#22992#22993#0" expanded="true" />
+                <element signature="e#23032#23033#0" expanded="true" />
+                <element signature="e#23069#23070#0" expanded="true" />
+                <element signature="e#23802#23803#0" expanded="true" />
+                <element signature="e#23831#23832#0" expanded="true" />
+                <element signature="e#25433#25434#0" expanded="true" />
+                <element signature="e#25477#25478#0" expanded="true" />
+                <element signature="e#31332#31333#0" expanded="true" />
+                <element signature="e#31380#31381#0" expanded="true" />
+                <element signature="e#31445#31446#0" expanded="true" />
+                <element signature="e#31494#31495#0" expanded="true" />
+                <element signature="e#35932#35933#0" expanded="true" />
+                <element signature="e#35979#35980#0" expanded="true" />
+                <element signature="e#37270#37271#0" expanded="true" />
+                <element signature="e#37321#37322#0" expanded="true" />
+                <element signature="e#42555#42556#0" expanded="true" />
+                <element signature="e#42591#42592#0" expanded="true" />
+                <element signature="e#42572#42573#0" expanded="true" />
+                <element signature="e#42594#42595#0" expanded="true" />
+                <element signature="e#44869#44870#0" expanded="true" />
+                <element signature="e#44902#44903#0" expanded="true" />
+                <element signature="e#47106#47107#0" expanded="true" />
+                <element signature="e#47137#47138#0" expanded="true" />
+                <element signature="e#51729#51730#0" expanded="true" />
+                <element signature="e#51776#51777#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="235" selection-start-line="235" selection-end-line="235" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="454">
+              <caret line="823" column="103" selection-start-line="823" selection-start-column="103" selection-end-line="823" selection-end-column="103" />
             </state>
           </provider>
         </entry>
@@ -145,8 +231,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
-              <caret line="60" column="29" selection-start-line="60" selection-start-column="29" selection-end-line="60" selection-end-column="29" />
+            <state relative-caret-position="508">
+              <caret line="1048" column="17" selection-start-line="1048" selection-start-column="17" selection-end-line="1048" selection-end-column="17" />
               <folding>
                 <element signature="e#2445#2446#0" expanded="true" />
                 <element signature="e#2484#2485#0" expanded="true" />
@@ -158,93 +244,31 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CannyEdgeTransform.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="284">
+              <caret line="285" column="17" selection-start-line="285" selection-start-column="17" selection-end-line="285" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="342">
               <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#207#208#0" expanded="true" />
-                <element signature="e#250#251#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="252">
-              <caret line="24" column="22" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
-              <folding>
-                <element signature="e#867#868#0" expanded="true" />
-                <element signature="e#912#913#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1800">
-              <caret line="109" selection-start-line="109" selection-end-line="113" selection-end-column="5" />
-              <folding>
-                <element signature="e#2752#2753#0" expanded="true" />
-                <element signature="e#2795#2796#0" expanded="true" />
-                <element signature="e#3049#3050#0" expanded="true" />
-                <element signature="e#3088#3089#0" expanded="true" />
-                <element signature="e#3187#3188#0" expanded="true" />
-                <element signature="e#3232#3233#0" expanded="true" />
-                <element signature="e#3331#3332#0" expanded="true" />
-                <element signature="e#3376#3377#0" expanded="true" />
-                <element signature="e#3475#3476#0" expanded="true" />
-                <element signature="e#3520#3521#0" expanded="true" />
-                <element signature="e#3619#3620#0" expanded="true" />
-                <element signature="e#3664#3665#0" expanded="true" />
-                <element signature="e#4057#4058#0" expanded="true" />
-                <element signature="e#4123#4124#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="507">
-              <caret line="198" selection-start-line="198" selection-end-line="198" />
-              <folding>
-                <element signature="e#7299#7300#0" expanded="true" />
-                <element signature="e#7325#7326#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="564">
-              <caret line="103" selection-start-line="103" selection-end-line="103" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="31" column="18" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="18" />
+            <state relative-caret-position="546">
+              <caret line="125" column="29" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -252,11 +276,13 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="31" column="31" selection-start-line="31" selection-start-column="31" selection-end-line="31" selection-end-column="31" />
+            <state relative-caret-position="348">
+              <caret line="38" selection-start-line="38" selection-end-line="40" selection-end-column="5" />
               <folding>
                 <element signature="e#1414#1415#0" expanded="true" />
                 <element signature="e#1464#1465#0" expanded="true" />
+                <element signature="e#1511#1512#0" expanded="true" />
+                <element signature="e#1561#1562#0" expanded="true" />
                 <element signature="e#2196#2197#0" expanded="true" />
                 <element signature="e#2245#2246#0" expanded="true" />
                 <element signature="e#3695#3696#0" expanded="true" />
@@ -286,6 +312,34 @@
           </provider>
         </entry>
       </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="528">
+              <caret line="94" column="29" selection-start-line="94" selection-start-column="29" selection-end-line="94" selection-end-column="29" />
+              <folding>
+                <element signature="e#711#712#0" expanded="true" />
+                <element signature="e#740#741#0" expanded="true" />
+                <element signature="e#1573#1574#0" expanded="true" />
+                <element signature="e#1615#1616#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/util/Vector.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="283">
+              <caret line="800" column="19" selection-start-line="800" selection-start-column="19" selection-end-line="800" selection-end-column="19" />
+              <folding>
+                <element signature="e#30261#30262#0" expanded="true" />
+                <element signature="e#30300#30301#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
@@ -305,6 +359,7 @@
       <find>new Pi</find>
       <find>merge</find>
       <find>PixelChain</find>
+      <find>nodeGet</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -328,10 +383,8 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetector.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorOpenCL.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" />
@@ -339,8 +392,6 @@
         <option value="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" />
@@ -348,6 +399,10 @@
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" />
       </list>
     </option>
   </component>
@@ -362,7 +417,7 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="114" />
-    <option name="width" value="2808" />
+    <option name="width" value="2696" />
     <option name="height" value="2160" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -385,6 +440,81 @@
             <path>
               <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
               <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="math" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+              <item name="framework-0.1-SNAPSHOT.jar" type="ab9368bb:PsiFileNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+              <item name="framework-0.1-SNAPSHOT.jar" type="ab9368bb:PsiFileNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
+              <item name="framework-0.1-SNAPSHOT.jar" type="ab9368bb:PsiFileNode" />
+              <item name="framework" type="462c0819:PsiDirectoryNode" />
+              <item name="math" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -443,18 +573,6 @@
               <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
               <item name="perception" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="ownimage" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
-              <item name="segment" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
-              <item name="TSE.2017" type="462c0819:PsiDirectoryNode" />
-              <item name="perception" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -473,6 +591,36 @@
               <item name="test" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="pixelMap" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; jdk1.8.0_181 &gt;" type="70bed36:NamedLibraryElementNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; jdk1.8.0_181 &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; jdk1.8.0_181 &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TSE" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; jdk1.8.0_181 &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -485,7 +633,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537078104534" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537117487617" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -643,14 +791,14 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29775000" />
+    <option name="totallyTimeSpent" value="34024000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="76" y="0" width="1872" height="1440" extended-state="0" />
+    <frame x="76" y="0" width="1797" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.057766367" weight="0.21578367" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.9422336" visible="true" weight="0.37030905" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.057766367" weight="0.21544452" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.9422336" visible="true" weight="0.37017846" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="DB Browser" order="4" />
@@ -658,8 +806,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info id="Capture Tool" order="7" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32976282" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32976282" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32976282" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32976282" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4039786" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -736,20 +884,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/ViewBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="49" column="5" selection-start-line="49" selection-start-column="5" selection-end-line="49" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/DoubleView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/IGraphics.java" />
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/IGrafitti.java" />
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/framework/control/grafitti/GraphicsHelper.java" />
@@ -923,24 +1057,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="831" column="15" selection-start-line="831" selection-start-column="15" selection-end-line="831" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorOpenCL.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="587">
           <caret line="694" column="60" selection-start-line="694" selection-start-column="60" selection-end-line="694" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="135" column="72" selection-start-line="135" selection-start-column="72" selection-end-line="135" selection-end-column="72" />
         </state>
       </provider>
     </entry>
@@ -955,10 +1075,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="294">
           <caret line="127" column="28" selection-start-line="127" selection-start-column="28" selection-end-line="127" selection-end-column="28" />
-          <folding>
-            <element signature="e#3914#3915#0" expanded="true" />
-            <element signature="e#3960#3961#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -995,8 +1111,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8928">
-          <caret line="576" column="47" selection-start-line="576" selection-start-column="47" selection-end-line="576" selection-end-column="47" />
+        <state relative-caret-position="546">
+          <caret line="125" column="29" selection-start-line="125" selection-start-column="29" selection-end-line="125" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -1011,84 +1127,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="16" column="28" lean-forward="true" selection-start-line="16" selection-start-column="28" selection-end-line="16" selection-end-column="28" />
-          <folding>
-            <element signature="e#711#712#0" expanded="true" />
-            <element signature="e#740#741#0" expanded="true" />
-            <element signature="e#1573#1574#0" expanded="true" />
-            <element signature="e#1615#1616#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="31" column="31" selection-start-line="31" selection-start-column="31" selection-end-line="31" selection-end-column="31" />
-          <folding>
-            <element signature="e#1414#1415#0" expanded="true" />
-            <element signature="e#1464#1465#0" expanded="true" />
-            <element signature="e#2196#2197#0" expanded="true" />
-            <element signature="e#2245#2246#0" expanded="true" />
-            <element signature="e#3695#3696#0" expanded="true" />
-            <element signature="e#3734#3735#0" expanded="true" />
-            <element signature="e#4429#4430#0" expanded="true" />
-            <element signature="e#4487#4488#0" expanded="true" />
-            <element signature="e#4771#4772#0" expanded="true" />
-            <element signature="e#4801#4802#0" expanded="true" />
-            <element signature="e#4855#4856#0" expanded="true" />
-            <element signature="e#4898#4899#0" expanded="true" />
-            <element signature="e#4953#4954#0" expanded="true" />
-            <element signature="e#5005#5006#0" expanded="true" />
-            <element signature="e#5080#5081#0" expanded="true" />
-            <element signature="e#5127#5128#0" expanded="true" />
-            <element signature="e#5448#5449#0" expanded="true" />
-            <element signature="e#5498#5499#0" expanded="true" />
-            <element signature="e#5838#5839#0" expanded="true" />
-            <element signature="e#5890#5891#0" expanded="true" />
-            <element signature="e#6106#6107#0" expanded="true" />
-            <element signature="e#6171#6172#0" expanded="true" />
-            <element signature="e#6229#6230#0" expanded="true" />
-            <element signature="e#6284#6285#0" expanded="true" />
-            <element signature="e#6362#6363#0" expanded="true" />
-            <element signature="e#6412#6413#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="60" column="29" selection-start-line="60" selection-start-column="29" selection-end-line="60" selection-end-column="29" />
-          <folding>
-            <element signature="e#2445#2446#0" expanded="true" />
-            <element signature="e#2484#2485#0" expanded="true" />
-            <element signature="e#2530#2531#0" expanded="true" />
-            <element signature="e#2572#2573#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
           <caret line="24" column="22" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5">
-          <caret line="100" column="5" lean-forward="true" selection-start-line="100" selection-start-column="5" selection-end-line="100" selection-end-column="5" />
-          <folding>
-            <element signature="e#1668#1669#0" expanded="true" />
-            <element signature="e#1710#1711#0" expanded="true" />
-            <element signature="e#2669#2670#0" expanded="true" />
-            <element signature="e#2724#2725#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1098,8 +1140,6 @@
           <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#207#208#0" expanded="true" />
-            <element signature="e#250#251#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1159,6 +1199,188 @@
             <element signature="e#3664#3665#0" expanded="true" />
             <element signature="e#4057#4058#0" expanded="true" />
             <element signature="e#4123#4124#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="38" selection-start-line="38" selection-end-line="40" selection-end-column="5" />
+          <folding>
+            <element signature="e#1414#1415#0" expanded="true" />
+            <element signature="e#1464#1465#0" expanded="true" />
+            <element signature="e#1511#1512#0" expanded="true" />
+            <element signature="e#1561#1562#0" expanded="true" />
+            <element signature="e#2196#2197#0" expanded="true" />
+            <element signature="e#2245#2246#0" expanded="true" />
+            <element signature="e#3695#3696#0" expanded="true" />
+            <element signature="e#3734#3735#0" expanded="true" />
+            <element signature="e#4429#4430#0" expanded="true" />
+            <element signature="e#4487#4488#0" expanded="true" />
+            <element signature="e#4771#4772#0" expanded="true" />
+            <element signature="e#4801#4802#0" expanded="true" />
+            <element signature="e#4855#4856#0" expanded="true" />
+            <element signature="e#4898#4899#0" expanded="true" />
+            <element signature="e#4953#4954#0" expanded="true" />
+            <element signature="e#5005#5006#0" expanded="true" />
+            <element signature="e#5080#5081#0" expanded="true" />
+            <element signature="e#5127#5128#0" expanded="true" />
+            <element signature="e#5448#5449#0" expanded="true" />
+            <element signature="e#5498#5499#0" expanded="true" />
+            <element signature="e#5838#5839#0" expanded="true" />
+            <element signature="e#5890#5891#0" expanded="true" />
+            <element signature="e#6106#6107#0" expanded="true" />
+            <element signature="e#6171#6172#0" expanded="true" />
+            <element signature="e#6229#6230#0" expanded="true" />
+            <element signature="e#6284#6285#0" expanded="true" />
+            <element signature="e#6362#6363#0" expanded="true" />
+            <element signature="e#6412#6413#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="235" selection-start-line="235" selection-end-line="235" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="454">
+          <caret line="823" column="103" selection-start-line="823" selection-start-column="103" selection-end-line="823" selection-end-column="103" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/util/Vector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="800" column="19" selection-start-line="800" selection-start-column="19" selection-end-line="800" selection-end-column="19" />
+          <folding>
+            <element signature="e#30261#30262#0" expanded="true" />
+            <element signature="e#30300#30301#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="94" column="29" selection-start-line="94" selection-start-column="29" selection-end-line="94" selection-end-column="29" />
+          <folding>
+            <element signature="e#711#712#0" expanded="true" />
+            <element signature="e#740#741#0" expanded="true" />
+            <element signature="e#1573#1574#0" expanded="true" />
+            <element signature="e#1615#1616#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_181/src.zip!/java/util/HashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="1060" column="13" selection-start-line="1060" selection-start-column="13" selection-end-line="1060" selection-end-column="13" />
+          <folding>
+            <element signature="e#42126#42127#0" expanded="true" />
+            <element signature="e#42190#42191#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="508">
+          <caret line="1048" column="17" selection-start-line="1048" selection-start-column="17" selection-end-line="1048" selection-end-column="17" />
+          <folding>
+            <element signature="e#2445#2446#0" expanded="true" />
+            <element signature="e#2484#2485#0" expanded="true" />
+            <element signature="e#2530#2531#0" expanded="true" />
+            <element signature="e#2572#2573#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="1100" column="33" lean-forward="true" selection-start-line="1100" selection-start-column="33" selection-end-line="1100" selection-end-column="33" />
+          <folding>
+            <element signature="e#3616#3617#0" expanded="true" />
+            <element signature="e#3658#3659#0" expanded="true" />
+            <element signature="e#3898#3899#0" expanded="true" />
+            <element signature="e#3941#3942#0" expanded="true" />
+            <element signature="e#3988#3989#0" expanded="true" />
+            <element signature="e#4030#4031#0" expanded="true" />
+            <element signature="e#4081#4082#0" expanded="true" />
+            <element signature="e#4139#4140#0" expanded="true" />
+            <element signature="e#5277#5278#0" expanded="true" />
+            <element signature="e#5332#5333#0" expanded="true" />
+            <element signature="e#5369#5370#0" expanded="true" />
+            <element signature="e#5424#5425#0" expanded="true" />
+            <element signature="e#11992#11993#0" expanded="true" />
+            <element signature="e#12022#12023#0" expanded="true" />
+            <element signature="e#12061#12062#0" expanded="true" />
+            <element signature="e#12117#12118#0" expanded="true" />
+            <element signature="e#12157#12158#0" expanded="true" />
+            <element signature="e#12215#12216#0" expanded="true" />
+            <element signature="e#12362#12363#0" expanded="true" />
+            <element signature="e#12424#12425#0" expanded="true" />
+            <element signature="e#12465#12466#0" expanded="true" />
+            <element signature="e#12519#12520#0" expanded="true" />
+            <element signature="e#12558#12559#0" expanded="true" />
+            <element signature="e#12612#12613#0" expanded="true" />
+            <element signature="e#17429#17430#0" expanded="true" />
+            <element signature="e#17493#17494#0" expanded="true" />
+            <element signature="e#17191#17192#0" expanded="true" />
+            <element signature="e#17246#17247#0" expanded="true" />
+            <element signature="e#18243#18244#0" expanded="true" />
+            <element signature="e#18283#18284#0" expanded="true" />
+            <element signature="e#20629#20630#0" expanded="true" />
+            <element signature="e#20685#20686#0" expanded="true" />
+            <element signature="e#20726#20727#0" expanded="true" />
+            <element signature="e#20784#20785#0" expanded="true" />
+            <element signature="e#20827#20828#0" expanded="true" />
+            <element signature="e#20887#20888#0" expanded="true" />
+            <element signature="e#20928#20929#0" expanded="true" />
+            <element signature="e#20986#20987#0" expanded="true" />
+            <element signature="e#21027#21028#0" expanded="true" />
+            <element signature="e#21085#21086#0" expanded="true" />
+            <element signature="e#22465#22466#0" expanded="true" />
+            <element signature="e#22528#22529#0" expanded="true" />
+            <element signature="e#22665#22666#0" expanded="true" />
+            <element signature="e#22720#22721#0" expanded="true" />
+            <element signature="e#22757#22758#0" expanded="true" />
+            <element signature="e#22810#22811#0" expanded="true" />
+            <element signature="e#22846#22847#0" expanded="true" />
+            <element signature="e#22900#22901#0" expanded="true" />
+            <element signature="e#22953#22954#0" expanded="true" />
+            <element signature="e#22992#22993#0" expanded="true" />
+            <element signature="e#23032#23033#0" expanded="true" />
+            <element signature="e#23069#23070#0" expanded="true" />
+            <element signature="e#23802#23803#0" expanded="true" />
+            <element signature="e#23831#23832#0" expanded="true" />
+            <element signature="e#25433#25434#0" expanded="true" />
+            <element signature="e#25477#25478#0" expanded="true" />
+            <element signature="e#31332#31333#0" expanded="true" />
+            <element signature="e#31380#31381#0" expanded="true" />
+            <element signature="e#31445#31446#0" expanded="true" />
+            <element signature="e#31494#31495#0" expanded="true" />
+            <element signature="e#35932#35933#0" expanded="true" />
+            <element signature="e#35979#35980#0" expanded="true" />
+            <element signature="e#37270#37271#0" expanded="true" />
+            <element signature="e#37321#37322#0" expanded="true" />
+            <element signature="e#42555#42556#0" expanded="true" />
+            <element signature="e#42591#42592#0" expanded="true" />
+            <element signature="e#42572#42573#0" expanded="true" />
+            <element signature="e#42594#42595#0" expanded="true" />
+            <element signature="e#44869#44870#0" expanded="true" />
+            <element signature="e#44902#44903#0" expanded="true" />
+            <element signature="e#47106#47107#0" expanded="true" />
+            <element signature="e#47137#47138#0" expanded="true" />
+            <element signature="e#51729#51730#0" expanded="true" />
+            <element signature="e#51776#51777#0" expanded="true" />
           </folding>
         </state>
       </provider>

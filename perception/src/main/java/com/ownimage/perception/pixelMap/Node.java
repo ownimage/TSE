@@ -30,31 +30,10 @@ public class Node extends Pixel {
     /**
      * Instantiates a new node.
      *
-     * @param pPixel the pixel
+     * @param pIntegerPoint the pixel
      */
-    Node(final Pixel pPixel) {
-        super(pPixel);
-    }
-
-    /**
-     * Instantiates a new node.
-     *
-     * @param pPixelMap the pixel map
-     * @param pX        the p x
-     * @param pY        the p y
-     */
-    public Node(final PixelMap pPixelMap, final int pX, final int pY) {
-        super(pX, pY);
-    }
-
-    /**
-     * Instantiates a new node.
-     *
-     * @param pPixelMap the pixel map
-     * @param pPoint        the position on the map
-     */
-    public Node(final PixelMap pPixelMap, final IntegerPoint pPoint) {
-        super(pPoint.getX(), pPoint.getY());
+    Node(final IntegerPoint pIntegerPoint) {
+        super(pIntegerPoint);
     }
 
     /**

@@ -36,6 +36,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         this(pPixel.getX(), pPixel.getY());
     }
 
+    public Pixel(final IntegerPoint pIntegerPoint) {
+        this(pIntegerPoint.getX(), pIntegerPoint.getY());
+    }
+
     public Pixel(final int pX, final int pY) {
         super(pX, pY);
     }
