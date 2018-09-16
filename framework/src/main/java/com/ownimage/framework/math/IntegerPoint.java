@@ -40,7 +40,7 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 	}
 
 	public int hashCode() {
-		return java.util.Objects.hash(super.hashCode(), mX, mY);
+        return java.util.Objects.hash(mX, mY);
 	}
 
 	@Override
@@ -53,7 +53,8 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 		return value;
 	}
 
-	public IntegerPoint getEast() {
+
+    public IntegerPoint getEast() {
 		return new IntegerPoint(getX() + 1, getY());
 	}
 

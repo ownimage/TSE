@@ -1,3 +1,4 @@
+
 /*
  *  This code is part of the Perception programme.
  *
@@ -45,6 +46,10 @@ import java.util.stream.Stream;
  */
 public class PixelMap implements Serializable, IPersist, PixelConstants {
 
+    public int getPixelChainCount() {
+        return mPixelChains.size();
+    }
+
     private class AllNodes implements Iterable<Node>, Serializable {
         // note made this static so that when it is serialized there is not the attempt to serialize the parent.
 
@@ -87,6 +92,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             return mNodes.size();
         }
 
+    }
+
+    public void actionDeletePixelChain(Pixel pPixel) {
+        if (pPixel != null && pPixel.isEdge(this)) {
+            getPixelChains(pPixel).forEach(pc -> pc.delete(this));
+        }
     }
 
     public final static Logger mLogger = Framework.getLogger();
@@ -176,9 +187,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (!isSegmentIndexValid()) {
             resetSegmentIndex();
 
-            final Vector<PixelChain> pixelChains = new Vector<>();
-            mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments(this)));
-            mPixelChains = pixelChains;
+            indexSegments();
         }
         Framework.logExit(mLogger);
     }
@@ -1117,9 +1126,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 mLogger.info("mAllNodes size() = " + mAllNodes.size());
                 mLogger.info("mPixelChains size() = " + mPixelChains.size());
 
-                for (final PixelChain chain : mPixelChains) {
-                    chain.indexSegments(this);
-                }
+                indexSegments();
 
                 mLogger.info("mSegmentCount = " + mSegmentCount);
                 calcSegmentIndex();
@@ -1130,6 +1137,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
         }
         Framework.logExit(mLogger);
+    }
+
+    private void indexSegments() {
+        final Vector<PixelChain> pixelChains = new Vector<>();
+        mPixelChains.forEach(pc -> {
+            PixelChain pcNew = pc.indexSegments(this);
+            pixelChains.add(pcNew);
+            pc.getStartNode().removePixelChain(pc);
+            pc.getStartNode().addPixelChain(pcNew);
+            pc.getEndNode().removePixelChain(pc);
+            pc.getEndNode().addPixelChain(pcNew);
+        });
+        mPixelChains = pixelChains;
     }
 
     synchronized void removePixelChain(final PixelChain pPixelChain) {

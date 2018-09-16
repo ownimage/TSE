@@ -100,11 +100,15 @@ public class Node extends Pixel {
      * @param pPixelChain the pixel chain
      */
     void removePixelChain(final PixelChain pPixelChain) {
+        mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
         mPixelChains.remove(pPixelChain);
+        mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
     }
 
     void mergePixelChains(final PixelMap pPixelMap) {
-        switch (countPixelChains()) {
+        int count = countPixelChains();
+        mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
+        switch (count) {
             case 2:
                 final PixelChain chain0 = getPixelChain(0);
                 final PixelChain chain1 = getPixelChain(1);

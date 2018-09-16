@@ -92,7 +92,7 @@ public class PixelChain implements Serializable, Cloneable {
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the pOtherChain are all
      * LineApproximations.
      *
-     * @param pPixelMap the pixelMap
+     * @param pPixelMap   the pixelMap
      * @param pOtherChain the other chain
      */
     private void add(final PixelMap pPixelMap, final PixelChain pOtherChain) {
@@ -137,6 +137,8 @@ public class PixelChain implements Serializable, Cloneable {
         getEndNode().addPixelChain(this);
         pPixelMap.removePixelChain(pOtherChain);
 
+        mLogger.fine(() -> String.format("this.mPixels.size() = %s", mPixels.size()));
+        mLogger.fine(() -> String.format("this.mSegments.size() = %s", mSegments.size()));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out..mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
         validate("add");
@@ -417,7 +419,7 @@ public class PixelChain implements Serializable, Cloneable {
     /**
      * Gets the UHVW value of the Pixel at the specified position.
      *
-     * @param pIndex the index
+     * @param pIndex    the index
      * @param pPixelMap
      * @return the UHVW Point
      */
@@ -498,11 +500,13 @@ public class PixelChain implements Serializable, Cloneable {
     /**
      * Merges two pixel chains together that share a common Node. The result is one PixelChain with a vertex where the Node was. The chain will have correctly attached itself to the node at either
      * end. This needs to be done before after the segments are generated so that the vertex for the node can be created.
-     * @param pPixelMap the PixelMap
+     *
+     * @param pPixelMap   the PixelMap
      * @param pOtherChain the other chain
      * @param pNode       the node
      */
     void merge(final PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
+        mLogger.fine("merge");
         if (!(getStartNode() == pNode || getEndNode() == pNode) || !(pOtherChain.getStartNode() == pNode || pOtherChain.getEndNode() == pNode)) {
             throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
         }
@@ -519,7 +523,10 @@ public class PixelChain implements Serializable, Cloneable {
             throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
         }
 
+        // TODO should recalculate thickness from source values
+        mThickness = getPixelLength() > pOtherChain.getPixelLength() ? mThickness : pOtherChain.mThickness;
         add(pPixelMap, pOtherChain);
+        pOtherChain.detatach(pPixelMap);
     }
 
     private void refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
@@ -685,13 +692,13 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
 
-    private PixelChain copy() {
-        final PixelChain copy = new PixelChain(mStartNode);
-        copy.mEndNode = mEndNode;
-        copy.mPixels = mPixels;
-        copy.mThickness = mThickness;
-        return copy;
-    }
+//    private PixelChain copy() {
+//        final PixelChain copy = new PixelChain(mStartNode);
+//        copy.mEndNode = mEndNode;
+//        copy.mPixels = mPixels;
+//        copy.mThickness = mThickness;
+//        return copy;
+//    }
 
     private void refine03_matchDoubleCurves(final IPixelMapTransformSource pSource, final PixelMap pPixelMap) {
         if (mSegments.size() == 1) return;
@@ -786,9 +793,11 @@ public class PixelChain implements Serializable, Cloneable {
     /**
      * Reverses the order of the pixels in the pixel chain. This means reversing the start and end nodes. And all of the segments in the line are also reversed and repaced with new straight line
      * segments.
+     *
      * @param pPixelMap
      */
     private void reverse(final PixelMap pPixelMap) {
+        validate("reverse");
         // note that this uses direct access to the data members as the public setters have other side effects
         mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
@@ -986,6 +995,7 @@ public class PixelChain implements Serializable, Cloneable {
             vertex = vertex.getEndSegment(this) != null
                     ? vertex.getEndSegment(this).getEndVertex(this)
                     : null;
+            ;
         }
 
         mLogger.severe(sb::toString);
@@ -1029,10 +1039,20 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     public void delete(final PixelMap pPixelMap) {
-        pPixelMap.removePixelChain(this);
+        mLogger.fine("delete");
         setInChain(pPixelMap, false);
         setVisited(pPixelMap, false);
+        detatach(pPixelMap);
         setEdge(pPixelMap);
+    }
+
+    private void detatach(final PixelMap pPixelMap) {
+        mLogger.fine("detatach");
+        pPixelMap.removePixelChain(this);
+        getStartNode().removePixelChain(this);
+        getStartNode().mergePixelChains(pPixelMap);
+        getEndNode().removePixelChain(this);
+        getEndNode().mergePixelChains(pPixelMap);
     }
 
 }

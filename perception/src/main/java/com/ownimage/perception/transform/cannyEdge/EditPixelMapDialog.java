@@ -83,7 +83,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final CropTransform mCropTransform;
 
     private final PictureControl mPictureControl = new PictureControl("Preview", "preview", NullContainer,
-                                                                new PictureType(100, 100));
+            new PictureType(100, 100));
 
     private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
     private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
@@ -256,9 +256,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private IDialogView getDialogView() {
         if (mEditPixelMapDialogView == null) {
             mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
-                                                                             DialogOptions.builder().withCompleteFunction(this::dialogClose).build(),
-                                                                             getUndoRedoBuffer(),
-                                                                             mCancelAction, mOkAction);
+                    DialogOptions.builder().withCompleteFunction(this::dialogClose).build(),
+                    getUndoRedoBuffer(),
+                    mCancelAction, mOkAction);
         }
         return mEditPixelMapDialogView;
     }
@@ -520,10 +520,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         new Range2D(pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size)
                 .forEach((x, y) ->
-                                 mPixelMap.getOptionalPixelAt(x, y)
-                                         .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
-                                         .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
-                                         .ifPresent(p -> p.setEdge(mPixelMap, false))
+                        mPixelMap.getOptionalPixelAt(x, y)
+                                .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
+                                .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
+                                .ifPresent(p -> p.setEdge(mPixelMap, false))
                 );
         updateGrafitti();
     }
@@ -574,9 +574,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionDeletePixelChain(final Pixel pPixel) {
-        if (pPixel != null && pPixel.isEdge(mPixelMap)) {
-            mPixelMap.getPixelChains(pPixel).forEach(pc -> pc.delete(mPixelMap));
-        }
+        mPixelMap.actionDeletePixelChain(pPixel);
         mPictureControl.drawGrafitti();
     }
 
