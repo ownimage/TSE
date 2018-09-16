@@ -253,7 +253,7 @@ public class PixelMapTest {
                 "           ",
         };
         final PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process(null);
+        pixelMap.actionProcess(null);
         assertEquals(3, pixelMap.getPixelChainCount());
 
         // WHEN

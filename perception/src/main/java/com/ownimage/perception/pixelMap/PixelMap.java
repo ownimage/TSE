@@ -100,6 +100,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
+    public void actionPixelOff(Pixel pPixel) {
+        pPixel.setEdge(this, false);
+    }
+
+    public void actionPixelOn(Pixel pPixel) {
+        pPixel.setEdge(this, true);
+    }
+
+    public void actionPixelToggle(Pixel pPixel) {
+        pPixel.setEdge(this, !pPixel.isEdge(this));
+    }
+
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 1L;
@@ -192,7 +204,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    public void equalizeValues(final EqualizeValues pValues) {
+    public void actionEqualizeValues(final EqualizeValues pValues) {
         // TODO do not like this mutable parameter
 
         int totalLength = 0;
@@ -783,11 +795,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (pProgressObserver != null) pProgressObserver.setProgress(pProgressString, pPercent);
     }
 
-    public void reapproximateAllChains() {
+    public void actionReapproximate() {
         mPixelChains.stream().parallel().forEach(pc -> pc.approximate(getTransformSource(), this));
     }
 
-    public void process(final IProgressObserver pProgressObserver) {
+    public void actionProcess(final IProgressObserver pProgressObserver) {
         try {
             mAutoTrackChanges = false;
             // // pProgress.showProgressBar();
@@ -1200,7 +1212,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mHeight = pHeight;
     }
 
-    public void setPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
+    public void actionSetPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
         Framework.logEntry(mLogger);
         final int shortLength = pTransform.getShortLineLength();
         final int mediumLength = pTransform.getMediumLineLength();

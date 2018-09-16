@@ -386,7 +386,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOn()) actionPixelOn(pPixel);
             if (isPixelActionOff()) actionPixelOff(pPixel);
             if (isPixelActionToggle()) actionPixelToggle(pPixel);
-            if (isPixelActionDeletePixelChain()) actionPixelChainDelete(pPixel);
+            if (isPixelActionDeletePixelChain()) actionDeletePixelChain(pPixel);
             autoUpdatePreview();
         }
         grafittiCursor(pEvent, pPixel);
@@ -410,17 +410,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private void actionPixelOn(final Pixel pPixel) {
-        pPixel.setEdge(mPixelMap, true);
+        mPixelMap.actionPixelOn(pPixel);
         mPictureControl.drawGrafitti();
     }
 
     synchronized private void actionPixelToggle(final Pixel pPixel) {
         pPixel.setEdge(mPixelMap, !pPixel.isEdge(mPixelMap));
-        mPictureControl.drawGrafitti();
-    }
-
-    synchronized private void actionPixelChainDelete(final Pixel pPixel) {
-        mPixelMap.getPixelChains(pPixel).forEach(pc -> pc.delete(mPixelMap));
         mPictureControl.drawGrafitti();
     }
 
@@ -523,7 +518,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                         mPixelMap.getOptionalPixelAt(x, y)
                                 .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
                                 .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
-                                .ifPresent(p -> p.setEdge(mPixelMap, false))
+                                .ifPresent(mPixelMap::actionPixelOff)
                 );
         updateGrafitti();
     }
