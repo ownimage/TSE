@@ -18,25 +18,13 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
 
     public final static long serialVersionUID = 1L;
 
-    /**
-     * The start tangent. This should match the start vertex tangent exactly.
-     */
-    private final Line mStartTangent;
-
-    /**
-     * The end tangent. This should match the start vertex tangent exactly.
-     */
-    private final Line mEndTangent;
-
     private final CurveSegment mStartCurve;
     private final CurveSegment mEndCurve;
 
     DoubleCurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
         super(pStartCurve.getSegmentIndex());
         mStartCurve = pStartCurve;
-        mStartTangent = mStartCurve.getStartTangent(pPixelMap, pPixelChain);
         mEndCurve = pEndCurve;
-        mEndTangent = mEndCurve.getEndTangent(pPixelMap, pPixelChain);
     }
 
     @Override
@@ -78,12 +66,12 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
 
     @Override
     public Line getEndTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return mEndTangent;
+        return mEndCurve.getEndTangent(pPixelMap, pPixelChain);
     }
 
     @Override
     public Vector getEndTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return mEndTangent.getAB();
+        return mEndCurve.getEndTangent(pPixelMap, pPixelChain).getAB();
     }
 
     @Override
@@ -124,12 +112,12 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
 
     @Override
     public Line getStartTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return mStartTangent;
+        return mEndCurve.getStartTangent(pPixelMap, pPixelChain);
     }
 
     @Override
     public Vector getStartTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return mStartTangent.getAB();
+        return mEndCurve.getStartTangent(pPixelMap, pPixelChain).getAB();
     }
 
     @Override
