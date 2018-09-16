@@ -20,18 +20,15 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
-    private int mSegmentIndex;
-    private double mStartPosition;
+    private final int mSegmentIndex;
+    private final double mStartPosition;
 
     public SegmentBase(final int pSegmentIndex) {
-        mSegmentIndex = pSegmentIndex;
+        this(pSegmentIndex, 0.0d);
     }
 
-    protected void setSegmentIndex(final int pSegmentIndex) {
+    public SegmentBase(final int pSegmentIndex, final double pStartPosition) {
         mSegmentIndex = pSegmentIndex;
-    }
-
-    protected void setStartPosition(final double pStartPosition) {
         mStartPosition = pStartPosition;
     }
 
@@ -68,6 +65,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return pPixelChain.getActualThickness(pSource, pPosition);
     }
 
+    // TOD c
     public Point getControlPoint() {
         Framework.logEntry(mLogger);
         Framework.logExit(mLogger);
@@ -162,37 +160,9 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         return true;
     }
 
-    protected void setStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
-        mStartPosition = pStartPosition;
-    }
-
     @Override
     public String toString() {
         return "SegmentBase[" + mSegmentIndex + "]";
-    }
-
-    @Override
-    public T withSegmentIndex(final int pSegmentIndex) {
-        if (pSegmentIndex == mSegmentIndex) return (T) this;
-        try {
-            final T clone = (T) clone();
-            clone.setSegmentIndex(pSegmentIndex);
-            return (T) this;
-        } catch (final CloneNotSupportedException pCNSE) {
-            throw new RuntimeException("Cannot clone", pCNSE);
-        }
-    }
-
-    @Override
-    public T withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
-        if (pStartPosition == mStartPosition) return (T) this;
-        try {
-            final T clone = (T) clone();
-            clone.setStartPosition(pPixelMap, pPixelChain, pStartPosition);
-            return clone;
-        } catch (final CloneNotSupportedException pCNSE) {
-            throw new RuntimeException("Cannot clone", pCNSE);
-        }
     }
 
 }

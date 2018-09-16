@@ -20,7 +20,11 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     private final LineSegment mLineSegment;
 
     StraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex) {
-        super(pSegmentIndex);
+        this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
+    }
+
+    StraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final double pStartPosition) {
+        super(pSegmentIndex, pStartPosition);
         final Point a = getStartUHVWPoint(pPixelMap, pPixelChain);
         final Point b = getEndUHVWPoint(pPixelMap, pPixelChain);
         mLineSegment = new LineSegment(a, b);
@@ -101,6 +105,12 @@ public class StraightSegment extends SegmentBase<StraightSegment> {
     @Override
     public String toString() {
         return "StraightSegment[" + super.toString() + "]";
+    }
+
+    @Override
+    public StraightSegment withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
+        if (getStartPosition() == pStartPosition) return this;
+        return new StraightSegment(pPixelMap, pPixelChain, getSegmentIndex(), pStartPosition);
     }
 
 }

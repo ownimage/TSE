@@ -48,7 +48,7 @@ public interface ISegment<T> extends Serializable, Cloneable {
     /**
      * Gets the end tangent.
      *
-     * @param pPixelMap
+     * @param pPixelMap the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
@@ -57,7 +57,7 @@ public interface ISegment<T> extends Serializable, Cloneable {
     /**
      * Gets the end uhvw point.
      *
-     * @param pPixelMap
+     * @param pPixelMap the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
@@ -91,8 +91,7 @@ public interface ISegment<T> extends Serializable, Cloneable {
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
      *
      *
-     * @param pPixelMap
-     * @param pPixelChain the Pixel Chain performing this operation
+     * @param pPixelMap the PixelMap performing the this operation
      * @return the start tangent
      */
     Vector getStartTangentVector(final PixelMap pPixelMap, PixelChain pPixelChain);
@@ -101,7 +100,7 @@ public interface ISegment<T> extends Serializable, Cloneable {
      * Gets the start uhvw point.
      *
      *
-     * @param pPixelMap
+     * @param pPixelMap the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
@@ -124,8 +123,6 @@ public interface ISegment<T> extends Serializable, Cloneable {
     double getMinX(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     double getMinY(final PixelMap pPixelMap, PixelChain pPixelChain);
-
-    ISegment withSegmentIndex(int pSegmentIndex); // for future use I might want to move a segment
 
     ISegment withStartPosition(final PixelMap pPixelMap, PixelChain pPixelChain, double pStartPosition);
 }

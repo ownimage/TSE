@@ -24,7 +24,11 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
     private final Point mB;
 
     CurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
-        super(pSegmentIndex);
+        this(pPixelMap, pPixelChain, pSegmentIndex, pP1, 0.0d);
+    }
+
+    public CurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1, final double pStartPosition) {
+        super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
         mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelChain, pPixelMap)).minus(getP1().multiply(2.0d));
         mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
@@ -171,7 +175,7 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
     /**
      * Gets the Vector from P0 to P1.
      *
-     * @param pPixelMap
+     * @param pPixelMap the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
@@ -191,7 +195,7 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
      * Gets the Vector from P2 to P1
      *
      * @param pPixelChain the Pixel Chain performing this operation
-     * @param pPixelMap
+     * @param pPixelMap the PixelMap performing the this operation
      * @return the Vector
      */
     private Vector getP2P1(final PixelChain pPixelChain, final PixelMap pPixelMap) {
@@ -223,4 +227,9 @@ public class CurveSegment extends SegmentBase<CurveSegment> {
         return "CurveSegment[" + super.toString() + "]";
     }
 
+    @Override
+    public CurveSegment withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
+        if (getStartPosition() == pStartPosition) return this;
+        return new CurveSegment(pPixelMap, pPixelChain, getSegmentIndex(), getP1(), pStartPosition);
+    }
 }

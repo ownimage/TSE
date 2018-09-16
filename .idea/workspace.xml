@@ -22,18 +22,13 @@
     <option name="FILTER_BY_CURRENT_PROJECT" value="true" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="Issue #188 Fix delete pixelChain problem not joining adjacent PixelChains">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+    <list default="true" id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="Issue #182 SegmentBase implements 2 withXXX methods, it should leave the implementation to the child classes so that I can make segmentIndex and startPosition final.  This also covers making mStartCurve and mEndCurve final in DoubleCurveSegment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NY2.transform" beforeDir="false" afterPath="$PROJECT_DIR$/NY2.transform" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logging.properties" beforeDir="false" afterPath="$PROJECT_DIR$/logging.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelMapTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/perception/target/" />
     <ignored path="$PROJECT_DIR$/framework/target/" />
@@ -88,15 +83,15 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="class" value="7" />
-          <entry key="java" value="2292" />
-          <entry key="txt" value="78" />
+          <entry key="java" value="2664" />
+          <entry key="txt" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CLASS" value="7" />
-          <entry key="JAVA" value="2292" />
-          <entry key="PLAIN_TEXT" value="78" />
+          <entry key="JAVA" value="2664" />
+          <entry key="PLAIN_TEXT" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -162,11 +157,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="558">
-              <caret line="42" column="29" lean-forward="true" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+            <state relative-caret-position="342">
+              <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#207#208#0" expanded="true" />
@@ -188,21 +183,37 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2250">
-              <caret line="17" column="72" lean-forward="true" selection-start-line="17" selection-start-column="72" selection-end-line="17" selection-end-column="72" />
+            <state relative-caret-position="276">
+              <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
               <folding>
-                <element signature="e#975#976#0" expanded="true" />
-                <element signature="e#1020#1021#0" expanded="true" />
+                <element signature="e#867#868#0" expanded="true" />
+                <element signature="e#912#913#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="19" column="30" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
+            <state relative-caret-position="1800">
+              <caret line="109" selection-start-line="109" selection-end-line="113" selection-end-column="5" />
+              <folding>
+                <element signature="e#2752#2753#0" expanded="true" />
+                <element signature="e#2795#2796#0" expanded="true" />
+                <element signature="e#3049#3050#0" expanded="true" />
+                <element signature="e#3088#3089#0" expanded="true" />
+                <element signature="e#3187#3188#0" expanded="true" />
+                <element signature="e#3232#3233#0" expanded="true" />
+                <element signature="e#3331#3332#0" expanded="true" />
+                <element signature="e#3376#3377#0" expanded="true" />
+                <element signature="e#3475#3476#0" expanded="true" />
+                <element signature="e#3520#3521#0" expanded="true" />
+                <element signature="e#3619#3620#0" expanded="true" />
+                <element signature="e#3664#3665#0" expanded="true" />
+                <element signature="e#4057#4058#0" expanded="true" />
+                <element signature="e#4123#4124#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -210,8 +221,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+            <state relative-caret-position="507">
+              <caret line="198" selection-start-line="198" selection-end-line="198" />
+              <folding>
+                <element signature="e#7299#7300#0" expanded="true" />
+                <element signature="e#7325#7326#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -219,8 +234,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
+            <state relative-caret-position="564">
+              <caret line="103" selection-start-line="103" selection-end-line="103" />
             </state>
           </provider>
         </entry>
@@ -228,8 +243,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+            <state relative-caret-position="276">
+              <caret line="31" column="18" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -313,15 +328,12 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Pixel.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetector.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorJavaThreads.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/CannyEdgeDetectorOpenCL.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelTest.java" />
         <option value="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java" />
@@ -330,9 +342,12 @@
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Node.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java" />
       </list>
     </option>
   </component>
@@ -470,7 +485,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537075942572" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1537078104534" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -576,7 +591,7 @@
       <workItem from="1536842538791" duration="817000" />
       <workItem from="1536843641855" duration="1239000" />
       <workItem from="1536856168681" duration="1273000" />
-      <workItem from="1537059977134" duration="2845000" />
+      <workItem from="1537059977134" duration="4600000" />
     </task>
     <task id="LOCAL-00001" summary="Issue #172 remove mSegmentIndexValid from PixelMap">
       <created>1536852625788</created>
@@ -585,7 +600,14 @@
       <option name="project" value="LOCAL" />
       <updated>1536852625788</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Issue #188 Fix delete pixelChain problem not joining adjacent PixelChains">
+      <created>1537076308839</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1537076308839</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -621,14 +643,14 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28020000" />
+    <option name="totallyTimeSpent" value="29775000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="76" y="0" width="1872" height="1440" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.057766367" visible="true" weight="0.21578367" />
-      <window_info id="Structure" order="1" sideWeight="0.9422336" weight="0.37030905" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.057766367" weight="0.21578367" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.9422336" visible="true" weight="0.37030905" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="DB Browser" order="4" />
@@ -636,7 +658,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info id="Capture Tool" order="7" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32976282" />
+      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32976282" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32976282" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4039786" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -645,7 +667,7 @@
       <window_info anchor="bottom" id="DB Execution Console" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Messages" order="10" visible="true" weight="0.3289977" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.3289977" />
       <window_info anchor="bottom" id="Run with VisualVM" order="11" />
       <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="13" />
@@ -673,7 +695,8 @@
     <MESSAGE value="Issue #172 remove mSegmentIndexValid from PixelMap" />
     <MESSAGE value="Issue #174 remove PixelMap from PixelChain" />
     <MESSAGE value="Issue #188 Fix delete pixelChain problem not joining adjacent PixelChains" />
-    <option name="LAST_COMMIT_MESSAGE" value="Issue #188 Fix delete pixelChain problem not joining adjacent PixelChains" />
+    <MESSAGE value="Issue #182 SegmentBase implements 2 withXXX methods, it should leave the implementation to the child classes so that I can make segmentIndex and startPosition final.  This also covers making mStartCurve and mEndCurve final in DoubleCurveSegment" />
+    <option name="LAST_COMMIT_MESSAGE" value="Issue #182 SegmentBase implements 2 withXXX methods, it should leave the implementation to the child classes so that I can make segmentIndex and startPosition final.  This also covers making mStartCurve and mEndCurve final in DoubleCurveSegment" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -1049,38 +1072,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="17" column="17" selection-start-line="17" selection-start-column="17" selection-end-line="17" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2250">
-          <caret line="17" column="72" lean-forward="true" selection-start-line="17" selection-start-column="72" selection-end-line="17" selection-end-column="72" />
-          <folding>
-            <element signature="e#975#976#0" expanded="true" />
-            <element signature="e#1020#1021#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="19" column="30" selection-start-line="19" selection-start-column="30" selection-end-line="19" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/Vertex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
@@ -1101,21 +1092,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/Utility.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="42" column="29" lean-forward="true" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
+        <state relative-caret-position="342">
+          <caret line="30" column="2" selection-start-line="30" selection-start-column="2" selection-end-line="30" selection-end-column="2" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#207#208#0" expanded="true" />
             <element signature="e#250#251#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="31" column="18" selection-start-line="31" selection-start-column="18" selection-end-line="31" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/ISegment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="564">
+          <caret line="103" selection-start-line="103" selection-end-line="103" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
+          <folding>
+            <element signature="e#867#868#0" expanded="true" />
+            <element signature="e#912#913#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/CurveSegment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="507">
+          <caret line="198" selection-start-line="198" selection-end-line="198" />
+          <folding>
+            <element signature="e#7299#7300#0" expanded="true" />
+            <element signature="e#7325#7326#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1800">
+          <caret line="109" selection-start-line="109" selection-end-line="113" selection-end-column="5" />
+          <folding>
+            <element signature="e#2752#2753#0" expanded="true" />
+            <element signature="e#2795#2796#0" expanded="true" />
+            <element signature="e#3049#3050#0" expanded="true" />
+            <element signature="e#3088#3089#0" expanded="true" />
+            <element signature="e#3187#3188#0" expanded="true" />
+            <element signature="e#3232#3233#0" expanded="true" />
+            <element signature="e#3331#3332#0" expanded="true" />
+            <element signature="e#3376#3377#0" expanded="true" />
+            <element signature="e#3475#3476#0" expanded="true" />
+            <element signature="e#3520#3521#0" expanded="true" />
+            <element signature="e#3619#3620#0" expanded="true" />
+            <element signature="e#3664#3665#0" expanded="true" />
+            <element signature="e#4057#4058#0" expanded="true" />
+            <element signature="e#4123#4124#0" expanded="true" />
           </folding>
         </state>
       </provider>

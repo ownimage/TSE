@@ -28,8 +28,8 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
      */
     private final Line mEndTangent;
 
-    private CurveSegment mStartCurve;
-    private CurveSegment mEndCurve;
+    private final CurveSegment mStartCurve;
+    private final CurveSegment mEndCurve;
 
     DoubleCurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final CurveSegment pStartCurve, final CurveSegment pEndCurve) {
         super(pStartCurve.getSegmentIndex());
@@ -140,22 +140,14 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
         pGraphics.graffitiControlPoint(mStartCurve.getP1());
         pGraphics.graffitiControlPoint(mEndCurve.getP1());
         super.graffiti(pPixelMap, pPixelChain, pGraphics);
-        pGraphics.graffitiSelectedControlPoint(getControlPoint());
         pGraphics.grafittLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.RED);
     }
 
-    @Override
-    protected void setStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
-        mStartCurve.setStartPosition(pPixelMap, pPixelChain, pStartPosition);
-        mEndCurve.setStartPosition(pPixelMap, pPixelChain, pStartPosition + mStartCurve.getLength(pPixelMap, pPixelChain));
-    }
-
-
-    public CurveSegment getStartCurve() {
+    private CurveSegment getStartCurve() {
         return mStartCurve;
     }
 
-    public CurveSegment getEndCurve() {
+    private CurveSegment getEndCurve() {
         return mEndCurve;
     }
 
@@ -164,14 +156,11 @@ public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
         return "DoubleCurveSegment[" + super.toString() + "]";
     }
 
-    /**
-     * This is a MUTATING method that sets the segment index on this object.
-     *
-     * @param pSegmentIndex the new segment index for this copy.
-     */
-    protected void setSegmentIndex(final int pSegmentIndex) {
-        super.setSegmentIndex(pSegmentIndex);
-        mStartCurve = mStartCurve.withSegmentIndex(pSegmentIndex);
-        mEndCurve = mEndCurve.withSegmentIndex(pSegmentIndex);
+    @Override
+    public DoubleCurveSegment withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
+        if (getStartPosition() == pStartPosition) return this;
+        CurveSegment start = getStartCurve().withStartPosition(pPixelMap, pPixelChain, pStartPosition);
+        CurveSegment end = getEndCurve().withStartPosition(pPixelMap, pPixelChain, pStartPosition + start.getLength(pPixelMap, pPixelChain));
+        return new DoubleCurveSegment(pPixelMap, pPixelChain, start, end);
     }
 }
