@@ -1,11 +1,10 @@
-/**
- * This code is part of the Perception programme.
- * All code copyright (c) 2012-2015 ownimage.com, Keith Hart
+/*
+ *  This code is part of the Perception programme.
+ *
+ *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
  */
-package com.ownimage.framework.util.logging;
+package com.ownimage.framework.logging;
 
-import com.ownimage.framework.logging.FrameworkException;
-import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import org.junit.*;
 
@@ -18,9 +17,9 @@ import static org.junit.Assert.fail;
 public class LoggingTEST {
 
 
-    public final static Logger mLogger = Framework.getLogger();
+    private final static Logger mLogger = Framework.getLogger();
 
-    final String testMessage = "this is a message";
+    private final String testMessage = "this is a message";
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -29,7 +28,7 @@ public class LoggingTEST {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDownAfterClass() {
     }
 
     @Test
@@ -39,7 +38,6 @@ public class LoggingTEST {
             throw new FrameworkException(this, Level.WARNING, message, null);
         } catch (final Throwable pT) {
             testLog(message);
-            return;
         }
 
     }
@@ -55,8 +53,7 @@ public class LoggingTEST {
             final String log = FrameworkLogger.getInstance().getLog();
             testLog(UIMessage);
             testLog(causedByMessage);
-            testLog("com.ownimage.framework.util.logging.LoggingTEST");
-            return;
+            testLog("com.ownimage.framework.logging.LoggingTEST");
         }
 
     }
@@ -70,7 +67,7 @@ public class LoggingTEST {
         } catch (final Throwable pT) {
             final String log = FrameworkLogger.getInstance().getLog();
             testLog(UIMessage);
-            testLog("com.ownimage.framework.util.logging.LoggingTEST");
+            testLog("com.ownimage.framework.logging.LoggingTEST");
             testLog(" at ");
         }
     }
@@ -313,7 +310,7 @@ public class LoggingTEST {
     }
 
     @After
-    public void setUpAfter() throws Exception {
+    public void setUpAfter() {
         FrameworkLogger.getInstance().clearLog();
     }
 

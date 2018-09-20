@@ -421,14 +421,14 @@ public class ImmutableLayerMap2DTest {
     @Test
     public void benchmark() {
         FrameworkLogger.getInstance().setLevel(ImmutableLayerMap2D.class.getCanonicalName(), Level.OFF);
-        final int ITERATIONS = 100;
+        final int ITERATIONS = 10000;
         final int WIDTH = 1000;
         final int HEIGHT = 1000;
         final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("YYYY MM dd HH:mm:ss SSS");
 
-        //MutableMap2D<Byte> underTest = new MutableMap2D<>(WIDTH, HEIGHT, defaultValue);
+        MutableMap2D<Byte> underTest = new MutableMap2D<>(WIDTH, HEIGHT, defaultValue);
         //ImmutableLayerMap2D<Byte>.Map2D underTest = new ImmutableLayerMap2D<>(WIDTH, HEIGHT, defaultValue).getMutable();
-        ImmutableLayerMap2D<Byte>.ImmutableMap2D underTest = new ImmutableLayerMap2D<>(WIDTH, HEIGHT, defaultValue).getImmutable();
+        //ImmutableLayerMap2D<Byte>.ImmutableMap2D underTest = new ImmutableLayerMap2D<>(WIDTH, HEIGHT, defaultValue).getImmutable();
 
         final Random random = new Random();
         final LocalDateTime start = LocalDateTime.now();
