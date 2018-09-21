@@ -14,8 +14,8 @@ public class ChangeLog<M> implements Node<M> {
     private WeakReference<Node<M>> mTop;
     private Node<M> mToMaster;
 
-    private final HashMap<Object, Consumer<M>> mRedoLog = new java.util.HashMap<>();
-    private final HashMap<Object, Consumer<M>> mUndoLog = new java.util.HashMap<>();
+    private HashMap<Object, Consumer<M>> mRedoLog;
+    private HashMap<Object, Consumer<M>> mUndoLog;
 
     ChangeLog(Node<M> pTop, Node<M> pToMaster) {
         setTop(pTop);
@@ -23,19 +23,19 @@ public class ChangeLog<M> implements Node<M> {
     }
 
     private M undo(M pMaster) {
-        mUndoLog.forEach((k, v) -> v.accept(pMaster));
+        getUndoLog().forEach((k, v) -> v.accept(pMaster));
         return pMaster;
     }
 
     private M redo(M pMaster) {
-        mRedoLog.forEach((k, v) -> v.accept(pMaster));
+        getRedoLog().forEach((k, v) -> v.accept(pMaster));
         return pMaster;
     }
 
     void addChange(Object pKey, Consumer<M> pRedo, Consumer<M> pUndo) {
-        if (mRedoLog.containsKey(pKey)) mRedoLog.replace(pKey, pRedo);
-        else mRedoLog.put(pKey, pRedo);
-        if (!mUndoLog.containsKey(pKey)) mUndoLog.put(pKey, pUndo);
+        if (getRedoLog().containsKey(pKey)) getRedoLog().replace(pKey, pRedo);
+        else getRedoLog().put(pKey, pRedo);
+        if (!getUndoLog().containsKey(pKey)) getUndoLog().put(pKey, pUndo);
     }
 
     @Override
@@ -65,5 +65,19 @@ public class ChangeLog<M> implements Node<M> {
 
     public void setToMaster(final Node<M> pNode) {
         mToMaster = pNode;
+    }
+
+    private synchronized HashMap<Object, Consumer<M>> getRedoLog() {
+        if (mRedoLog == null) {
+            mRedoLog = new java.util.HashMap<>();
+        }
+        return mRedoLog;
+    }
+
+    private synchronized HashMap<Object, Consumer<M>> getUndoLog() {
+        if (mUndoLog == null) {
+            mUndoLog = new java.util.HashMap<>();
+        }
+        return mUndoLog;
     }
 }
