@@ -37,23 +37,29 @@ public class SnapshotMap2D<T> extends Snapshot<HashMap<Object, T>> {
     }
 
     public SnapshotMap2D<T> snapshot() {
-        final Link<HashMap<Object, T>> link = createLinkReadyForNewSnapshot();
-        return new SnapshotMap2D<>(this, link);
+        synchronized (mSharedSyncObject) {
+            final Link<HashMap<Object, T>> link = createLinkReadyForNewSnapshot();
+            return new SnapshotMap2D<>(this, link);
+        }
     }
 
     public T get(final int pX, final int pY) {
         checkXY(pX, pY);
         final Long key = generateKey(pX, pY);
-        T value = getMaster().get(key);
-        if (value != null) return value;
-        else return mDefaultValue;
+        synchronized (mSharedSyncObject) {
+            T value = getMaster().get(key);
+            if (value != null) return value;
+            else return mDefaultValue;
+        }
     }
 
     public void set(final int pX, final int pY, final T pValue) {
         checkXY(pX, pY);
         final Long key = generateKey(pX, pY);
-        final T oldValue = getMaster().put(key, pValue);
-        addChangeLogEntry(key, m -> m.put(key, pValue), m -> m.put(key, oldValue));
+        synchronized (mSharedSyncObject) {
+            final T oldValue = getMaster().put(key, pValue);
+            addChangeLogEntry(key, m -> m.put(key, pValue), m -> m.put(key, oldValue));
+        }
     }
 
     private Long generateKey(final int pX, final int pY) {

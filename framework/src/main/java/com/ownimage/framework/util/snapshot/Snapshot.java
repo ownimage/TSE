@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 public class Snapshot<M> implements Node<M> {
 
-    private final Object mSharedSyncObject; // TODO
+    protected final Object mSharedSyncObject; // TODO
     private M mMaster;
     private WeakReference<ChangeLog<M>> mChangeLog;
     private Node<M> mToMaster;
