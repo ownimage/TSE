@@ -11,15 +11,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="Maven: com.ownimage:framework:0.0.1-SNAPSHOT">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../framework/target/framework-0.1-SNAPSHOT.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="framework" />
+    <orderEntry type="library" name="Maven: javax.vecmath:vecmath:1.5.2" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: io.vavr:vavr:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.vavr:vavr-match:0.9.2" level="project" />

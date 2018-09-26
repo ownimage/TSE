@@ -13,6 +13,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.*;
+import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
@@ -65,7 +66,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final Point mUHVWHalfPixel;
     private ImmutableLayerMap2D<Byte>.Map2D mData;
     private final HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
-    private Vector<PixelChain> mPixelChains = new Vector<>();
+    private ImmutableSet<PixelChain> mPixelChainsx = new ImmutableSet<>();
 
     private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
     private Map<ISegment, PixelChain> mSegmentToPixelChainMap = new HashMap<>();
@@ -93,7 +94,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public int getPixelChainCount() {
-        return mPixelChains.size();
+        return mPixelChainsx.size();
     }
 
     public void actionDeletePixelChain(Pixel pPixel) {
@@ -125,14 +126,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
         invalidateSegmentIndex();
-        mPixelChains.addAll(pPixelChains);
+        mPixelChainsx = mPixelChainsx.addAll(pPixelChains);
         Framework.logExit(mLogger);
     }
 
-    public List<PixelChain> getPixelChains(final Pixel pPixel) {
+    // TO
+    private List<PixelChain> getPixelChains(final Pixel pPixel) {
         Framework.checkParameterNotNull(mLogger, pPixel, "pPixel");
         Framework.logEntry(mLogger);
-        final List<PixelChain> pixelChains = mPixelChains.stream().filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
+        final List<PixelChain> pixelChains = mPixelChainsx.toJavaStream()
+                .filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
         Framework.logExit(mLogger);
         return pixelChains;
     }
@@ -165,7 +168,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // TODO do not like this mutable parameter
 
         int totalLength = 0;
-        for (final PixelChain chain : mPixelChains) {
+        for (final PixelChain chain : mPixelChainsx) {
             totalLength += chain.getPixelLength();
         }
 
@@ -201,22 +204,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pValues.setReturnValues(shortLength, mediumLength, longLength);
     }
 
-    private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pChain) {
+    private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pPixelChain) {
         try {
             Framework.logEntry(mLogger);
             if (mLogger.isLoggable(Level.FINEST)) {
                 mLogger.finest("pStartNode: " + pStartNode);
                 mLogger.finest("pCurrentPixel: " + pCurrentPixel);
-                mLogger.finest("pChain: " + pChain);
+                mLogger.finest("pPixelChain: " + pPixelChain);
             }
 
             if (pCurrentPixel.isNode(this)) {
-                pChain.setEndNode(this, nodeGet(pCurrentPixel));
+                pPixelChain.setEndNode(this, nodeGet(pCurrentPixel));
                 Framework.logExit(mLogger);
                 return;
             }
 
-            pChain.add(pCurrentPixel);
+            pPixelChain.add(pCurrentPixel);
             pCurrentPixel.setInChain(this, true);
             pCurrentPixel.setVisited(this, true);
 
@@ -226,9 +229,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 // going back to the staring node.
                 // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
                 // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(pChain.count() == 2 &&
-                        nodalNeighbour.equals(pChain.firstPixel()))) {
-                    generateChain(pStartNode, nodalNeighbour, pChain);
+                if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(pPixelChain.count() == 2 &&
+                        nodalNeighbour.equals(pPixelChain.firstPixel()))) {
+                    generateChain(pStartNode, nodalNeighbour, pPixelChain);
                     Framework.logExit(mLogger);
                     return;
                 }
@@ -240,18 +243,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 // going back to the staring node.
                 // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
                 // !neighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(pChain.count() == 2 && neighbour.equals(pChain.getStartNode()))) {
-                    generateChain(pStartNode, neighbour, pChain);
+                if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(pPixelChain.count() == 2 && neighbour.equals(pPixelChain.getStartNode()))) {
+                    generateChain(pStartNode, neighbour, pPixelChain);
                     Framework.logExit(mLogger);
                     return;
                 }
             }
-
         } catch (final Throwable pT) {
             mLogger.log(Level.SEVERE, "Exception thrown", pT);
             mLogger.severe("pStartNode: " + pStartNode);
             mLogger.severe("pCurrentPixel: " + pCurrentPixel);
-            mLogger.severe("pChain: " + pChain);
+            mLogger.severe("pPixelChain: " + pPixelChain);
         }
     }
 
@@ -521,7 +523,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 
     private Vector<PixelChain> getPixelChainsSortedByLength() {
-        final Vector<PixelChain> chains = new Vector<>(mPixelChains); // this will be the sorted collection
+        final Vector<PixelChain> chains = new Vector<>(mPixelChainsx.toJavaSet()); // this will be the sorted collection
         Collections.sort(chains, (pChain1, pChain2) -> pChain1.getPixelLength() - pChain2.getPixelLength());
         return chains;
     }
@@ -775,7 +777,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void actionReapproximate() {
-        mPixelChains.stream().parallel().forEach(pc -> pc.approximate(getTransformSource(), this));
+        Vector<PixelChain> updates = new Vector<>();
+        mPixelChainsx.toJavaStream().parallel().forEach(pc -> updates.add(pc.approximate(getTransformSource(), this)));
+        mPixelChainsx = io.vavr.collection.HashSet.of(updates.toArray(new PixelChain[]{}));
     }
 
     public void actionProcess(final IProgressObserver pProgressObserver) {
@@ -872,11 +876,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (mAutoTrackChanges) {
             if (!pValue) { // turning pixel off
                 getPixelChains(pPixel).forEach(pc -> {
-                    mPixelChains.remove(pc);
+                    mPixelChainsx = mPixelChainsx.remove(pc);
                     pc.setInChain(this, false);
                     pc.setVisited(this, false);
                     pc.streamPixels()
-                            .filter(pPixel1 -> pPixel1.isNode(this))//pixel -> pixel.isNode())
+                            .filter(pPixel1 -> pPixel1.isNode(this))
                             .forEach(pixel -> pixel.getNode(this)
                                     .ifPresent(node -> {
                                         final Collection<PixelChain> chains = generateChains(node);
@@ -991,19 +995,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pToBeRemoved.forEach(mNodes::remove);
     }
 
-    Vector<PixelChain> process05_generateChains(final IProgressObserver pProgressObserver) {
+    io.vavr.collection.HashSet<PixelChain> process05_generateChains(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
 
-        nodesStream().forEach(node -> mPixelChains.addAll(generateChains(node)));
+        nodesStream().forEach(node -> mPixelChainsx = mPixelChainsx.addAll(generateChains(node)));
         forEachPixel(pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
                 final Node node = nodeGet(pixel);
-                mPixelChains.addAll(generateChains(node));
+                mPixelChainsx = mPixelChainsx.addAll(generateChains(node));
             }
         });
 
         mLogger.info(() -> "Number of chains: " + getPixelChainCount());
-        return mPixelChains;
+        return mPixelChainsx;
     }
 
     private void process06_straightLinesRefineCorners(final IProgressObserver pProgressObserver, final double pMaxiLineTolerance) {
@@ -1020,19 +1024,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void process07_mergeChains(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
-        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
+        mLogger.info(() -> "number of PixelChains: " + mPixelChainsx.size());
         //for (final Node node : getAllNodes()) {
         nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
         mSegmentCount = 0;
 
         invalidateSegmentIndex();
-        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
+        mLogger.info(() -> "number of PixelChains: " + mPixelChainsx.size());
     }
 
     private void process08_refine(final IProgressObserver pProgressObserver) {
-        final Counter counter = new Counter(mPixelChains.size());
+        final Counter counter = new Counter(mPixelChainsx.size());
         reportProgress(pProgressObserver, "Refining ...", 0);
-        mPixelChains.forEach(pc -> {
+        mPixelChainsx.forEach(pc -> {
             pc.approximate(getTransformSource(), this);
             counter.increase();
             reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
@@ -1095,11 +1099,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 ObjectInputStream ois = new ObjectInputStream(bais);
 
                 final Vector<PixelChain> pixelChains = (Vector<PixelChain>) ois.readObject();
-                mPixelChains.removeAllElements();
-                mPixelChains.addAll(pixelChains);
+                mPixelChainsx = io.vavr.collection.HashSet.empty();
+                mPixelChainsx.addAll(pixelChains);
 
                 nodesRemoveAll();
-                mPixelChains.forEach(pc -> {
+                mPixelChainsx.forEach(pc -> {
                     nodeGet(pc.getStartNode()).addPixelChain(pc);
                     nodeGet(pc.getEndNode()).addPixelChain(pc);
                 });
@@ -1110,7 +1114,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 objectBytes = null;
 
                 mLogger.info("mAllNodes size() = " + nodeCount());
-                mLogger.info("mPixelChains size() = " + mPixelChains.size());
+                mLogger.info("mPixelChains size() = " + mPixelChainsx.size());
 
                 indexSegments();
 
@@ -1134,8 +1138,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void indexSegments() {
-        final Vector<PixelChain> pixelChains = new Vector<>();
-        mPixelChains.forEach(pc -> {
+        final io.vavr.collection.HashSet<PixelChain> pixelChains = io.vavr.collection.HashSet.empty();
+        mPixelChainsx.forEach(pc -> {
             PixelChain pcNew = pc.indexSegments(this);
             pixelChains.add(pcNew);
             pc.getStartNode().removePixelChain(pc);
@@ -1143,11 +1147,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             pc.getEndNode().removePixelChain(pc);
             pc.getEndNode().addPixelChain(pcNew);
         });
-        mPixelChains = pixelChains;
+        mPixelChainsx = pixelChains;
     }
 
     synchronized void removePixelChain(final PixelChain pPixelChain) {
-        mPixelChains.remove(pPixelChain);
+        mPixelChainsx = mPixelChainsx.remove(pPixelChain);
         invalidateSegmentIndex();
     }
 
@@ -1200,7 +1204,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final int mediumLength = pTransform.getMediumLineLength();
         final int longLength = pTransform.getLongLineLength();
 
-        mPixelChains.forEach(chain -> chain.setThickness(shortLength, mediumLength, longLength));
+        io.vavr.collection.HashSet<PixelChain> updates = io.vavr.collection.HashSet.empty();
+        mPixelChainsx.forEach(chain -> updates.add(chain.setThickness(shortLength, mediumLength, longLength)));
+        mPixelChainsx = updates;
         Framework.logExit(mLogger);
     }
 
@@ -1293,8 +1299,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void validate() {
-        mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-        mPixelChains.stream().parallel().forEach(pc -> pc.validate("PixelMap::validate"));
+        mLogger.info(() -> "Number of chains: " + mPixelChainsx.size());
+        mPixelChainsx.toJavaStream().parallel().forEach(pc -> pc.validate("PixelMap::validate"));
     }
 
 
@@ -1316,7 +1322,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         final Counter counter = new Counter();
 
-        mPixelChains.forEach(pc -> pc.getAllSegments().forEach(s -> {
+        mPixelChainsx.forEach(pc -> pc.getAllSegments().forEach(s -> {
                     if (s instanceof StraightSegment) {
                     } else if (s instanceof CurveSegment) {
                     } else if (s instanceof DoubleCurveSegment) {
@@ -1356,10 +1362,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         // mAllNodes & mPixelChains
         mLogger.info("nodeCount() = " + nodeCount());
-        mLogger.info("mPixelChains size() = " + mPixelChains.size());
+        mLogger.info("mPixelChains size() = " + mPixelChainsx.size());
         baos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(baos);
-        oos.writeObject(mPixelChains);
+        oos.writeObject(mPixelChainsx);
         oos.close();
 
         String objectString = MyBase64.compressAndEncode(baos.toByteArray());
@@ -1379,7 +1385,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void forEachPixelChain(final Consumer<PixelChain> pFunction) {
-        mPixelChains.forEach(pFunction);
+        mPixelChainsx.forEach(pFunction);
     }
 
 }

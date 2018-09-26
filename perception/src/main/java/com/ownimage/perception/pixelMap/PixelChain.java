@@ -83,8 +83,22 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.stream();
     }
 
-    public boolean add(final Pixel pPixel) {
-        return mPixels.add(pPixel);
+    private PixelChain deepCopy() {
+        try {
+            PixelChain copy = (PixelChain) super.clone();
+            copy.mPixels = (Vector<Pixel>) mPixels.clone();
+            copy.mSegments = (Vector<ISegment>) mSegments.clone();
+            copy.mVertexes = (Vector<IVertex>) mVertexes.clone();
+            return copy;
+        } catch (CloneNotSupportedException pE) {
+            throw new RuntimeException("CloneNotSupportedException", pE);
+        }
+    }
+
+    public PixelChain add(final Pixel pPixel) {
+        PixelChain clone = deepCopy();
+        clone.mPixels.add(pPixel);
+        return clone;
     }
 
     /**
@@ -165,16 +179,17 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
 
-    void approximate(final IPixelMapTransformSource pTransformSource, final PixelMap pPixelMap) {
+    PixelChain approximate(final IPixelMapTransformSource pTransformSource, final PixelMap pPixelMap) {
         final double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-        mSegments = new Vector<>();
-        approximate01_straightLines(pPixelMap, tolerance);
-        approximate02_refineCorners(pPixelMap);
-        refine(pPixelMap, pTransformSource);
-        checkAllVertexesAttached();
+        final PixelChain copy = deepCopy();
+        copy.approximate01_straightLines(pPixelMap, tolerance);
+        copy.approximate02_refineCorners(pPixelMap);
+        copy.refine(pPixelMap, pTransformSource);
+        copy.checkAllVertexesAttached();
+        return copy;
     }
 
-    void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
+    private void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of length n will be close enough, a line of length n+1 will not be, but there exists an m such that a line of length m is close enough.
         mSegments.removeAllElements();
@@ -222,7 +237,7 @@ public class PixelChain implements Serializable, Cloneable {
         validate("approximate01_straightLines");
     }
 
-    void approximate02_refineCorners(final PixelMap pPixelMap) {
+    private void approximate02_refineCorners(final PixelMap pPixelMap) {
         for (final ISegment segment : mSegments) {
             if (segment == mSegments.lastElement()) return;
 
@@ -453,20 +468,16 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     PixelChain indexSegments(final PixelMap pPixelMap) {
-        try {
-            final PixelChain pixelChainClone = (PixelChain) clone();
-            double startPosition = 0.0d;
-            for (final ISegment segment : pixelChainClone.mSegments) {
-                final ISegment segmentClone = segment.withStartPosition(pPixelMap, pixelChainClone, startPosition);
-                pPixelMap.index(pixelChainClone, segmentClone);
-                pixelChainClone.mSegments.set(segment.getSegmentIndex(), segmentClone);
-                startPosition += segment.getLength(pPixelMap, pixelChainClone);
-            }
-            pixelChainClone.setLength(startPosition);
-            return pixelChainClone;
-        } catch (final CloneNotSupportedException pCNSE) {
-            throw new RuntimeException("Clone not supported", pCNSE);
+        final PixelChain copy = deepCopy();
+        double startPosition = 0.0d;
+        for (final ISegment segment : copy.mSegments) {
+            final ISegment segmentClone = segment.withStartPosition(pPixelMap, copy, startPosition);
+            pPixelMap.index(copy, segmentClone);
+            copy.mSegments.set(segment.getSegmentIndex(), segmentClone);
+            startPosition += segment.getLength(pPixelMap, copy);
         }
+        copy.setLength(startPosition);
+        return copy;
     }
 
     private boolean isValid(final PixelMap pPixelMap, final ISegment pSegment) { // need to maks sure that not only the pixels are close to the line but the line is close to the pixels
@@ -873,21 +884,28 @@ public class PixelChain implements Serializable, Cloneable {
         mVertexes.add(0, pVertex);
     }
 
-    void setThickness(final int pThinLength, final int pNormalLength, final int pLongLength) {
+    PixelChain setThickness(final int pThinLength, final int pNormalLength, final int pLongLength) {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pNormalLength, pLongLength", pNormalLength, pLongLength);
 
+        Thickness newThickness;
         if (length() < pThinLength) {
-            mThickness = Thickness.None;
+            newThickness = Thickness.None;
         } else if (length() < pNormalLength) {
-            mThickness = Thickness.Thin;
+            newThickness = Thickness.Thin;
         } else if (length() < pLongLength) {
-            mThickness = Thickness.Normal;
+            newThickness = Thickness.Normal;
         } else {
-            mThickness = Thickness.Thick;
+            newThickness = Thickness.Thick;
         }
 
-        Framework.logExit(mLogger);
+        PixelChain result;
+        if (newThickness == mThickness) result = this;
+        else {
+            result = deepCopy();
+            result.mThickness = newThickness;
+        }
+        return result;
     }
 
     @Override
