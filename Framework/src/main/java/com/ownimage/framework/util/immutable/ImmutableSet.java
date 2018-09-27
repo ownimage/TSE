@@ -7,10 +7,10 @@ import java.util.function.Consumer;
 public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
 
     public ImmutableSet() {
-        super(new HashSet<E>());
+        super(new HashSet<>());
     }
 
-    private ImmutableSet(ImmutableSet pPrevious, Consumer<HashSet<E>> pRedo, Consumer<HashSet<E>> pUndo) {
+    private ImmutableSet(ImmutableSet<E> pPrevious, Consumer<HashSet<E>> pRedo, Consumer<HashSet<E>> pUndo) {
         super(pPrevious, pRedo, pUndo);
     }
 
@@ -21,7 +21,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             }
             Consumer<HashSet<E>> redo = m -> m.add(pElement);
             Consumer<HashSet<E>> undo = m -> m.remove(pElement);
-            return new ImmutableSet(this, redo, undo);
+            return new ImmutableSet<E>(this, redo, undo);
         }
     }
 
@@ -32,7 +32,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             }
             Consumer<HashSet<E>> redo = m -> m.remove(pElement);
             Consumer<HashSet<E>> undo = m -> m.add(pElement);
-            return new ImmutableSet(this, redo, undo);
+            return new ImmutableSet<E>(this, redo, undo);
         }
     }
 
