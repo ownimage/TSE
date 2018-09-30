@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class ImmutableSetTest {
@@ -57,10 +59,58 @@ public class ImmutableSetTest {
         second = second.add("five");
         underTest = underTest.add("six");
         final List<String> expectedUnderTest = Arrays.asList(new String[]{"two", "six"});
-        final List<String> expectedSnapshot = Arrays.asList(new String[]{"one", "two", "four", "five"});
+        final List<String> expectedSecond = Arrays.asList(new String[]{"one", "two", "four", "five"});
         Assert.assertEquals(2, underTest.size());
         Assert.assertTrue(underTest.containsAll(expectedUnderTest));
         Assert.assertEquals(4, second.size());
-        Assert.assertTrue(second.containsAll(expectedSnapshot));
+        Assert.assertTrue(second.containsAll(expectedSecond));
+    }
+
+    @Test
+    public void addAll() {
+        Collection<String> all = Arrays.asList(new String[]{"two", "three", "four"});
+        ImmutableSet<String> underTest = new ImmutableSet<>();
+        underTest = underTest.add("one");
+        underTest = underTest.add("two");
+        ImmutableSet<String> second = underTest;
+        underTest = underTest.addAll(all);
+        final List<String> expectedUnderTest = Arrays.asList(new String[]{"one", "two", "three", "four"});
+        final List<String> expectedSecond = Arrays.asList(new String[]{"one", "two"});
+        Assert.assertEquals(4, underTest.size());
+        Assert.assertTrue(underTest.containsAll(expectedUnderTest));
+        Assert.assertEquals(2, second.size());
+        Assert.assertTrue(second.containsAll(expectedSecond));
+    }
+
+    @Test
+    public void forEach() {
+        String[] values = "one,two,three,four".split(",");
+        Collection<String> all = Arrays.asList(values);
+        ImmutableSet<String> underTest = new ImmutableSet<String>().addAll(all);
+        HashSet<String> actual = new HashSet<>();
+        underTest.forEach(s -> actual.add(s));
+        Assert.assertEquals(4, actual.size());
+        Assert.assertTrue(actual.containsAll(all));
+    }
+
+    @Test
+    public void stream() {
+        String[] values = "one,two,three,four".split(",");
+        Collection<String> all = Arrays.asList(values);
+        ImmutableSet<String> underTest = new ImmutableSet<String>().addAll(all);
+        HashSet<String> actual = new HashSet<>();
+        underTest.stream().forEach(s -> actual.add(s));
+        Assert.assertEquals(4, actual.size());
+        Assert.assertTrue(actual.containsAll(all));
+    }
+
+    @Test
+    public void toCollection() {
+        String[] values = "one,two,three,four".split(",");
+        Collection<String> all = Arrays.asList(values);
+        ImmutableSet<String> underTest = new ImmutableSet<String>().addAll(all);
+        Collection<String> actual = underTest.toCollection();
+        Assert.assertEquals(4, actual.size());
+        Assert.assertTrue(actual.containsAll(all));
     }
 }

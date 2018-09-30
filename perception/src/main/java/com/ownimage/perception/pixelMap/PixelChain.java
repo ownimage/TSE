@@ -189,7 +189,7 @@ public class PixelChain implements Serializable, Cloneable {
         return copy;
     }
 
-    private void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
+     void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of length n will be close enough, a line of length n+1 will not be, but there exists an m such that a line of length m is close enough.
         mSegments.removeAllElements();
