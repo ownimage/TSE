@@ -72,7 +72,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     }
 
-    private final PixelMap mPixelMap;
+    private PixelMap mPixelMap;
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
     private IDialogView mEditPixelMapDialogView;
@@ -410,7 +410,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private void actionPixelOn(final Pixel pPixel) {
-        mPixelMap.actionPixelOn(pPixel);
+        mPixelMap = mPixelMap.actionPixelOn(pPixel);
         mPictureControl.drawGrafitti();
     }
 
@@ -518,7 +518,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                         mPixelMap.getOptionalPixelAt(x, y)
                                 .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
                                 .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
-                                .ifPresent(mPixelMap::actionPixelOff)
+                                .ifPresent(p -> mPixelMap = mPixelMap.actionPixelOff(p))
                 );
         updateGrafitti();
     }
@@ -569,7 +569,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionDeletePixelChain(final Pixel pPixel) {
-        mPixelMap.actionDeletePixelChain(pPixel);
+        mPixelMap = mPixelMap.actionDeletePixelChain(pPixel);
         mPictureControl.drawGrafitti();
     }
 

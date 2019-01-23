@@ -275,4 +275,15 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         }
     }
 
+    @Override
+    public boolean equals(final Object pO) {
+        if (this == pO) return true;
+        if (pO == null || getClass() != pO.getClass()) return false;
+        return super.equals(pO);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

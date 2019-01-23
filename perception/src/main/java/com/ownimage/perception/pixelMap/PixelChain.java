@@ -86,6 +86,10 @@ public class PixelChain implements Serializable, Cloneable {
     private PixelChain deepCopy() {
         try {
             PixelChain copy = (PixelChain) super.clone();
+            copy.mStartNode = mStartNode;
+            copy.mEndNode = mEndNode;
+            copy.mLength = mLength;
+            copy.mThickness = mThickness;
             copy.mPixels = (Vector<Pixel>) mPixels.clone();
             copy.mSegments = (Vector<ISegment>) mSegments.clone();
             copy.mVertexes = (Vector<IVertex>) mVertexes.clone();
@@ -189,7 +193,7 @@ public class PixelChain implements Serializable, Cloneable {
         return copy;
     }
 
-     void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
+    void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of length n will be close enough, a line of length n+1 will not be, but there exists an m such that a line of length m is close enough.
         mSegments.removeAllElements();
@@ -843,17 +847,19 @@ public class PixelChain implements Serializable, Cloneable {
         validate("reverse");
     }
 
-    void setEndNode(final PixelMap pPixelMap, final Node pNode) {
-        mEndNode = pNode;
-        if (pNode != null) {
-            add(pNode);
-        }
+    PixelChain setEndNode(final PixelMap pPixelMap, final Node pNode) {
+        Framework.checkParameterNotNull(mLogger, pNode, "pNode");
+
+        PixelChain copy = this.deepCopy();
+        copy.mEndNode = pNode;
+        copy.mPixels.add(pNode);
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (count() >= 3 && pNode.isNeighbour(mPixels.get(count() - 3))) {
-            mPixels.remove(count() - 2).setVisited(pPixelMap, false);
+        if (copy.count() >= 3 && pNode.isNeighbour(copy.mPixels.get(copy.count() - 3))) {
+            copy.mPixels.remove(copy.count() - 2).setVisited(pPixelMap, false);
         }
+        return copy;
     }
 
     private void setLength(final double pLength) {
@@ -861,6 +867,7 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     private void setStartNode(final Node pNode) {
+        // this is a mutating method and should only be called from the constructor
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pNode", pNode);
 
@@ -872,7 +879,7 @@ public class PixelChain implements Serializable, Cloneable {
         }
 
         mStartNode = pNode;
-        add(pNode);
+        mPixels.add(pNode);
 
         setStartVertex(Vertex.createVertex(this, mVertexes.size(), 0));
 

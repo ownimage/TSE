@@ -43,10 +43,10 @@ class Utility {
                     case ' ':
                         break;
                     case 'N':
-                        pixelMap.setValueNoUndo(x, y, (byte) (Pixel.NODE | Pixel.EDGE));
+                        pixelMap.setValue(x, y, (byte) (Pixel.NODE | Pixel.EDGE));
                         break;
                     case 'E':
-                        pixelMap.setValueNoUndo(x, y, Pixel.EDGE);
+                        pixelMap.setValue(x, y, Pixel.EDGE);
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected char:" + c + ", y=" + y);

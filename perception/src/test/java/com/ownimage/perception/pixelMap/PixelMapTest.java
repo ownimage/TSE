@@ -3,8 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import org.junit.*;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class PixelMapTest {
 
@@ -257,14 +256,29 @@ public class PixelMapTest {
         assertEquals(3, pixelMap.getPixelChainCount());
 
         // WHEN
-        pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1));
+        final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1));
 
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
-        final String[] actual = Utility.getMap(pixelMap);
+        assertEquals(2, result.getPixelChainCount());
+        final String[] actual = Utility.getMap(result);
         Utility.assertMapEquals(expected, actual);
     }
 
+
+    @Test
+    public void process04b_generatePixelChain() {
+        // GIVEN
+        final String[] input = {
+                "    N      ",
+                "    E      ",
+                "    E      ",
+                "    N      ",
+                "           ",
+        };
+        final PixelMap pixelMap = Utility.createMap(input);
+        pixelMap.actionProcess(null);
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -273,5 +287,35 @@ public class PixelMapTest {
     @After
     public void tearDown() throws Exception {
     }
+
+    @Test
+    public void setPixelOnOff() {
+        PixelMap underTest = new PixelMap(10, 10, false, null);
+        Pixel pixel = new Pixel(5, 5);
+        assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+
+        pixel.setEdge(underTest, true);
+        assertTrue(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+
+        pixel.setEdge(underTest, false);
+        assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+    }
+
+    @Test
+    public void actionPixelOnOff() {
+        PixelMap underTest = new PixelMap(10, 10, false, null);
+        Pixel pixel = new Pixel(5, 5);
+        assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+
+        PixelMap resultOn = underTest.actionPixelOn(pixel);
+        assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
+
+        PixelMap resultOff = underTest.actionPixelOff(pixel);
+        assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
+        assertTrue(!resultOff.getOptionalPixelAt(5, 5).get().isEdge(resultOff));
+    }
+
 
 }

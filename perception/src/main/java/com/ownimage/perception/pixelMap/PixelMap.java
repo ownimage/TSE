@@ -13,8 +13,8 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.*;
+import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -64,8 +64,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
-    private ImmutableLayerMap2D<Byte>.Map2D mData;
-    private final HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
+    private ImmutableMap2D<Byte> mData;
+    private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
 
     private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
@@ -88,27 +88,53 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         resetSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
-        mData = new ImmutableLayerMap2D<>(pWidth, pHeight, (byte) 0).getMutable();
+        mData = new ImmutableMap2D<>(pWidth, pHeight, (byte) 0);
         // resetSegmentIndex();
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
+    }
+
+    public PixelMap(PixelMap pFrom) {
+        setWidth(pFrom.getWidth());
+        setHeight(pFrom.getHeight());
+        m360 = pFrom.m360;
+        mTransformSource = pFrom.mTransformSource;
+        mAutoTrackChanges = pFrom.mAutoTrackChanges;
+
+        mAspectRatio = pFrom.mAspectRatio;
+        mSegmentCount = pFrom.mSegmentCount;
+        mData = pFrom.mData;
+        mNodes = (HashMap<IntegerPoint, Node>) pFrom.mNodes.clone(); // TODO
+        mPixelChains = pFrom.mPixelChains;
+        mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
+        invalidateSegmentIndex();
     }
 
     public int getPixelChainCount() {
         return mPixelChains.size();
     }
 
-    public void actionDeletePixelChain(Pixel pPixel) {
-        if (pPixel != null && pPixel.isEdge(this)) {
-            getPixelChains(pPixel).forEach(pc -> pc.delete(this));
+    public PixelMap actionDeletePixelChain(Pixel pPixel) {
+        PixelMap clone = new PixelMap(this);
+        if (pPixel != null && pPixel.isEdge(clone)) {
+            clone.getPixelChains(pPixel).forEach(pc -> {
+                pc.delete(clone);
+                clone.mPixelChains = clone.mPixelChains.remove(pc);
+                clone.invalidateSegmentIndex();
+            });
         }
+        return clone;
     }
 
-    public void actionPixelOff(Pixel pPixel) {
-        pPixel.setEdge(this, false);
+    public PixelMap actionPixelOff(Pixel pPixel) {
+        PixelMap clone = new PixelMap(this);
+        pPixel.setEdge(clone, false);
+        return clone;
     }
 
-    public void actionPixelOn(Pixel pPixel) {
-        pPixel.setEdge(this, true);
+    public PixelMap actionPixelOn(Pixel pPixel) {
+        PixelMap clone = new PixelMap(this);
+        pPixel.setEdge(clone, true);
+        return clone;
     }
 
     public void actionPixelToggle(Pixel pPixel) {
@@ -158,7 +184,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logEntry(mLogger);
         if (!isSegmentIndexValid()) {
             resetSegmentIndex();
-
             indexSegments();
         }
         Framework.logExit(mLogger);
@@ -202,57 +227,52 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pValues.setReturnValues(shortLength, mediumLength, longLength);
     }
 
-    private void generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pPixelChain) {
-        try {
-            Framework.logEntry(mLogger);
-            if (mLogger.isLoggable(Level.FINEST)) {
-                mLogger.finest("pStartNode: " + pStartNode);
-                mLogger.finest("pCurrentPixel: " + pCurrentPixel);
-                mLogger.finest("pPixelChain: " + pPixelChain);
-            }
-
-            if (pCurrentPixel.isNode(this)) {
-                pPixelChain.setEndNode(this, nodeGet(pCurrentPixel));
-                Framework.logExit(mLogger);
-                return;
-            }
-
-            pPixelChain.add(pCurrentPixel);
-            pCurrentPixel.setInChain(this, true);
-            pCurrentPixel.setVisited(this, true);
-
-            // try to end quickly at a node to prevent bypassing
-            for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours(this)) {
-                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-                // going back to the staring node.
-                // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
-                // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(pPixelChain.count() == 2 &&
-                        nodalNeighbour.equals(pPixelChain.firstPixel()))) {
-                    generateChain(pStartNode, nodalNeighbour, pPixelChain);
-                    Framework.logExit(mLogger);
-                    return;
-                }
-            }
-
-            // otherwise go to the next pixel normally
-            for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
-                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-                // going back to the staring node.
-                // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
-                // !neighbour.isNeighbour(pChain.firstPixel()))) {
-                if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(pPixelChain.count() == 2 && neighbour.equals(pPixelChain.getStartNode()))) {
-                    generateChain(pStartNode, neighbour, pPixelChain);
-                    Framework.logExit(mLogger);
-                    return;
-                }
-            }
-        } catch (final Throwable pT) {
-            mLogger.log(Level.SEVERE, "Exception thrown", pT);
-            mLogger.severe("pStartNode: " + pStartNode);
-            mLogger.severe("pCurrentPixel: " + pCurrentPixel);
-            mLogger.severe("pPixelChain: " + pPixelChain);
+    private PixelChain generateChain(final Node pStartNode, final Pixel pCurrentPixel, final PixelChain pPixelChain) {
+        Framework.logEntry(mLogger);
+        if (mLogger.isLoggable(Level.FINEST)) {
+            mLogger.finest("pStartNode: " + pStartNode);
+            mLogger.finest("pCurrentPixel: " + pCurrentPixel);
+            mLogger.finest("pPixelChain: " + pPixelChain);
         }
+
+        if (pCurrentPixel.isNode(this)) {
+            PixelChain copy = pPixelChain.setEndNode(this, nodeGet(pCurrentPixel));
+            Framework.logExit(mLogger);
+            return copy;
+        }
+
+        PixelChain copy = pPixelChain.add(pCurrentPixel);
+        pCurrentPixel.setInChain(this, true);
+        pCurrentPixel.setVisited(this, true);
+
+        // try to end quickly at a node to prevent bypassing
+        for (final Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours(this)) {
+            // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+            // going back to the staring node.
+            // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
+            // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
+            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(pPixelChain.count() == 2 &&
+                    nodalNeighbour.equals(copy.firstPixel()))) {
+                copy = generateChain(pStartNode, nodalNeighbour, copy);
+                Framework.logExit(mLogger);
+                return copy;
+            }
+        }
+
+        // otherwise go to the next pixel normally
+        for (final Pixel neighbour : pCurrentPixel.getNeighbours()) {
+            // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+            // going back to the staring node.
+            // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
+            // !neighbour.isNeighbour(pChain.firstPixel()))) {
+            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(pPixelChain.count() == 2 && neighbour.equals(pPixelChain.getStartNode()))) {
+                copy = generateChain(pStartNode, neighbour, copy);
+                Framework.logExit(mLogger);
+                return copy;
+            }
+        }
+
+        return copy;
     }
 
     private Collection<PixelChain> generateChains(final Node pStartNode) {
@@ -261,8 +281,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pStartNode.setInChain(this, true);
         pStartNode.getNeighbours().forEach(neighbour -> {
             if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
-                final PixelChain chain = new PixelChain(pStartNode);
-                generateChain(pStartNode, neighbour, chain);
+                PixelChain chain = new PixelChain(pStartNode);
+                chain = generateChain(pStartNode, neighbour, chain);
                 if (chain.length() > 2) {
                     chains.add(chain);
                     chain.addToNodes();
@@ -548,6 +568,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mSegmentIndex;
     }
 
+    private Map<ISegment, PixelChain> getSegmentToPixelChainMap() {
+        calcSegmentIndex();
+        return mSegmentToPixelChainMap;
+    }
+
     private AbstractCollection<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
@@ -696,7 +721,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public Optional<PixelChain> getPixelChainForSegment(final ISegment pSegment) {
-        return Optional.ofNullable(mSegmentToPixelChainMap.get(pSegment));
+        return Optional.ofNullable(getSegmentToPixelChainMap().get(pSegment));
     }
 
     private boolean isSegmentIndexValid() {
@@ -881,12 +906,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                             .filter(pPixel1 -> pPixel1.isNode(this))
                             .forEach(pixel -> pixel.getNode(this)
                                     .ifPresent(node -> {
-                                        final Collection<PixelChain> chains = generateChains(node);
+                                        final List<PixelChain> chains = generateChains(node)
+                                                .parallelStream()
+                                                .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
+                                                .collect(Collectors.toList());
                                         addPixelChains(chains);
-                                        chains.parallelStream()
-                                                .forEach(pc2 -> pc2.approximate(this.getTransformSource(), this));
                                     })
-
                             );
                 });
             } else { // turning pixel on
@@ -905,10 +930,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                             pixel.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
                         });
                 nodes.stream().filter(pNode -> pNode.isNode(this)).forEach(n -> {
-                    final Collection<PixelChain> chains = generateChains(n);
+                    final Collection<PixelChain> chains = generateChains(n)
+                            .parallelStream()
+                            .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
+                            .collect(Collectors.toList());
                     addPixelChains(chains);
-                    chains.parallelStream()
-                            .forEach(pc -> pc.approximate(this.getTransformSource(), this));
                 });
             }
         }
@@ -1213,49 +1239,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    private void setValue(final int pX, final int pY, final byte pValue) {
-        // all the parameter bounds checking is doing in the saveValueNoUndo.
-        // mLogger.info(() -> "setValue: " + pX + ", " + pY + ", " + pValue);
-
-        final byte before = getValue(pX, pY);
-        if (before != pValue) {
-            Services.getServices().getUndoRedoBuffer()
-                    .add("Pixel::setValue",
-                            () -> setValueNoUndo(pX, pY, before),
-                            () -> setValueNoUndo(pX, pY, pValue)
-                    );
-        }
-        setValueNoUndo(pX, pY, pValue);
-    }
-
-    /**
-     * Sets the value of a pixel in the PixelMap BUT does not generate the Undo/Redo information. This is specifically intended to
-     * be called from the UndoRedo mechanism. All normal usage should be to the setValue(...) method.
-     *
-     * @param pX     the x
-     * @param pY     the y
-     * @param pValue the value
-     */
-    void setValueNoUndo(final int pX, final int pY, final byte pValue) {
-        // TODO check these value using Framework
-        if (pX < 0) {
-            throw new IllegalArgumentException("pX must be > 0.");
-        }
-
-        if (pX > getWidth() - 1) {
-            throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth());
-        }
-
-        if (pY < 0) {
-            throw new IllegalArgumentException("pY must be > 0.");
-        }
-
-        if (pY > getHeight() - 1) {
-            throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
-        }
-
+    void setValue(final int pX, final int pY, final byte pValue) {
         mData = mData.set(pX, pY, pValue);
     }
+
 
     private void setWidth(final int pWidth) {
         mWidth = pWidth;

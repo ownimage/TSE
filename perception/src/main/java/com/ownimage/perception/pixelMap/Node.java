@@ -25,7 +25,7 @@ public class Node extends Pixel {
     /**
      * The m pixel chains.
      */
-    private final Vector<PixelChain> mPixelChains = new Vector<>();
+    private Vector<PixelChain> mPixelChains = new Vector<>();
 
     /**
      * Instantiates a new node.
@@ -80,6 +80,7 @@ public class Node extends Pixel {
      */
     void removePixelChain(final PixelChain pPixelChain) {
         mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
+        mPixelChains = new Vector<>(mPixelChains); // TODO better immutable or clone
         mPixelChains.remove(pPixelChain);
         mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
     }
