@@ -1236,6 +1236,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Vector<PixelChain> updates = new Vector<>();
         mPixelChains.forEach(chain -> updates.add(chain.setThickness(shortLength, mediumLength, longLength)));
         mPixelChains = mPixelChains.clear().addAll(updates);
+        invalidateSegmentIndex();
         Framework.logExit(mLogger);
     }
 

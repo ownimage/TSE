@@ -97,7 +97,7 @@ public class EqualizeValues {
         if (mLongFraction != 1.0d) {
             return String.format("%d/%d/%d/%d", (int) (100 * mIgnoreFraction), (int) (100 * mShortFraction), (int) (100 * mMediumFraction), (int) (100 * mLongFraction));
         } else {
-            return "-- None --";
+            return "-- Custom --";
         }
     }
 }

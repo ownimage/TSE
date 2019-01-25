@@ -27,6 +27,7 @@ import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
@@ -168,11 +169,16 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
-        // mLogger.fine("CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl.getDisplayName() + " " +
-        // pIsMutating);
-        //
+        Framework.log(mLogger, Level.FINE, () -> "CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl + " " + pIsMutating);
+        if (pControl instanceof IControl) {
+            Framework.log(mLogger, Level.FINE, () -> "pControl.getDisplayName() = " + ((IControl) pControl).getDisplayName());
+        }
+
         if (isInitialized() && isNotMutating()) {
             try {
+                setMutating(true);
+                Framework.log(mLogger, Level.FINE, () -> "Running controlChangeEvent");
+
                 // if (!isInitialized()) { return; }
                 //
                 // if (pControl == mGeneratePixelMapButton) {
@@ -188,24 +194,21 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 //
                 // if (mGenerateEdgesDialog.contains(pControl)) { return; }
                 //
-                // if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
-                // try {
-                // setMutating(true);
-                //
-                // getPixelMap().setPixelChainDefaultThickness(this);
-                // mEqualize.setValue(EqualizeValues.getDefaultValue());
-                // } finally {
-                // setMutating(false);
-                // }
-                // }
-                //
+                if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
+                    getPixelMap().ifPresent(pm -> pm.actionSetPixelChainDefaultThickness(this));
+                    mEqualize.setValue(EqualizeValues.getDefaultValue());
+                }
+
                 if ((pControl == mLineTolerance || pControl == mLineCurvePreference) && !pIsMutating) {
                     mPixelMap.actionReapproximate();
                 }
 
-                if (pControl == mEqualize) equalize();
+                if (pControl == mEqualize) {
+                    equalize();
+                }
 
             } finally {
+                setMutating(false);
                 super.controlChangeEvent(pControl, pIsMutating);
             }
         }
