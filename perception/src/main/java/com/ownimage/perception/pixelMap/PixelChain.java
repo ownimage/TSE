@@ -60,8 +60,6 @@ public class PixelChain implements Serializable, Cloneable {
     private Vector<Pixel> mPixels = new Vector<>();
     private Vector<ISegment> mSegments = new Vector<>();
     private Vector<IVertex> mVertexes = new Vector<>();
-    private Node mStartNode;
-    private Node mEndNode;
 
     private Thickness mThickness;
 
@@ -86,8 +84,6 @@ public class PixelChain implements Serializable, Cloneable {
     private PixelChain deepCopy() {
         try {
             PixelChain copy = (PixelChain) super.clone();
-            copy.mStartNode = mStartNode;
-            copy.mEndNode = mEndNode;
             copy.mLength = mLength;
             copy.mThickness = mThickness;
             copy.mPixels = (Vector<Pixel>) mPixels.clone();
@@ -148,12 +144,11 @@ public class PixelChain implements Serializable, Cloneable {
         }
 
         //pOtherChain.mSegments.removeAllElements(); // TODO
-        getEndNode().removePixelChain(this);
-        pOtherChain.getEndNode().removePixelChain(pOtherChain);
-        pOtherChain.getStartNode().removePixelChain(pOtherChain);
+        getEndNode(pPixelMap).removePixelChain(this);
+        pOtherChain.getEndNode(pPixelMap).removePixelChain(pOtherChain);
+        pOtherChain.getStartNode(pPixelMap).removePixelChain(pOtherChain);
 
-        clone.mEndNode = pOtherChain.getEndNode(); // not using setEndNode here as this adds the Node pixel to the end of the pixelChain
-        getEndNode().addPixelChain(clone);
+        getEndNode(pPixelMap).addPixelChain(clone);
         pPixelMap.removePixelChain(pOtherChain);
         pPixelMap.removePixelChain(this);
         pPixelMap.addPixelChain(pOtherChain);
@@ -165,27 +160,6 @@ public class PixelChain implements Serializable, Cloneable {
         clone.validate("add");
         return clone;
     }
-
-
-    void addToNodes() {
-        getStartNode().addPixelChain(this);
-
-        if (mEndNode != null) {
-            if (!mEndNode.samePosition(getStartNode())) {
-                mEndNode.addPixelChain(this);
-            }
-        } else {
-            final Pixel end = mPixels.lastElement();
-            mEndNode = new Node(end);
-            mEndNode.addPixelChain(this);
-            if (end.getX() != 0 && end.getY() != 0) {
-                mLogger.info(() -> "mEndNode bodge");
-                mLogger.info(this::toString);
-                //end.printNeighbours(5);
-            }
-        }
-    }
-
 
     PixelChain approximate(final IPixelMapTransformSource pTransformSource, final PixelMap pPixelMap) {
         final double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
@@ -389,8 +363,8 @@ public class PixelChain implements Serializable, Cloneable {
         return mSegments;
     }
 
-    Node getEndNode() {
-        return mEndNode;
+    Node getEndNode(PixelMap pPixelMap) {
+        return pPixelMap.getNode(mPixels.lastElement());
     }
 
     private ISegment getFirstSegment() {
@@ -426,8 +400,8 @@ public class PixelChain implements Serializable, Cloneable {
         return result;
     }
 
-    Node getStartNode() {
-        return mStartNode;
+    Node getStartNode(final PixelMap pPixelMap) {
+        return pPixelMap.getNode(mPixels.lastElement());
     }
 
     private IVertex getStartVertex() {
@@ -530,14 +504,14 @@ public class PixelChain implements Serializable, Cloneable {
      */
     PixelChain merge(final PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
         mLogger.fine("merge");
-        if (!(getStartNode() == pNode || getEndNode() == pNode) || !(pOtherChain.getStartNode() == pNode || pOtherChain.getEndNode() == pNode)) {
+        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(pOtherChain.getStartNode(pPixelMap) == pNode || pOtherChain.getEndNode(pPixelMap) == pNode)) {
             throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
         }
 
-        PixelChain one = getEndNode() == pNode ? this : reverse(pPixelMap);
-        PixelChain other = pOtherChain.getStartNode() == pNode ? pOtherChain : pOtherChain.reverse(pPixelMap);
+        PixelChain one = getEndNode(pPixelMap) == pNode ? this : reverse(pPixelMap);
+        PixelChain other = pOtherChain.getStartNode(pPixelMap) == pNode ? pOtherChain : pOtherChain.reverse(pPixelMap);
 
-        if (one.getEndNode() != pNode || other.getStartNode() != pNode) {
+        if (one.getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
             throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
         }
 
@@ -820,10 +794,6 @@ public class PixelChain implements Serializable, Cloneable {
         clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(clone).getPixelIndex(), s.getEndVertex(clone).getPixelIndex())));
         clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(clone), s.getEndIndex(clone))));
 
-        final Node tmp = clone.getStartNode();
-        mStartNode = clone.getEndNode();
-        mEndNode = tmp;
-
         final int maxPixelIndex = clone.mPixels.size() - 1;
 
         Collections.reverse(clone.mPixels);
@@ -855,7 +825,6 @@ public class PixelChain implements Serializable, Cloneable {
         Framework.checkParameterNotNull(mLogger, pNode, "pNode");
 
         PixelChain copy = this.deepCopy();
-        copy.mEndNode = pNode;
         copy.mPixels.add(pNode);
 
         // need to do a check here to see if we are clobbering over another chain
@@ -875,14 +844,13 @@ public class PixelChain implements Serializable, Cloneable {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pNode", pNode);
 
-        if (mStartNode != null) {
-            throw new IllegalStateException("Can not change the start node of a PixelChain once it has been set.  Current mStartNode = " + mStartNode);
+        if (mPixels.size() != 0) {
+            throw new IllegalStateException("Can not change the start node of a PixelChain once it has been set.  Current mStartNode = " + mPixels.firstElement());
         }
         if (pNode == null) {
             throw new IllegalArgumentException("Can not change the start node to a null value");
         }
 
-        mStartNode = pNode;
         mPixels.add(pNode);
 
         setStartVertex(Vertex.createVertex(this, mVertexes.size(), 0));
