@@ -1,12 +1,132 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.perception.transform.CannyEdgeTransform;
+
+import java.awt.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 class Utility {
 
     static PixelMap createMap(final String[] map) {
-        return createMap(map, null);
+        IPixelMapTransformSource ts = new IPixelMapTransformSource() {
+            @Override
+            public int getHeight() {
+                return map.length;
+            }
+
+            @Override
+            public Color getLineColor() {
+                return null;
+            }
+
+            @Override
+            public double getLineCurvePreference() {
+                return 0;
+            }
+
+            @Override
+            public int getLineEndLengthPercent() {
+                return 0;
+            }
+
+            @Override
+            public int getLineEndLengthPixel() {
+                return 0;
+            }
+
+            @Override
+            public CannyEdgeTransform.LineEndLengthType getLineEndLengthType() {
+                return null;
+            }
+
+            @Override
+            public CannyEdgeTransform.LineEndShape getLineEndShape() {
+                return null;
+            }
+
+            @Override
+            public double getLineEndThickness() {
+                return 0;
+            }
+
+            @Override
+            public double getLineOpacity() {
+                return 0;
+            }
+
+            @Override
+            public double getLineTolerance() {
+                return 0;
+            }
+
+            @Override
+            public double getLongLineThickness() {
+                return 0;
+            }
+
+            @Override
+            public double getMediumLineThickness() {
+                return 0;
+            }
+
+            @Override
+            public Color getPixelColor() {
+                return null;
+            }
+
+            @Override
+            public Color getShadowColor() {
+                return null;
+            }
+
+            @Override
+            public double getShadowOpacity() {
+                return 0;
+            }
+
+            @Override
+            public double getShadowThickness() {
+                return 0;
+            }
+
+            @Override
+            public double getShadowXOffset() {
+                return 0;
+            }
+
+            @Override
+            public double getShadowYOffset() {
+                return 0;
+            }
+
+            @Override
+            public int getShortLineLength() {
+                return 0;
+            }
+
+            @Override
+            public double getShortLineThickness() {
+                return 0;
+            }
+
+            @Override
+            public boolean getShowPixels() {
+                return false;
+            }
+
+            @Override
+            public boolean getShowLines() {
+                return false;
+            }
+
+            @Override
+            public boolean getShowShadow() {
+                return false;
+            }
+        };
+        return createMap(map, ts);
     }
 
     static PixelMap createMap(final String[] map, final IPixelMapTransformSource transformSource) {

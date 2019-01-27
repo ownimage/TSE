@@ -266,7 +266,7 @@ public class PixelMapTest {
 
 
     @Test
-    public void process04b_generatePixelChain() {
+    public void process04b_generatePixelChain_00() {
         // GIVEN
         final String[] input = {
                 "    N      ",
@@ -276,8 +276,101 @@ public class PixelMapTest {
                 "           ",
         };
         final PixelMap pixelMap = Utility.createMap(input);
+        // WHEN
         pixelMap.actionProcess(null);
+        // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
+        StringBuilder result = new StringBuilder();
+        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
+    }
+
+    @Test
+    public void process04b_generatePixelChain_01() {
+        // GIVEN
+        final String[] input = {
+                "           ",
+                "    N      ",
+                "    E      ",
+                "    E      ",
+                "    N      ",
+                "           ",
+        };
+        final PixelMap pixelMap = Utility.createMap(input);
+        // WHEN
+        pixelMap.actionProcess(null);
+        // THEN
+        assertEquals(1, pixelMap.getPixelChainCount());
+        StringBuilder result = new StringBuilder();
+        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
+    }
+
+    @Test
+    public void process04b_generatePixelChain_02() {
+        // GIVEN
+        final String[] input = {
+                "           ",
+                "       N   ",
+                "     EE    ",
+                "    E      ",
+                "   N       ",
+                "           ",
+        };
+        final PixelMap pixelMap = Utility.createMap(input);
+        // WHEN
+        pixelMap.actionProcess(null);
+        // THEN
+        assertEquals(1, pixelMap.getPixelChainCount());
+        StringBuilder result = new StringBuilder();
+        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        assertEquals("PixelChain[ Node(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Node(7, 1) ]\n", result.toString());
+    }
+
+    @Test
+    public void process04b_generatePixelChain_03() {
+        // GIVEN
+        final String[] input = {
+                "           ",
+                "     N     ",
+                "    E      ",
+                "   E       ",
+                "   N       ",
+                "           ",
+        };
+        final PixelMap pixelMap = Utility.createMap(input);
+        // WHEN
+        pixelMap.actionProcess(null);
+        // THEN
+        assertEquals(1, pixelMap.getPixelChainCount());
+        StringBuilder result = new StringBuilder();
+        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
+    }
+
+    @Test
+    public void buildChain_01() {
+        // GIVEN
+        final String[] input = {
+                "           ",
+                "           ",
+                "           ",
+                "           ",
+                "           ",
+                "           ",
+        };
+        PixelMap pixelMap = Utility.createMap(input);
+        pixelMap.actionProcess(null);
+        // WHEN
+        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 4));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 3));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(4, 2));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(5, 1));
+        // THEN
+        assertEquals(1, pixelMap.getPixelChainCount());
+        StringBuilder result = new StringBuilder();
+        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
     }
 
     @Before

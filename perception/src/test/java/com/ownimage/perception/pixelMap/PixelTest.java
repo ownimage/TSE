@@ -273,4 +273,67 @@ public class PixelTest {
         // THEN
         assertSame(8, count.get());
     }
+
+    @Test
+    public void samePosition_00() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Pixel sameAsTest = null;
+        // THEN
+        assertFalse(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_01() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Pixel sameAsTest = new Pixel(5, 5);
+        // THEN
+        assertTrue(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_02() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Pixel sameAsTest = new Pixel(4, 5);
+        // THEN
+        assertFalse(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_03() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Pixel sameAsTest = new Pixel(5, 4);
+        // THEN
+        assertFalse(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_04() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Pixel sameAsTest = new Pixel(4, 4);
+        // THEN
+        assertFalse(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_05() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Node sameAsTest = new Node(new Pixel(5, 5));
+        // THEN
+        assertTrue(underTest.samePosition(sameAsTest));
+    }
+
+    @Test
+    public void samePosition_06() {
+        // GIVEN
+        Pixel underTest = new Pixel(5, 5);
+        Node sameAsTest = new Node(new Pixel(4, 4));
+        // THEN
+        assertFalse(underTest.samePosition(sameAsTest));
+    }
 }

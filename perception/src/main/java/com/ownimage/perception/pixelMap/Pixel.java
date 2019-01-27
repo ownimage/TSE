@@ -282,6 +282,12 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return super.equals(pO);
     }
 
+    public boolean samePosition(final Pixel pO) {
+        if (this == pO) return true;
+        if (pO == null) return false;
+        return getX() == pO.getX() && getY() == pO.getY();
+    }
+
     @Override
     public int hashCode() {
         return super.hashCode();

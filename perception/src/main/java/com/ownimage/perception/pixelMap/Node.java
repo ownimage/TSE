@@ -41,8 +41,10 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    void addPixelChain(final PixelChain pPixelChain) {
-        mPixelChains.add(pPixelChain);
+    Node addPixelChain(final PixelChain pPixelChain) {
+        Node clone = clone();
+        clone.mPixelChains.add(pPixelChain);
+        return clone;
     }
 
     /**
@@ -78,11 +80,16 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    void removePixelChain(final PixelChain pPixelChain) {
-        mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
-        mPixelChains = new Vector<>(mPixelChains); // TODO better immutable or clone
-        mPixelChains.remove(pPixelChain);
-        mLogger.info(() -> String.format("Node::removePixelChain count=%s", mPixelChains.size()));
+    Node removePixelChain(final PixelChain pPixelChain) {
+        Node clone = clone();
+        clone.mPixelChains.remove(pPixelChain);
+        return clone;
+    }
+
+    public Node clone() {
+        Node clone = new Node(this);
+        clone.mPixelChains.addAll(mPixelChains);
+        return clone;
     }
 
     void mergePixelChains(final PixelMap pPixelMap) {
@@ -93,7 +100,10 @@ public class Node extends Pixel {
                 final PixelChain chain0 = getPixelChain(0);
                 final PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    chain0.merge(pPixelMap, chain1, this);
+                    PixelChain merged = chain0.merge(pPixelMap, chain1, this);
+                    pPixelMap.removePixelChain(chain0);
+                    pPixelMap.removePixelChain(chain1);
+                    pPixelMap.addPixelChain(merged);
                 }
                 break;
             case 3:
