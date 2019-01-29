@@ -16,7 +16,7 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
         private final int mHeight;
         private final E mDefaultValue;
         private final int mDensity;
-        private final HashMap<Long, E> mValues;
+        private final HashMap<Key, E> mValues;
 
         public Map2D(final int pWidth, final int pHeight, final E pDefaultValue, final int pDensity) {
             mWidth = pWidth;
@@ -32,14 +32,14 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
 
         public E get(final int pX, final int pY) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            Key key = new Key(pX, pY);
             E value = mValues.get(key);
             return (value != null) ? value : mDefaultValue;
         }
 
         public void set(final int pX, final int pY, final E pValue) {
             checkXY(pX, pY);
-            Long key = generateKey(pX, pY);
+            Key key = new Key(pX, pY);
             if (Objects.equals(pValue, mDefaultValue)) {
                 mValues.remove(key);
             } else {
@@ -54,8 +54,34 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
             Framework.checkParameterLessThan(mLogger, pY, mHeight, "pY");
         }
 
-        private Long generateKey(final int pX, final int pY) {
-            return (long) pX * mWidth + pY;
+        private static class Key {
+
+            private final int mX;
+            private final int mY;
+
+            private Key(final int pX, final int pY) {
+                mX = pX;
+                mY = pY;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("(%s,%s)", mX, mY);
+            }
+
+            @Override
+            public boolean equals(final Object pO) {
+                if (this == pO) return true;
+                if (pO == null || getClass() != pO.getClass()) return false;
+                final Key key = (Key) pO;
+                return mX == key.mX &&
+                        mY == key.mY;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(mX, mY);
+            }
         }
     }
 
