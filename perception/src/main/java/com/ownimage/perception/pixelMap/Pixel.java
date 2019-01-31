@@ -198,7 +198,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public Optional<Node> getNode(final PixelMap pPixelMap) {
-        return isNode(pPixelMap) ? Optional.of(new Node(this)) : Optional.empty();
+        return pPixelMap.getNode(this);
     }
 
     public boolean isUnVisitedEdge(final PixelMap pPixelMap) {
@@ -240,6 +240,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     @Override
     public String toString() {
         return "Pixel(" + getX() + ", " + getY() + ")";
+    }
+
+    public IntegerPoint toIntegerPoint() {
+        return new IntegerPoint(getX(), getY());
     }
 
     private class Neighbours implements Iterable<Pixel>, Iterator<Pixel> {

@@ -152,7 +152,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
         invalidateSegmentIndex();
-        mPixelChains = mPixelChains.addAll(pPixelChains);
+        pPixelChains.stream().forEach(pc -> addPixelChain(pc));
         Framework.logExit(mLogger);
     }
 
@@ -235,8 +235,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.finest("pPixelChain: " + pPixelChain);
         }
 
-        if (pCurrentPixel.isNode(this)) {
-            PixelChain copy = pPixelChain.setEndNode(this, getNode(pCurrentPixel));
+        Optional<Node> node = getNode(pCurrentPixel);
+        if (node.isPresent()) {
+            PixelChain copy = pPixelChain.setEndNode(this, node.get());
             Framework.logExit(mLogger);
             return copy;
         }
@@ -265,7 +266,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
             // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.count() == 2 && neighbour.equals(copy.getStartNode(pPixelMap)))) {
+            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.count() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
                 copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
                 Framework.logExit(mLogger);
                 return copy;
@@ -441,18 +442,31 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
 
     /**
-     * Gets the Node at the PixelPosition.
+     * Gets the Node at the PixelPosition if it is a Node either because it is in mNodes or because mData says that it is a Node.
      *
      * @param pIntegerPoint the pixel
      * @return the node
      */
-    public Node getNode(final IntegerPoint pIntegerPoint) {
-        Node node = mNodes.get(pIntegerPoint);
-        if (node == null) {
-            node = new Node(pIntegerPoint);
+    public Optional<Node> getNode(final IntegerPoint pIntegerPoint) {
+        // this is because pIntegerPoint might be a Node or Pixel
+        IntegerPoint point = getTrueIntegerPoint(pIntegerPoint);
+
+        Node node = mNodes.get(point);
+        if (node != null) {
+            return Optional.of(node);
         }
-        mNodes.put(pIntegerPoint, node);
-        return node;
+
+        if (new Pixel(point).isNode(this)) {
+            node = new Node(point);
+            mNodes.put(point, node);
+            return Optional.of(node);
+        }
+        return Optional.empty();
+    }
+
+    private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
+        // this is because pIntegerPoint might be a Node or Pixel
+        return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
     }
 
     /*
@@ -462,20 +476,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private Node nodeAdd(final IntegerPoint pIntegerPoint) {
         Node node = mNodes.get(pIntegerPoint);
         if (node != null) {
-            // throw new RuntimeException(String.format("Trying to add node that already exists, nodesCount=%s", nodeCount()));
+            return node;            // throw new RuntimeException(String.format("Trying to add node that already exists, nodesCount=%s", nodeCount()));
         }
         node = new Node(pIntegerPoint);
         mNodes.put(pIntegerPoint, node);
         return node;
     }
 
-    private Node nodeRemove(final IntegerPoint pIntegerPoint) {
+    private void nodeRemove(final IntegerPoint pIntegerPoint) {
         Node node = mNodes.get(pIntegerPoint);
         if (node == null) {
             //  throw new RuntimeException("Node to be removed does not already exist");
         }
-        node = new Node(pIntegerPoint);
-        return node;
+        mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
     }
 
     public double getNormalWidth() {
@@ -923,8 +936,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                         .forEach(pixel -> {
                             getPixelChains(pixel)
                                     .forEach(pc -> {
-                                        nodes.add(pc.getStartNode(this));
-                                        nodes.add(pc.getEndNode(this));
+                                        pc.getStartNode(this).ifPresent(nodes::add);
+                                        pc.getEndNode(this).ifPresent(nodes::add);
                                         removePixelChain(pc);
                                     });
                             pixel.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
@@ -970,7 +983,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.isNode(this)) {
-                final Node node = getNode(pixel);
+                final Node node = getNode(pixel).get();
                 if (node.countEdgeNeighbours(this) == 0) {
                     pixel.setEdge(this, false);
                     setNode(pixel, false);
@@ -982,6 +995,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private Stream<Node> nodesStream() {
+        // note this is to prevent concurrent modification exception
         return ((HashMap) mNodes.clone()).values().stream();
     }
 
@@ -1025,8 +1039,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         nodesStream().forEach(node -> mPixelChains = mPixelChains.addAll(generateChains(this, node)));
         forEachPixel(pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
-                final Node node = getNode(pixel);
-                mPixelChains = mPixelChains.addAll(generateChains(this, node));
+                getNode(pixel).ifPresent(node -> mPixelChains = mPixelChains.addAll(generateChains(this, node)));
             }
         });
 
@@ -1130,12 +1143,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 mPixelChains = mPixelChains.clear().addAll(pixelChains);
                 //TODO this will need to change
 
-                nodesRemoveAll();
-                mPixelChains.forEach(pc -> {
-                    getNode(pc.getStartNode(this)).addPixelChain(pc);
-                    getNode(pc.getEndNode(this)).addPixelChain(pc);
-                });
-
                 bais = null;
                 ois = null;
                 objectString = null;
@@ -1167,26 +1174,32 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void indexSegments() {
         final Vector<PixelChain> pixelChains = new Vector<>();
-        mPixelChains.forEach(pc -> {
-            PixelChain pcNew = pc.indexSegments(this);
-            pixelChains.add(pcNew);
-            pc.getStartNode(this).removePixelChain(pc);
-            pc.getStartNode(this).addPixelChain(pcNew);
-            pc.getEndNode(this).removePixelChain(pc);
-            pc.getEndNode(this).addPixelChain(pcNew);
-        });
+        mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments(this)));
         mPixelChains = mPixelChains.clear().addAll(pixelChains);
     }
 
+    /**
+     * The removes a pixelChain from the PixelMap.  It also removes it from the Nodes that it was attached to.
+     * This is different from deletePixelChain which can cause the nodes that it was attached to to be merged.
+     *
+     * @param pPixelChain
+     */
     synchronized void removePixelChain(final PixelChain pPixelChain) {
         mPixelChains = mPixelChains.remove(pPixelChain);
+        pPixelChain.getStartNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
+        pPixelChain.getEndNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
         invalidateSegmentIndex();
     }
 
     synchronized void addPixelChain(final PixelChain pPixelChain) {
         mPixelChains = mPixelChains.add(pPixelChain);
-        pPixelChain.getStartNode(this);
+        replaceNode(pPixelChain.getStartNode(this).get().addPixelChain(pPixelChain));
+        replaceNode(pPixelChain.getEndNode(this).get().addPixelChain(pPixelChain));
         invalidateSegmentIndex();
+    }
+
+    private void replaceNode(Node pNode) {
+        mNodes.put(pNode.toIntegerPoint(), pNode);
     }
 
     private void resetInChain() {
@@ -1215,6 +1228,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
             setValue(x, y, newValue);
         });
+    }
+
+    // access weakened for testing only
+    protected void setData_FOR_TESTING_PURPOSES_ONLY(final Pixel pPixel, final boolean pState, final byte pValue) {
+        setData(pPixel, pState, pValue);
     }
 
     private void setData(final Pixel pPixel, final boolean pState, final byte pValue) {
@@ -1275,6 +1293,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         if (canEliminate) {
             pPixel.setEdge(this, false);
+            nodeRemove(pPixel);
         }
         return canEliminate;
     }

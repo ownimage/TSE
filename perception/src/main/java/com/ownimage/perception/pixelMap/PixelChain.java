@@ -10,12 +10,14 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.segment.*;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple4;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -124,8 +126,8 @@ public class PixelChain implements Serializable, Cloneable {
             pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartIndex(pOtherChain), s.getEndIndex(pOtherChain))));
         }
 
-        clone.validate("add");
-        pOtherChain.validate("add");
+        clone.validate("merge");
+        pOtherChain.validate("merge");
 
         if (!clone.lastPixel().equals(pOtherChain.firstPixel())) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + pOtherChain);
@@ -142,16 +144,6 @@ public class PixelChain implements Serializable, Cloneable {
             final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, clone, clone.mSegments.size());
             clone.mSegments.add(newSegment);
         }
-
-        //pOtherChain.mSegments.removeAllElements(); // TODO
-        getEndNode(pPixelMap).removePixelChain(this);
-        pOtherChain.getEndNode(pPixelMap).removePixelChain(pOtherChain);
-        pOtherChain.getStartNode(pPixelMap).removePixelChain(pOtherChain);
-
-        getEndNode(pPixelMap).addPixelChain(clone);
-        pPixelMap.removePixelChain(pOtherChain);
-        pPixelMap.removePixelChain(this);
-        pPixelMap.addPixelChain(pOtherChain);
 
         mLogger.fine(() -> String.format("clone.mPixels.size() = %s", clone.mPixels.size()));
         mLogger.fine(() -> String.format("clone.mSegments.size() = %s", clone.mSegments.size()));
@@ -363,7 +355,7 @@ public class PixelChain implements Serializable, Cloneable {
         return mSegments;
     }
 
-    Node getEndNode(PixelMap pPixelMap) {
+    Optional<Node> getEndNode(PixelMap pPixelMap) {
         return pPixelMap.getNode(mPixels.lastElement());
     }
 
@@ -400,8 +392,8 @@ public class PixelChain implements Serializable, Cloneable {
         return result;
     }
 
-    Node getStartNode(final PixelMap pPixelMap) {
-        return pPixelMap.getNode(mPixels.lastElement());
+    Optional<Node> getStartNode(final PixelMap pPixelMap) {
+        return pPixelMap.getNode(mPixels.firstElement());
     }
 
     private IVertex getStartVertex() {
@@ -504,16 +496,19 @@ public class PixelChain implements Serializable, Cloneable {
      */
     PixelChain merge(final PixelMap pPixelMap, final PixelChain pOtherChain, final Node pNode) {
         mLogger.fine("merge");
-        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(pOtherChain.getStartNode(pPixelMap) == pNode || pOtherChain.getEndNode(pPixelMap) == pNode)) {
-            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
-        }
+//        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(pOtherChain.getStartNode(pPixelMap) == pNode || pOtherChain.getEndNode(pPixelMap) == pNode)) {
+//            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
+//        }
 
-        PixelChain one = getEndNode(pPixelMap) == pNode ? this : reverse(pPixelMap);
-        PixelChain other = pOtherChain.getStartNode(pPixelMap) == pNode ? pOtherChain : pOtherChain.reverse(pPixelMap);
+        StrongReference<PixelChain> one = new StrongReference<>(this);
+        getEndNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> one.set(reverse(pPixelMap)));
 
-        if (one.getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
-            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
-        }
+        StrongReference<PixelChain> other = new StrongReference<>(pOtherChain);
+        pOtherChain.getStartNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> other.set(pOtherChain.reverse(pPixelMap)));
+
+//        if (one.get().getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
+//            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
+//        }
 
         // TODO should recalculate thickness from source values
         mThickness = getPixelLength() > pOtherChain.getPixelLength() ? mThickness : pOtherChain.mThickness;
@@ -961,8 +956,15 @@ public class PixelChain implements Serializable, Cloneable {
                     throw new RuntimeException("wrong start vertex");
                 if (mVertexes.lastElement().getEndSegment(this) != null) throw new RuntimeException("wrong end vertex");
             }
+
+            int currentMax = -1;
             for (int i = 0; i < mVertexes.size(); i++) {
                 final IVertex v = mVertexes.get(i);
+                if (i == 0 && v.getPixelIndex() != 0) throw new IllegalStateException("First vertex wrong)");
+                if (i == mVertexes.size() - 1 && v.getPixelIndex() != mPixels.size() - 1)
+                    throw new IllegalStateException("Last vertex wrong)");
+                if (v.getPixelIndex() <= currentMax) throw new IllegalStateException("Wrong pixel index order");
+                currentMax = v.getPixelIndex();
                 if (i != 0 && v.getStartSegment(this) != mSegments.get(i - 1))
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 if (i != mVertexes.size() - 1 && v.getEndSegment(this) != mSegments.get(i))
@@ -974,7 +976,7 @@ public class PixelChain implements Serializable, Cloneable {
         }
     }
 
-    private void printVertexs() {
+    public void printVertexs() {
         final StringBuilder sb = new StringBuilder()
                 .append(String.format("mVertexes.size() = %s, mSegments.size() = %s", mVertexes.size(), mSegments.size()))
                 .append("\nArrray\n");

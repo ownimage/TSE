@@ -9,11 +9,11 @@ import static org.junit.Assert.fail;
 
 class Utility {
 
-    static PixelMap createMap(final String[] map) {
-        IPixelMapTransformSource ts = new IPixelMapTransformSource() {
+    private static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
+        return new IPixelMapTransformSource() {
             @Override
             public int getHeight() {
-                return map.length;
+                return pHeight;
             }
 
             @Override
@@ -23,7 +23,7 @@ class Utility {
 
             @Override
             public double getLineCurvePreference() {
-                return 0;
+                return 1.2;
             }
 
             @Override
@@ -58,7 +58,7 @@ class Utility {
 
             @Override
             public double getLineTolerance() {
-                return 0;
+                return 1.2;
             }
 
             @Override
@@ -126,7 +126,15 @@ class Utility {
                 return false;
             }
         };
-        return createMap(map, ts);
+    }
+
+    static PixelMap createMap(final int pX, final int pY) {
+        final PixelMap pixelMap = new PixelMap(pX, pY, true, getDefaultTransformSource(pY));
+        return pixelMap;
+    }
+
+    static PixelMap createMap(final String[] map) {
+        return createMap(map, getDefaultTransformSource(map.length));
     }
 
     static PixelMap createMap(final String[] map, final IPixelMapTransformSource transformSource) {
