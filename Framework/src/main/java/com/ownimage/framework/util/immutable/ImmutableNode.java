@@ -1,12 +1,13 @@
 package com.ownimage.framework.util.immutable;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
 
-public class ImmutableNode<M> {
+public class ImmutableNode<M> implements Serializable {
 
     private M mMaster;
-    private WeakReference<ImmutableNode<M>> mPrevious;
+    transient private WeakReference<ImmutableNode<M>> mPrevious;
     private Object mSynchronisation;
     private ImmutableNode<M> mToMaster;
     private Consumer<M> mRedo;

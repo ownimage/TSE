@@ -282,6 +282,7 @@ public class PixelMapTest {
         final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1));
 
         // THEN
+        result.calcSegmentIndex();
         assertEquals(2, result.getPixelChainCount());
         final String[] actual = Utility.getMap(result);
         Utility.assertMapEquals(expected, actual);

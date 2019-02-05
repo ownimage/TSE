@@ -242,7 +242,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     //
     private void editPixels() {
         getEditPixelMapDialog().showDialog();
-        getPerception().refreshOutputPreview();
     }
 
     private void generateEdges() {
@@ -288,7 +287,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            final ActionControl ok = ActionControl.create("OK", NullContainer, () -> mLogger.info(() -> "edit pixelmap OK"));
+            final ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
+                mLogger.info(() -> "edit pixelmap OK");
+                refreshOutputPreview();
+            });
             final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
             mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
         }
@@ -616,6 +618,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
+        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+        if (mPixelMap != null && (pPixelMap.getWidth() != getWidth() || pPixelMap.getHeight() != getHeight())) {
+            throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
+        }
+
         mPixelMap = pPixelMap;
         mEditPixelMapDialog = null;
         mEditPixelMapButton.setEnabled(mPixelMap != null);
@@ -623,7 +630,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private Optional<PixelMap> getPixelMap() {
         return Optional.ofNullable(mPixelMap);
-        // TODO need to make all type of mPixelMap Optional<PixelMap>
     }
 
     @Override

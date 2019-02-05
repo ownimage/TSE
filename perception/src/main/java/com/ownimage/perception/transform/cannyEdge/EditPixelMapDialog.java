@@ -8,7 +8,6 @@ package com.ownimage.perception.transform.cannyEdge;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.*;
-import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -33,8 +32,8 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
-import com.ownimage.perception.transform.ITransform;
 
 import java.awt.*;
 import java.io.IOException;
@@ -79,7 +78,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean mMutating = false;
 
-    private final ITransform mTransform;
+    private final CannyEdgeTransform mTransform;
+    private IView mView;
     private final CropTransform mCropTransform;
 
     private final PictureControl mPictureControl = new PictureControl("Preview", "preview", NullContainer,
@@ -110,8 +110,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<PixelAction> mPixelAction =
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
 
-    private final IControlChangeListener mGrafittiChangeRequired = (c, m) -> mPictureControl.drawGrafitti();
-
     // Vertex Container
     private final DoubleControl mVCC1 = new DoubleControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 0.5);
     private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
@@ -126,7 +124,14 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private int mMouseLastSize;
     private Id mSavepointId;
 
-    public EditPixelMapDialog(final ITransform pTransform, final PixelMap pPixelMap, final String pDisplayName, final String pPropertyName, final ActionControl pOkAction, final ActionControl pCancelAction) {
+    public EditPixelMapDialog(
+            final CannyEdgeTransform pTransform,
+            final PixelMap pPixelMap,
+            final String pDisplayName,
+            final String pPropertyName,
+            final ActionControl pOkAction,
+            final ActionControl pCancelAction
+    ) {
         super(pDisplayName, pPropertyName, Services.getServices().getUndoRedoBuffer());
         Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         Framework.checkParameterNotNull(mLogger, pPixelMap, "mPixelMap");
@@ -149,14 +154,19 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.setUIListener(this);
         updatePreview();
 
-        mEdgeColor.addControlChangeListener(mGrafittiChangeRequired);
-        mNodeColor.addControlChangeListener(mGrafittiChangeRequired);
-        mShowGrafitti.addControlChangeListener(mGrafittiChangeRequired);
+        mEdgeColor.addControlChangeListener(this::mGrafittiChangeListener);
+        mNodeColor.addControlChangeListener(this::mGrafittiChangeListener);
+        mShowGrafitti.addControlChangeListener(this::mGrafittiChangeListener);
+    }
+
+    private void mGrafittiChangeListener(Object pControl, boolean pIsMutating) {
+        mPictureControl.drawGrafitti();
     }
 
     private void updatePreview() {
         setCrop();
         if (mTransform.isInitialized()) {
+            mTransform.setPixelMap(mPixelMap);
             if (getPreviewSize() != mPictureControl.getWidth()) {
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
@@ -246,11 +256,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public IView createView() {
-        final VFlowLayout vflow = new VFlowLayout(mGeneralContainer, mContainerList);
-        final HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
-        final IView view = ViewFactory.getInstance().createView(hflow);
-        addView(view);
-        return view;
+        if (mView == null) {
+            final VFlowLayout vflow = new VFlowLayout(mGeneralContainer, mContainerList);
+            final HFlowLayout hflow = new HFlowLayout(mPictureControl, vflow);
+            mView = ViewFactory.getInstance().createView(hflow);
+            addView(mView);
+        }
+        return mView;
     }
 
     private IDialogView getDialogView() {
@@ -279,6 +291,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     synchronized public void grafitti(final GrafittiHelper pGrafittiHelper) {
+        System.err.println("############################# mPixelMap.getPixelChainCount() = " + mPixelMap.getPixelChainCount());
+        System.err.println("############################# mPixelMap.getSegmentCount() = " + mPixelMap.getSegmentCount());
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
 
         final int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;

@@ -90,11 +90,19 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 		return mX;
 	}
 
+
 	public int getY() {
 		return mY;
 	}
 
-	public IntegerPoint minus(final int pDx, final int pDy) {
+    public boolean samePosition(final IntegerPoint pO) {
+        if (this == pO) return true;
+        if (pO == null) return false;
+        return getX() == pO.getX() && getY() == pO.getY();
+    }
+
+
+    public IntegerPoint minus(final int pDx, final int pDy) {
 		return new IntegerPoint(getX() - pDx, getY() - pDy);
 	}
 

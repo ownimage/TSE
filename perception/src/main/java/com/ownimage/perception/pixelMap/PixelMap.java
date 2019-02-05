@@ -122,6 +122,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 clone.invalidateSegmentIndex();
             });
         }
+        clone.validate();
         return clone;
     }
 
@@ -179,11 +180,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 //        return new AllPixels();
     //  }
 
-
-    private synchronized void calcSegmentIndex() {
+    protected synchronized void calcSegmentIndex() {
         Framework.logEntry(mLogger);
         if (!isSegmentIndexValid()) {
-            resetSegmentIndex();
             indexSegments();
         }
         Framework.logExit(mLogger);
@@ -701,6 +700,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mWidth;
     }
 
+    public int getSegmentCount() {
+        return mSegmentCount;
+    }
     void index(final PixelChain pPixelChain, final ISegment pSegment) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
@@ -737,12 +739,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private boolean isSegmentIndexValid() {
-        return mSegmentIndex != null;
+        return mSegmentCount != 0;
     }
 
     private synchronized void invalidateSegmentIndex() {
         Framework.logEntry(mLogger);
-        mSegmentIndex = null;
+        resetSegmentIndex();
         Framework.logExit(mLogger);
     }
 
@@ -845,6 +847,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             invalidateSegmentIndex();
             mLogger.info(() -> "invalidateSegmentIndex done");
             printCount();
+            calcSegmentIndex();
             validate();
             //
         } catch (final Exception pEx) {
@@ -1139,7 +1142,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
                 ObjectInputStream ois = new ObjectInputStream(bais);
 
-                final Vector<PixelChain> pixelChains = (Vector<PixelChain>) ois.readObject();
+                final Collection<PixelChain> pixelChains = (Collection<PixelChain>) ois.readObject();
                 mPixelChains = mPixelChains.clear().addAll(pixelChains);
                 //TODO this will need to change
 
@@ -1316,6 +1319,19 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         mPixelChains.stream().parallel().forEach(pc -> pc.validate("PixelMap::validate"));
+        Set segments = new HashSet<ISegment>();
+        for (int x = 0; x < mSegmentIndex.length; x++) {
+            for (int y = 0; y < mSegmentIndex[x].length; y++) {
+                LinkedList<Tuple2<PixelChain, ISegment>> list = mSegmentIndex[x][y];
+                if (list != null) {
+                    list.stream().forEach(t -> segments.add(t._2));
+                }
+            }
+        }
+        if (mSegmentCount != segments.size() || mSegmentCount != mSegmentToPixelChainMap.keySet().size()) {
+            String message = String.format("mSegmentCount=%s, segments.size()=%s, mSegmentToPixelChainMap.keySet().size()=%s", mSegmentCount, segments.size(), mSegmentToPixelChainMap.keySet().size());
+            throw new IllegalStateException("mSegmentCount mismatch");
+        }
     }
 
 
@@ -1380,7 +1396,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info("mPixelChains size() = " + mPixelChains.size());
         baos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(baos);
-        oos.writeObject(mPixelChains);
+
+        final Collection<PixelChain> pixelChains = mPixelChains.toCollection();
+        oos.writeObject(pixelChains);
         oos.close();
 
         String objectString = MyBase64.compressAndEncode(baos.toByteArray());
@@ -1402,5 +1420,4 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void forEachPixelChain(final Consumer<PixelChain> pFunction) {
         mPixelChains.forEach(pFunction);
     }
-
 }
