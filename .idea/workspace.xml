@@ -35,24 +35,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="815018ad-fc97-45d9-bedf-e40dce1a058d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CannyEdgeTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CannyEdgeTransform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Framework/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Framework/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TSE.iml" beforeDir="false" afterPath="$PROJECT_DIR$/TSE.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/framework.iml" beforeDir="false" afterPath="$PROJECT_DIR$/framework/framework.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/perception/perception.iml" beforeDir="false" afterPath="$PROJECT_DIR$/perception/perception.iml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/perception/target/" />
     <ignored path="$PROJECT_DIR$/framework/target/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/TSE$PixelMapTest_process04b_generatePixelChain2.ic" NAME="PixelMapTest.process04b_generatePixelChain2 Coverage Results" MODIFIED="1548484115045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>com.ownimage.perception.pixelMap.*</FILTER>
+    <SUITE FILE_PATH="coverage/ownimage_tse2017$ImmutableMap2DTest.ic" NAME="ImmutableMap2DTest Coverage Results" MODIFIED="1538003063428" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.ownimage.framework.util.immutable.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/ownimage_tse2017$com_ownimage_framework_util_immutable_in_framework.ic" NAME="com.ownimage.framework.util.immutable in framework Coverage Results" MODIFIED="1538003127607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.ownimage.framework.util.immutable.*</FILTER>
@@ -60,8 +65,8 @@
     <SUITE FILE_PATH="coverage/TSE$PixelMapTest.ic" NAME="PixelMapTest Coverage Results" MODIFIED="1548747103929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.ownimage.perception.pixelMap.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/ownimage_tse2017$ImmutableMap2DTest.ic" NAME="ImmutableMap2DTest Coverage Results" MODIFIED="1538003063428" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>com.ownimage.framework.util.immutable.*</FILTER>
+    <SUITE FILE_PATH="coverage/TSE$PixelMapTest_process04b_generatePixelChain2.ic" NAME="PixelMapTest.process04b_generatePixelChain2 Coverage Results" MODIFIED="1548484115045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.ownimage.perception.pixelMap.*</FILTER>
     </SUITE>
   </component>
   <component name="DatabaseView">
@@ -179,28 +184,71 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file leaf-file-name="PixelMap.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="151" column="44" lean-forward="true" selection-start-line="151" selection-start-column="44" selection-end-line="151" selection-end-column="44" />
+            <state relative-caret-position="731">
+              <caret line="154" selection-start-line="154" selection-end-line="154" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file leaf-file-name="ImmutableSet.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="355">
+              <caret line="59" column="65" lean-forward="true" selection-start-line="59" selection-start-column="65" selection-end-line="59" selection-end-column="65" />
+              <folding>
+                <element signature="e#3058#3059#0" expanded="true" />
+                <element signature="e#3099#3100#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImmutableNode.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableNode.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="80">
+              <caret line="48" selection-start-line="48" selection-end-line="48" />
+              <folding>
+                <element signature="e#1632#1633#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ImmutableSetTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="297">
+              <caret line="98" selection-start-line="98" selection-end-line="98" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EditPixelMapDialog.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="608" column="51" selection-start-line="608" selection-start-column="51" selection-end-line="608" selection-end-column="51" />
+            <state relative-caret-position="212">
+              <caret line="537" column="30" selection-start-line="537" selection-start-column="30" selection-end-line="537" selection-end-column="30" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file leaf-file-name="IPersistDBTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/persist/IPersistDBTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PixelChain.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
+            <state relative-caret-position="14280">
               <caret line="884" column="22" selection-start-line="884" selection-start-column="22" selection-end-line="884" selection-end-column="22" />
               <folding>
                 <element signature="e#15929#15930#0" expanded="true" />
@@ -280,7 +328,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/GenerateEdgesDialog.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentFactory.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/StraightSegment.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/DoubleCurveSegment.java" />
@@ -311,8 +358,6 @@
         <option value="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/ImmutableLayerMap2D.java" />
         <option value="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableMap2DTest.java" />
         <option value="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableMap2D.java" />
-        <option value="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java" />
-        <option value="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/perception/src/test/java/com/ownimage/perception/pixelMap/PixelChainTest.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/EqualizeValues.java" />
@@ -329,8 +374,11 @@
         <option value="$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/DialogView.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/CannyEdgeTransform.java" />
-        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" />
         <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java" />
+        <option value="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/persist/IPersistDBTest.java" />
+        <option value="$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java" />
+        <option value="$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java" />
+        <option value="$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java" />
       </list>
     </option>
   </component>
@@ -347,6 +395,9 @@
   </component>
   <component name="NamedScopeManager">
     <scope name="Unnamed" pattern="com.ownimage.perception.pixelMap.PixelChain" />
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="120" />
@@ -686,11 +737,8 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
     </configuration>
-    <configuration name="ImmutableMap2DTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ImmutableSetTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="framework" />
       <extension name="coverage">
         <pattern>
@@ -698,71 +746,104 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="com.ownimage.framework.util.immutable" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.immutable.ImmutableMap2DTest" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.immutable.ImmutableSetTest" />
+      <option name="METHOD_NAME" value="removeAll02" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
     </configuration>
-    <configuration name="IntegerPointTEST" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ImmutableSetTest.addAll" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="framework" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.ownimage.framework.math.*" />
+          <option name="PATTERN" value="com.ownimage.framework.util.immutable.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.framework.math" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.math.IntegerPointTEST" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PixelMapTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="perception" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.perception.pixelMap.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.perception.pixelMap" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.perception.pixelMap.PixelMapTest" />
-      <option name="METHOD_NAME" value="process04b_generatePixelChain_01" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PixelMapTest.process04b_deletePixelChain" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="perception" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.ownimage.perception.pixelMap.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.ownimage.perception.pixelMap" />
-      <option name="MAIN_CLASS_NAME" value="com.ownimage.perception.pixelMap.PixelMapTest" />
-      <option name="METHOD_NAME" value="process04b_deletePixelChain" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.ownimage.framework.util.immutable" />
+      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.immutable.ImmutableSetTest" />
+      <option name="METHOD_NAME" value="addAll" />
       <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="ImmutableSetTest.removeAll01" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="framework" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ownimage.framework.util.immutable.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.ownimage.framework.util.immutable" />
+      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.immutable.ImmutableSetTest" />
+      <option name="METHOD_NAME" value="removeAll01" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="ImmutableSetTest.removeAll02" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="framework" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ownimage.framework.util.immutable.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.ownimage.framework.util.immutable" />
+      <option name="MAIN_CLASS_NAME" value="com.ownimage.framework.util.immutable.ImmutableSetTest" />
+      <option name="METHOD_NAME" value="removeAll02" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
     </configuration>
     <list>
-      <item itemvalue="JUnit.PixelMapTest" />
       <item itemvalue="Application.FXPerception" />
-      <item itemvalue="JUnit.PixelMapTest.process04b_deletePixelChain" />
-      <item itemvalue="JUnit.IntegerPointTEST" />
-      <item itemvalue="JUnit.ImmutableMap2DTest" />
+      <item itemvalue="JUnit.ImmutableSetTest.removeAll01" />
+      <item itemvalue="JUnit.ImmutableSetTest.removeAll02" />
+      <item itemvalue="JUnit.ImmutableSetTest.addAll" />
+      <item itemvalue="JUnit.ImmutableSetTest" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.FXPerception" />
-        <item itemvalue="JUnit.PixelMapTest.process04b_deletePixelChain" />
-        <item itemvalue="JUnit.PixelMapTest" />
-        <item itemvalue="JUnit.ImmutableMap2DTest" />
-        <item itemvalue="JUnit.IntegerPointTEST" />
+        <item itemvalue="JUnit.ImmutableSetTest" />
+        <item itemvalue="JUnit.ImmutableSetTest.removeAll02" />
+        <item itemvalue="JUnit.ImmutableSetTest.removeAll01" />
+        <item itemvalue="JUnit.ImmutableSetTest.addAll" />
       </list>
     </recent_temporary>
   </component>
@@ -821,6 +902,9 @@
       <workItem from="1548864324765" duration="4077000" />
       <workItem from="1549022985501" duration="1625000" />
       <workItem from="1549092345561" duration="25363000" />
+      <workItem from="1549364876522" duration="156000" />
+      <workItem from="1549365112046" duration="218000" />
+      <workItem from="1549379705955" duration="2027000" />
     </task>
     <task id="LOCAL-00001" summary="Issue #172 remove mSegmentIndexValid from PixelMap">
       <created>1536852625788</created>
@@ -945,80 +1029,80 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 06m 22s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 28m 20s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 06m 48s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 29m 50s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 08m 31s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 30m 09s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 09m 48s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 30m 34s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 11m 01s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 34m 23s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 11m 37s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_addAll - 2019.02.05 at 15h 34m 48s.xml">
+      <configuration name="ImmutableSetTest.addAll" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 11m 54s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll01 - 2019.02.05 at 15h 34m 57s.xml">
+      <configuration name="ImmutableSetTest.removeAll01" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 17m 43s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 35m 46s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 18m 53s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest_removeAll02 - 2019.02.05 at 15h 43m 16s.xml">
+      <configuration name="ImmutableSetTest.removeAll02" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PixelMapTest_process04b_deletePixelChain - 2019.02.02 at 08h 22m 17s.xml">
-      <configuration name="PixelMapTest.process04b_deletePixelChain" configurationId="JUnit" />
+    <history-entry file="ImmutableSetTest - 2019.02.05 at 15h 43m 27s.xml">
+      <configuration name="ImmutableSetTest" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="218727000" />
+    <option name="totallyTimeSpent" value="221128000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="82" y="-7" width="2485" height="1455" extended-state="6" />
+    <frame x="70" y="-8" width="1858" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.06399132" weight="0.25608248" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.9360087" visible="true" weight="0.26061857" />
-      <window_info id="Designer" order="2" />
-      <window_info id="Image Layers" order="3" />
-      <window_info id="DB Browser" order="4" />
-      <window_info id="Learn" order="5" />
-      <window_info id="UI Designer" order="6" />
-      <window_info id="Favorites" order="7" side_tool="true" />
-      <window_info id="Capture Tool" order="8" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3290469" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.30257186" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.41754916" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Palette" order="4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="DB Execution Console" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Messages" order="10" type="SLIDING" weight="0.41590214" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info id="Image Layers" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.41679275" />
-      <window_info anchor="bottom" id="Run with VisualVM" order="11" />
+      <window_info anchor="right" id="Maven Projects" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="13" weight="0.32980332" />
-      <window_info anchor="bottom" id="TeamCity" order="14" weight="0.32980332" />
-      <window_info anchor="bottom" id="Debug with VisualVM" order="15" />
-      <window_info anchor="bottom" id="Inspection Results" order="16" weight="0.32925585" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Database" order="1" weight="0.32976535" />
-      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Maven Projects" order="6" />
-      <window_info anchor="right" id="Palette&#9;" order="7" />
+      <window_info anchor="bottom" x="78" y="392" width="1842" height="296" id="Run" order="2" visible="true" weight="0.30173293" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info id="Capture Tool" order="8" />
+      <window_info id="Designer" order="2" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.06399132" weight="0.25608248" />
+      <window_info anchor="right" id="Database" order="2" weight="0.32976535" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3282365" />
+      <window_info id="Learn" order="5" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.9360087" side_tool="true" visible="true" weight="0.26058632" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="UI Designer" order="6" />
       <window_info anchor="right" id="Theme Preview" order="8" />
+      <window_info id="Favorites" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4169215" />
+      <window_info anchor="bottom" id="DB Execution Console" order="7" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="bottom" id="Inspection Results" order="16" weight="0.32925585" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Run with VisualVM" order="11" />
       <window_info anchor="right" id="Coverage" order="9" side_tool="true" visible="true" weight="0.116240725" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="TeamCity" order="14" weight="0.32980332" />
+      <window_info id="DB Browser" order="4" />
+      <window_info anchor="bottom" id="Debug with VisualVM" order="15" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1095,28 +1179,19 @@
           <properties />
           <option name="timeStamp" value="209" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java</url>
+          <line>104</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager>
-      <configuration name="JUnit">
-        <watch expression="nodalNeighbour.equals(copy.firstPixel())" language="JAVA" />
-        <watch expression="pc.validate(&quot;&quot;)" language="JAVA" />
-        <watch expression="pPixel.isNode(this)" language="JAVA" />
-        <watch expression="pPixel" language="JAVA" />
-        <watch expression="getValue(x, pPixel.getY())" language="JAVA" />
-        <watch expression="ALL" language="JAVA" />
-        <watch expression="ALL ^ pValue" language="JAVA" />
-        <watch expression="(byte) (getValue(x, pPixel.getY()) &amp; (ALL ^ pValue));" language="JAVA" />
-        <watch expression="neighbour.isNode(this) || neighbour.isEdge(this) &amp;&amp; !neighbour.isVisited(this)" language="JAVA" />
-        <watch expression="(nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) &amp;&amp; !(copy.count() == 2 &amp;&amp;                     nodalNeighbour.samePosition(copy.firstPixel()))" language="JAVA" />
-        <watch expression="nodalNeighbour.isUnVisitedEdge(this)" language="JAVA" />
-        <watch expression="nodalNeighbour.isNode(this)" language="JAVA" />
-        <watch expression="copy.count() == 2" language="JAVA" />
-        <watch expression="nodalNeighbour.samePosition(copy.firstPixel()" language="JAVA" />
-      </configuration>
       <configuration name="Application">
         <watch expression="mPixelMap" language="JAVA" />
       </configuration>
@@ -1194,34 +1269,8 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/statements/RunBefores.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="500">
-          <caret line="31" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/ArrayList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="1254" selection-start-line="1254" selection-end-line="1254" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/ClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="435" selection-start-line="435" selection-end-line="435" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/net/URLClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="380" selection-start-line="380" selection-end-line="380" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/ClassLoader.java" />
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/net/URLClassLoader.java" />
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/segment/SegmentBase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
@@ -1229,14 +1278,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/HashMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3352">
-          <caret line="137" column="13" selection-start-line="137" selection-start-column="13" selection-end-line="137" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/test/java/com/ownimage/framework/util/ImmutableLayerMap2DTest.java">
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/HashMap.java" />
+    <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/ImmutableLayerMap2DTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
@@ -1264,20 +1307,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Iterable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="940">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/Set.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4020">
-          <caret line="224" column="12" selection-start-line="224" selection-start-column="12" selection-end-line="224" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Iterable.java" />
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/util/Set.java" />
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/view/javafx/app/FXPerception.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="280">
@@ -1285,49 +1316,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/util/ImmutableLayerMap2D.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/ImmutableLayerMap2D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="560">
           <caret line="37" column="37" selection-start-line="37" selection-start-column="34" selection-end-line="37" selection-end-column="37" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/math/IntegerPoint.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="20">
           <caret line="5" column="35" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="35" />
-          <folding>
-            <element signature="e#2091#2092#0" expanded="true" />
-            <element signature="e#2107#2108#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/test/java/com/ownimage/framework/math/IntegerPointTEST.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/math/IntegerPointTEST.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableMap2D.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableMap2D.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="580">
           <caret line="31" column="9" selection-start-line="31" selection-start-column="9" selection-end-line="31" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableMap2DTest.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableMap2DTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="460">
           <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-          <folding>
-            <element signature="e#293#294#0" expanded="true" />
-            <element signature="e#382#383#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1356,10 +1376,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="70" column="18" selection-start-line="70" selection-start-column="18" selection-end-line="70" selection-end-column="18" />
-          <folding>
-            <element signature="e#2841#2842#0" expanded="true" />
-            <element signature="e#2880#2881#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1387,20 +1403,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Object.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="381" column="29" selection-start-line="381" selection-start-column="29" selection-end-line="381" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Thread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="747" selection-start-line="747" selection-end-line="747" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Object.java" />
+    <entry file="jar://P:/Java/jdk1.8.0_151/src.zip!/java/lang/Thread.java" />
     <entry file="file://$PROJECT_DIR$/NY2.transform">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="857">
@@ -1408,105 +1412,78 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-          <folding>
-            <element signature="e#1530#1531#0" expanded="true" />
-            <element signature="e#1569#1570#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/event/IControlChangeListener.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/event/IControlChangeListener.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/control/GrafittiHelper.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/control/GrafittiHelper.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
           <caret line="21" selection-start-line="21" selection-end-line="21" />
-          <folding>
-            <element signature="e#529#530#0" expanded="true" />
-            <element signature="e#572#573#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/ViewBase.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/javafx/ViewBase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="48" selection-start-line="48" selection-end-line="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/PictureView.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/javafx/PictureView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="142" selection-start-line="142" selection-end-line="142" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/event/EventDispatcher.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/event/EventDispatcher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="280">
           <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
-          <folding>
-            <element signature="e#1121#1122#0" expanded="true" />
-            <element signature="e#1169#1170#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/com/ownimage/framework/control/control/IGrafitti.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#226#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/IAppControlView.java">
+    <entry file="file://$PROJECT_DIR$/bin/com/ownimage/framework/control/control/IGrafitti.class" />
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/IAppControlView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/layout/IViewable.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/layout/IViewable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/IDialogView.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/IDialogView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="9" column="16" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/factory/IViewFactory.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/factory/IViewFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="662">
           <caret line="65" column="23" selection-start-line="65" selection-start-column="23" selection-end-line="65" selection-end-column="23" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/FXViewFactory.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/javafx/FXViewFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="682">
           <caret line="226" column="22" selection-start-line="226" selection-start-column="22" selection-end-line="226" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/view/javafx/DialogView.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/view/javafx/DialogView.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="389">
           <caret line="55" column="54" selection-start-line="55" selection-start-column="45" selection-end-line="55" selection-end-column="54" />
@@ -1520,56 +1497,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/control/ActionControl.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/control/ActionControl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="248">
           <caret line="101" selection-start-line="101" selection-end-line="101" />
-          <folding>
-            <element signature="e#3834#3835#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="284" selection-start-line="284" selection-end-line="284" />
-          <folding>
-            <element signature="e#2232#2680#0" />
-            <element signature="e#7671#7672#0" expanded="true" />
-            <element signature="e#7717#7718#0" expanded="true" />
-            <element signature="e#11860#11861#0" expanded="true" />
-            <element signature="e#11909#11910#0" expanded="true" />
-            <element signature="e#11974#11975#0" expanded="true" />
-            <element signature="e#15510#15511#0" expanded="true" />
-            <element signature="e#15577#15578#0" expanded="true" />
-            <element signature="e#16818#16819#0" expanded="true" />
-            <element signature="e#16883#16884#0" expanded="true" />
-            <element signature="e#17396#17397#0" expanded="true" />
-            <element signature="e#17460#17461#0" expanded="true" />
-            <element signature="e#17752#17753#0" expanded="true" />
-            <element signature="e#17820#17821#0" expanded="true" />
-            <element signature="e#17875#17876#0" expanded="true" />
-            <element signature="e#17953#17954#0" expanded="true" />
-            <element signature="e#18376#18377#0" expanded="true" />
-            <element signature="e#18419#18420#0" expanded="true" />
-            <element signature="e#23950#23951#0" expanded="true" />
-            <element signature="e#24038#24039#0" expanded="true" />
-            <element signature="e#27001#27002#0" expanded="true" />
-            <element signature="e#27050#27051#0" expanded="true" />
-            <element signature="e#27627#27628#0" expanded="true" />
-            <element signature="e#27695#27696#0" expanded="true" />
-            <element signature="e#27760#27761#0" expanded="true" />
-            <element signature="e#27825#27826#0" expanded="true" />
-            <element signature="e#28288#28289#0" expanded="true" />
-            <element signature="e#28366#28367#0" expanded="true" />
-            <element signature="e#28403#28404#0" expanded="true" />
-            <element signature="e#28489#28490#0" expanded="true" />
-            <element signature="e#28527#28528#0" expanded="true" />
-            <element signature="e#28614#28615#0" expanded="true" />
-            <element signature="e#28656#28657#0" expanded="true" />
-            <element signature="e#28717#28718#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1577,23 +1508,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="10">
           <caret line="609" column="69" lean-forward="true" selection-start-line="609" selection-start-column="69" selection-end-line="609" selection-end-column="69" />
-          <folding>
-            <element signature="e#10913#10914#0" expanded="true" />
-            <element signature="e#10965#10966#0" expanded="true" />
-            <element signature="e#23528#23529#0" expanded="true" />
-            <element signature="e#23581#23582#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/framework/src/main/java/com/ownimage/framework/control/control/PictureControl.java">
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/control/control/PictureControl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="20">
           <caret line="58" selection-start-line="58" selection-end-line="58" />
-          <folding>
-            <element signature="e#2640#2641#0" expanded="true" />
-            <element signature="e#2719#2720#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1608,34 +1529,66 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="186" selection-start-line="186" selection-end-line="186" />
-          <folding>
-            <element signature="e#7608#7609#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="608" column="51" selection-start-line="608" selection-start-column="51" selection-end-line="608" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="151" column="44" lean-forward="true" selection-start-line="151" selection-start-column="44" selection-end-line="151" selection-end-column="44" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelChain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
+        <state relative-caret-position="14280">
           <caret line="884" column="22" selection-start-line="884" selection-start-column="22" selection-end-line="884" selection-end-column="22" />
           <folding>
             <element signature="e#15929#15930#0" expanded="true" />
             <element signature="e#15961#15962#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/persist/IPersistDBTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="48" selection-start-line="48" selection-end-line="48" />
+          <folding>
+            <element signature="e#1632#1633#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Framework/src/main/java/com/ownimage/framework/util/immutable/ImmutableSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="59" column="65" lean-forward="true" selection-start-line="59" selection-start-column="65" selection-end-line="59" selection-end-column="65" />
+          <folding>
+            <element signature="e#3058#3059#0" expanded="true" />
+            <element signature="e#3099#3100#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Framework/src/test/java/com/ownimage/framework/util/immutable/ImmutableSetTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="98" selection-start-line="98" selection-end-line="98" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/pixelMap/PixelMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="154" selection-start-line="154" selection-end-line="154" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/perception/src/main/java/com/ownimage/perception/transform/cannyEdge/EditPixelMapDialog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="537" column="30" selection-start-line="537" selection-start-column="30" selection-end-line="537" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -1679,7 +1632,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>jdk1.8.0_151</last-edited>
+          <last-edited>1.8</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

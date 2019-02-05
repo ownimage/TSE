@@ -83,6 +83,43 @@ public class ImmutableSetTest {
     }
 
     @Test
+    public void removeAll01() {
+        // if none of the elements to be removed are present then should return itself
+        Collection<String> all = Arrays.asList(new String[]{"three", "four"});
+        ImmutableSet<String> underTest = new ImmutableSet<>();
+        underTest = underTest.add("one");
+        underTest = underTest.add("two");
+        ImmutableSet<String> result = underTest.removeAll(all);
+        final List<String> expecteResult = Arrays.asList(new String[]{"one", "two"});
+        Assert.assertEquals(result, underTest);
+        Assert.assertTrue(underTest.containsAll(expecteResult));
+    }
+
+    @Test
+    public void removeAll02() {
+        Collection<String> all = Arrays.asList(new String[]{"two", "three", "four"});
+        ImmutableSet<String> underTest = new ImmutableSet<>();
+        underTest = underTest.add("one");
+        underTest = underTest.add("two");
+        underTest = underTest.add("three");
+        ImmutableSet<String> result = underTest.removeAll(all);
+        final List<String> expectedUnderTest = Arrays.asList(new String[]{"one", "two", "three"});
+        final List<String> expectedResult = Arrays.asList(new String[]{"one"});
+        // test result
+        Assert.assertEquals(1, result.size());
+        Assert.assertTrue(result.containsAll(expectedResult));
+        // test rollback
+        Assert.assertEquals(3, underTest.size());
+        Assert.assertTrue(underTest.containsAll(expectedUnderTest));
+        // test roll forward
+        Assert.assertEquals(1, result.size());
+        Assert.assertTrue(result.containsAll(expectedResult));
+        // test rollback
+        Assert.assertEquals(3, underTest.size());
+        Assert.assertTrue(underTest.containsAll(expectedUnderTest));
+    }
+
+    @Test
     public void forEach() {
         String[] values = "one,two,three,four".split(",");
         Collection<String> all = Arrays.asList(values);

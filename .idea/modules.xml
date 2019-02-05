@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TSE.iml" filepath="$PROJECT_DIR$/TSE.iml" />
-      <module fileurl="file://$PROJECT_DIR$/framework/framework.iml" filepath="$PROJECT_DIR$/framework/framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Framework/framework.iml" filepath="$PROJECT_DIR$/Framework/framework.iml" />
       <module fileurl="file://$PROJECT_DIR$/perception/perception.iml" filepath="$PROJECT_DIR$/perception/perception.iml" />
     </modules>
   </component>

@@ -1,8 +1,10 @@
 package com.ownimage.framework.util.immutable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
@@ -44,6 +46,19 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             all.removeAll(master);
             Consumer<HashSet<E>> redo = m -> m.addAll(all);
             Consumer<HashSet<E>> undo = m -> m.removeAll(all);
+            return new ImmutableSet<E>(this, redo, undo);
+        }
+    }
+
+    public ImmutableSet removeAll(Collection<E> pAll) {
+        synchronized (getSynchronisationObject()) {
+            HashSet<E> master = getMaster();
+            ArrayList<E> remove = pAll.stream().filter(e -> master.contains(e)).collect(Collectors.toCollection(ArrayList::new));
+            if (remove.size() == 0) {
+                return this;
+            }
+            Consumer<HashSet<E>> redo = m -> m.removeAll(remove);
+            Consumer<HashSet<E>> undo = m -> m.addAll(remove);
             return new ImmutableSet<E>(this, redo, undo);
         }
     }
