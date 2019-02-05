@@ -882,6 +882,14 @@ public class PixelChain implements Serializable, Cloneable {
         return result;
     }
 
+    public PixelChain setThickness(final Thickness pThickness) {
+        Framework.logEntry(mLogger);
+        if (pThickness == mThickness) return this;
+        PixelChain clone = deepCopy();
+        clone.mThickness = pThickness;
+        return clone;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();

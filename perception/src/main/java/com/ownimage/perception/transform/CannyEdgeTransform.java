@@ -258,7 +258,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         Services.getServices().getRenderService()
                 .getRenderJobBuilder("CannyEdgeTransform::generateEdgesOK", inputPictureControl, getPreviousTransform())
                 .withCompleteAction(() -> {
-                    setPixelMap(null);
+                    mPixelMap = null;
                     regeneratePixelMap(inputPictureControl);
                     equalize();
                 })
@@ -628,7 +628,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mEditPixelMapButton.setEnabled(mPixelMap != null);
     }
 
-    private Optional<PixelMap> getPixelMap() {
+    public Optional<PixelMap> getPixelMap() {
         return Optional.ofNullable(mPixelMap);
     }
 

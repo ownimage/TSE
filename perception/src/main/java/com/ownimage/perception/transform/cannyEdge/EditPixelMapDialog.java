@@ -20,6 +20,7 @@ import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
@@ -57,8 +58,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         OffVeryWide("Off Very Wide"),
         OffVeryVeryWide("Off Very Very Wide"),
         Toggle("Toggle"),
-        DeletePixelChain("Delete Pixel Chain");
-
+        DeletePixelChain("Delete Pixel Chain"),
+        PixelChainThickness("Change Pixel Chain Thickness");
         private final String mName;
 
         PixelAction(final String pName) {
@@ -72,6 +73,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private PixelMap mPixelMap;
+    final StrongReference<PixelMap> mResultantPixelMap;
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
     private IDialogView mEditPixelMapDialogView;
@@ -93,7 +95,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mMoveContainer = mContainerList.add(newContainer("Move", "move", true));
     private final IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
-    private final IContainer mVertexControlContainer = mContainerList.add(newContainer("Vertex", "vertex", true));
 
     // General Container
     private final IntegerControl mPixelMapWidth;
@@ -109,11 +110,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true);
     private final ObjectControl<PixelAction> mPixelAction =
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
-
-    // Vertex Container
-    private final DoubleControl mVCC1 = new DoubleControl("Vertex test 1", "vertexTest1", mVertexControlContainer, 0.5);
-    private final IntegerControl mVCC2 = new IntegerControl("Vertex test 2", "vertexTest2", mVertexControlContainer, 2, 2, 15, 1);
-    private final IntegerControl mVCC3 = new IntegerControl("Vertex test 3", "vertexTest3", mVertexControlContainer, 2, 2, 15, 1);
+    private final ObjectControl<PixelChain.Thickness> mThickness =
+            new ObjectControl("Thickness", "Thickness", mPixelControlContainer, PixelChain.Thickness.None, PixelChain.Thickness.values());
 
     private boolean mDialogIsAlive = false;
 
@@ -138,6 +136,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
         mTransform = pTransform;
         mPixelMap = pPixelMap;
+        mResultantPixelMap = new StrongReference<>(mPixelMap);
         mOkAction = pOkAction;
         mCancelAction = pCancelAction;
 
@@ -246,6 +245,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves)) {
                 updateControlVisibility();
             }
+
+            if (pControl == mPixelAction) {
+                mThickness.setEnabled(mPixelAction.getValue() == PixelAction.PixelChainThickness);
+            }
         }
     }
 
@@ -268,14 +271,22 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private IDialogView getDialogView() {
         if (mEditPixelMapDialogView == null) {
             mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
-                    DialogOptions.builder().withCompleteFunction(this::dialogClose).build(),
+                    DialogOptions.builder().withCompleteFunction(() -> {
+                        mTransform.setPixelMap(mResultantPixelMap.get());
+                        dialogClose();
+                    }).build(),
                     getUndoRedoBuffer(),
-                    mCancelAction, mOkAction);
+                    mCancelAction,
+                    mOkAction.doBefore(() -> mResultantPixelMap.set(mPixelMap)));
         }
         return mEditPixelMapDialogView;
     }
 
     public void showDialog() {
+        PixelMap pixelMap = mTransform.getPixelMap().get();
+        mPixelMap.checkCompatibleSize(pixelMap);
+        mPixelMap = pixelMap;
+        mResultantPixelMap.set(pixelMap);
         mDialogIsAlive = true;
         updatePreview();
         getDialogView().showModal();
@@ -401,8 +412,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOff()) actionPixelOff(pPixel);
             if (isPixelActionToggle()) actionPixelToggle(pPixel);
             if (isPixelActionDeletePixelChain()) actionDeletePixelChain(pPixel);
+            if (isPixelChainThickness()) actionPixelChainThickness(pPixel);
             autoUpdatePreview();
         }
+
         grafittiCursor(pEvent, pPixel);
     }
 
@@ -423,13 +436,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mPixelAction.getValue() == PixelAction.DeletePixelChain;
     }
 
-    synchronized private void actionPixelOn(final Pixel pPixel) {
-        mPixelMap = mPixelMap.actionPixelOn(pPixel);
-        mPictureControl.drawGrafitti();
+    private boolean isPixelChainThickness() {
+        return mPixelAction.getValue() == PixelAction.PixelChainThickness;
     }
 
-    synchronized private void actionPixelToggle(final Pixel pPixel) {
-        pPixel.setEdge(mPixelMap, !pPixel.isEdge(mPixelMap));
+    synchronized private void actionPixelOn(final Pixel pPixel) {
+        mPixelMap = mPixelMap.actionPixelOn(pPixel);
         mPictureControl.drawGrafitti();
     }
 
@@ -587,6 +599,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.drawGrafitti();
     }
 
+
+    synchronized private void actionPixelToggle(final Pixel pPixel) {
+        pPixel.setEdge(mPixelMap, !pPixel.isEdge(mPixelMap));
+        mPictureControl.drawGrafitti();
+    }
+
+    private void actionPixelChainThickness(final Pixel pPixel) {
+        mPixelMap = mPixelMap.actionSetPixelChainThickness(pPixel, mThickness.getValue());
+        mPictureControl.drawGrafitti();
+    }
+
     @Override
     public void mouseMoveEvent(final IUIEvent pEvent) {
         Framework.logEntry(mLogger);
@@ -629,7 +652,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mLogger.fine(() -> "keyPressed " + pEvent.getKey());
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mMoveContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
-        if ("V".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mVertexControlContainer);
         mPictureControl.drawGrafitti(); // TODO should only be for the undo redo events
     }
 
@@ -662,10 +684,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean isPixelView() {
         return mContainerList.getSelectedContainer() == mPixelControlContainer;
-    }
-
-    private boolean isVertexView() {
-        return mContainerList.getSelectedContainer() == mVertexControlContainer;
     }
 
     private Properties getProperties() {

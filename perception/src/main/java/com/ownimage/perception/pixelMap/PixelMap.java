@@ -21,6 +21,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import com.sun.istack.internal.NotNull;
 import io.vavr.Tuple2;
 
 import java.awt.*;
@@ -138,8 +139,20 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return clone;
     }
 
-    public void actionPixelToggle(Pixel pPixel) {
-        pPixel.setEdge(this, !pPixel.isEdge(this));
+    public PixelMap actionPixelToggle(Pixel pPixel) {
+        PixelMap clone = new PixelMap(this);
+        pPixel.setEdge(clone, !pPixel.isEdge(this));
+        return clone;
+    }
+
+    public PixelMap actionSetPixelChainThickness(final Pixel pPixel, final PixelChain.Thickness pThickness) {
+        PixelMap clone = new PixelMap(this);
+        clone.getPixelChains(pPixel).forEach(pc -> {
+            clone.mPixelChains = clone.mPixelChains.remove(pc);
+            clone.mPixelChains = clone.mPixelChains.add(pc.setThickness(pThickness));
+            clone.invalidateSegmentIndex();
+        });
+        return clone;
     }
 
     private boolean getShowPixels() {
@@ -703,6 +716,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public int getSegmentCount() {
         return mSegmentCount;
     }
+
     void index(final PixelChain pPixelChain, final ISegment pSegment) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
@@ -1419,5 +1433,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     public void forEachPixelChain(final Consumer<PixelChain> pFunction) {
         mPixelChains.forEach(pFunction);
+    }
+
+    public void checkCompatibleSize(@NotNull final PixelMap pPixelMap) {
+        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+        if (getWidth() != pPixelMap.getWidth() || getHeight() != pPixelMap.getHeight()) {
+            throw new IllegalArgumentException("pPixelMap is different size to this.");
+        }
     }
 }
