@@ -88,9 +88,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             new PictureType(100, 100));
 
     private final IContainer mGeneralContainer = newContainer("General", "general", true).addTitle().addBottomPadding();
-    private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
-    private final BooleanControl mAutoUpdateCurves = new BooleanControl("Auto Update Curves", "autoUpdateCurves", mGeneralContainer, false);
-    private final ActionControl mUpateCurves = new ActionControl("Update Curves", "updateCurves", mGeneralContainer, this::updatePreview);
+    private final BooleanControl mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false).setUndoEnabled(false);
+    private final BooleanControl mAutoUpdateCurves = new BooleanControl("Auto Update Curves", "autoUpdateCurves", mGeneralContainer, false).setUndoEnabled(false);
+    ;
+    private final ActionControl mUpateCurves = new ActionControl("Update Curves", "updateCurves", mGeneralContainer, this::updatePreview).setUndoEnabled(false);
+    ;
 
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mMoveContainer = mContainerList.add(newContainer("Move", "move", true));
@@ -107,7 +109,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     // Pixel Container
     private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor", mPixelControlContainer, getProperties().getCETEPMDEdgeColor());
     private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor", mPixelControlContainer, getProperties().getCETEPMDNodeColor());
-    private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true);
+    private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti", mPixelControlContainer, true).setUndoEnabled(false);
+    ;
     private final ObjectControl<PixelAction> mPixelAction =
             new ObjectControl("Pixel Action", "pixelAction", mPixelControlContainer, PixelAction.On, PixelAction.values());
     private final ObjectControl<PixelChain.Thickness> mThickness =
@@ -536,6 +539,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private void actionPixelOff(final Pixel pPixel) {
+        final PixelMap undo = mPixelMap;
         final int size = getCursorSize();
         final double radius = (double) size / mPixelMapHeight.getValue();
 
@@ -547,6 +551,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                                 .ifPresent(p -> mPixelMap = mPixelMap.actionPixelOff(p))
                 );
         updateGrafitti();
+        addUndoRedoEntry("Action Pixel Off", undo, mPixelMap);
+    }
+
+    private void addUndoRedoEntry(final String pDescription, final PixelMap pUndo, final PixelMap pRedo) {
+        getUndoRedoBuffer().add(pDescription, () -> setPixelMap(pUndo), () -> setPixelMap(pRedo));
+    }
+
+    private void setPixelMap(PixelMap pPixelMap) {
+        mPixelMap = pPixelMap;
     }
 
     private void grafittiCursor(final IUIEvent pEvent, final Pixel pPixel) {
@@ -595,7 +608,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionDeletePixelChain(final Pixel pPixel) {
+        final PixelMap undo = mPixelMap;
         mPixelMap = mPixelMap.actionDeletePixelChain(pPixel);
+        addUndoRedoEntry("Delete PixelChain", undo, mPixelMap);
         mPictureControl.drawGrafitti();
     }
 
@@ -635,7 +650,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragStartEventPixelView(final IUIEvent pEvent) {
-        mSavepointId = getUndoRedoBuffer().startSavepoint("mouseDrag");
         eventToPixel(pEvent).ifPresent(p -> {
             grafittiCursor(pEvent, p);
             mMouseDragLastPixel = p;
