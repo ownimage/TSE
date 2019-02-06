@@ -20,6 +20,7 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 
 	private final int mX;
 	private final int mY;
+	transient private Integer mHashCode; /// calculating hash codes was taking a long time so they are now stored
 
 	public IntegerPoint(final int pX, final int pY) {
 		mX = pX;
@@ -40,7 +41,9 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 	}
 
 	public int hashCode() {
-        return java.util.Objects.hash(mX, mY);
+		if (mHashCode != null) return mHashCode;
+		mHashCode = java.util.Objects.hash(mX, mY);
+		return mHashCode;
 	}
 
 	@Override
