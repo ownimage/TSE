@@ -292,8 +292,8 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     boolean contains(final Pixel pPixel) {
-        if (mMinX > pPixel.getX() || pPixel.getX() > mMaxX || mMinY > pPixel.getY() || pPixel.getY() > mMaxY)
-            return false;
+//        if (mMinX > pPixel.getX() || pPixel.getX() > mMaxX || mMinY > pPixel.getY() || pPixel.getY() > mMaxY)
+//            return false;
 
         return mPixels
                 .stream()
