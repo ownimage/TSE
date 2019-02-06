@@ -134,6 +134,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public PixelMap actionPixelOn(Pixel pPixel) {
+        if (pPixel.isEdge(this)) return this; // short circuit return
         PixelMap clone = new PixelMap(this);
         pPixel.setEdge(clone, true);
         return clone;

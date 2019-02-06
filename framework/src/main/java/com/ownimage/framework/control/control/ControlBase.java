@@ -417,7 +417,7 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
      * @param pUndoEnabled whether this should participate or not
      * @return this control
      */
-    protected C setUndoEnabled(final boolean pUndoEnabled) {
+    public C setUndoEnabled(final boolean pUndoEnabled) {
         mUndoEnabled = pUndoEnabled;
         return (C) this;
     }
