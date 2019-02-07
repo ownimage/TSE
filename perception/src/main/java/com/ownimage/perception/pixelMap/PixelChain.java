@@ -62,10 +62,6 @@ public class PixelChain implements Serializable, Cloneable {
     private Vector<Pixel> mPixels = new Vector<>();
     private Vector<ISegment> mSegments = new Vector<>();
     private Vector<IVertex> mVertexes = new Vector<>();
-    private int mMinX;
-    private int mMinY;
-    private int mMaxX;
-    private int mMaxY;
 
     private Thickness mThickness;
 
@@ -81,10 +77,6 @@ public class PixelChain implements Serializable, Cloneable {
 
         mThickness = Thickness.Normal;
         setStartNode(pStartNode);
-        mMinX = pStartNode.getX();
-        mMaxX = pStartNode.getX();
-        mMinY = pStartNode.getY();
-        mMaxY = pStartNode.getY();
     }
 
     Stream<Pixel> streamPixels() {
@@ -99,10 +91,6 @@ public class PixelChain implements Serializable, Cloneable {
             copy.mPixels = (Vector<Pixel>) mPixels.clone();
             copy.mSegments = (Vector<ISegment>) mSegments.clone();
             copy.mVertexes = (Vector<IVertex>) mVertexes.clone();
-            copy.mMinX = mMinX;
-            copy.mMinY = mMinY;
-            copy.mMaxX = mMaxX;
-            copy.mMaxY = mMaxY;
             return copy;
         } catch (CloneNotSupportedException pE) {
             throw new RuntimeException("CloneNotSupportedException", pE);
@@ -112,10 +100,6 @@ public class PixelChain implements Serializable, Cloneable {
     public PixelChain add(final Pixel pPixel) {
         PixelChain clone = deepCopy();
         clone.mPixels.add(pPixel);
-        if (pPixel.getX() < clone.mMinX) clone.mMinX = pPixel.getX();
-        if (pPixel.getX() > clone.mMaxX) clone.mMaxX = pPixel.getX();
-        if (pPixel.getY() < clone.mMinY) clone.mMinY = pPixel.getY();
-        if (pPixel.getY() > clone.mMaxY) clone.mMaxY = pPixel.getY();
         return clone;
     }
 
