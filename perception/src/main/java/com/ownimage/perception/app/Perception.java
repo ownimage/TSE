@@ -5,25 +5,10 @@
  */
 package com.ownimage.perception.app;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.app.AppControlBase;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.FileControl;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HSplitLayout;
@@ -43,6 +28,17 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class Perception extends AppControlBase {
 
@@ -302,6 +298,7 @@ public class Perception extends AppControlBase {
                         .withCompleteAction(() -> {
                             try {
                                 output.getValue().save(pFile, getProperties().getImageQuality());
+                                mLogger.severe("Done");
                             } catch (Exception e) {
                                 mLogger.severe("Unable to output file");
                             }
