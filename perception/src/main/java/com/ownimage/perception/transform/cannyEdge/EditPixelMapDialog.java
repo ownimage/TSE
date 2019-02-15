@@ -52,22 +52,31 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public final static long serialVersionUID = 1L;
 
     private enum PixelAction {
-        On("On"),
-        Off("Off"),
-        OffWide("Off Wide"),
-        OffVeryWide("Off Very Wide"),
-        OffVeryVeryWide("Off Very Very Wide"),
-        Toggle("Toggle"),
-        DeletePixelChain("Delete Pixel Chain"),
-        PixelChainThickness("Change Pixel Chain Thickness");
-        private final String mName;
+        On("On", 1),
+        Off("Off", 1),
+        OffWide("Off Wide", 5),
+        OffVeryWide("Off Very Wide", 15),
+        OffVeryVeryWide("Off Very Very Wide", 45),
+        Toggle("Toggle", 1),
+        DeletePixelChain("Delete Pixel Chain", 1),
+        DeletePixelChainWide("Delete Pixel Chain Wide", 15),
+        DeletePixelChainVeryWide("Delete Pixel Chain Very Wide", 45),
+        PixelChainThickness("Change Pixel Chain Thickness", 2);
 
-        PixelAction(final String pName) {
+        private final String mName;
+        private final int mCursorSize;
+
+        PixelAction(final String pName, int pCursorSize) {
             mName = pName;
+            mCursorSize = pCursorSize;
         }
 
         public String toString() {
             return mName;
+        }
+
+        public int getCursorSize() {
+            return mCursorSize;
         }
 
     }
@@ -445,7 +454,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private boolean isPixelActionDeletePixelChain() {
-        return mPixelAction.getValue() == PixelAction.DeletePixelChain;
+        return mPixelAction.getValue() == PixelAction.DeletePixelChain
+                || mPixelAction.getValue() == PixelAction.DeletePixelChainWide
+                || mPixelAction.getValue() == PixelAction.DeletePixelChainVeryWide;
     }
 
     private boolean isPixelChainThickness() {
@@ -555,28 +566,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     synchronized private boolean actionPixelOff(final Pixel pPixel) {
         final PixelMap undo = mPixelMap;
-        final StrongReference<Boolean> changesMade = new StrongReference<>(false);
-        final int size = getCursorSize();
-        final double radius = (double) size / mPixelMapHeight.getValue();
-
-        new Range2D(pPixel.getX() - size, pPixel.getX() + size, pPixel.getY() - size, pPixel.getY() + size)
-                .forEach((x, y) ->
-                        mPixelMap.getOptionalPixelAt(x, y)
-                                .filter(p -> pPixel.getUHVWPoint(mPixelMap).distance(p.getUHVWPoint(mPixelMap)) < radius)
-                                .filter(pPixel1 -> pPixel1.isEdge(mPixelMap))
-                                .ifPresent(p -> {
-                                    mPixelMap = mPixelMap.actionPixelOff(p);
-                                    changesMade.set(true);
-                                })
-                );
-
-        if (changesMade.get()) {
+        mPixelMap = mPixelMap.actionPixelOff(pPixel, getCursorSize());
+        boolean changesMade = mPixelMap != undo;
+        if (changesMade) {
             addUndoRedoEntry("Action Pixel Off", undo, mPixelMap);
             updateGrafitti();
-            return true;
         }
-
-        return false;
+        return changesMade;
     }
 
     private void addUndoRedoEntry(final String pDescription, final PixelMap pUndo, final PixelMap pRedo) {
@@ -602,10 +598,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private int getCursorSize() {
-        if (mPixelAction.getValue() == PixelAction.OffWide) return 5;
-        if (mPixelAction.getValue() == PixelAction.OffVeryWide) return 15;
-        if (mPixelAction.getValue() == PixelAction.OffVeryVeryWide) return 45;
-        return 1;
+        return mPixelAction.getValue().getCursorSize();
     }
 
     /**
@@ -636,7 +629,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean actionDeletePixelChain(final Pixel pPixel) {
         final PixelMap undo = mPixelMap;
-        mPixelMap = mPixelMap.actionDeletePixelChain(pPixel);
+        mPixelMap = mPixelMap.actionDeletePixelChain(pPixel, getCursorSize());
         if (undo != mPixelMap) {
             addUndoRedoEntry("Delete PixelChain", undo, mPixelMap);
             mPictureControl.drawGrafitti();

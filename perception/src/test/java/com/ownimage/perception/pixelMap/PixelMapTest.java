@@ -279,7 +279,7 @@ public class PixelMapTest {
         assertEquals(3, pixelMap.getPixelChainCount());
 
         // WHEN
-        final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1));
+        final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1), 1);
 
         // THEN
         result.calcSegmentIndex();
@@ -446,7 +446,7 @@ public class PixelMapTest {
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
         assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
 
-        PixelMap resultOff = underTest.actionPixelOff(pixel);
+        PixelMap resultOff = underTest.actionPixelOff(pixel, 1);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
         assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
         assertTrue(!resultOff.getOptionalPixelAt(5, 5).get().isEdge(resultOff));

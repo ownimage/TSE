@@ -114,23 +114,52 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains.size();
     }
 
-    public PixelMap actionDeletePixelChain(Pixel pPixel) {
+    public PixelMap actionDeletePixelChain(Pixel pPixel, int pCursorSize) {
         PixelMap clone = new PixelMap(this);
-        if (pPixel != null && pPixel.isEdge(clone)) {
-            clone.getPixelChains(pPixel).forEach(pc -> {
-                pc.delete(clone);
-                clone.mPixelChains = clone.mPixelChains.remove(pc);
-                clone.invalidateSegmentIndex();
-            });
-        }
-        clone.validate();
-        return clone;
+        clone.mAutoTrackChanges = false;
+        StrongReference<Boolean> changesMade = new StrongReference<>(false);
+
+        final double radius = (double) pCursorSize / getHeight();
+
+        new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize, pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
+                .forEach((x, y) ->
+                        clone.getOptionalPixelAt(x, y)
+                                .filter(pPixel1 -> pPixel1.isEdge(clone))
+                                .filter(p -> pPixel.getUHVWPoint(clone).distance(p.getUHVWPoint(clone)) < radius)
+                                .ifPresent(p -> {
+                                    clone.getPixelChains(p).forEach(pc -> {
+                                        pc.delete(clone);
+                                        pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
+                                        pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
+                                        clone.mPixelChains = clone.mPixelChains.remove(pc);
+                                        clone.invalidateSegmentIndex();
+                                        changesMade.set(true);
+                                    });
+                                })
+                );
+
+        clone.mAutoTrackChanges = true;
+        return changesMade.get() ? clone : this;
     }
 
-    public PixelMap actionPixelOff(Pixel pPixel) {
+    public PixelMap actionPixelOff(Pixel pPixel, int pCursorSize) {
         PixelMap clone = new PixelMap(this);
-        pPixel.setEdge(clone, false);
-        return clone;
+        StrongReference<Boolean> changesMade = new StrongReference<>(false);
+
+        final double radius = (double) pCursorSize / getHeight();
+
+        new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize, pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
+                .forEach((x, y) ->
+                        clone.getOptionalPixelAt(x, y)
+                                .filter(pPixel1 -> pPixel1.isEdge(clone))
+                                .filter(p -> pPixel.getUHVWPoint(clone).distance(p.getUHVWPoint(clone)) < radius)
+                                .ifPresent(p -> {
+                                    p.setEdge(clone, false);
+                                    changesMade.set(true);
+                                })
+                );
+
+        return changesMade.get() ? clone : this;
     }
 
     public PixelMap actionPixelOn(Pixel pPixel) {

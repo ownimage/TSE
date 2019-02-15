@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13-beta-1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13-beta-2" level="project" />
     <orderEntry type="library" name="Maven: javax.vecmath:vecmath:1.5.2" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13-beta-2" level="project" />
@@ -22,6 +22,7 @@
     <orderEntry type="library" name="Maven: com.aparapi:aparapi-jni:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.bcel:bcel:6.2" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.12.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.immutables:value:2.7.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-all:1.10.19" level="project" />
   </component>
 </module>
