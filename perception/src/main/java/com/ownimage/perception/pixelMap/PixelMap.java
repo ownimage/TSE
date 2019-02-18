@@ -873,6 +873,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
             process04a_removeLoneNodes(pProgressObserver);
             process05_generateChains(pProgressObserver);
+            process05a_findLoops(pProgressObserver);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             validate();
             mLogger.info(() -> "validate done");
@@ -901,6 +902,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // pProgress.hideProgressBar();
             mAutoTrackChanges = true;
         }
+    }
+
+    private void process05a_findLoops(final IProgressObserver pProgressObserver) {
+        forEachPixel(pixel -> {
+            if (pixel.isEdge(this) && !pixel.isInChain(this)) {
+                setNode(pixel, true);
+                getNode(pixel).ifPresent(node -> mPixelChains = mPixelChains.addAll(generateChains(this, node)));
+            }
+        });
     }
 
     //

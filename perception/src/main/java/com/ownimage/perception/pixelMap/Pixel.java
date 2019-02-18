@@ -175,6 +175,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pPixelMap.getData(this, NODE);
     }
 
+    public boolean isInChain(final PixelMap pPixelMap) {
+        return pPixelMap.getData(this, IN_CHAIN);
+    }
+
     public Optional<Node> getNode(final PixelMap pPixelMap) {
         return pPixelMap.getNode(this);
     }

@@ -288,6 +288,26 @@ public class PixelMapTest {
         Utility.assertMapEquals(expected, actual);
     }
 
+    @Test
+    public void process05a_findLoops() {
+        // GIVEN
+        final String[] input = {
+                "           ",
+                "    E      ",
+                "   E E     ",
+                "   E E     ",
+                "   E E     ",
+                "    E      ",
+                "           ",
+        };
+        final PixelMap pixelMap = Utility.createMap(input);
+
+        // WHEN
+        pixelMap.actionProcess(null);
+
+        // THEN
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
 
     @Test
     public void process04b_generatePixelChain_00() {
