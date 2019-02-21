@@ -379,7 +379,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Point UHVWtoView(final Point pUHVW) {
-        final double x = (mPixelMapHeight.getValue() / mPixelMapWidth.getValidateValue()) * (getWidth() * pUHVW.getX() - getViewOriginX()) * getZoom() / getWidth();
+        final double x = ((mPixelMapHeight.getValue() / mPixelMapWidth.getValidateValue()) * getWidth() * pUHVW.getX() - getViewOriginX()) * getZoom() / getWidth();
         final double y = (getHeight() * pUHVW.getY() - getViewOriginY()) * getZoom() / getHeight();
         return new Point(x, y);
     }
