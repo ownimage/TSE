@@ -10,6 +10,7 @@ import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.awt.*;
 
@@ -79,19 +80,25 @@ public class GrafittiImp implements IGrafittiImp {
         final double x = pX * mWidth;
         final double y = (1.0 - pY) * mHeight;
         final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
-        final double w = fm.computeStringWidth(pLabel);
-        final double h = fm.getAscent() + fm.getDescent(); // fm.getLineHeight() gets the leading as well
+        final double w = textWidth(mGraphicsContext.getFont(), pLabel);
+        double h = fm.getAscent() + fm.getDescent(); // fm.getLineHeight() gets the leading as well
         final double d = fm.getMaxDescent();
 
         final double xpadding = 3;
         final double ypadding = 1;
+
 
         mGraphicsContext.setFill(convert(Color.WHITE));
         mGraphicsContext.fillRect(x, y - (h + 2 * ypadding), w + 2 * xpadding, h + 2 * ypadding);
 
         mGraphicsContext.setFill(convert(Color.BLACK));
         mGraphicsContext.fillText(pLabel, x + xpadding, y - d - ypadding);
+    }
 
+    private double textWidth(Font font, String s) {
+        Text text = new Text(s);
+        text.setFont(font);
+        return text.getBoundsInLocal().getWidth();
     }
 
     private void setDashed(final boolean pDashed) {

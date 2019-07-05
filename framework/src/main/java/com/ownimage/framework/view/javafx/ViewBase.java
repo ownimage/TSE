@@ -15,7 +15,6 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
@@ -49,14 +48,14 @@ public class ViewBase<C extends IViewable> implements FXView {
         else Platform.runLater(pRunnable);
     }
 
-    public static Image getImage(final String pName) {
-        final URL url = pName.getClass().getResource(pName);
+    public Image getImage(final String pName) {
+        final URL url = getClass().getResource(pName);
         try (final InputStream stream = url.openStream()) {
             final Image image = new Image(stream);
             return image;
-        } catch (final IOException ioe) {
+        } catch (final Exception pEx) {
             mLogger.severe("Unable to getImage for " + pName);
-            Framework.logThrowable(mLogger, Level.SEVERE, ioe);
+            Framework.logThrowable(mLogger, Level.SEVERE, pEx);
         }
         return null;
     }

@@ -15,7 +15,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Logger;
@@ -67,8 +66,8 @@ public class ActionView extends ViewBase<ActionControl> {
             final Image image = new Image(stream);
             mButton.setGraphic(new javafx.scene.image.ImageView(image));
 
-        } catch (final IOException pEx) {
-            mLogger.severe(pEx.getMessage());
+        } catch (final Exception pEx) {
+            mLogger.severe(pEx.getMessage() + "");
             mLogger.severe(FrameworkLogger.throwableToString(pEx));
         }
 

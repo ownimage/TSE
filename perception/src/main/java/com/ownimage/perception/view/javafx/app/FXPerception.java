@@ -5,15 +5,17 @@
  */
 package com.ownimage.perception.view.javafx.app;
 
-import java.io.File;
-
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.view.javafx.AppControlView;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Services;
-
 import javafx.scene.image.Image;
+
+import java.io.File;
+
+// need to add the following to VM Options
+// --module-path C:\Users\User\Downloads\openjfx-11.0.2_windows-x64_bin-sdk\javafx-sdk-11.0.2\lib --add-modules=javafx.controls
 
 public class FXPerception extends AppControlView {
 

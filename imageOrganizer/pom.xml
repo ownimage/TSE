@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~  This code is part of the Perception programme.
-  ~
-  ~  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
-  -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ownimage</groupId>
         <artifactId>TSE</artifactId>
+        <groupId>com.ownimage</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ownimage</groupId>
-    <artifactId>perception</artifactId>
+    <artifactId>imageOrganizer</artifactId>
     <version>0.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
-    <name>Perception</name>
+    <name>ImageOrganizer</name>
 
     <build>
         <pluginManagement>
@@ -103,24 +95,11 @@
         </plugins>
     </build>
 
-
     <dependencies>
-        <dependency>
-            <groupId>gov.nist.math</groupId>
-            <artifactId>jama</artifactId>
-            <version>1.0.3</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>com.ownimage</groupId>
             <artifactId>framework</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

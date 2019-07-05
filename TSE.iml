@@ -10,6 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="vecmath" level="project" />
+    <orderEntry type="library" name="javafx-swt" level="project" />
     <orderEntry type="library" name="Maven: io.vavr:vavr:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.vavr:vavr-match:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: com.aparapi:aparapi:1.10.0" level="project" />

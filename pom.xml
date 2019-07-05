@@ -27,6 +27,7 @@
     <modules>
         <module>framework</module>
         <module>perception</module>
+        <module>imageOrganizer</module>
     </modules>
 
     <build>
@@ -74,6 +75,14 @@
             <artifactId>jama</artifactId>
             <version>1.0.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx</artifactId>
+            <version>11</version>
+            <type>pom</type>
+        </dependency>
+
 
     </dependencies>
 

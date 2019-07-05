@@ -8,11 +8,16 @@ package com.ownimage.framework.view.javafx;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
+import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IDoubleView;
 import javafx.beans.InvalidationListener;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -26,8 +31,9 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
     private final static Logger mLogger = Framework.getLogger();
 
-    private static final Image mSpinnerImage = getImage("/icon/spinner.png");
-    private static final Image mSliderImage = getImage("/icon/slider.png");
+    private static Image mSpinnerImage;
+    private static Image mSliderImage;
+    private static boolean mImagesInitialized = false;
 
     private final HBox mUI;
     private final HBox mControlPanel;
@@ -40,6 +46,7 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
 
     public DoubleView(final DoubleControl pDoubleControl) {
         super(pDoubleControl);
+        initImages();
         setMutating(true);
 
         final double min = mControl.getMetaType().getMin();
@@ -92,6 +99,19 @@ public class DoubleView extends ViewBase<DoubleControl> implements IDoubleView {
         mUI.getChildren().addAll(mLabel, mControlPanel, mDisplayOption);
         setDisplayType(mControl.getDisplayType());
         setMutating(false);
+    }
+
+    private synchronized void initImages() {
+        if (!mImagesInitialized) {
+            try {
+                mSpinnerImage = getImage("/icon/spinner.png");
+                mSliderImage = getImage("/icon/slider.png");
+                mImagesInitialized = true;
+            } catch (final Exception pEx) {
+                mLogger.severe(pEx.getMessage() + "");
+                mLogger.severe(FrameworkLogger.throwableToString(pEx));
+            }
+        }
     }
 
     @Override
