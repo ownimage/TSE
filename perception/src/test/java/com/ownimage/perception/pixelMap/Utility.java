@@ -130,6 +130,7 @@ class Utility {
 
     static PixelMap createMap(final int pX, final int pY) {
         final PixelMap pixelMap = new PixelMap(pX, pY, true, getDefaultTransformSource(pY));
+        pixelMap.actionProcess(null);
         return pixelMap;
     }
 

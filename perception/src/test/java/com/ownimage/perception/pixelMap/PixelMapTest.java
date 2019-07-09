@@ -1,13 +1,38 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import org.junit.*;
+import org.jetbrains.annotations.NotNull;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PixelMapTest {
+    private static List<Pixel> chainS1 = Arrays.asList(
+            new Pixel(0, 0),
+            new Pixel(0, -1),
+            new Pixel(1, -2),
+            new Pixel(2, -3)
+    );
+    private static List<Pixel> chainNE = Arrays.asList(
+            new Pixel(0, 0),
+            new Pixel(1, 1),
+            new Pixel(2, 2),
+            new Pixel(3, 3)
+    );
+
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -418,21 +443,46 @@ public class PixelMapTest {
         pixelMap.forEachPixelChain(pc -> pc.validate("test"));
     }
 
+    public PixelMap addChain(@NotNull PixelMap pPixelMap, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
+        StrongReference<PixelMap> pixelMapRef = new StrongReference<>(pPixelMap);
+        pChain.forEach(pixel -> pixelMapRef.set(pixelMapRef.get().actionPixelOn(pStart.add(pixel))));
+        return pixelMapRef.get();
+    }
+
     @Test
-    public void buildChain_01() {
-        // GIVEN
-        PixelMap pixelMap = Utility.createMap(10, 10);
-        pixelMap.actionProcess(null);
-        // WHEN
-        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 4));
-        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 3));
-        pixelMap = pixelMap.actionPixelOn(new Pixel(4, 2));
-        pixelMap = pixelMap.actionPixelOn(new Pixel(5, 1));
+    public void testBuildChain_01() {
+        // GIVEN WHEN
+        PixelMap pixelMap = Utility.createMap(20, 20);
+        pixelMap = addChain(pixelMap, new Pixel(3, 4), chainS1);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
+    }
+
+    @Test
+    public void actionThickness() {
+        // GIVEN
+        final Pixel start1 = new Pixel(3, 4);
+        final Pixel start2 = new Pixel(10, 10);
+        PixelMap pixelMap = Utility.createMap(20, 20);
+        pixelMap = addChain(pixelMap, start1, chainS1);
+        pixelMap = addChain(pixelMap, start2, chainNE);
+        BiConsumer<PixelMap, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
+            assertEquals(2, pPixelMap.getPixelChainCount());
+            List<PixelChain> chains1 = pPixelMap.getPixelChains(start1);
+            assertEquals(1, chains1.size());
+            assertEquals(PixelChain.Thickness.Normal, chains1.get(0).getThickness());
+            List<PixelChain> chains2 = pPixelMap.getPixelChains(start2);
+            assertEquals(1, chains2.size());
+            assertEquals(pThickness, chains2.get(0).getThickness());
+        };
+        test.accept(pixelMap, PixelChain.Thickness.Normal);
+        // WHEN
+        pixelMap = pixelMap.actionSetPixelChainThickness(start2, PixelChain.Thickness.Thick);
+        // THEN
+        test.accept(pixelMap, PixelChain.Thickness.Thick);
     }
 
     @Before

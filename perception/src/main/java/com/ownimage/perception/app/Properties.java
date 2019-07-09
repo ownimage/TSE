@@ -5,14 +5,6 @@
  */
 package com.ownimage.perception.app;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.BooleanControl.BooleanProperty;
@@ -38,6 +30,14 @@ import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist, IControlChangeListener {
 
 
@@ -61,6 +61,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     private final IntegerControl mCETEPMDZoom = new IntegerControl("Save size", "savePreviewSize", mContainer, 2, CETEPMDZoomModel);
     private final ColorControl mCETEPMDEdgeColor = new ColorControl("Edge Color", "edgeColor", mContainer, Color.GREEN);
     private final ColorControl mCETEPMDNodeColor = new ColorControl("Node Color", "nodeColor", mContainer, Color.RED);
+    private final ColorControl mCETEPMDWorkingColor = new ColorControl("Working Color", "workingColor", mContainer, Color.LIGHT_GRAY);
 
     // colors
     private final ColorControl mColor1 = new ColorControl("Color 1", "color1", mContainer, Color.RED);
@@ -104,9 +105,10 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         final VFlowLayout colors = new VFlowLayout(mColor1, mColor2, mColor3, mColorOOB, mPixelMapBGColor, mPixelMapFGColor);
 
         final NamedTabs transformsTab = new NamedTabs("Transforms", "transforms");
-        transformsTab.addTab("CannyEdge", new VFlowLayout(mCETEPMDPreviewSize, mCETEPMDZoom, mCETEPMDEdgeColor, mCETEPMDNodeColor));
-
-        final VFlowLayout render = new VFlowLayout(mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
+        transformsTab.addTab("CannyEdge", new VFlowLayout(
+                mCETEPMDPreviewSize, mCETEPMDZoom, mCETEPMDEdgeColor, mCETEPMDNodeColor, mCETEPMDWorkingColor));
+        final VFlowLayout render = new VFlowLayout(
+                mUseJTP, mRenderBatchSize, mRenderThreadPoolSize, mRenderJTPBatchSize, mUseOpenCL);
         final VFlowLayout output = new VFlowLayout(mJPGQuality);
 
         view.addTab("Defaults", defaults);
@@ -315,5 +317,9 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     public Color getCETEPMDNodeColor() {
         return mCETEPMDNodeColor.getValue();
+    }
+
+    public Color getCETEPMDWorkingColor() {
+        return mCETEPMDWorkingColor.getValue();
     }
 }

@@ -235,8 +235,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    // TO
-    private List<PixelChain> getPixelChains(final Pixel pPixel) {
+    public List<PixelChain> getPixelChains(final Pixel pPixel) {
         Framework.checkParameterNotNull(mLogger, pPixel, "pPixel");
         Framework.logEntry(mLogger);
         final List<PixelChain> pixelChains = mPixelChains.stream()
@@ -244,19 +243,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
         return pixelChains;
     }
-
-    // public void addVertexes(final Vector<IVertex> pVisibleVertexes, final Pixel pOrigin, final Pixel pTopLeft) {
-    // Framework.logEntry(mLogger);
-    // for (final PixelChain pixelChain : getAllPixelChains()) {
-    // pixelChain.checkAllVertexesAttached();
-    // pixelChain.addVertexes(pVisibleVertexes, pOrigin, pTopLeft);
-    // }
-    // Framework.logExit(mLogger);
-    // }
-
-//    private AllPixels allPixels() {
-//        return new AllPixels();
-    //  }
 
     protected synchronized void calcSegmentIndex() {
         Framework.logEntry(mLogger);
