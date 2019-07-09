@@ -39,6 +39,10 @@ public class GrafittiHelper {
         drawFilledRectangle(r, pColor);
     }
 
+    public void drawFilledRectangle(final Rectangle pR, final ColorControl pColor) {
+        drawFilledRectangle(pR, pColor.getProperty().getValue());
+    }
+
     public void drawFilledRectangle(final Rectangle pR, final Color pColor) {
         drawFilledRectangle(pR.getX1(), pR.getY1(), pR.getX2(), pR.getY2(), pColor);
     }

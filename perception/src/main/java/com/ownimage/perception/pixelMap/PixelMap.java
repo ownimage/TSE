@@ -37,6 +37,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.AbstractCollection;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,6 +75,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private int mWidth;
     private int mHeight;
+    private int mVersion = 0;
 
     // TODO should delete the following two values
     private final boolean m360;
@@ -114,6 +116,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public PixelMap(PixelMap pFrom) {
+        mVersion = pFrom.mVersion + 1;
         setWidth(pFrom.getWidth());
         setHeight(pFrom.getHeight());
         m360 = pFrom.m360;
@@ -161,6 +164,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return changesMade.get() ? clone : this;
     }
 
+    public String toString() {
+        return "PixelMap{mVersion=" + mVersion + "}";
+    }
+
     public PixelMap actionPixelOff(Pixel pPixel, int pCursorSize) {
         PixelMap clone = new PixelMap(this);
         StrongReference<Boolean> changesMade = new StrongReference<>(false);
@@ -179,6 +186,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 );
 
         return changesMade.get() ? clone : this;
+    }
+
+    public PixelMap actionPixelOn(List<Pixel> pPixels) {
+        PixelMap clone = new PixelMap(this);
+        clone.mAutoTrackChanges = false;
+        pPixels.forEach(pixel -> pixel.setEdge(clone, true));
+        clone.mAutoTrackChanges = true;
+        clone.trackPixelOn(pPixels);
+        return clone;
     }
 
     public PixelMap actionPixelOn(Pixel pPixel) {
@@ -969,8 +985,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         setData(pPixel, pValue, IN_CHAIN);
     }
 
-
-    void setEdge(final Pixel pPixel, final boolean pValue) {
+    void setEdge(@NotNull final Pixel pPixel, final boolean pValue) {
         if (pPixel.isEdge(this) == pValue) return; // ignore no change
 
         if (pPixel.isNode(this) && !pValue) {
@@ -987,46 +1002,91 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         if (mAutoTrackChanges) {
             if (!pValue) { // turning pixel off
-                getPixelChains(pPixel).forEach(pc -> {
-                    mPixelChains = mPixelChains.remove(pc);
-                    pc.setInChain(this, false);
-                    pc.setVisited(this, false);
-                    pc.streamPixels()
-                            .filter(pPixel1 -> pPixel1.isNode(this))
-                            .forEach(pixel -> pixel.getNode(this)
-                                    .ifPresent(node -> {
-                                        final List<PixelChain> chains = generateChains(this, node)
-                                                .parallelStream()
-                                                .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
-                                                .collect(Collectors.toList());
-                                        addPixelChains(chains);
-                                    })
-                            );
-                });
+                trackPixelOff(pPixel);
             } else { // turning pixel on
-                final Set<Node> nodes = new HashSet<>();
-                resetInChain();
-                resetVisited();
-                pPixel.getNode(this).ifPresent(nodes::add);
-                pPixel.getNeighbours()
-                        .forEach(pixel -> {
-                            getPixelChains(pixel)
-                                    .forEach(pc -> {
-                                        pc.getStartNode(this).ifPresent(nodes::add);
-                                        pc.getEndNode(this).ifPresent(nodes::add);
-                                        removePixelChain(pc);
-                                    });
-                            pixel.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
-                        });
-                nodes.stream().filter(pNode -> pNode.isNode(this)).forEach(n -> {
-                    final Collection<PixelChain> chains = generateChains(this, n)
-                            .parallelStream()
-                            .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
-                            .collect(Collectors.toList());
-                    addPixelChains(chains);
-                });
+                trackPixelOn(pPixel);
             }
         }
+    }
+
+    void setEdge(@NotNull final List<Pixel> pPixels, final boolean pValue) {
+        pPixels.forEach(pixel -> {
+            if (pixel.isEdge(this) == pValue) return; // ignore no change
+            if (pixel.isNode(this) && !pValue) {
+                setNode(pixel, false);
+            }
+            setData(pixel, pValue, EDGE);
+            calcIsNode(pixel);
+            pixel.getNeighbours().forEach(p -> {
+                thin(p);
+                calcIsNode(p);
+            });
+            thin(pixel);
+        });
+        if (mAutoTrackChanges) {
+            if (!pValue) { // turning pixel off
+                trackPixelOff(pPixels);
+            } else { // turning pixel on
+                trackPixelOn(pPixels);
+            }
+        }
+    }
+
+    private void trackPixelOn(@NotNull List<Pixel> pPixels) {
+        final Set<Node> nodes = new HashSet<>();
+        resetInChain();
+        resetVisited();
+        pPixels.forEach(pixel -> {
+            pixel.getNode(this).ifPresent(nodes::add);
+            pixel.getNeighbours()
+                    .forEach(neighbour -> {
+                        getPixelChains(neighbour)
+                                .forEach(pc -> {
+                                    pc.getStartNode(this).ifPresent(nodes::add);
+                                    pc.getEndNode(this).ifPresent(nodes::add);
+                                    removePixelChain(pc);
+                                });
+                        neighbour.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
+                    });
+        });
+        nodes.stream().filter(pNode -> pNode.isNode(this)).forEach(n -> {
+            final Collection<PixelChain> chains = generateChains(this, n)
+                    .parallelStream()
+                    .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
+                    .collect(Collectors.toList());
+            addPixelChains(chains);
+        });
+    }
+
+    private void trackPixelOn(@NotNull Pixel pPixel) {
+        List<Pixel> pixels = Arrays.asList(pPixel);
+        trackPixelOn(pixels);
+    }
+
+    private void trackPixelOff(@NotNull Pixel pPixel) {
+        List<Pixel> pixels = Arrays.asList(pPixel);
+        trackPixelOff(pixels);
+    }
+
+    private void trackPixelOff(@NotNull List<Pixel> pPixels) {
+        pPixels.forEach(pixel -> {
+            getPixelChains(pixel).forEach(pc -> {
+                mPixelChains = mPixelChains.remove(pc);
+                pc.setInChain(this, false);
+                pc.setVisited(this, false);
+                pc.streamPixels()
+                        .filter(pPixel1 -> pPixel1.isNode(this))
+                        .forEach(chainPixel -> chainPixel.getNode(this)
+                                .ifPresent(node -> {
+                                    final List<PixelChain> chains = generateChains(this, node)
+                                            .parallelStream()
+                                            .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
+                                            .collect(Collectors.toList());
+                                    addPixelChains(chains);
+                                })
+                        );
+            });
+        });
     }
 
     private void setNode(final Pixel pPixel, final boolean pValue) {
