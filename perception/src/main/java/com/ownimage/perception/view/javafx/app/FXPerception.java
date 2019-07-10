@@ -31,7 +31,12 @@ public class FXPerception extends AppControlView {
         final Image applicationIcon = new Image(app.getClass().getResourceAsStream("/icon/tse2.png"));
         getAppControlView().setApplicationIcon(applicationIcon);
 
-        app.fileOpen((new File("NY2.jpg")));
+        if (pArgs != null && pArgs.length != 0) {
+            String filename = pArgs[0];
+            System.out.println(filename);
+            app.fileOpen((new File(filename)));
+        }
+
     }
 
 }
