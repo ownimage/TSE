@@ -102,11 +102,6 @@ class Utility {
             }
 
             @Override
-            public int getShortLineLength() {
-                return 0;
-            }
-
-            @Override
             public double getShortLineThickness() {
                 return 0;
             }

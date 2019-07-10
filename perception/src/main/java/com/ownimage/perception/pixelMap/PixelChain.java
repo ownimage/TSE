@@ -11,7 +11,11 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.segment.*;
+import com.ownimage.perception.pixelMap.segment.CurveSegment;
+import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
+import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.segment.SegmentFactory;
+import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple4;
 
@@ -284,6 +288,10 @@ public class PixelChain implements Serializable, Cloneable {
                 .filter(p -> p.samePosition(pPixel))
                 .findAny()
                 .isPresent();
+    }
+
+    public Stream<Pixel> stream() {
+        return mPixels.stream();
     }
 
     int count() {

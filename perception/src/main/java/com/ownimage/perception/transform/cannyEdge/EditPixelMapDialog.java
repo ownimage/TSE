@@ -22,6 +22,7 @@ import com.ownimage.framework.control.layout.ContainerList;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.math.Bounds;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.persist.IPersistDB;
@@ -47,6 +48,7 @@ import com.ownimage.perception.transform.CropTransform;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -75,7 +77,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         DeletePixelChain("Delete Pixel Chain", 1),
         DeletePixelChainWide("Delete Pixel Chain Wide", 15),
         DeletePixelChainVeryWide("Delete Pixel Chain Very Wide", 45),
-        PixelChainThickness("Change Pixel Chain Thickness", 2);
+        PixelChainThickness("Change Pixel Chain Thickness", 2),
+        CopyToClipboard("Copy To Clipboard", 1);
         private final String mName;
         private final int mCursorSize;
 
@@ -429,12 +432,52 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
             if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(pPixel);
             if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
+            if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
             if (change) {
                 drawGrafitti();
                 autoUpdatePreview();
             }
         }
         graffitiCursor(pEvent, pPixel);
+    }
+
+    private void actionCopyToClipboard(Pixel pPixel) {
+        StringBuilder builder = new StringBuilder();
+        StrongReference<Bounds> bounds = new StrongReference<>(null);
+        mPixelMap.getPixelChains(pPixel).stream().findFirst().ifPresent(pixelChain -> {
+            bounds.set(new Bounds());
+            pixelChain.stream().forEach(pixel -> bounds.set(bounds.get().getBounds(pixel)));
+            builder.append("int xMargin = 2;\n");
+            builder.append("int yMargin = 2;\n");
+            builder.append("Pixel offset = new Pixel(xMargin, yMargin);\n");
+
+            builder.append("IPixelMapTransformSource ts = new PixelMapTransformSource(");
+            builder.append(mPixelMap.getHeight());
+            builder.append(", ");
+            builder.append(mPixelMap.getLineTolerance());
+            builder.append(", ");
+            builder.append(mPixelMap.getLineCurvePreference());
+            builder.append(");\n");
+
+            builder.append("PixelMap pixelMap = new PixelMap(");
+            builder.append(bounds.get().getWidth() + " + 2 * xMargin");
+            builder.append(", ");
+            builder.append(bounds.get().getHeight() + " + 2 * yMargin");
+            builder.append(", false, ts);\n");
+
+            builder.append("pixelMap.actionProcess(null);\n");
+
+            pixelChain.stream().forEach(pixel -> {
+                builder.append("pixelMap = pixelMap.actionPixelOn(new Pixel(");
+                builder.append(pixel.minus(bounds.get().getLowerLeft()).getX());
+                builder.append(", ");
+                builder.append(pixel.minus(bounds.get().getLowerLeft()).getY());
+                builder.append(").add(offset));\n");
+            });
+        });
+        builder.append("\n\nassertEquals(1, pixelMap.getPixelChainCount());\n");
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(builder.toString()), null);
+        System.out.println("CLIPBOARD: " + builder);
     }
 
     private void drawGrafitti() {
@@ -464,6 +507,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private boolean isPixelChainThickness() {
         return mPixelAction.getValue() == PixelAction.PixelChainThickness;
     }
+
+    private boolean isCopyToClipboard() {
+        return mPixelAction.getValue() == PixelAction.CopyToClipboard;
+    }
+
+
 
     public boolean actionPixelOn(@NotNull List<Pixel> pPixels) {
         final PixelMap undo = mPixelMap;

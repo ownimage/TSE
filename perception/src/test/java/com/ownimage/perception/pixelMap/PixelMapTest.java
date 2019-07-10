@@ -33,7 +33,6 @@ public class PixelMapTest {
             new Pixel(3, 3)
     );
 
-
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         FXViewFactory.setAsViewFactory();
@@ -72,10 +71,8 @@ public class PixelMapTest {
                 "  NEEEEN  ",
                 "E    N    "
         };
-
         // WHEN
         final PixelMap pixelMap = Utility.createMap(input);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(actual, input);
@@ -95,10 +92,8 @@ public class PixelMapTest {
                 "E    E    "
         };
         final PixelMap pixelMap = Utility.createMap(input);
-
         // WHEN
         pixelMap.process02_thin(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -119,10 +114,8 @@ public class PixelMapTest {
         };
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
-
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -142,10 +135,8 @@ public class PixelMapTest {
                 "E    N    "
         };
         final PixelMap pixelMap = Utility.createMap(input);
-
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -168,15 +159,12 @@ public class PixelMapTest {
         pixelMap.process01_reset(null);
         pixelMap.process02_thin(null);
         pixelMap.process03_generateNodes(null);
-
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
-
 
     @Test
     public void process03_generateNodes() {
@@ -192,15 +180,12 @@ public class PixelMapTest {
                 "N N  E    "
         };
         final PixelMap pixelMap = Utility.createMap(input);
-
         // WHEN
         pixelMap.process03_generateNodes(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
-
 
     @Test
     public void process04b_removeBristles_01() {
@@ -217,10 +202,8 @@ public class PixelMapTest {
         };
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
-
         // WHEN
         pixelMap.process04b_removeBristles(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -245,10 +228,8 @@ public class PixelMapTest {
         };
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
-
         // WHEN
         pixelMap.process04b_removeBristles(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -273,10 +254,8 @@ public class PixelMapTest {
         };
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.process03_generateNodes(null);
-
         // WHEN
         pixelMap.process04b_removeBristles(null);
-
         // THEN
         final String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -302,10 +281,8 @@ public class PixelMapTest {
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.actionProcess(null);
         assertEquals(3, pixelMap.getPixelChainCount());
-
         // WHEN
         final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1), 1);
-
         // THEN
         result.calcSegmentIndex();
         assertEquals(2, result.getPixelChainCount());
@@ -326,10 +303,8 @@ public class PixelMapTest {
                 "           ",
         };
         final PixelMap pixelMap = Utility.createMap(input);
-
         // WHEN
         pixelMap.actionProcess(null);
-
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
     }
@@ -450,6 +425,153 @@ public class PixelMapTest {
     }
 
     @Test
+    public void test_closeLoop() {
+        int xMargin = 2;
+        int yMargin = 2;
+        Pixel offset = new Pixel(xMargin, yMargin);
+        IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
+        PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
+        pixelMap.actionProcess(null);
+        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 11).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(4, 11).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(5, 12).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(6, 13).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(7, 13).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(8, 13).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(9, 12).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(9, 11).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 10).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 9).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 8).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 7).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 6).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 5).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 4).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(10, 3).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(9, 2).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(8, 1).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(7, 0).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(6, 0).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(5, 0).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(4, 0).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(3, 0).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(2, 1).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 2).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(0, 3).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(0, 4).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(0, 5).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(0, 6).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 7).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 8).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 9).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 10).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(1, 11).add(offset));
+        pixelMap = pixelMap.actionPixelOn(new Pixel(2, 11).add(offset));
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
+
+    @Test
+    public void test_closeLoop_2() {
+        int xMargin = 2;
+        int yMargin = 2;
+        Pixel offset = new Pixel(xMargin, yMargin);
+        IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
+        PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
+        pixelMap.actionProcess(null);
+        List<Pixel> pixels = Arrays.asList(
+                new Pixel(3, 11).add(offset),
+                new Pixel(4, 11).add(offset),
+                new Pixel(5, 12).add(offset),
+                new Pixel(6, 13).add(offset),
+                new Pixel(7, 13).add(offset),
+                new Pixel(8, 13).add(offset),
+                new Pixel(9, 12).add(offset),
+                new Pixel(9, 11).add(offset),
+                new Pixel(10, 10).add(offset),
+                new Pixel(10, 9).add(offset),
+                new Pixel(10, 8).add(offset),
+                new Pixel(10, 7).add(offset),
+                new Pixel(10, 6).add(offset),
+                new Pixel(10, 5).add(offset),
+                new Pixel(10, 4).add(offset),
+                new Pixel(10, 3).add(offset),
+                new Pixel(9, 2).add(offset),
+                new Pixel(8, 1).add(offset),
+                new Pixel(7, 0).add(offset),
+                new Pixel(6, 0).add(offset),
+                new Pixel(5, 0).add(offset),
+                new Pixel(4, 0).add(offset),
+                new Pixel(3, 0).add(offset),
+                new Pixel(2, 1).add(offset),
+                new Pixel(1, 2).add(offset),
+                new Pixel(0, 3).add(offset),
+                new Pixel(0, 4).add(offset),
+                new Pixel(0, 5).add(offset),
+                new Pixel(0, 6).add(offset),
+                new Pixel(1, 7).add(offset),
+                new Pixel(1, 8).add(offset),
+                new Pixel(1, 9).add(offset),
+                new Pixel(1, 10).add(offset),
+                new Pixel(1, 11).add(offset),
+                new Pixel(2, 11).add(offset)
+        );
+        pixelMap = pixelMap.actionPixelOn(pixels);
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
+
+    @Test
+    public void test_closeLoop_3() {
+        IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
+        PixelMap pixelMap = new PixelMap(9, 11, false, ts);
+        pixelMap.actionProcess(null);
+        List<Pixel> pixels = Arrays.asList(
+                new Pixel(5, 9),
+                new Pixel(4, 9),
+                new Pixel(3, 8),
+                new Pixel(2, 7),
+                new Pixel(2, 6),
+                new Pixel(2, 5),
+                new Pixel(2, 4),
+                new Pixel(3, 3),
+                new Pixel(4, 2),
+                new Pixel(5, 3),
+                new Pixel(6, 4),
+                new Pixel(6, 5),
+                new Pixel(6, 6),
+                new Pixel(6, 7),
+                new Pixel(6, 8)
+        );
+        pixelMap = pixelMap.actionPixelOn(pixels);
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
+
+    @Test
+    public void test_closeLoop_4() {
+        IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
+        PixelMap pixelMap = new PixelMap(9, 11, false, ts);
+        pixelMap.actionProcess(null);
+        List<Pixel> pixels = Arrays.asList(
+                new Pixel(5, 9),
+                new Pixel(4, 9),
+                new Pixel(3, 8),
+                new Pixel(2, 7),
+                new Pixel(2, 6),
+                new Pixel(2, 5),
+                new Pixel(2, 4),
+                new Pixel(3, 3),
+                new Pixel(4, 2),
+                new Pixel(5, 3),
+                new Pixel(6, 4),
+                new Pixel(6, 5),
+                new Pixel(6, 6),
+                new Pixel(6, 7),
+                new Pixel(6, 8),
+                new Pixel(6, 9)
+        );
+        pixelMap = pixelMap.actionPixelOn(pixels);
+        assertEquals(1, pixelMap.getPixelChainCount());
+    }
+    @Test
     public void testBuildChain_01() {
         // GIVEN WHEN
         PixelMap pixelMap = Utility.createMap(20, 20);
@@ -498,10 +620,8 @@ public class PixelMapTest {
         PixelMap underTest = new PixelMap(10, 10, false, null);
         Pixel pixel = new Pixel(5, 5);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
-
         pixel.setEdge(underTest, true);
         assertTrue(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
-
         pixel.setEdge(underTest, false);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
     }
@@ -511,16 +631,12 @@ public class PixelMapTest {
         PixelMap underTest = new PixelMap(10, 10, false, null);
         Pixel pixel = new Pixel(5, 5);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
-
         PixelMap resultOn = underTest.actionPixelOn(pixel);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
         assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
-
         PixelMap resultOff = underTest.actionPixelOff(pixel, 1);
         assertTrue(!underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
         assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
         assertTrue(!resultOff.getOptionalPixelAt(5, 5).get().isEdge(resultOff));
     }
-
-
 }

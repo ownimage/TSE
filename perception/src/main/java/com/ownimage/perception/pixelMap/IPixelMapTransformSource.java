@@ -5,61 +5,56 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import java.awt.*;
-
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CannyEdgeTransform.LineEndShape;
+
+import java.awt.*;
 
 /**
  * The Interface IPixelMapTransformSource adds additional methods to an ITtransformSource to get the PixelMap related information.
  */
 public interface IPixelMapTransformSource {
+    int getHeight();
 
+    Color getLineColor();
 
-    public int getHeight();
+    double getLineCurvePreference();
 
-    public Color getLineColor();
+    int getLineEndLengthPercent();
 
-    public double getLineCurvePreference();
+    int getLineEndLengthPixel();
 
-    public int getLineEndLengthPercent();
+    CannyEdgeTransform.LineEndLengthType getLineEndLengthType();
 
-    public int getLineEndLengthPixel();
+    LineEndShape getLineEndShape();
 
-    public CannyEdgeTransform.LineEndLengthType getLineEndLengthType();
+    double getLineEndThickness();
 
-    public LineEndShape getLineEndShape();
+    double getLineOpacity();
 
-    public double getLineEndThickness();
+    double getLineTolerance();
 
-    public double getLineOpacity();
+    double getLongLineThickness();
 
-    public double getLineTolerance();
+    double getMediumLineThickness();
 
-    public double getLongLineThickness();
+    Color getPixelColor();
 
-    public double getMediumLineThickness();
+    Color getShadowColor();
 
-    public Color getPixelColor();
+    double getShadowOpacity();
 
-    public Color getShadowColor();
+    double getShadowThickness();
 
-    public double getShadowOpacity();
+    double getShadowXOffset();
 
-    public double getShadowThickness();
+    double getShadowYOffset();
 
-    public double getShadowXOffset();
+    double getShortLineThickness();
 
-    public double getShadowYOffset();
+    boolean getShowPixels();
 
-    public int getShortLineLength();
+    boolean getShowLines();
 
-    public double getShortLineThickness();
-
-    public boolean getShowPixels();
-
-    public boolean getShowLines();
-
-    public boolean getShowShadow();
-
+    boolean getShowShadow();
 }

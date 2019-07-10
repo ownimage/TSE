@@ -5,7 +5,15 @@
  */
 package com.ownimage.perception.transform;
 
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.ColorControl;
+import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.ObjectControl;
+import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.math.Rectangle;
@@ -404,7 +412,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mShadowYOffset.getValue();
     }
 
-    @Override
     public int getShortLineLength() {
         return mShortLineLength.getValue();
     }
