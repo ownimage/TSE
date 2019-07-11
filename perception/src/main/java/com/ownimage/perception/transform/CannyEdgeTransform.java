@@ -631,7 +631,9 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         }
 
         mPixelMap = pPixelMap;
-        mEditPixelMapDialog = null;
+        if (mEditPixelMapDialog != null && mEditPixelMapDialog.getPixelMap() != pPixelMap) {
+            mEditPixelMapDialog = null;
+        }
         mEditPixelMapButton.setEnabled(mPixelMap != null);
     }
 

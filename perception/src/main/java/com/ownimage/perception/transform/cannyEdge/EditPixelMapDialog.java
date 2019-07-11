@@ -180,6 +180,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mShowGrafitti.addControlChangeListener(this::mGrafittiChangeListener);
     }
 
+    public PixelMap getPixelMap() {
+        return mPixelMap;
+    }
+
     private void mGrafittiChangeListener(Object pControl, boolean pIsMutating) {
         mPictureControl.drawGrafitti();
     }
