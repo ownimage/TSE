@@ -131,7 +131,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             mPixelControlContainer, getProperties().getCETEPMDEdgeColor());
     private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor",
             mPixelControlContainer, getProperties().getCETEPMDNodeColor());
-    private final ColorControl mWorkingColor = new ColorControl("Node Color", "nodeColor",
+    private final ColorControl mWorkingColor = new ColorControl("Working Color", "workingColor",
             mPixelControlContainer, getProperties().getCETEPMDWorkingColor());
     private final BooleanControl mShowGrafitti = new BooleanControl("Show Grafitti", "showGrafitti",
             mPixelControlContainer, true);

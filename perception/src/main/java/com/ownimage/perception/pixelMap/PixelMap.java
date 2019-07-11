@@ -759,13 +759,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final double pMultiplier, final boolean pThickOnly) {
         calcSegmentIndex();
-        final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
+        final double maxThickness = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         final Point uhvw = toUHVW(pPoint);
         // to prevent the expensive closerThanActual being run against the same segment more than once they
         // are condensed into a set.
         final HashSet<Tuple2<PixelChain, ISegment>> candidateSegments = new HashSet<>();
-        for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
-            for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() + maxWidth) + 1; y++) {
+        for (int x = (int) Math.floor((uhvw.getX() - maxThickness) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxThickness) * getWidth() / mAspectRatio) + 1; x++) {
+            for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * getHeight())) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * getHeight()) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
                     for (final Tuple2<PixelChain, ISegment> tuple : getSegments(x, y)) {
                         if (tuple._1().getThickness() == PixelChain.Thickness.None) {
