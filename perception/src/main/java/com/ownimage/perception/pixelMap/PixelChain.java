@@ -432,7 +432,7 @@ public class PixelChain implements Serializable, Cloneable {
             throw new IllegalArgumentException("pIndex, currently: " + pIndex + " must be between 0 and the length of mPixels, currently: " + length());
         }
 
-        return mPixels.elementAt(pIndex).getUHVWPoint(pPixelMap);
+        return mPixels.elementAt(pIndex).getUHVWMidPoint(pPixelMap);
     }
 
     private double getWidth(final IPixelMapTransformSource pLineInfo) {
@@ -474,11 +474,11 @@ public class PixelChain implements Serializable, Cloneable {
         if (pSegment.getPixelLength(this) < 4) return true;
 
         final int startIndexPlus = pSegment.getStartIndex(this) + 1;
-        final Point startPointPlus = getPixel(startIndexPlus).getUHVWPoint(pPixelMap);
+        final Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap);
         final double startPlusLambda = pSegment.closestLambda(startPointPlus, this, pPixelMap);
 
         final int endIndexMinus = pSegment.getEndIndex(this) - 1;
-        final Point endPointMinus = getPixel(endIndexMinus).getUHVWPoint(pPixelMap);
+        final Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap);
         final double endMinusLambda = pSegment.closestLambda(endPointMinus, this, pPixelMap);
 
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;

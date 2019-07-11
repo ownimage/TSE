@@ -136,7 +136,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .forEach((x, y) ->
                         clone.getOptionalPixelAt(x, y)
                                 .filter(pPixel1 -> pPixel1.isEdge(clone))
-                                .filter(p -> pPixel.getUHVWPoint(clone).distance(p.getUHVWPoint(clone)) < radius)
+                                .filter(p -> pPixel.getUHVWMidPoint(clone).distance(p.getUHVWMidPoint(clone)) < radius)
                                 .ifPresent(p -> {
                                     clone.getPixelChains(p).forEach(pc -> {
                                         pc.delete(clone);
@@ -164,7 +164,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .forEach((x, y) ->
                         clone.getOptionalPixelAt(x, y)
                                 .filter(pPixel1 -> pPixel1.isEdge(clone))
-                                .filter(p -> pPixel.getUHVWPoint(clone).distance(p.getUHVWPoint(clone)) < radius)
+                                .filter(p -> pPixel.getUHVWMidPoint(clone).distance(p.getUHVWMidPoint(clone)) < radius)
                                 .ifPresent(p -> {
                                     p.setEdge(clone, false);
                                     changesMade.set(true);
@@ -735,7 +735,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
         new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
             final Pixel pixel = getPixelAt(x, y);
-            final Point centre = pixel.getUHVWPoint(this).add(getUHVWHalfPixel());
+            final Point centre = pixel.getUHVWMidPoint(this).add(getUHVWHalfPixel());
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
                 getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
             }
@@ -1347,7 +1347,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private Point toUHVW(final Point pIn) {
-        return pIn.scaleX(mAspectRatio).minus(getUHVWHalfPixel());  // TODO this should line up with the Pixel get UHVW point
+        return pIn.scaleX(mAspectRatio);
     }
 
     public void transform(final ITransformResult pRenderResult) {

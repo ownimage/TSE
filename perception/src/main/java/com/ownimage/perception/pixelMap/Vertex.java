@@ -111,7 +111,7 @@ public class Vertex implements IVertex {
 
     @Override
     public Point getUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return getPixel(pPixelChain).getUHVWPoint(pPixelMap);
+        return getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
     }
 
     @Override

@@ -9,7 +9,12 @@ import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,7 +72,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pPixelMap.calcIsNode(this);
     }
 
-    protected synchronized void calcUHVWPoint(final PixelMap pPixelMap) {
+    protected synchronized void calcUHVWMidPoint(final PixelMap pPixelMap) {
         final double y = (getY() + 0.5d) / pPixelMap.getHeight();
         final double x = (getX() + 0.5d) / pPixelMap.getHeight();
         mUHVW = new Point(x, y);
@@ -146,9 +151,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     // UHVW = unit height variable width
-    public synchronized Point getUHVWPoint(final PixelMap pPixelMap) {
+    public synchronized Point getUHVWMidPoint(final PixelMap pPixelMap) {
         if (mUHVW == null) {
-            calcUHVWPoint(pPixelMap);
+            calcUHVWMidPoint(pPixelMap);
         }
         return mUHVW;
     }
