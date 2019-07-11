@@ -975,10 +975,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     });
         });
 
-        nodes.forEach(n -> {
-            List<PixelChain> chains = generateChainsAndApproximate(n);
-            addPixelChains(chains);
-        });
+        nodes.stream()
+                .flatMap(this::generateChainsAndApproximate)
+                .map(chain -> chain.indexSegments(this))
+                .forEach(this::addPixelChain);
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
         pPixels.stream()
@@ -986,19 +986,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .findFirst()
                 .filter(p -> !p.isNode(this))
                 .filter(p -> getPixelChains(p).isEmpty())
-                .ifPresent(p -> {
-                    setNode(p, true);
-                    Node node = new Node(p);
-                    List<PixelChain> chains = generateChainsAndApproximate(node);
-                    addPixelChains(chains);
-                });
+                .stream()
+                .map(p -> setNode(p, true))
+                .flatMap(p -> generateChainsAndApproximate(new Node(p)))
+                .map(chain -> chain.indexSegments(this))
+                .forEach(this::addPixelChain);
     }
 
-    private List<PixelChain> generateChainsAndApproximate(Node pNode) {
+    private Stream<PixelChain> generateChainsAndApproximate(Node pNode) {
         return generateChains(this, pNode)
                 .parallelStream()
-                .map(pc2 -> pc2.approximate(this.getTransformSource(), this))
-                .collect(Collectors.toList());
+                .map(pc2 -> pc2.approximate(this.getTransformSource(), this));
     }
 
     private void trackPixelOn(@NotNull Pixel pPixel) {
@@ -1032,7 +1030,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         });
     }
 
-    private void setNode(final Pixel pPixel, final boolean pValue) {
+    private Pixel setNode(@NotNull final Pixel pPixel, final boolean pValue) {
         if (pPixel.isNode(this) && !pValue) {
             nodeRemove(pPixel);
         }
@@ -1040,6 +1038,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             nodeAdd(pPixel);
         }
         setData(pPixel, pValue, NODE);
+        return pPixel;
     }
 
     boolean calcIsNode(final Pixel pPixel) {
@@ -1394,7 +1393,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         }
         final Counter counter = new Counter();
-        mPixelChains.forEach(pc -> pc.getAllSegments().forEach(s -> {
+        mPixelChains.forEach(pc -> pc.streamSegments().forEach(s -> {
                     if (s instanceof StraightSegment) {
                     } else if (s instanceof CurveSegment) {
                     } else if (s instanceof DoubleCurveSegment) {

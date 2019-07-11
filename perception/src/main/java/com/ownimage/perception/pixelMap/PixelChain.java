@@ -362,8 +362,8 @@ public class PixelChain implements Serializable, Cloneable {
 
     }
 
-    public Iterable<ISegment> getAllSegments() {
-        return mSegments;
+    public Stream<ISegment> streamSegments() {
+        return mSegments.stream();
     }
 
     Optional<Node> getEndNode(PixelMap pPixelMap) {

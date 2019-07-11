@@ -378,7 +378,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void grafittiPixelChain(final GrafittiHelper pGrafittiHelper, final PixelChain pPixelChain) {
         Framework.logEntry(mLogger);
-        pPixelChain.getAllSegments().forEach(s -> grafittiSegment(pGrafittiHelper, s));
+        pPixelChain.streamSegments().forEach(s -> grafittiSegment(pGrafittiHelper, s));
     }
 
     private void grafittiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
@@ -517,6 +517,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public boolean actionPixelOn(@NotNull List<Pixel> pPixels) {
+        if (pPixels.isEmpty()) return false;
         final PixelMap undo = mPixelMap;
         mPixelMap = mPixelMap.actionPixelOn(pPixels);
         if (mPixelMap != undo) {
@@ -555,7 +556,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mDragPixels.clear();
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
-        updatePreview();
+        drawGrafitti();
+        autoUpdatePreview();
         mMouseDragLastPixel = null;
         Framework.logExit(mLogger);
     }
