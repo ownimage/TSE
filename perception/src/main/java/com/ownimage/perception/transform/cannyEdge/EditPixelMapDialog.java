@@ -174,6 +174,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
+        updateControlVisibility();
         updatePreview();
         mEdgeColor.addControlChangeListener(this::mGrafittiChangeListener);
         mNodeColor.addControlChangeListener(this::mGrafittiChangeListener);
@@ -266,11 +267,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
                 updatePreview();
             }
-            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves)) {
+            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction)) {
                 updateControlVisibility();
-            }
-            if (pControl == mPixelAction) {
-                mThickness.setEnabled(mPixelAction.getValue() == PixelAction.PixelChainThickness);
             }
         }
     }
@@ -278,6 +276,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void updateControlVisibility() {
         mAutoUpdateCurves.setVisible(mShowCurves.getValue());
         mUpateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
+        mThickness.setEnabled(mPixelAction.getValue() == PixelAction.PixelChainThickness);
     }
 
     @Override
