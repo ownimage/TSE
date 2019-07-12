@@ -63,7 +63,7 @@ public class ColorView extends ViewBase<ColorControl> {
     private void setControlValue() {
         runOnFXApplicationThread(() -> {
             final javafx.scene.paint.Color c = mColorPicker.getValue();
-            final Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+            final Color color = new java.awt.Color((int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255), (int) (c.getOpacity() * 255));
             mControl.setValue(color, this, false);
         });
     }

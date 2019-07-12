@@ -13,6 +13,6 @@ public interface IPictureView extends IView {
 
     public void drawGrafitti(Consumer<IGrafittiImp> pGrafitti);
 
-    public void updateGrafitti(Consumer<IGrafittiImp> pGrafitti);
+    public void updateGraffiti(Consumer<IGrafittiImp> pGrafitti);
 
 }

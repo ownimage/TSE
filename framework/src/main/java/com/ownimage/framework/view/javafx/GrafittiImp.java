@@ -55,7 +55,13 @@ public class GrafittiImp implements IGrafittiImp {
     }
 
     @Override
-    public void drawFilledRectangle(final double pX1, final double pY1, final double pX2, final double pY2, final Color pColor) {
+    public void drawFilledRectangle(
+            final double pX1,
+            final double pY1,
+            final double pX2,
+            final double pY2,
+            final Color pColor
+    ) {
         final double x = pX1 * mWidth;
         final double w = (pX2 - pX1) * mWidth;
         final double y = (1.0 - pY2) * mHeight;
@@ -65,7 +71,14 @@ public class GrafittiImp implements IGrafittiImp {
     }
 
     @Override
-    public void drawLine(final double pX1, final double pY1, final double pX2, final double pY2, final Color pColor, final boolean pDashed) {
+    public void drawLine(
+            final double pX1,
+            final double pY1,
+            final double pX2,
+            final double pY2,
+            final Color pColor,
+            final boolean pDashed
+    ) {
         final double x1 = pX1 * mWidth;
         final double x2 = pX2 * mWidth;
         final double y1 = (1.0 - pY1) * mHeight;

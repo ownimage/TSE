@@ -43,8 +43,8 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private Image mImage;
 
-    private GrafittiImp mGrafittiImp;
-    private GraphicsContext mGrafittiContext;
+    private GrafittiImp mGraffitiImp;
+    private GraphicsContext mGraffitiContext;
 
     private GrafittiImp mCursorImp;
     private GraphicsContext mCursorContext;
@@ -148,8 +148,8 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     @Override
     public void drawGrafitti(final Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> {
-            mGrafittiContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
-            pGrafitti.accept(mGrafittiImp);
+            mGraffitiContext.clearRect(0, 0, mImage.getWidth(), mImage.getHeight());
+            pGrafitti.accept(mGraffitiImp);
         });
     }
 
@@ -162,8 +162,8 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     @Override
-    public void updateGrafitti(final Consumer<IGrafittiImp> pGrafitti) {
-        runOnFXApplicationThread(() -> pGrafitti.accept(mGrafittiImp));
+    public void updateGraffiti(final Consumer<IGrafittiImp> pGrafitti) {
+        runOnFXApplicationThread(() -> pGrafitti.accept(mGraffitiImp));
     }
 
 
@@ -194,16 +194,16 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
         final double width = mImage.getWidth();
         final double height = mImage.getHeight();
 
-        final Canvas grafittiCanvas = new Canvas(width, height);
-        mGrafittiContext = grafittiCanvas.getGraphicsContext2D();
-        mGrafittiImp = new GrafittiImp(mGrafittiContext, width, height);
+        final Canvas graffitiCanvas = new Canvas(width, height);
+        mGraffitiContext = graffitiCanvas.getGraphicsContext2D();
+        mGraffitiImp = new GrafittiImp(mGraffitiContext, width, height);
 
         final Canvas cursorCanvas = new Canvas(width, height);
         mCursorContext = cursorCanvas.getGraphicsContext2D();
         mCursorImp = new GrafittiImp(mCursorContext, width, height);
 
         mUI.getChildren().clear();
-        mUI.getChildren().addAll(imageView, grafittiCanvas, cursorCanvas);
+        mUI.getChildren().addAll(imageView, graffitiCanvas, cursorCanvas);
     }
 
     // from https://jar-download.com/artifacts/org.openjfx/javafx-swing/11/source-code/javafx/embed/swing/SwingFXUtils.java

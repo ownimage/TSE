@@ -74,7 +74,7 @@ public class PictureControl
 
     public void updateGrafitti(final IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
-        mViews.invokeAll(view -> view.updateGrafitti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
+        mViews.invokeAll(view -> view.updateGraffiti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
     }
 
     public void drawCursor(final IGrafitti pGrafitti) {
