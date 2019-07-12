@@ -114,8 +114,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             mGeneralContainer, false);
     private final BooleanControl mAutoUpdateCurves = new BooleanControl("Auto Update Curves", "autoUpdateCurves",
             mGeneralContainer, false);
-    private final ActionControl mUpateCurves = new ActionControl("Update Curves", "updateCurves",
-            mGeneralContainer, this::updatePreview);
+    private final ActionControl mUpdateCurves = new ActionControl("Update Curves", "updateCurves",
+            mGeneralContainer, this::updateCurves);
     private final ContainerList mContainerList = new ContainerList("Edit PixelMap", "editPixelMap");
     private final IContainer mMoveContainer = mContainerList.add(newContainer("Move", "move", true));
     private final IContainer mPixelControlContainer = mContainerList.add(newContainer("Pixel", "pixel", true));
@@ -147,6 +147,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private int mMouseLastSize;
     private Id mSavepointId;
     private final ArrayList<Pixel> mDragPixels = new ArrayList();
+    private boolean mAutoUpdateCurvesDirty = false;
 
     public EditPixelMapDialog(
             final CannyEdgeTransform pTransform,
@@ -175,7 +176,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
         updateControlVisibility();
-        updatePreview();
+        updateCurves();
         mEdgeColor.addControlChangeListener(this::mGrafittiChangeListener);
         mNodeColor.addControlChangeListener(this::mGrafittiChangeListener);
         mShowGrafitti.addControlChangeListener(this::mGrafittiChangeListener);
@@ -189,7 +190,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.drawGrafitti();
     }
 
-    private void updatePreview() {
+    private void updateCurves() {
+        mAutoUpdateCurvesDirty = false;
         setCrop();
         if (mTransform.isInitialized()) {
             mTransform.setPixelMap(mPixelMap);
@@ -198,7 +200,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 mPictureControl.setValue(pictureType);
             }
             Services.getServices().getRenderService()
-                    .getRenderJobBuilder("EditPixelMapDialog::updatePreview", mPictureControl, mCropTransform)
+                    .getRenderJobBuilder("EditPixelMapDialog::updateCurves", mPictureControl, mCropTransform)
                     .withAllowTerminate(false)
                     .build()
                     .run();
@@ -265,17 +267,20 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (isMutating()) return;
         if (pControl != null) {
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
-                updatePreview();
+                updateCurves();
             }
             if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction)) {
                 updateControlVisibility();
+            }
+            if (pControl.isOneOf(mAutoUpdateCurves)) {
+                if (mAutoUpdateCurvesDirty) updateCurves();
             }
         }
     }
 
     private void updateControlVisibility() {
         mAutoUpdateCurves.setVisible(mShowCurves.getValue());
-        mUpateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
+        mUpdateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
         mThickness.setEnabled(mPixelAction.getValue() == PixelAction.PixelChainThickness);
     }
 
@@ -310,7 +315,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMap = pixelMap;
         mResultantPixelMap.set(pixelMap);
         mDialogIsAlive = true;
-        updatePreview();
+        updateCurves();
         getDialogView().showModal();
     }
 
@@ -424,7 +429,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void autoUpdatePreview() {
-        if (mAutoUpdateCurves.getValue()) updatePreview();
+        if (mAutoUpdateCurves.getValue()) updateCurves();
+        else mAutoUpdateCurvesDirty = true;
     }
 
     private void mouseClickEventPixelView(@NotNull final IUIEvent pEvent, @NotNull final Pixel pPixel) {
@@ -613,7 +619,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         final int y = mViewOriginY.getValue();
         mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / getZoom()));
         mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / getZoom()));
-        if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updatePreview();
+        if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updateCurves();
         setMutating(false);
     }
 
