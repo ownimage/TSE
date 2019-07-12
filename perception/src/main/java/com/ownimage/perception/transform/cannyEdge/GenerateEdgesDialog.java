@@ -6,7 +6,14 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.IAction;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IUIEventListener;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
@@ -205,8 +212,9 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         mDragStart = new IntegerPoint(mPreviewPositionX.getValue(), mPreviewPositionY.getValue());
     }
 
-    public void showDialog(final ActionControl pOk, final ActionControl pCancel) {
-        Services.getServices().getPerception().showDialog(this, DialogOptions.NONE, getUndoRedoBuffer(), pCancel, pOk);
+    public void showDialog(final ActionControl pOk, final ActionControl pCancel, final IAction pCompleteFunction) {
+        var dialogOptions = DialogOptions.builder().withCompleteFunction(pCompleteFunction).build();
+        Services.getServices().getPerception().showDialog(this, dialogOptions, getUndoRedoBuffer(), pCancel, pOk);
         updatePreview();
     }
 

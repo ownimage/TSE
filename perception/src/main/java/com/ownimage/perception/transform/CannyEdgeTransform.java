@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
@@ -50,7 +51,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         Square, Straight, Curved
     }
 
-
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
@@ -64,9 +64,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final ActionControl mEditPixelMapButton =
             new ActionControl("Edit Pixels", "editPixels", getContainer(), this::editPixels)
                     .setEnabled(false);
-
-    // TODO private final EditPixelMapDialog mEditPixelMapSegmentsDialog;
-    // TODO private final EditPixelMapDialog mEditPixelMapPixelsDialog;
 
     private GenerateEdgesDialog mGenerateEdgesDialog;
     private EditPixelMapDialog mEditPixelMapDialog;
@@ -139,12 +136,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new BooleanControl("Show Shadow", "showShadow", getContainer(), false);
     private final DoubleControl mShadowXOffset =
             new DoubleControl("Shadow X Offset", "shadowXOffset", getContainer(), 1.0d, -20.0d, 20.0d);
-
     private final DoubleControl mShadowYOffset =
             new DoubleControl("Shadow Y Offset", "shadowYOffset", getContainer(), 1.0d, -20.0d, 20.0d);
     private final DoubleControl mShadowThickness =
             new DoubleControl("Shadow Thickness", "shadowThickness", getContainer(), 1.0d, 1.0d, 10.0d);
-
     private final ColorControl mShadowColor =
             new ColorControl("Shadow Colour", "shadowColor", getContainer(), Color.WHITE);
     private final DoubleControl mShadowOpacity =
@@ -187,21 +182,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 setMutating(true);
                 Framework.log(mLogger, Level.FINE, () -> "Running controlChangeEvent");
 
-                // if (!isInitialized()) { return; }
-                //
-                // if (pControl == mGeneratePixelMapButton) {
-                // mGenerateEdgesDialog.showModalDialog();
-                // return;
-                // }
-                //
-                // if (pControl == mEditPixelMapButton) {
-                // mLogger.info(() -> "EditPixels");
-                // mEditPixelMapPixelsDialog.showModalDialog();
-                // return;
-                // }
-                //
-                // if (mGenerateEdgesDialog.contains(pControl)) { return; }
-                //
                 if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
                     getPixelMap().ifPresent(pm -> pm.actionSetPixelChainDefaultThickness(this));
                     mEqualize.setValue(EqualizeValues.getDefaultValue());
@@ -214,7 +194,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 if (pControl == mEqualize) {
                     equalize();
                 }
-
             } finally {
                 setMutating(false);
                 super.controlChangeEvent(pControl, pIsMutating);
@@ -242,31 +221,31 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         }
     }
 
-    //
-    // @Override
-    // public ITransformUI createUI() {
-    // return GUIFactory.getInstance().createUI((IDynamicTransformUI) this);
-    // }
-    //
     private void editPixels() {
         getEditPixelMapDialog().showDialog();
     }
 
     private void generateEdges() {
+        mEditPixelMapButton.setEnabled(false);
         final ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
-        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
-        getGenerateEdgesDialog().showDialog(cancel, ok);
+        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, this::setEditPixelMapButtonEnabledState);
+        final IAction completeAction = this::setEditPixelMapButtonEnabledState;
+        getGenerateEdgesDialog().showDialog(cancel, ok, completeAction);
+    }
+
+    private void setEditPixelMapButtonEnabledState() {
+        mEditPixelMapButton.setEnabled(mPixelMap != null);
     }
 
     private void generateEdgesOK() {
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
+        mPixelMap = null;
         final PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
         final PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
         Services.getServices().getRenderService()
                 .getRenderJobBuilder("CannyEdgeTransform::generateEdgesOK", inputPictureControl, getPreviousTransform())
                 .withCompleteAction(() -> {
-                    mPixelMap = null;
                     regeneratePixelMap(inputPictureControl);
                     equalize();
                 })
@@ -305,14 +284,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mEditPixelMapDialog;
     }
 
-    //
-    // private Color getBackgroundColor(final Point pIn) {
-    //
-    // final Color color = getColorFromPreviousTransform(pIn);
-    // final double fade = mWhiteFade.getDouble();
-    // return KColor.fade(color, Color.WHITE, fade);
-    // }
-    //
     @Override
     public int getHeight() {
         return mHeight.getValue();
@@ -362,7 +333,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     public double getLineTolerance() {
         return mLineTolerance.getValue();
     }
-
 
     public int getLongLineLength() {
         return mLongLineLength.getValue();
@@ -436,37 +406,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return mShowLines.getValue();
     }
 
-    // @Override
-    // public ICUI getUIDynamic(final IControlPrimative<IPicture> pPreviewPictureControl) {
-    //
-    // return new DynamicUI.HorizontalFlowUISource() //
-    // .setLeftUI(DynamicUI.createGrafittiPicture(pPreviewPictureControl) //
-    // .setControlContainer(getControlContainer()) //
-    // .setPopupMenu(getPopupMenuContainer()) //
-    // .setGrafitti(this) //
-    // ) //
-    // .setRightUI(getControlContainer()) //
-    // .createUI();
-    // }
-    //
     @Override
     public int getWidth() {
         return mWidth.getValue();
     }
 
-    //
-    // @Override
-    // public void graffiti(final GraphicsHelper pGraphics) {
-    // super.graffiti(pGraphics);
-    // mGenerateEdgesDialog.graffitiTransform(pGraphics);
-    // mEditPixelMapSegmentsDialog.graffitiTransform(pGraphics);
-    // }
-    //
-    // public void postProcess() {
-    // getPixelMap().process(this);
-    // getPixelMap().setPixelChainDefaultThickness(this);
-    // }
-    //
     @Override
     public void read(final IPersistDB pDB, final String pId) {
         super.read(pDB, pId);
@@ -483,38 +427,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         getEditPixelMapDialog().read(pDB, pId + "." + getPropertyName());
     }
 
-    //
-    // public void reapproximate() {
-    // getPixelMap().process08_refine();
-    // }
-    //
-    // public void resetHeightWidth() {
-    // mWidth.setValue(getPreviousTransform().getWidth());
-    // mHeight.setValue(getPreviousTransform().getHeight());
-    // }
-    //
-    // @Override
-    // public void setInitialized() {
-    // super.setInitialized();
-    // if (getUseTransform() && mPixelMap == null) {
-    // mGenerateEdgesDialog.generateEdgeImage();
-    // }
-    // mEditPixelMapSegmentsDialog.setInitialized();
-    // mEditPixelMapPixelsDialog.setInitialized();
-    // setValues();
-    // }
-    //
-    // public void setPixelMap(final PixelMap pPixelMap) {
-    // mPixelMap = pPixelMap;
-    // }
-    //
-    // @Override
-    // public void setPreviousTransform(final ITransform pPreviousTransform) {
-    // super.setPreviousTransform(pPreviousTransform);
-    // mWidth.setValue(super.getWidth());
-    // mHeight.setValue(super.getHeight());
-    // }
-    //
     @Override
     public void setValues() {
         super.setValues();
@@ -621,7 +533,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             getProgressControl().finished();
             getProgressControl().setVisible(false);
         }
-
     }
 
     public void setPixelMap(final PixelMap pPixelMap) {
@@ -634,7 +545,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         if (mEditPixelMapDialog != null && mEditPixelMapDialog.getPixelMap() != pPixelMap) {
             mEditPixelMapDialog = null;
         }
-        mEditPixelMapButton.setEnabled(mPixelMap != null);
+        setEditPixelMapButtonEnabledState();
     }
 
     public Optional<PixelMap> getPixelMap() {
