@@ -37,15 +37,17 @@ public interface IControl<C, T, M, R> extends IMouseControl, IPersist, IViewable
      * Adds the control change listener.
      *
      * @param pListener the listener
+     * @return this object to make fluent
      */
-    void addControlChangeListener(final IControlChangeListener<?> pListener);
+    C addControlChangeListener(final IControlChangeListener<?> pListener);
 
     /**
      * Adds the control validator.
      *
      * @param pValidator the validator
+     * @return this object to make fluent
      */
-    void addControlValidator(final IControlValidator<?> pValidator);
+    C addControlValidator(final IControlValidator<?> pValidator);
 
     /**
      * Clean.
