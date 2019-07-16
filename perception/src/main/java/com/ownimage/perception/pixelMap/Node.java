@@ -36,6 +36,10 @@ public class Node extends Pixel {
         super(pIntegerPoint);
     }
 
+    Node(final int pX, final int pY) {
+        super(pX, pY);
+    }
+
     /**
      * Adds the pixel chain.
      *

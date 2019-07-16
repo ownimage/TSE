@@ -12,8 +12,10 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import java.io.Serializable;
 
 /**
- * The Interface IVertex represends a joining point between two segments that approximate part of a PixelChain. The vertex is associated with a Pixel in the PixelChain i.e. it has an integer (x, y)
- * position on the map. However the Pixel that it maps to might be moved slightly in terms of its UHVW double (x, y) position to improve the closeness of the overall approximatio.
+ * The Interface IVertex represents a joining point between two segments that approximate part of a PixelChain.
+ * The vertex is associated with a Pixel in the PixelChain i.e. it has an integer (x, y)
+ * position on the map. However the Pixel that it maps to might be moved slightly in terms of its UHVW double (x, y)
+ * position to improve the closeness of the overall approximatio.
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 

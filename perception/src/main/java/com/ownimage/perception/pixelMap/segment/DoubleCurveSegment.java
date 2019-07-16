@@ -14,7 +14,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.awt.*;
 
-public class DoubleCurveSegment extends SegmentBase<DoubleCurveSegment> {
+public class DoubleCurveSegment extends SegmentBase {
 
     public final static long serialVersionUID = 1L;
 

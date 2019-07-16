@@ -11,7 +11,11 @@ import com.ownimage.framework.factory.ViewFactoryDELEGATOR;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.IView;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -176,11 +180,6 @@ public class ControlBaseTEST {
         new ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView>("display.Name", "a", mContainer, type);
     }
 
-    // public void addControlChangeListener(final IControlChangeListener pListener) {
-    // tested by the fireControlChangeEvent methods
-
-    // public void addControlValidator(final IControlValidator pValidator) {
-    //
     @Test
     public void ControlBase_addControlValidator_0_00() {
         final DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
@@ -260,8 +259,6 @@ public class ControlBaseTEST {
         assertTrue("v2 fired for dc", v2.getLastObject() == dc);
     }
 
-    // public void addControlValidator(final IControlValidator pValidator) {
-    //
     @Test
     public void ControlBase_addControlValidator_0_03() {
         final IUndoRedoProviderASSISTANT mUndoRedoBufferSource = new IUndoRedoProviderASSISTANT();
@@ -288,6 +285,57 @@ public class ControlBaseTEST {
         assertTrue("v2 has not fired", !v2.hasFired());
         assertTrue("v2 fired for dc", v2.getLastObject() == null);
     }
+
+    @Test
+    public void ControlBase_addTypedControlValidator_0_00() {
+        final DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<>();
+        final ContolValidatorASSISTANT<DoubleControl> v3 = new ContolValidatorASSISTANT<>(); // control test
+
+        dc.addTypedControlValidator(v1);
+        dc.addTypedControlValidator(v2);
+
+        dc.setValue(0.7);
+
+        assertTrue("value set", dc.getValue() == 0.7);
+
+        assertTrue("v1 has fired", v1.hasFired());
+        assertTrue("v1 fired for dc", v1.getLastObject() == dc);
+
+        assertTrue("v2 has fired", v2.hasFired());
+        assertTrue("v2 fired for dc", v2.getLastObject() == dc);
+
+        assertTrue("v3 has not fired", !v3.hasFired());
+        assertTrue("v3 fired for null", v3.getLastObject() == null);
+    }
+
+    // public void addControlValidator(final IControlValidator pValidator) {
+    //
+    @Test
+    public void ControlBase_addTypedControlValidator_0_01() {
+        final DoubleControl dc = new DoubleControl("x", "x", mContainer, 0.5);
+        final ContolValidatorASSISTANT<DoubleControl> v1 = new ContolValidatorASSISTANT<>();
+        final ContolValidatorASSISTANT<DoubleControl> v2 = new ContolValidatorASSISTANT<>();
+
+        v1.setReturnValue(false);
+
+        dc.addTypedControlValidator(v1);
+        dc.addTypedControlValidator(v2);
+
+        dc.setValue(0.7);
+
+        assertTrue("value not set", dc.getValue() == 0.5);
+        assertTrue("dc not dirty", !dc.isDirty());
+
+        assertTrue("v1 has fired", v1.hasFired());
+        assertTrue("v1 fired for dc", v1.getLastObject() == dc);
+
+        assertTrue("v2 has not fired", !v2.hasFired());
+        assertTrue("v2 fired for dc", v2.getLastObject() == null);
+    }
+
+
 
     // protected void addView(final IView pView) {
     // tested by set enabled
@@ -424,6 +472,17 @@ public class ControlBaseTEST {
         mControlBase.fireControlChangeEvent();
         assertTrue("should have fired", listener.getHasFired());
     }
+
+    @Test
+    public void ControlBase_fireTypedControlChangeEvent_0_01() {
+        final ControlChangeListenerASSISTANT listener = new ControlChangeListenerASSISTANT<IntegerControl>();
+        mControlBase.addTypedControlChangeListener(listener);
+        assertFalse("should not have fired", listener.getHasFired());
+
+        mControlBase.fireControlChangeEvent();
+        assertTrue("should have fired", listener.getHasFired());
+    }
+
 
     // public IContainer getContainer() {
     //

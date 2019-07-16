@@ -5,8 +5,12 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.framework.math.*;
+import com.ownimage.framework.math.CubicEquation;
 import com.ownimage.framework.math.CubicEquation.Root;
+import com.ownimage.framework.math.KMath;
+import com.ownimage.framework.math.Point;
+import com.ownimage.framework.math.QuarticEquation;
+import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
@@ -14,7 +18,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.util.logging.Logger;
 
-public class CurveSegment extends SegmentBase<CurveSegment> {
+public class CurveSegment extends SegmentBase {
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;

@@ -15,7 +15,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.util.logging.Logger;
 
-public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> {
+public abstract class SegmentBase implements ISegment {
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
@@ -43,7 +43,7 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
         }
 
         if (error < 0.0d) {
-            System.err.println("-ve error");
+            mLogger.warning("-ve error");
         }
 
         return error;
@@ -63,13 +63,6 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
 
     double getActualThickness(final IPixelMapTransformSource pSource, final PixelChain pPixelChain, final double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
-    }
-
-    // TOD c
-    public Point getControlPoint() {
-        Framework.logEntry(mLogger);
-        Framework.logExit(mLogger);
-        return null;
     }
 
     @Override
@@ -132,7 +125,10 @@ public abstract class SegmentBase<T extends SegmentBase> implements ISegment<T> 
 
     @Override
     public Line getStartTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return new Line(getStartUHVWPoint(pPixelMap, pPixelChain), getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain)));
+        return new Line(
+                getStartUHVWPoint(pPixelMap, pPixelChain),
+                getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
+        );
     }
 
     @Override

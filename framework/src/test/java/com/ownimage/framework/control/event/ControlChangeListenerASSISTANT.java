@@ -1,13 +1,13 @@
 package com.ownimage.framework.control.event;
 
-public class ControlChangeListenerASSISTANT implements IControlChangeListener {
+public class ControlChangeListenerASSISTANT<C> implements IControlChangeListener<C> {
 
     private int mFired = 0;
     private Object mLastControl = null;
     private boolean mLastIsMutating = false;
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final C pControl, final boolean pIsMutating) {
         mFired++;
         mLastControl = pControl;
         mLastIsMutating = pIsMutating;

@@ -1119,7 +1119,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
         mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(mTransformSource, this)));
-        //HERE
         mPixelChains = mPixelChains.clear().addAll(refined);
         mLogger.info(() -> "approximate - done");
         invalidateSegmentIndex();
@@ -1128,7 +1127,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private void process07_mergeChains(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
-        //for (final Node node : getAllNodes()) {
         nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
         mSegmentCount = 0;
         invalidateSegmentIndex();
@@ -1360,6 +1358,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void validate() {
+        invalidateSegmentIndex();
+        calcSegmentIndex();
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         mPixelChains.stream().parallel().forEach(pc -> pc.validate("PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
@@ -1372,8 +1372,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         }
         if (mSegmentCount != segments.size() || mSegmentCount != mSegmentToPixelChainMap.keySet().size()) {
-            String message = String.format("mSegmentCount=%s, segments.size()=%s, mSegmentToPixelChainMap.keySet().size()=%s", mSegmentCount, segments.size(), mSegmentToPixelChainMap.keySet().size());
-            throw new IllegalStateException("mSegmentCount mismatch");
+            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s, mSegmentToPixelChainMap.keySet().size()=%s", mSegmentCount, segments.size(), mSegmentToPixelChainMap.keySet().size());
+            throw new IllegalStateException(message);
         }
     }
 
@@ -1442,16 +1442,26 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
+    // Move to a stream
+    @Deprecated
     private void forEach(final BiConsumer<Integer, Integer> pFunction) {
         new Range2D(getWidth(), getHeight()).forEach(pFunction);
     }
 
+    // move to a stream
+    @Deprecated
     private void forEachPixel(final Consumer<Pixel> pFunction) {
         new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(getPixelAt(x, y)));
     }
 
+    // Move to a stream
+    @Deprecated
     public void forEachPixelChain(final Consumer<PixelChain> pFunction) {
         mPixelChains.forEach(pFunction);
+    }
+
+    public Stream<PixelChain> streamPixelChains() {
+        return mPixelChains.stream();
     }
 
     public void checkCompatibleSize(@NotNull final PixelMap pPixelMap) {

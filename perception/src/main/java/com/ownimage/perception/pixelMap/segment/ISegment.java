@@ -15,7 +15,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.io.Serializable;
 
-public interface ISegment<T> extends Serializable, Cloneable {
+public interface ISegment extends Serializable, Cloneable {
 
 
     long serialVersionUID = 1L;

@@ -335,7 +335,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         final int ySize = Math.floorDiv(getHeight(), getZoom()) + 1;
         grafitti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
         if (mShowGrafitti.getValue()) {
-            mPixelMap.forEachPixelChain(pc -> grafittiPixelChain(pGrafittiHelper, pc));
+            mPixelMap.forEachPixelChain(pc -> graffitiPixelChain(pGrafittiHelper, pc));
         }
     }
 
@@ -380,12 +380,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return (double) (pY - pYMin) * pZoom / pPMHeight;
     }
 
-    private void grafittiPixelChain(final GrafittiHelper pGrafittiHelper, final PixelChain pPixelChain) {
+    private void graffitiPixelChain(final GrafittiHelper pGrafittiHelper, final PixelChain pPixelChain) {
         Framework.logEntry(mLogger);
-        pPixelChain.streamSegments().forEach(s -> grafittiSegment(pGrafittiHelper, s));
+        pPixelChain.streamSegments().forEach(s -> graffitiSegment(pGrafittiHelper, s));
     }
 
-    private void grafittiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
+    private void graffitiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
         Framework.logEntry(mLogger);
         final SegmentGrafittiHelper segmentGrafittiHelper = new SegmentGrafittiHelper(pGrafittiHelper, this::UHVWtoView);
         mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(mPixelMap, pc, segmentGrafittiHelper));

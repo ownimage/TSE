@@ -9,6 +9,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
+import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
@@ -159,10 +160,10 @@ public class PixelChain implements Serializable, Cloneable {
 
     PixelChain approximate(final IPixelMapTransformSource pTransformSource, final PixelMap pPixelMap) {
         final double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-        final PixelChain copy = deepCopy();
+        PixelChain copy = deepCopy();
         copy.approximate01_straightLines(pPixelMap, tolerance);
         copy.approximate02_refineCorners(pPixelMap);
-        copy.refine(pPixelMap, pTransformSource);
+        copy = copy.refine(pPixelMap, pTransformSource);
         copy.checkAllVertexesAttached();
         return copy;
     }
@@ -435,19 +436,19 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.elementAt(pIndex).getUHVWMidPoint(pPixelMap);
     }
 
-    private double getWidth(final IPixelMapTransformSource pLineInfo) {
+    private double getWidth(final IPixelMapTransformSource pIPMTS) {
         Framework.logEntry(mLogger);
 
         double width = 0.0d;
         switch (getThickness()) {
             case Thin:
-                width = pLineInfo.getShortLineThickness() / 1000.0d;
+                width = pIPMTS.getShortLineThickness() / pIPMTS.getHeight();
                 break;
             case Normal:
-                width = pLineInfo.getMediumLineThickness() / 1000.0d;
+                width = pIPMTS.getMediumLineThickness() / pIPMTS.getHeight();
                 break;
             case Thick:
-                width = pLineInfo.getLongLineThickness() / 1000.0d;
+                width = pIPMTS.getLongLineThickness() / pIPMTS.getHeight();
                 break;
         }
 
@@ -526,9 +527,34 @@ public class PixelChain implements Serializable, Cloneable {
         return merge(pPixelMap, pOtherChain);
     }
 
-    private void refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
+    private PixelChain refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
         refine01_matchCurves(pPixelMap, pSource);
         refine03_matchDoubleCurves(pSource, pPixelMap);
+
+        if (containsStraightSegment()) {
+            PixelChain reversed = reverse(pPixelMap);
+            reversed.refine01_matchCurves(pPixelMap, pSource);
+            reversed.refine03_matchDoubleCurves(pSource, pPixelMap);
+            if (reversed.countStraightSegments() < countStraightSegments()) {
+                return reversed;
+            }
+        }
+
+        return this;
+    }
+
+    private boolean containsStraightSegment() {
+        return mSegments.stream()
+                .filter(s -> (s instanceof StraightSegment))
+                .findFirst()
+                .isPresent();
+    }
+
+    private int countStraightSegments() {
+        var count = new Counter();
+        mSegments.stream()
+                .forEach(s -> count.increase());
+        return count.getCount();
     }
 
     private void refine01_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
@@ -550,10 +576,6 @@ public class PixelChain implements Serializable, Cloneable {
                     // calculate end tangent
                     final Line tangent = currentSegment.getEndVertex(this).calcTangent(this, pPixelMap);
 
-                    if (tangent == null) {
-                        // this was for test purposes
-                        final Line tangent2 = currentSegment.getEndVertex(this).calcTangent(this, pPixelMap);
-                    }
                     // find closest point between start point and tangent line
                     final Point closest = tangent.closestPoint(currentSegment.getStartUHVWPoint(pPixelMap, this));
                     // divide this line (tangentRuler) into the number of pixels in the segment
@@ -688,15 +710,6 @@ public class PixelChain implements Serializable, Cloneable {
         return endVertex.calcTangent(this, pPixelMap);
     }
 
-
-//    private PixelChain copy() {
-//        final PixelChain copy = new PixelChain(mStartNode);
-//        copy.mEndNode = mEndNode;
-//        copy.mPixels = mPixels;
-//        copy.mThickness = mThickness;
-//        return copy;
-//    }
-
     private void refine03_matchDoubleCurves(final IPixelMapTransformSource pSource, final PixelMap pPixelMap) {
         if (mSegments.size() == 1) return;
         for (final ISegment currentSegment : mSegments) {
@@ -786,42 +799,43 @@ public class PixelChain implements Serializable, Cloneable {
         validate("refine03_matchDoubleCurves");
     }
 
-
     /**
-     * Reverses the order of the pixels in the pixel chain. This means reversing the start and end nodes. And all of the segments in the line are also reversed and repaced with new straight line
+     * Creates a copy of this PixelChain with the order of the pixels in the pixel chain.
+     * The original PixelChain is not altered.
+     * This means reversing the start and end nodes.
+     * All of the segments in the line are also reversed and replaced with new straight line
      * segments.
      *
      * @param pPixelMap
+     * @return a new PixelChain with the elements reversed
      */
-    private PixelChain reverse(final PixelMap pPixelMap) {
+    public PixelChain reverse(final PixelMap pPixelMap) {
+        // note that this uses direct access to the data members as the public setters have other side effects
         validate("reverse");
         PixelChain clone = deepCopy();
-        // note that this uses direct access to the data members as the public setters have other side effects
-        clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(clone).getPixelIndex(), s.getEndVertex(clone).getPixelIndex())));
-        clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(clone), s.getEndIndex(clone))));
 
-        final int maxPixelIndex = clone.mPixels.size() - 1;
-
+        // reverse pixels
         Collections.reverse(clone.mPixels);
-        final Vector<IVertex> vertexes = new Vector<>();
-        final Vector<ISegment> stnemges = new Vector<>();
 
+        // reverse vertexes
+        final int maxPixelIndex = clone.mPixels.size() - 1;
+        final Vector<IVertex> vertexes = new Vector<>();
         for (int i = clone.mVertexes.size() - 1; i >= 0; i--) {
             final IVertex vertex = clone.mVertexes.get(i);
             final IVertex v = Vertex.createVertex(clone, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
+        }
+        clone.mVertexes = vertexes;
+
+        // reverse segments
+        final Vector<ISegment> segments = new Vector<>();
+        for (int i = clone.mVertexes.size() - 1; i >= 0; i--) {
             if (i != mVertexes.size() - 1) {
-                final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, clone, stnemges.size());
-                stnemges.add(newSegment);
+                final StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, clone, segments.size());
+                segments.add(newSegment);
             }
         }
-
-        clone.mSegments = stnemges;
-        clone.mVertexes = vertexes;
-        //setStartVertex(mSegments.firstElement().getStartVertex(this));
-        // TODO mVertexes.firstElement().setIndex(this, 0);
-        clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
-        clone.mSegments.forEach(s -> mLogger.fine(() -> String.format("reverse this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
+        clone.mSegments = segments;
 
         clone.validate("reverse");
         return clone;

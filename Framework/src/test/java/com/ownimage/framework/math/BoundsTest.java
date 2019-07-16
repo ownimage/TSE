@@ -68,7 +68,8 @@ public class BoundsTest {
         assertTrue(underTest.contains(point));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
+    @Test(expected = NullPointerException.class)
     public void contains_null() {
         // GIVEN WHEN
         final Bounds underTest = new Bounds(-5, -5, 5, 5);
@@ -249,7 +250,8 @@ public class BoundsTest {
         assertTrue(actual.contains(point));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
+    @Test(expected = NullPointerException.class)
     public void getBounds_null() {
         // GIVEN
         final Bounds underTest = new Bounds(-5, -5, 1, 4);

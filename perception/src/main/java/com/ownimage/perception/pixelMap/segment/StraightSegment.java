@@ -12,7 +12,7 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
-public class StraightSegment extends SegmentBase<StraightSegment> {
+public class StraightSegment extends SegmentBase {
 
 
     public final static long serialVersionUID = 1L;
