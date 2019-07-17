@@ -59,7 +59,6 @@ public class PixelChain implements Serializable, Cloneable {
         None, Thin, Normal, Thick
     }
 
-
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
@@ -158,9 +157,9 @@ public class PixelChain implements Serializable, Cloneable {
         return clone;
     }
 
-    PixelChain approximate(final IPixelMapTransformSource pTransformSource, final PixelMap pPixelMap) {
-        final double tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-        PixelChain copy = deepCopy();
+    PixelChain approximate(final PixelMap pPixelMap, final IPixelMapTransformSource pTransformSource) {
+        var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+        var copy = deepCopy();
         copy.approximate01_straightLines(pPixelMap, tolerance);
         copy.approximate02_refineCorners(pPixelMap);
         copy = copy.refine(pPixelMap, pTransformSource);
@@ -304,9 +303,9 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     private double getActualCurvedThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
-        final double c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        final double a = c - getWidth(pTransformSource);
-        final double b = -2.0 * a;
+        var c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
+        var a = c - getWidth(pTransformSource);
+        var b = -2.0 * a;
         return a * pFraction * pFraction + b * pFraction + c;
     }
 
@@ -315,8 +314,8 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     private double getActualStraightThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
-        final double min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        final double max = getWidth(pTransformSource);
+        var min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
+        var max = getWidth(pTransformSource);
         return min + pFraction * (max - min);
     }
 
@@ -349,16 +348,16 @@ public class PixelChain implements Serializable, Cloneable {
      */
     private double getActualThicknessEndFraction(final IPixelMapTransformSource pTransformSource, final double pPosition) {
 
-        final double end2 = getLength() - pPosition;
-        final double closestEnd = Math.min(pPosition, end2);
+        var end2 = getLength() - pPosition;
+        var closestEnd = Math.min(pPosition, end2);
 
         if (pTransformSource.getLineEndLengthType() == CannyEdgeTransform.LineEndLengthType.Percent) {
-            final double closestPercent = 100.0d * closestEnd / getLength();
+            var closestPercent = 100.0d * closestEnd / getLength();
             return Math.min(closestPercent / pTransformSource.getLineEndLengthPercent(), 1.0d);
         }
 
         // type is Pixels
-        final double fraction = pTransformSource.getHeight() * closestEnd / pTransformSource.getLineEndLengthPixel();
+        var fraction = pTransformSource.getHeight() * closestEnd / pTransformSource.getLineEndLengthPixel();
         return Math.min(fraction, 1.0d);
 
     }
@@ -436,25 +435,16 @@ public class PixelChain implements Serializable, Cloneable {
         return mPixels.elementAt(pIndex).getUHVWMidPoint(pPixelMap);
     }
 
-    private double getWidth(final IPixelMapTransformSource pIPMTS) {
-        Framework.logEntry(mLogger);
-
-        double width = 0.0d;
+    public double getWidth(final IPixelMapTransformSource pIPMTS) {
         switch (getThickness()) {
             case Thin:
-                width = pIPMTS.getShortLineThickness() / pIPMTS.getHeight();
-                break;
+                return pIPMTS.getShortLineThickness() / pIPMTS.getHeight();
             case Normal:
-                width = pIPMTS.getMediumLineThickness() / pIPMTS.getHeight();
-                break;
+                return pIPMTS.getMediumLineThickness() / pIPMTS.getHeight();
             case Thick:
-                width = pIPMTS.getLongLineThickness() / pIPMTS.getHeight();
-                break;
+                return pIPMTS.getLongLineThickness() / pIPMTS.getHeight();
         }
-
-        Framework.logExit(mLogger);
-        return width;
-
+        return 0.0d;
     }
 
     PixelChain indexSegments(final PixelMap pPixelMap) {
@@ -1076,7 +1066,6 @@ public class PixelChain implements Serializable, Cloneable {
         setVisited(pPixelMap, false);
         setEdge(pPixelMap);
     }
-
 
 }
 

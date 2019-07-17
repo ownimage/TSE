@@ -36,10 +36,11 @@ public class PixelChainTest {
                 "   N  NEE                 ",
                 "                          ",
         };
+
         IPixelMapTransformSource ipmts = mock(IPixelMapTransformSource.class);
-        when(ipmts.getLineTolerance()).thenReturn(1.7d);
-        when(ipmts.getLineCurvePreference()).thenReturn(1.2d);
         when(ipmts.getHeight()).thenReturn(input.length);
+        when(ipmts.getLineTolerance()).thenReturn(1.2);
+        when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
 
         PixelMap pixelMap = Utility.createMap(input, ipmts);
         pixelMap.process03_generateNodes(null);
@@ -50,7 +51,7 @@ public class PixelChainTest {
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().get();
-        chain = chain.approximate(ipmts, pixelMap);
+        chain = chain.approximate(pixelMap, ipmts);
         assertEquals(3, chain.getSegmentCount());
     }
 
@@ -65,7 +66,111 @@ public class PixelChainTest {
     @Test
     public void PixelChain_reverse_01() {
         // GIVEN
+        var lineTolerance = 2.0d;
         var pixelMap = Utility.createMap(10, 2000);
+        var ipmts = mock(IPixelMapTransformSource.class);
+        when(ipmts.getHeight()).thenReturn(2000);
+        when(ipmts.getLineTolerance()).thenReturn(lineTolerance);
+        when(ipmts.getLineCurvePreference()).thenReturn(3.0d);
+
+        // WHEN
+        var underTest = createPixelChain();
+
+        var tolerance = lineTolerance / pixelMap.getHeight();
+        underTest.approximate01_straightLines(pixelMap, tolerance);
+        var approx = underTest.approximate(pixelMap, ipmts);
+
+        // AND WHEN
+        var reverse = approx.reverse(pixelMap);
+        var compare = reverse.reverse(pixelMap);
+        assertEquals(underTest.toString(), compare.toString());
+        assertEquals(dumpPixelChain(underTest), dumpPixelChain(compare));
+
+    }
+
+    @Test
+    public void getWidth_00() {
+        // GIVEN a thick line
+        var longThickness = 77d;
+        var height = 1000;
+        var underTest = createPixelChain();
+        var length = underTest.getPixelLength();
+        underTest = underTest.setThickness(1, length - 2, length - 1);
+        var ipmts = mock(IPixelMapTransformSource.class);
+        when(ipmts.getHeight()).thenReturn(height);
+        when(ipmts.getLongLineThickness()).thenReturn(longThickness);
+        var expected = longThickness / height;
+        // WHEN
+        var actual = underTest.getWidth(ipmts);
+        // THEN
+        assertEquals(expected, actual, 0.0d);
+    }
+
+    @Test
+    public void getWidth_01() {
+        // GIVEN a medium line
+        var longThickness = 77d;
+        var mediumThickness = 55d;
+        var height = 1000;
+        var underTest = createPixelChain();
+        var length = underTest.getPixelLength();
+        underTest = underTest.setThickness(1, length - 2, length + 1);
+        var ipmts = mock(IPixelMapTransformSource.class);
+        when(ipmts.getHeight()).thenReturn(height);
+        when(ipmts.getLongLineThickness()).thenReturn(longThickness);
+        when(ipmts.getMediumLineThickness()).thenReturn(mediumThickness);
+        var expected = mediumThickness / height;
+        // WHEN
+        var actual = underTest.getWidth(ipmts);
+        // THEN
+        assertEquals(expected, actual, 0.0d);
+    }
+
+    @Test
+    public void getWidth_02() {
+        // GIVEN a short line
+        var longThickness = 77d;
+        var mediumThickness = 55d;
+        var shortThickness = 33d;
+        var height = 1000;
+        var underTest = createPixelChain();
+        var length = underTest.getPixelLength();
+        underTest = underTest.setThickness(1, length + 2, length + 4);
+        var ipmts = mock(IPixelMapTransformSource.class);
+        when(ipmts.getHeight()).thenReturn(height);
+        when(ipmts.getLongLineThickness()).thenReturn(longThickness);
+        when(ipmts.getMediumLineThickness()).thenReturn(mediumThickness);
+        when(ipmts.getShortLineThickness()).thenReturn(shortThickness);
+        var expected = shortThickness / height;
+        // WHEN
+        var actual = underTest.getWidth(ipmts);
+        // THEN
+        assertEquals(expected, actual, 0.0d);
+    }
+
+    @Test
+    public void getWidth_03() {
+        // GIVEN a very short line
+        var longThickness = 77d;
+        var mediumThickness = 55d;
+        var shortThickness = 33d;
+        var height = 1000;
+        var underTest = createPixelChain();
+        var length = underTest.getPixelLength();
+        underTest = underTest.setThickness(length + 1, length + 2, length + 4);
+        var ipmts = mock(IPixelMapTransformSource.class);
+        when(ipmts.getHeight()).thenReturn(height);
+        when(ipmts.getLongLineThickness()).thenReturn(longThickness);
+        when(ipmts.getMediumLineThickness()).thenReturn(mediumThickness);
+        when(ipmts.getShortLineThickness()).thenReturn(shortThickness);
+        var expected = 0d;
+        // WHEN
+        var actual = underTest.getWidth(ipmts);
+        // THEN
+        assertEquals(expected, actual, 0.0d);
+    }
+
+    public PixelChain createPixelChain() {
         Pixel[] pixels = new Pixel[]{
                 new Pixel(4, 6),
                 new Pixel(3, 5),
@@ -84,28 +189,13 @@ public class PixelChainTest {
                 new Pixel(8, 7),
                 new Pixel(7, 7)
         };
-        IPixelMapTransformSource ipmts = mock(IPixelMapTransformSource.class);
-        when(ipmts.getLineCurvePreference()).thenReturn(3d);
-        when(ipmts.getLineTolerance()).thenReturn(2d);
-        when(ipmts.getHeight()).thenReturn(2000);
 
-        // WHEN
-        var underTest = new PixelChain(new Node(3, 7));
+        var pixelChain = new PixelChain(new Node(3, 7));
         for (Pixel pixel : pixels) {
-            underTest = underTest.add(pixel);
+            pixelChain = pixelChain.add(pixel);
         }
-        underTest = underTest.setEndNode(null, new Node(6, 7));
-
-        final double tolerance = 2d / 2000;
-        underTest.approximate01_straightLines(pixelMap, tolerance);
-        var approx = underTest.approximate(ipmts, pixelMap);
-
-        // AND WHEN
-        var reverse = approx.reverse(pixelMap);
-        var compare = reverse.reverse(pixelMap);
-        assertEquals(underTest.toString(), compare.toString());
-        assertEquals(dumpPixelChain(underTest), dumpPixelChain(compare));
-
+        pixelChain = pixelChain.setEndNode(null, new Node(6, 7));
+        return pixelChain;
     }
 
     public String dumpPixelChain(final PixelChain pPixelChain) {
