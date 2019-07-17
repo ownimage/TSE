@@ -69,7 +69,7 @@ public class BoundsTest {
     }
 
     // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void contains_null() {
         // GIVEN WHEN
         final Bounds underTest = new Bounds(-5, -5, 5, 5);
@@ -251,7 +251,7 @@ public class BoundsTest {
     }
 
     // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void getBounds_null() {
         // GIVEN
         final Bounds underTest = new Bounds(-5, -5, 1, 4);

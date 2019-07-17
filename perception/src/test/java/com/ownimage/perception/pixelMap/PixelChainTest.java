@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 public class PixelChainTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory();
     }
 

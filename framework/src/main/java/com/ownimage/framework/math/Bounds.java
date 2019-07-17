@@ -1,5 +1,6 @@
 package com.ownimage.framework.math;
 
+import com.ownimage.framework.util.Framework;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -85,6 +86,7 @@ public class Bounds {
      * @return whether the point is inside the bounds
      */
     public boolean contains(@NotNull IntegerPoint pPoint) {
+        Framework.checkParameterNotNull(Framework.mLogger, pPoint, "pPoint");
         if (!testValid()) {
             return false;
         }

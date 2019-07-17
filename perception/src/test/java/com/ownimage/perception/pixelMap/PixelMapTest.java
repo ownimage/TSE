@@ -35,6 +35,7 @@ public class PixelMapTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory();
     }
 

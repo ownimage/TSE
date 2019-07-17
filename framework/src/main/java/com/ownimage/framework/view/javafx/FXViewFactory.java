@@ -8,13 +8,35 @@ package com.ownimage.framework.view.javafx;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.ColorControl;
+import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.ObjectControl;
+import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
+import com.ownimage.framework.control.control.StringControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
-import com.ownimage.framework.control.layout.*;
+import com.ownimage.framework.control.layout.BorderLayout;
+import com.ownimage.framework.control.layout.HFlowLayout;
+import com.ownimage.framework.control.layout.HSplitLayout;
+import com.ownimage.framework.control.layout.IContainerList;
+import com.ownimage.framework.control.layout.INamedTabs;
 import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.control.layout.ScrollLayout;
+import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.KColor;
-import com.ownimage.framework.view.*;
+import com.ownimage.framework.view.IAppControlView;
+import com.ownimage.framework.view.IBorderView;
+import com.ownimage.framework.view.IDialogView;
+import com.ownimage.framework.view.IDoubleView;
+import com.ownimage.framework.view.IPictureView;
+import com.ownimage.framework.view.ISingleSelectView;
+import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.IViewFactory;
 import com.ownimage.framework.view.factory.ViewFactory;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -87,6 +109,13 @@ public class FXViewFactory implements IViewFactory {
     public static void setAsViewFactory() {
         ViewFactory.setViewFactory(getInstance());
         ApplicationEventQueue.getInstance(); // this initializes the event queue of the main thread group
+    }
+
+    /**
+     * This clears the view factory, this is intended to be used for testing only.
+     */
+    public static void clearViewFactory() {
+        ViewFactory.clearViewFactory();
     }
 
     /**

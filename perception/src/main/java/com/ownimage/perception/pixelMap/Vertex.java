@@ -11,6 +11,8 @@ import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -24,10 +26,12 @@ public class Vertex implements IVertex {
 
     private final int mVertexIndex;
     private final int mPixelIndex;
+    private final Point mPosition;
 
-    private Vertex(final int pVertexIndex, final int pPixelIndex) {
+    private Vertex(final int pVertexIndex, final int pPixelIndex, final Point pPosition) {
         mVertexIndex = pVertexIndex;
         mPixelIndex = pPixelIndex;
+        mPosition = pPosition;
     }
 
     public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex) {
@@ -35,7 +39,15 @@ public class Vertex implements IVertex {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
         }
 
-        return new Vertex(pVertexIndex, pPixelIndex);
+        return new Vertex(pVertexIndex, pPixelIndex, null);
+    }
+
+    public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex, final Point pPosition) {
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
+        }
+
+        return new Vertex(pVertexIndex, pPixelIndex, pPosition);
     }
 
     @Override
@@ -52,21 +64,40 @@ public class Vertex implements IVertex {
     @Override
     public Line calcTangent(final PixelChain pPixelChain, final PixelMap pPixelMap) {
         Line tangent;
-        if (getStartSegment(pPixelChain) == null && getEndSegment(pPixelChain) == null) {
-            tangent = null;
-        } else if (getStartSegment(pPixelChain) == null) {
-            tangent = getEndSegment(pPixelChain).getStartTangent(pPixelMap, pPixelChain);
-            tangent = tangent.getReverse();
-        } else if (getEndSegment(pPixelChain) == null) {
-            tangent = getStartSegment(pPixelChain).getEndTangent(pPixelMap, pPixelChain);
-        } else {
-            final Point startTangentPoint = getStartSegment(pPixelChain).getEndTangent(pPixelMap, pPixelChain).getPoint(1.0d);
-            final Point endTangentPoint = getEndSegment(pPixelChain).getStartTangent(pPixelMap, pPixelChain).getPoint(1.0d);
-            final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
+        ISegment startSegment = getStartSegment(pPixelChain);
+        ISegment endSegment = getEndSegment(pPixelChain);
 
-            tangent = new Line(getUHVWPoint(pPixelMap, pPixelChain), getUHVWPoint(pPixelMap, pPixelChain).add(tangentVector));
+        if (startSegment == null && endSegment == null) {
+            tangent = null;
+
+        } else if (startSegment == null) {
+            tangent = endSegment.getStartTangent(pPixelMap, pPixelChain);
+            tangent = tangent.getReverse();
+
+        } else if (endSegment == null) {
+            tangent = startSegment.getEndTangent(pPixelMap, pPixelChain);
+
+        } else {
+            return calcTangent(
+                    getUHVWPoint(pPixelMap, pPixelChain),
+                    startSegment.getEndTangent(pPixelMap, pPixelChain),
+                    endSegment.getStartTangent(pPixelMap, pPixelChain)
+            );
+//            final Point startTangentPoint = startSegment.getEndTangent(pPixelMap, pPixelChain).getPoint(1.0d);
+//            final Point endTangentPoint = endSegment.getStartTangent(pPixelMap, pPixelChain).getPoint(1.0d);
+//            final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
+//
+//            tangent = new Line(getUHVWPoint(pPixelMap, pPixelChain), getUHVWPoint(pPixelMap, pPixelChain).add(tangentVector));
         }
         return tangent;
+    }
+
+    public static Line calcTangent(final Point pPoint, final Line pStartTangent, final Line pEndTangent) {
+        final Point startTangentPoint = pEndTangent.getPoint(1.0d);
+        final Point endTangentPoint = pStartTangent.getPoint(1.0d);
+        final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
+
+        return new Line(pPoint, pPoint.add(tangentVector));
     }
 
     /*
@@ -79,15 +110,6 @@ public class Vertex implements IVertex {
         return mPixelIndex - pOther.getPixelIndex();
     }
 
-    @Override
-    public boolean equals(final Object pObject) {
-        if (!(pObject instanceof Vertex)) {
-            return false;
-        }
-
-        final Vertex other = (Vertex) pObject;
-        return mPixelIndex == other.mPixelIndex;
-    }
 
     @Override
     public ISegment getEndSegment(final PixelChain pPixelChain) {
@@ -111,12 +133,38 @@ public class Vertex implements IVertex {
 
     @Override
     public Point getUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
+        return Optional.ofNullable(mPosition).orElseGet(() -> getPixel(pPixelChain).getUHVWMidPoint(pPixelMap));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vertex vertex = (Vertex) o;
+        return mVertexIndex == vertex.mVertexIndex &&
+                mPixelIndex == vertex.mPixelIndex &&
+                Objects.equals(mPosition, vertex.mPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mVertexIndex, mPixelIndex, mPosition);
     }
 
     @Override
     public String toString() {
-        return "Vertex[Index=" + mPixelIndex + "]";
+        var sb = new StringBuilder()
+                .append("Vertex { ")
+                .append("vertexIndex: ").append(mVertexIndex)
+                .append(", pixelIndex: ").append(mPixelIndex);
+
+        if (mPosition != null) {
+            sb.append(", position: ").append(mPosition);
+        }
+
+        sb.append(" }");
+
+        return sb.toString();
     }
 
 }

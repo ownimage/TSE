@@ -8,19 +8,25 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.undo.IUndoRedoBufferProvider;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.ImageQuality;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.awt.*;
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class PictureTypeTEST implements IUndoRedoBufferProvider {
 
     private static final Color mTestColor1 = Color.CYAN;
     private static final Color mTestColor2 = Color.RED;
     private PictureType mPicture;
-    private final ImageQuality mImageQuality = new ImageQuality(0.95f);
+    private final ImageQuality mImageQuality = new ImageQuality(1.0f);
 
     private final Container mContainer = new Container("PictureTypeTEST", "PictureTypeTEST", this);
     private final ColorProperty mOOB = new ColorControl("mOOB", "mOOB", mContainer, Color.CYAN).getProperty();
@@ -381,7 +387,7 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     @Test
     // public void save(final String name) throws Exception {
     public void PictureType_save_10() throws Exception {
-        final File tempFile = File.createTempFile("picture", ".jpg");
+        final File tempFile = File.createTempFile("picture", ".gif"); // needs to be GIF as lossless
         final String tmpFileName = tempFile.getAbsolutePath();
         System.out.println(tmpFileName);
         final IntegerPoint ip = new IntegerPoint(101, 99);
@@ -398,7 +404,6 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
         assertTrue("height correct", picture2.getHeight() == height);
         picture2.save(tmpFileName, mImageQuality);
         assertEquals("Colors should match", picture1.getColor(ip).get(), picture2.getColor(ip).get());
-        // TODO for some reason the above test fails
 
         tempFile.delete();
     }
