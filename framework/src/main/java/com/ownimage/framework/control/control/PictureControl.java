@@ -56,7 +56,7 @@ public class PictureControl
     public void drawGrafitti(final IGrafittiImp pGrafittiImp) {
         if (mGrafitti != null) {
             final GrafittiHelper grafittiHelper = new GrafittiHelper(pGrafittiImp);
-            mGrafitti.grafitti(grafittiHelper);
+            mGrafitti.graffiti(grafittiHelper);
         }
     }
 
@@ -74,12 +74,12 @@ public class PictureControl
 
     public void updateGrafitti(final IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
-        mViews.invokeAll(view -> view.updateGraffiti(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
+        mViews.invokeAll(view -> view.updateGraffiti(grafittiImp -> pGrafitti.graffiti(new GrafittiHelper(grafittiImp))));
     }
 
     public void drawCursor(final IGrafitti pGrafitti) {
         Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
-        mViews.invokeAll(view -> view.drawCursor(grafittiImp -> pGrafitti.grafitti(new GrafittiHelper(grafittiImp))));
+        mViews.invokeAll(view -> view.drawCursor(grafittiImp -> pGrafitti.graffiti(new GrafittiHelper(grafittiImp))));
     }
 
     public void setGrafitti(final IGrafitti pGrafitti) {
