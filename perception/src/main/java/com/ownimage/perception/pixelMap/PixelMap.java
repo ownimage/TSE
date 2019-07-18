@@ -1141,7 +1141,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void process08_refine(final IProgressObserver pProgressObserver) {
         if (mPixelChains.size() > 0) {
-            final Counter counter = new Counter(mPixelChains.size());
+            var counter = Counter.createMaxCounter(mPixelChains.size());
             reportProgress(pProgressObserver, "Refining ...", 0);
             Vector<PixelChain> refined = new Vector<>();
             mPixelChains.forEach(pc -> {

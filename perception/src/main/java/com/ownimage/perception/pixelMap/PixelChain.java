@@ -541,7 +541,7 @@ public class PixelChain implements Serializable, Cloneable {
     }
 
     private int countStraightSegments() {
-        var count = new Counter();
+        var count = Counter.createCounter();
         mSegments.stream()
                 .forEach(s -> count.increase());
         return count.getCount();
