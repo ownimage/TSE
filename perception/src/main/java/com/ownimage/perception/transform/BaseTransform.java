@@ -113,7 +113,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
         if (!isInitialized()) {
             return;

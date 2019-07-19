@@ -1,6 +1,8 @@
 package com.ownimage.framework.control.event;
 
-public class ControlChangeListenerASSISTANT<C> implements IControlChangeListener<C> {
+import com.ownimage.framework.control.control.IControl;
+
+public class ControlChangeListenerASSISTANT<C extends IControl> implements IControlChangeListener<C> {
 
     private int mFired = 0;
     private Object mLastControl = null;

@@ -9,6 +9,7 @@ import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.control.Path;
 import com.ownimage.framework.math.KMath;
@@ -73,7 +74,7 @@ public class RotateTransform extends BaseTransform {
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
 
         super.controlChangeEvent(pControl, pIsMutating);

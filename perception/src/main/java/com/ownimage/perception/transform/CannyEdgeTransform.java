@@ -171,7 +171,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         Framework.log(mLogger, Level.FINE, () -> "CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl + " " + pIsMutating);
         if (pControl instanceof IControl) {
             Framework.log(mLogger, Level.FINE, () -> "pControl.getDisplayName() = " + ((IControl) pControl).getDisplayName());
@@ -182,13 +182,17 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 setMutating(true);
                 Framework.log(mLogger, Level.FINE, () -> "Running controlChangeEvent");
 
-                if (pControl == mShortLineLength || pControl == mMediumLineLength || pControl == mLongLineLength) {
+                if (pControl.isOneOf(mShortLineLength, mMediumLineLength, mLongLineLength)) {
                     getPixelMap().ifPresent(pm -> pm.actionSetPixelChainDefaultThickness(this));
                     mEqualize.setValue(EqualizeValues.getDefaultValue());
                 }
 
-                if ((pControl == mLineTolerance || pControl == mLineCurvePreference) && !pIsMutating) {
-                    mPixelMap.actionReapproximate();
+                if (pControl == mLineTolerance && !pIsMutating) {
+                    setPixelMap(mPixelMap.actionReapproximate());
+                }
+
+                if (pControl == mLineCurvePreference && !pIsMutating) {
+                    setPixelMap(mPixelMap.actionRerefine());
                 }
 
                 if (pControl == mEqualize) {

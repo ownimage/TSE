@@ -5,15 +5,16 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.util.logging.Logger;
 
 public class OutputTransform extends BaseTransform {
 
@@ -123,7 +124,7 @@ public class OutputTransform extends BaseTransform {
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (isNotMutating()) {
             super.controlChangeEvent(pControl, pIsMutating);
         }

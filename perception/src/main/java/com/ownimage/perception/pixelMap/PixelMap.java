@@ -818,14 +818,29 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (pProgressObserver != null) pProgressObserver.setProgress(pProgressString, pPercent);
     }
 
-    public void actionReapproximate() {
-        final double tolerance = getLineTolerance() / getHeight();
-        final double lineCurvePreference = getLineCurvePreference();
+    public PixelMap actionReapproximate() {
+        PixelMap clone = new PixelMap(this);
+        Vector<PixelChain> updates = new Vector<>();
+        clone.mPixelChains.stream()
+                .parallel()
+                .map(pc -> pc.approximate(this, getTransformSource()))
+                .map(pc -> pc.refine(this, getTransformSource()))
+                .map(pc -> pc.indexSegments(this))
+                .forEach(pc -> updates.add(pc));
+        clone.mPixelChains = clone.mPixelChains.clear().addAll(updates);
+        return clone;
+    }
+
+    public PixelMap actionRerefine() {
+        PixelMap clone = new PixelMap(this);
         Vector<PixelChain> updates = new Vector<>();
         mPixelChains.stream()
                 .parallel()
-                .forEach(pc -> updates.add(pc.approximate(this, getTransformSource())));
-        mPixelChains = mPixelChains.clear().addAll(updates);
+                .map(pc -> pc.refine(this, getTransformSource()))
+                .map(pc -> pc.indexSegments(this))
+                .forEach(pc -> updates.add(pc));
+        clone.mPixelChains = clone.mPixelChains.clear().addAll(updates);
+        return clone;
     }
 
     public void actionProcess(final IProgressObserver pProgressObserver) {
@@ -857,6 +872,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             invalidateSegmentIndex();
             mLogger.info(() -> "invalidateSegmentIndex done");
             printCount();
+            invalidateSegmentIndex();
             calcSegmentIndex();
             validate();
             //
@@ -1120,13 +1136,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info(() -> "Number of chains: " + getPixelChainCount());
     }
 
-    private void process06_straightLinesRefineCorners(final IProgressObserver pProgressObserver, final double pMaxiLineTolerance) {
+    private void process06_straightLinesRefineCorners(
+            final IProgressObserver pProgressObserver,
+            final double pMaxiLineTolerance
+    ) {
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
         mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, mTransformSource)));
         mPixelChains = mPixelChains.clear().addAll(refined);
-        mLogger.info(() -> "approximate - done");
+        mLogger.info("approximate - done");
         invalidateSegmentIndex();
     }
 
@@ -1144,8 +1163,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             var counter = Counter.createMaxCounter(mPixelChains.size());
             reportProgress(pProgressObserver, "Refining ...", 0);
             Vector<PixelChain> refined = new Vector<>();
-            mPixelChains.forEach(pc -> {
-                PixelChain refinedPC = pc.approximate(this, getTransformSource());
+            mPixelChains.stream().parallel().forEach(pc -> {
+                PixelChain refinedPC = pc.refine(this, getTransformSource());
                 refined.add(refinedPC);
                 counter.increase();
                 reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());

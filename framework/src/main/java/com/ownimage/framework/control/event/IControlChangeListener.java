@@ -5,7 +5,9 @@
  */
 package com.ownimage.framework.control.event;
 
-public interface IControlChangeListener<C> {
+import com.ownimage.framework.control.control.IControl;
+
+public interface IControlChangeListener<C extends IControl> {
 
 
     void controlChangeEvent(C pControl, boolean pIsMutating);

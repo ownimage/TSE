@@ -8,7 +8,7 @@ package com.ownimage.framework.control.event;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.view.IView;
 
-public interface IControlEventDispatcher<C> {
+public interface IControlEventDispatcher<C extends IControl> {
 
 
     public void addControlChangeListener(IControlChangeListener<IControl<?, ?, ?, ?>> pListener);

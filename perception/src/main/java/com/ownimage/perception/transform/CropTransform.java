@@ -7,6 +7,7 @@ package com.ownimage.perception.transform;
 
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
@@ -65,13 +66,13 @@ public class CropTransform extends BaseTransform implements IControlValidator {
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (isNotMutating()) {
             if (isIndependent()) { // supress the update to the base component which updates the main preview
                 setValues();
                 redrawGrafitti();
             } else {
-                super.controlChangeEvent(this, pIsMutating);
+                super.controlChangeEvent(pControl, pIsMutating);
             }
         }
     }

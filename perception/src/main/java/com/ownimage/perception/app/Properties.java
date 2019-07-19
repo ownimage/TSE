@@ -89,7 +89,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         if (pControl == mUseJTP) {
             setEnabled(mUseJTP.getValue(), mRenderBatchSize, mRenderJTPBatchSize, mRenderThreadPoolSize);
         }

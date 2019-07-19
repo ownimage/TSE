@@ -8,6 +8,7 @@ package com.ownimage.perception.transform;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
+import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.type.IntegerMetaType;
@@ -70,7 +71,7 @@ public class ImageLoadTransform extends BaseTransform {
     }
 
     @Override
-    public void controlChangeEvent(final Object pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
         Framework.logEntry(mLogger);
         getPreviewImage().drawGrafitti();
         Framework.logExit(mLogger);
