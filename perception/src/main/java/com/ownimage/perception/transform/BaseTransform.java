@@ -5,11 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.BooleanControl;
@@ -37,6 +32,11 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.IBatchEngine;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.ITransformResultBatch;
+
+import java.awt.*;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.logging.Logger;
 
 public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener {
 
@@ -387,7 +387,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
     }
 
     protected boolean isMutating() {

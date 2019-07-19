@@ -5,16 +5,16 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QuadSpaceTransform extends BaseTransform {
     // This seems to be a very sharp change at the boundaries ... perhaps it should be smoothilicious, or at least have a
@@ -47,7 +47,7 @@ public class QuadSpaceTransform extends BaseTransform {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         pGrafittiHelper.drawVerticalLineWithLabel(mOneControl, getGrafitiColor1(), isControlSelected(mOneControl));
         pGrafittiHelper.drawVerticalLineWithLabel(mTwoControl, getGrafitiColor1(), isControlSelected(mTwoControl));
         pGrafittiHelper.drawVerticalLineWithLabel(mThreeControl, getGrafitiColor1(), isControlSelected(mThreeControl));

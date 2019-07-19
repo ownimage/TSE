@@ -5,10 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
@@ -19,6 +15,10 @@ import com.ownimage.framework.math.RTheta;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PolarTransform extends BaseTransform {
 
@@ -40,7 +40,7 @@ public class PolarTransform extends BaseTransform {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         pGrafittiHelper.drawVerticalLine(mRotate, getGrafitiColor1(), isControlSelected(mRotateSlider));
     }
 

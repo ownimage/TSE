@@ -5,9 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.PointControl;
@@ -19,6 +16,9 @@ import com.ownimage.framework.math.SSpline;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 public class RuleOfThirdsTransform extends BaseTransform {
 
@@ -99,7 +99,7 @@ public class RuleOfThirdsTransform extends BaseTransform {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         final boolean p = isControlSelected(mP);
         final boolean q = isControlSelected(mQ);
         final boolean r = isControlSelected(mR);

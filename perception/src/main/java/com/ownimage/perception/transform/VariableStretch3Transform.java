@@ -5,8 +5,7 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.logging.Logger;
-
+import Jama.Matrix;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
@@ -18,7 +17,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
 
-import Jama.Matrix;
+import java.util.logging.Logger;
 
 public class VariableStretch3Transform extends BaseTransform implements IControlValidator {
 
@@ -111,7 +110,7 @@ public class VariableStretch3Transform extends BaseTransform implements IControl
     // }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         pGrafittiHelper.drawHorizontalLine(mCutoffControl.getValue(), getGrafitiColor1(), isControlSelected(mCutoffControl));
         pGrafittiHelper.drawHorizontalLine(mHighestControl.getValue(), getGrafitiColor2(), isControlSelected(mHighestControl));
         pGrafittiHelper.drawHorizontalLine(mHighControl.getValue(), getGrafitiColor3(), isControlSelected(mHighControl));

@@ -5,10 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.awt.*;
-import java.io.File;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.BooleanControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
@@ -21,6 +17,10 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.awt.*;
+import java.io.File;
+import java.util.logging.Logger;
 
 public class ImageLoadTransform extends BaseTransform {
 
@@ -283,7 +283,7 @@ public class ImageLoadTransform extends BaseTransform {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGraphicsHelper) {
+    public void graffiti(final GrafittiHelper pGraphicsHelper) {
         if (mSharpen.getValue()) {
             pGraphicsHelper.drawLine(0.0f, 0.0f, 1.0f, 1.0f, Color.WHITE, false);
         }

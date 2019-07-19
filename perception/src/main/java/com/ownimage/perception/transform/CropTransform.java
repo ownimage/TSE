@@ -5,8 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.event.IControlValidator;
@@ -16,6 +14,8 @@ import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.util.logging.Logger;
 
 public class CropTransform extends BaseTransform implements IControlValidator {
 
@@ -81,7 +81,7 @@ public class CropTransform extends BaseTransform implements IControlValidator {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         pGrafittiHelper.drawHorizontalLine(mTop, getGrafitiColor1(), isControlSelected(mTopControl));
         pGrafittiHelper.drawHorizontalLine(mBottom, getGrafitiColor1(), isControlSelected(mBottomControl));
         pGrafittiHelper.drawVerticalLine(mLeft, getGrafitiColor1(), isControlSelected(mLeftControl));

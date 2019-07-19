@@ -495,7 +495,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         final Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
         pGrafittiHelper.drawRectangle(r, Services.getServices().getPerception().getProperties().getColor1());
     }

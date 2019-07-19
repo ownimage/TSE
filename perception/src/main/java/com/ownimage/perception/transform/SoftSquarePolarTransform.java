@@ -5,8 +5,6 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.math.Point;
@@ -15,6 +13,8 @@ import com.ownimage.framework.math.RTheta;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+
+import java.util.logging.Logger;
 
 public class SoftSquarePolarTransform extends BaseTransform {
 
@@ -40,7 +40,7 @@ public class SoftSquarePolarTransform extends BaseTransform {
     }
 
     @Override
-    public void grafitti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(final GrafittiHelper pGrafittiHelper) {
         pGrafittiHelper.drawHorizontalLine((mPower - 1.0d) / 2.0d, getGrafitiColor3(), isControlSelected(mPowerControl));
         pGrafittiHelper.drawString(mPowerControl, new Point(0.0d, (mPower - 1.0d) / 2.0d));
         pGrafittiHelper.drawVerticalLine(mod1(mRotate), getGrafitiColor1());
