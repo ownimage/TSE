@@ -39,7 +39,6 @@
     </build>
 
     <dependencies>
-
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>

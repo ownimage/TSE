@@ -125,10 +125,8 @@ public class DialogView implements IDialogView {
             final Optional<ActionControl> dialogResult = mDialog.showAndWait();
 
             new Thread(() -> {
-                // this needs to be done here as the complete function might not be specified.
+                System.out.println("############ Dialog complete");
                 dialogResult.ifPresent(ActionControl::performAction);
-
-                // the value is passed into the completeFunction only to indicate how the mDialog ended.
                 mDialogOptions.getCompleteFunction().ifPresent(IAction::performAction);
             }).start();
         });
