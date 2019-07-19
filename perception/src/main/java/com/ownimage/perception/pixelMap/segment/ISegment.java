@@ -125,4 +125,8 @@ public interface ISegment extends Serializable, Cloneable {
     double getMinY(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     ISegment withStartPosition(final PixelMap pPixelMap, PixelChain pPixelChain, double pStartPosition);
+
+    ISegment getNextSegment(PixelChain pPixelChain);
+
+    ISegment getPreviousSegment(PixelChain pPixelChain);
 }

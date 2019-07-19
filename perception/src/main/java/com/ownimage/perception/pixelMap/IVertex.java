@@ -33,4 +33,5 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
     Pixel getPixel(PixelChain pPixelChain);
 
+    IVertex withPosition(PixelChain pPixelChain, Point pPosition);
 }

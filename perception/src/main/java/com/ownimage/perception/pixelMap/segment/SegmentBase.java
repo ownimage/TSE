@@ -161,4 +161,13 @@ public abstract class SegmentBase implements ISegment {
         return "SegmentBase[" + mSegmentIndex + "]";
     }
 
+    @Override
+    public ISegment getNextSegment(PixelChain pPixelChain) {
+        return getEndVertex(pPixelChain).getEndSegment(pPixelChain);
+    }
+
+    @Override
+    public ISegment getPreviousSegment(PixelChain pPixelChain) {
+        return getStartVertex(pPixelChain).getStartSegment(pPixelChain);
+    }
 }

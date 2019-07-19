@@ -137,6 +137,11 @@ public class Vertex implements IVertex {
     }
 
     @Override
+    public IVertex withPosition(PixelChain pPixelChain, Point pPosition) {
+        return createVertex(pPixelChain, mVertexIndex, mPixelIndex, pPosition);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
