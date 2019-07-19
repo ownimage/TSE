@@ -5,6 +5,7 @@
  */
 package com.ownimage.framework.queue;
 
+import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 
 import java.util.Date;
@@ -45,6 +46,11 @@ public class Job implements IJob {
     private Status mStatus;
 
     /**
+     *
+     */
+    private Runnable mDo;
+
+    /**
      * Instantiates a new job.
      *
      * @param pName the name
@@ -67,6 +73,21 @@ public class Job implements IJob {
         mName = pName;
         mPriority = pPriority;
         mControlObject = pControlObject;
+        mCreatedDate = new Date();
+        setStatus(Status.CREATED);
+
+        Framework.logExit(mLogger);
+    }
+
+    public Job(final String pName, final Priority pPriority, final Runnable pDo) {
+        Framework.logEntry(mLogger);
+        Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
+        Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
+
+        mName = pName;
+        mPriority = pPriority;
+        mControlObject = null;
+        mDo = pDo;
         mCreatedDate = new Date();
         setStatus(Status.CREATED);
 
@@ -110,9 +131,17 @@ public class Job implements IJob {
     @Override
     public void doJob() {
         setStatus(Status.RUNNING);
-        // do work
-        // setStatus(Status.COMPLETE);
-        // Only setStatus(Status.RUNNING); is left in so that subclassess can call super.doJob()
+        if (mDo != null) {
+            try {
+                mDo.run();
+            } catch (Throwable pT) {
+                mLogger.severe(FrameworkLogger.throwableToString(pT));
+                setStatus(Status.COMPLETE);
+            } finally {
+                setStatus(Status.FAILED);
+            }
+        }
+
     }
 
     @Override

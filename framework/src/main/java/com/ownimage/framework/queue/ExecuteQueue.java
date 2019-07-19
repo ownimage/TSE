@@ -105,7 +105,10 @@ public class ExecuteQueue {
             pJob.queued();
 
             final ExecuteThread runningThread = mRunningThread;
-            if (runningThread != null && runningThread.getJob().getControlObject() != null && runningThread.getJob().getControlObject() == pJob.getControlObject()) {
+            if (
+                    runningThread != null && runningThread.getJob().getControlObject() != null
+                            && runningThread.getJob().getControlObject() == pJob.getControlObject()
+            ) {
                 runningThread.getJob().terminate();
             }
 
@@ -126,4 +129,8 @@ public class ExecuteQueue {
         Framework.logExit(mLogger);
     }
 
+    public void submit(final String pName, final IJob.Priority pPriority, final Runnable pDo) {
+        var job = new Job(pName, pPriority, pDo);
+        submit(job);
+    }
 }
