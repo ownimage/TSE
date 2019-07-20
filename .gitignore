@@ -4,3 +4,7 @@
 **/.idea/**
 ./.settings/**
 Framework/framework.iml
+TEST.log
+logging.proerties
+junit.log
+Perception.log
