@@ -16,6 +16,7 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
+import java.awt.*;
 import java.util.logging.Logger;
 
 public class CurveSegment extends SegmentBase {
@@ -45,7 +46,6 @@ public class CurveSegment extends SegmentBase {
         final double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
         return closerThan(pPixelMap, pPixelChain, pPoint, actualThickness);
     }
-
 
     @Override
     public boolean closerThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
@@ -151,7 +151,6 @@ public class CurveSegment extends SegmentBase {
         return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelChain, pPixelMap).length();
     }
 
-
     @Override
     public double getMaxX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
         return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
@@ -179,7 +178,7 @@ public class CurveSegment extends SegmentBase {
     /**
      * Gets the Vector from P0 to P1.
      *
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
@@ -199,7 +198,7 @@ public class CurveSegment extends SegmentBase {
      * Gets the Vector from P2 to P1
      *
      * @param pPixelChain the Pixel Chain performing this operation
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @return the Vector
      */
     private Vector getP2P1(final PixelChain pPixelChain, final PixelMap pPixelMap) {
@@ -219,10 +218,17 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.grafittiControlLine(getP0(pPixelMap, pPixelChain), getP1());
-        pGraphics.grafittiControlLine(getP1(), getP2(pPixelChain, pPixelMap));
-        super.graffiti(pPixelMap, pPixelChain, pGraphics);
+    public void graffiti(
+            final PixelMap pPixelMap,
+            final PixelChain pPixelChain,
+            final ISegmentGrafittiHelper pGraphics
+    ) {
+        var c = (getStartVertex(pPixelChain).isPositionSpecified() || getEndVertex(pPixelChain).isPositionSpecified())
+                ? Color.RED : Color.BLACK;
+        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP1(), c);
+        pGraphics.graffitiLine(getP1(), getP2(pPixelChain, pPixelMap), c);
+        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelChain, pPixelMap), c);
+        //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }
 
@@ -232,7 +238,11 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public CurveSegment withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
+    public CurveSegment withStartPosition(
+            final PixelMap pPixelMap,
+            final PixelChain pPixelChain,
+            final double pStartPosition
+    ) {
         if (getStartPosition() == pStartPosition) return this;
         return new CurveSegment(pPixelMap, pPixelChain, getSegmentIndex(), getP1(), pStartPosition);
     }

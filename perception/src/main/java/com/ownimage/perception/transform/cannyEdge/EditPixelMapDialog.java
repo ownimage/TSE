@@ -389,7 +389,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void graffitiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
         Framework.logEntry(mLogger);
-        final SegmentGrafittiHelper segmentGrafittiHelper = new SegmentGrafittiHelper(pGrafittiHelper, this::UHVWtoView);
+        final SegmentGraffitiHelper segmentGrafittiHelper = new SegmentGraffitiHelper(pGrafittiHelper, this::UHVWtoView);
         mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(mPixelMap, pc, segmentGrafittiHelper));
     }
 

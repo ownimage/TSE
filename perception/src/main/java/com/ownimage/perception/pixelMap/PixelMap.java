@@ -16,10 +16,12 @@ import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.MyBase64;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -861,7 +863,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.info(() -> "process07_mergeChains done");
             validate();
             mLogger.info(() -> "validate done");
+            getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
+            getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             process08_refine(pProgressObserver);
+            System.out.println("StartSegmentStraightToCurveAttempted: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted));
+            System.out.println("StartSegmentStraightToCurveSuccessful: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful));
             mLogger.info(() -> "process08_refine done");
             validate();
             mLogger.info(() -> "validate done");
@@ -1178,6 +1184,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final String pixelString = pDB.read(pId + ".data");
         return pixelString != null && pixelString.length() != 0;
     }
+
+    private PegCounter getPegCounter() {
+        return Services.getServices().getPegCounter();
+    }
+
 
     @Override
     public void read(final IPersistDB pDB, final String pId) {

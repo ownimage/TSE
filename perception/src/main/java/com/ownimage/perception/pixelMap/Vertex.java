@@ -12,7 +12,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -55,6 +54,11 @@ public class Vertex implements IVertex {
         return mVertexIndex;
     }
 
+    @Override
+    public boolean isPositionSpecified() {
+        return mPosition != null;
+    }
+
     /**
      * Calc tangent always generates a tangent line that goes in the direction of start to finish.
      *
@@ -83,11 +87,6 @@ public class Vertex implements IVertex {
                     startSegment.getEndTangent(pPixelMap, pPixelChain),
                     endSegment.getStartTangent(pPixelMap, pPixelChain)
             );
-//            final Point startTangentPoint = startSegment.getEndTangent(pPixelMap, pPixelChain).getPoint(1.0d);
-//            final Point endTangentPoint = endSegment.getStartTangent(pPixelMap, pPixelChain).getPoint(1.0d);
-//            final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
-//
-//            tangent = new Line(getUHVWPoint(pPixelMap, pPixelChain), getUHVWPoint(pPixelMap, pPixelChain).add(tangentVector));
         }
         return tangent;
     }
@@ -133,7 +132,7 @@ public class Vertex implements IVertex {
 
     @Override
     public Point getUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
-        return Optional.ofNullable(mPosition).orElseGet(() -> getPixel(pPixelChain).getUHVWMidPoint(pPixelMap));
+        return mPosition != null ? mPosition : getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
     }
 
     @Override

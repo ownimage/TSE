@@ -27,6 +27,8 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
     int getVertexIndex();
 
+    boolean isPositionSpecified();
+
     Line calcTangent(PixelChain pPixelChain, final PixelMap pPixelMap);
 
     Point getUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);

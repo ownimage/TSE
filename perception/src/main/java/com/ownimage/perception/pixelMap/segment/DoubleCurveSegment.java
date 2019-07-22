@@ -122,13 +122,13 @@ public class DoubleCurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.grafittiControlLine(mStartCurve.getP0(pPixelMap, pPixelChain), mStartCurve.getP1());
-        pGraphics.grafittiControlLine(mStartCurve.getP1(), mEndCurve.getP1());
-        pGraphics.grafittiControlLine(mEndCurve.getP1(), mEndCurve.getP2(pPixelChain, pPixelMap));
+        pGraphics.graffitiControlLine(mStartCurve.getP0(pPixelMap, pPixelChain), mStartCurve.getP1());
+        pGraphics.graffitiControlLine(mStartCurve.getP1(), mEndCurve.getP1());
+        pGraphics.graffitiControlLine(mEndCurve.getP1(), mEndCurve.getP2(pPixelChain, pPixelMap));
         pGraphics.graffitiControlPoint(mStartCurve.getP1());
         pGraphics.graffitiControlPoint(mEndCurve.getP1());
         super.graffiti(pPixelMap, pPixelChain, pGraphics);
-        pGraphics.grafittLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.RED);
+        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.RED);
     }
 
     private CurveSegment getStartCurve() {

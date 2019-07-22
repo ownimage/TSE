@@ -12,6 +12,7 @@ import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 
@@ -46,6 +47,10 @@ public class SegmentFactory {
             mLogger.severe(FrameworkLogger.throwableToString(pT));
         }
         return null;
+    }
+
+    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+        return Optional.of(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 
     //public static ISegment createTempDoubleCurveSegment(PixelChain pPixelChain, final int pSegmentIndex, final CurveSegment pStartCurve, final CurveSegment pEndCurve, final IVertex pThrough) {

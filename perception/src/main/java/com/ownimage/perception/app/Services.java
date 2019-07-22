@@ -5,12 +5,13 @@
  */
 package com.ownimage.perception.app;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+
+import java.util.logging.Logger;
 
 public class Services {
 
@@ -22,6 +23,7 @@ public class Services {
     private UndoRedoBuffer mUndoRedoBuffer;
     private RenderService mRenderService;
     private TransformSequence mTransformSequence;
+    private PegCounter mPegCounter;
 
     private Services() {
     }
@@ -46,6 +48,10 @@ public class Services {
         return mTransformSequence;
     }
 
+    public PegCounter getPegCounter() {
+        return mPegCounter;
+    }
+
     public void setTransformSequence(final TransformSequence pTransformSequence) {
         mLogger.info("setTransformSequence()");
         mTransformSequence = pTransformSequence;
@@ -56,12 +62,12 @@ public class Services {
     }
 
     static {
-        final Services services = new Services();
-        services.mProperties = new Properties();
-        services.mUndoRedoBuffer = new UndoRedoBuffer(100);
-        mServices = services;
-        services.mRenderService = new RenderService();
-        services.mPerception = new Perception();
+        mServices = new Services();
+        mServices.mProperties = new Properties();
+        mServices.mUndoRedoBuffer = new UndoRedoBuffer(100);
+        mServices.mRenderService = new RenderService();
+        mServices.mPerception = new Perception();
+        mServices.mPegCounter = new PegCounter();
     }
 }
 

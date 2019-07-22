@@ -143,7 +143,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.grafittiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
+        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
     }
 
     public boolean noPixelFurtherThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pDistance) {

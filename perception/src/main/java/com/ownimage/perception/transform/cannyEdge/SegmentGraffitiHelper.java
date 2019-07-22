@@ -5,35 +5,35 @@
  */
 package com.ownimage.perception.transform.cannyEdge;
 
-import java.awt.*;
-import java.util.function.Function;
-
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
 
-public class SegmentGrafittiHelper implements ISegmentGrafittiHelper {
+import java.awt.*;
+import java.util.function.Function;
+
+public class SegmentGraffitiHelper implements ISegmentGrafittiHelper {
 
     final GrafittiHelper mGrafittiHelper;
     final Function<Point, Point> mTranslate;
 
-    public SegmentGrafittiHelper(final GrafittiHelper pGrafittiHelper, final Function<Point, Point> pTranslate) {
+    public SegmentGraffitiHelper(final GrafittiHelper pGrafittiHelper, final Function<Point, Point> pTranslate) {
         mGrafittiHelper = pGrafittiHelper;
         mTranslate = pTranslate;
     }
 
     @Override
-    public void grafittiLine(final Point p1, final Point p2) {
-        grafittLine(p1, p2, Color.white);
+    public void graffitiLine(final Point p1, final Point p2) {
+        graffitiLine(p1, p2, Color.white);
     }
 
     @Override
-    public void grafittLine(final Point p1, final Point p2, final Color pColor) {
+    public void graffitiLine(final Point p1, final Point p2, final Color pColor) {
         mGrafittiHelper.drawLine(mTranslate.apply(p1), mTranslate.apply(p2), pColor);
     }
 
     @Override
-    public void grafittiControlLine(final Point p1, final Point p2) {
+    public void graffitiControlLine(final Point p1, final Point p2) {
         mGrafittiHelper.drawLine(mTranslate.apply(p1), mTranslate.apply(p2), Color.black);
     }
 

@@ -5,12 +5,13 @@
  */
 package com.ownimage.framework.math;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
+import Jama.Matrix;
 import com.ownimage.framework.util.Framework;
 
-import Jama.Matrix;
+import java.io.Serializable;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Line implements Serializable {
 
@@ -149,6 +150,10 @@ public class Line implements Serializable {
     @Override
     public String toString() {
         return "(Line A=" + mA + " B=" + mB + ")";
+    }
+
+    public Stream<Point> stream(final int mCount) {
+        return IntStream.rangeClosed(0, mCount).mapToDouble(i -> (double) i / mCount).mapToObj(this::getPoint);
     }
 
 }

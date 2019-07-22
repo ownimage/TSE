@@ -11,7 +11,9 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -59,6 +62,12 @@ public class PixelChain implements Serializable, Cloneable {
         None, Thin, Normal, Thick
     }
 
+    public enum PegCounters {
+        StartSegmentStraightToCurveAttempted,
+        StartSegmentStraightToCurveSuccessful
+
+    }
+
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
@@ -85,6 +94,10 @@ public class PixelChain implements Serializable, Cloneable {
 
     Stream<Pixel> streamPixels() {
         return mPixels.stream();
+    }
+
+    private PegCounter getPegCounter() {
+        return Services.getServices().getPegCounter();
     }
 
     private PixelChain deepCopy() {
@@ -519,14 +532,14 @@ public class PixelChain implements Serializable, Cloneable {
     public PixelChain refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
         var copy = deepCopy();
         copy.refine01_matchCurves(pPixelMap, pSource);
-        copy.refine03_matchDoubleCurves(pSource, pPixelMap);
-        copy.refine01_matchCurves(pPixelMap, pSource);
+        copy.refine02_matchDoubleCurves(pSource, pPixelMap);
+        copy.refine03_matchCurves(pPixelMap, pSource);
 
         if (copy.containsStraightSegment()) {
             PixelChain reversed = copy.reverse(pPixelMap);
             reversed.refine01_matchCurves(pPixelMap, pSource);
-            reversed.refine03_matchDoubleCurves(pSource, pPixelMap);
-            reversed.refine01_matchCurves(pPixelMap, pSource);
+            reversed.refine02_matchDoubleCurves(pSource, pPixelMap);
+            reversed.refine03_matchCurves(pPixelMap, pSource);
             if (reversed.countStraightSegments() < copy.countStraightSegments()) {
                 return reversed;
             }
@@ -549,6 +562,24 @@ public class PixelChain implements Serializable, Cloneable {
         return count.getCount();
     }
 
+    private void refine03_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
+
+        if (mSegments.size() == 1) {
+            return;
+        }
+
+        for (final ISegment currentSegment : mSegments) {
+            if (currentSegment == mSegments.firstElement()) {
+                refine03FirstSegment(pPixelMap, pSource, currentSegment);
+            } else if (currentSegment == mSegments.lastElement()) {
+                //refineEndSegment(pPixelMap, pSource, currentSegment);
+            } else {
+                //refineMidSegment(pPixelMap, pSource, currentSegment);
+            }
+        }
+        validate("refine03_matchCurves");
+    }
+
     private void refine01_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
 
         if (mSegments.size() == 1) {
@@ -557,17 +588,17 @@ public class PixelChain implements Serializable, Cloneable {
 
         for (final ISegment currentSegment : mSegments) {
             if (currentSegment == mSegments.firstElement()) {
-                refineFirstSegment(pPixelMap, pSource, currentSegment);
+                refine01FirstSegment(pPixelMap, pSource, currentSegment);
             } else if (currentSegment == mSegments.lastElement()) {
-                refineEndSegment(pPixelMap, pSource, currentSegment);
+                refine01EndSegment(pPixelMap, pSource, currentSegment);
             } else {
-                refineMidSegment(pPixelMap, pSource, currentSegment);
+                refine01MidSegment(pPixelMap, pSource, currentSegment);
             }
         }
         validate("refine01_matchCurves");
     }
 
-    private void refineMidSegment(
+    private void refine01MidSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
             final ISegment pCurrentSegment
@@ -607,7 +638,7 @@ public class PixelChain implements Serializable, Cloneable {
         }
     }
 
-    private void refineEndSegment(
+    private void refine01EndSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
             final ISegment pCurrentSegment
@@ -647,7 +678,7 @@ public class PixelChain implements Serializable, Cloneable {
         }
     }
 
-    private void refineFirstSegment(
+    private void refine01FirstSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
             final ISegment pCurrentSegment
@@ -686,6 +717,68 @@ public class PixelChain implements Serializable, Cloneable {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
             mSegments.set(pCurrentSegment.getSegmentIndex(), bestSegment);
+        }
+    }
+
+    private void refine03FirstSegment(
+            PixelMap pPixelMap,
+            final IPixelMapTransformSource pSource,
+            final ISegment pCurrentSegment
+    ) {
+        var bestCandidateSegment = pCurrentSegment;
+        var bestCandidateVertex = pCurrentSegment.getEndVertex(this);
+        var originalNextSegment = pCurrentSegment.getNextSegment(this);
+        var originalEndVertex = pCurrentSegment.getEndVertex(this);
+
+        // this only works if this or the next segment are straight
+        if (!(
+                (pCurrentSegment instanceof StraightSegment) || (originalNextSegment instanceof StraightSegment)
+        )) {
+            return;
+        }
+
+        try {
+            getPegCounter().increase(PegCounters.StartSegmentStraightToCurveAttempted);
+            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference();
+            var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
+            var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, this)
+                    .add(
+                            originalNextSegment.getStartTangent(pPixelMap, this)
+                                    .getAB()
+                                    .normalize()
+                                    .multiply(pCurrentSegment.getLength(pPixelMap, this)
+                                    )
+                    );
+            var length = pCurrentSegment.getLength(pPixelMap, this) / originalNextSegment.getLength(pPixelMap, this);
+            controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
+            for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
+                mVertexes.set(originalEndVertex.getVertexIndex(), originalEndVertex);
+                var lambda = (double) i / nextSegmentPixelLength;
+                var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
+                var candidateVertex = Vertex.createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
+                mVertexes.set(candidateVertex.getVertexIndex(), candidateVertex);
+                var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList());
+                for (var controlPoint : controlPoints) {
+                    var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
+                    if (candidateSegment != null) {
+                        mSegments.set(pCurrentSegment.getSegmentIndex(), candidateSegment);
+                        var candidateError = candidateSegment.calcError(pPixelMap, this);
+
+                        if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
+                            lowestError = candidateError;
+                            bestCandidateSegment = candidateSegment;
+                            bestCandidateVertex = candidateVertex;
+                        }
+                    }
+                }
+            }
+        } finally {
+            if (bestCandidateSegment != pCurrentSegment) {
+                getPegCounter().increase(PegCounters.StartSegmentStraightToCurveSuccessful);
+                mVertexes.set(bestCandidateVertex.getVertexIndex(), bestCandidateVertex);
+                mSegments.set(bestCandidateSegment.getSegmentIndex(), bestCandidateSegment);
+                System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this));
+            }
         }
     }
 
@@ -898,7 +991,7 @@ public class PixelChain implements Serializable, Cloneable {
         return endVertex.calcTangent(this, pPixelMap);
     }
 
-    private void refine03_matchDoubleCurves(final IPixelMapTransformSource pSource, final PixelMap pPixelMap) {
+    private void refine02_matchDoubleCurves(final IPixelMapTransformSource pSource, final PixelMap pPixelMap) {
         if (mSegments.size() == 1) return;
         for (final ISegment currentSegment : mSegments) {
             if (currentSegment instanceof CurveSegment) continue;
