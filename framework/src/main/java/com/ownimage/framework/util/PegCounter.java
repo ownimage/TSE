@@ -9,15 +9,15 @@ public class PegCounter {
 
     private HashMap<Object, Long> mMap = new HashMap<>();
 
-    public void increase(final Object pPeg) {
+    public synchronized void increase(final Object pPeg) {
         mMap.compute(pPeg, (k, v) -> get(k) + 1);
     }
 
-    public long get(final Object pPeg) {
+    public synchronized long get(final Object pPeg) {
         return mMap.getOrDefault(pPeg, 0L);
     }
 
-    public void clear(final Object pPeg) {
+    public synchronized void clear(final Object pPeg) {
         mMap.remove(pPeg);
     }
 }
