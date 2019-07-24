@@ -10,6 +10,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
@@ -28,6 +29,8 @@ public interface ISegment extends Serializable, Cloneable {
     double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain);
 
     boolean closerThanActual(final PixelMap pPixelMap, final PixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
+
+    double calcError(PixelMap pPixelMap, PixelChain pPixelChain, Pixel pPixel);
 
     int getSegmentIndex();
 
@@ -126,7 +129,9 @@ public interface ISegment extends Serializable, Cloneable {
 
     ISegment withStartPosition(final PixelMap pPixelMap, PixelChain pPixelChain, double pStartPosition);
 
-    ISegment getNextSegment(PixelChain pPixelChain);
+    ISegment getNextSegment(final PixelChain pPixelChain);
 
-    ISegment getPreviousSegment(PixelChain pPixelChain);
+    ISegment getPreviousSegment(final PixelChain pPixelChain);
+
+    boolean containsPixelIndex(final PixelChain pPixelChain, int pIndex);
 }

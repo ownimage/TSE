@@ -10,8 +10,10 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
+import lombok.val;
 
 import java.util.logging.Logger;
 
@@ -47,6 +49,13 @@ public abstract class SegmentBase implements ISegment {
         }
 
         return error;
+    }
+
+    @Override
+    public double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain, final Pixel pPixel) {
+        val uhvw = pPixel.getUHVWMidPoint(pPixelMap);
+        val distance = distance(pPixelMap, pPixelChain, uhvw);
+        return distance * distance;
     }
 
     @Override
@@ -162,12 +171,17 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public ISegment getNextSegment(PixelChain pPixelChain) {
+    public ISegment getNextSegment(final PixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getEndSegment(pPixelChain);
     }
 
     @Override
-    public ISegment getPreviousSegment(PixelChain pPixelChain) {
+    public ISegment getPreviousSegment(final PixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getStartSegment(pPixelChain);
+    }
+
+    @Override
+    public boolean containsPixelIndex(final PixelChain pPixelChain, final int pIndex) {
+        return getStartIndex(pPixelChain) <= pIndex && pIndex <= getEndIndex(pPixelChain);
     }
 }

@@ -19,6 +19,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple4;
+import lombok.val;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -103,7 +104,7 @@ public class PixelChain implements Serializable, Cloneable {
 
     private PixelChain deepCopy() {
         try {
-            PixelChain copy = (PixelChain) super.clone();
+            val copy = (PixelChain) super.clone();
             copy.mLength = mLength;
             copy.mThickness = mThickness;
             copy.mPixels = (Vector<Pixel>) mPixels.clone();
@@ -770,7 +771,6 @@ public class PixelChain implements Serializable, Cloneable {
 
         try {
             getPegCounter().increase(PegCounters.MidSegmentEatForwardAttempted);
-            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
             var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, this)
                     .add(
@@ -784,6 +784,16 @@ public class PixelChain implements Serializable, Cloneable {
             controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
             for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
                 mVertexes.set(originalEndVertex.getVertexIndex(), originalEndVertex);
+                mSegments.set(pCurrentSegment.getSegmentIndex(), pCurrentSegment);
+                mSegments.set(originalNextSegment.getSegmentIndex(), originalNextSegment);
+                var lowestErrorPerPixel = calcError(
+                        pPixelMap,
+                        pCurrentSegment.getStartIndex(this),
+                        pCurrentSegment.getEndIndex(this) + i,
+                        pCurrentSegment,
+                        originalNextSegment
+                );
+
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
                 var candidateVertex = Vertex.createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
@@ -793,10 +803,15 @@ public class PixelChain implements Serializable, Cloneable {
                     var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
                     if (candidateSegment != null) {
                         mSegments.set(pCurrentSegment.getSegmentIndex(), candidateSegment);
-                        var candidateError = candidateSegment.calcError(pPixelMap, this);
-
-                        if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
-                            lowestError = candidateError;
+                        var candidateErrorPerPixel = calcError(
+                                pPixelMap,
+                                pCurrentSegment.getStartIndex(this),
+                                pCurrentSegment.getEndIndex(this) + i,
+                                candidateSegment,
+                                originalNextSegment
+                        );
+                        if (isValid(pPixelMap, candidateSegment) && candidateErrorPerPixel < lowestErrorPerPixel) {
+                            lowestErrorPerPixel = candidateErrorPerPixel;
                             bestCandidateSegment = candidateSegment;
                             bestCandidateVertex = candidateVertex;
                         }
@@ -811,6 +826,29 @@ public class PixelChain implements Serializable, Cloneable {
             mSegments.set(bestCandidateSegment.getSegmentIndex(), bestCandidateSegment);
             // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
         }
+    }
+
+    private double calcError(
+            final PixelMap pPixelMap,
+            final int pStartPixelIndex,
+            final int pEndPixelIndex,
+            final ISegment pStartSegment,
+            final ISegment pEndSegment
+    ) {
+        var error = 0d;
+        for (var i = pStartPixelIndex; i <= pEndPixelIndex; i++) {
+            var p = this.getPixel(i);
+            if (pStartSegment.containsPixelIndex(this, i)) {
+                var d = pStartSegment.calcError(pPixelMap, this, p);
+                error += d * d;
+            } else if (pEndSegment.containsPixelIndex(this, i)) {
+                var d = pEndSegment.calcError(pPixelMap, this, p);
+                error += d * d;
+            } else {
+                throw new IllegalArgumentException("Not in Range");
+            }
+        }
+        return error;
     }
 
     private void refine03FirstSegment
