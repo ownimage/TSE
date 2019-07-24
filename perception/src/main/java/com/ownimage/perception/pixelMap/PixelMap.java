@@ -872,9 +872,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     PixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
                     PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
                     PixelChain.PegCounters.MidSegmentEatForwardAttempted,
-                    PixelChain.PegCounters.MidSegmentEatForwardSuccessful,
-                    PixelChain.PegCounters.DoubleCurveAttempted,
-                    PixelChain.PegCounters.DoubleCurveSuccessful
+                    PixelChain.PegCounters.MidSegmentEatForwardSuccessful
             };
             getPegCounter().clear(pegs);
             process08_refine(pProgressObserver);

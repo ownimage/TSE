@@ -66,9 +66,7 @@ public class PixelChain implements Serializable, Cloneable {
         RefineCornersAttempted,
         RefineCornersSuccessful,
         MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful,
-        DoubleCurveAttempted,
-        DoubleCurveSuccessful
+        MidSegmentEatForwardSuccessful
     }
 
     public final static Logger mLogger = Framework.getLogger();
