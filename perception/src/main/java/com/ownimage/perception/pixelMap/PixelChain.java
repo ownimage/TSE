@@ -14,8 +14,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.segment.CurveSegment;
-import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
@@ -549,7 +547,6 @@ public class PixelChain implements Serializable, Cloneable {
         var copy = deepCopy();
         copy.refine01_matchCurves(pPixelMap, pSource);
         copy.refine03_matchCurves(pPixelMap, pSource);
-        copy.refine02_matchDoubleCurves(pSource, pPixelMap);
 
 //        if (copy.containsStraightSegment()) {
 //            PixelChain reversed = copy.reverse(pPixelMap);
@@ -982,103 +979,6 @@ public class PixelChain implements Serializable, Cloneable {
         }
 
         return endVertex.calcTangent(this, pPixelMap);
-    }
-
-    private void refine02_matchDoubleCurves(final IPixelMapTransformSource pSource, final PixelMap pPixelMap) {
-        if (mSegments.size() == 1) return;
-        for (final ISegment currentSegment : mSegments) {
-            if (currentSegment instanceof CurveSegment) continue;
-
-            matchDoubleCurve(pPixelMap, pSource, currentSegment);
-        } // end loop
-
-        validate("refine03_matchDoubleCurves");
-    }
-
-    private void matchDoubleCurve(PixelMap pPixelMap, IPixelMapTransformSource pSource, ISegment currentSegment) {
-        final IVertex startVertex = currentSegment.getStartVertex(this);
-        final IVertex endVertex = currentSegment.getEndVertex(this);
-        final Line startTangent = getDCStartTangent(pPixelMap, currentSegment);
-        final Line endTangent = getDCEndTangent(pPixelMap, currentSegment);
-
-        getPegCounter().increase(PegCounters.DoubleCurveAttempted);
-        ISegment bestCandidate = currentSegment;
-
-        // get error values from straight line to start the compare
-        double lowestError = currentSegment.calcError(pPixelMap, this);
-        if (currentSegment instanceof StraightSegment) {
-            lowestError *= pSource.getLineCurvePreference();
-        }
-
-        try {
-            try {
-                for (int i = 1; i < currentSegment.getPixelLength(this) - 1; i++) { // first and last pixel will throw an error and are equivalent to the straight line
-                    final Vertex midVertex = Vertex.createVertex(this, mVertexes.size(), startVertex.getPixelIndex() + i);
-
-                    final Point closestStart = startTangent.closestPoint(midVertex.getUHVWPoint(pPixelMap, this));
-                    final Line startLine = new Line(startVertex.getUHVWPoint(pPixelMap, this), closestStart);
-
-                    final Point closestEnd = endTangent.closestPoint(midVertex.getUHVWPoint(pPixelMap, this));
-                    final Line endLine = new Line(endVertex.getUHVWPoint(pPixelMap, this), closestEnd);
-                    // should check that lambdas are the correct sign
-
-                    for (double sigma = 0.3d; sigma < 0.7d; sigma += 0.1d) {
-                        try {
-                            // try from start
-                            final Point p1 = startLine.getPoint(sigma);
-                            final Point p2 = new Line(p1, midVertex.getUHVWPoint(pPixelMap, this)).intersect(endLine);
-                            if (p2 != null) {
-                                final double closestLambda = endLine.closestLambda(p2);
-
-                                if (closestLambda > 0.1d && closestLambda < 1.2d) {
-
-                                    final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(pPixelMap, this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
-                                    mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
-                                    if (isValid(pPixelMap, candidateCurve)) {
-                                        final double candidateError = candidateCurve.calcError(pPixelMap, this);
-                                        if (candidateError < lowestError) {
-                                            bestCandidate = candidateCurve;
-                                        }
-                                    }
-                                }
-                            }
-
-                        } catch (final Throwable pT) {
-                            //mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                        }
-
-                        // try from end
-                        try {
-                            final Point p2 = endLine.getPoint(sigma);
-                            final Point p1 = new Line(p2, midVertex.getUHVWPoint(pPixelMap, this)).intersect(startLine);
-                            final double closestLambda = startLine.closestLambda(p2);
-
-                            if (p1 != null && 0.1d < closestLambda && closestLambda < 1.2d) { // TODO what are these magic numbers
-
-                                final ISegment candidateCurve = SegmentFactory.createTempDoubleCurveSegment(pPixelMap, this, currentSegment.getSegmentIndex(), p1, midVertex, p2);
-                                mSegments.set(currentSegment.getSegmentIndex(), candidateCurve);
-                                if (isValid(pPixelMap, candidateCurve)) {
-                                    final double candidateError = candidateCurve.calcError(pPixelMap, this);
-                                    if (candidateError < lowestError) {
-                                        bestCandidate = candidateCurve;
-                                    }
-                                }
-                            }
-                        } catch (final Throwable pT) {
-                            //mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
-                        }
-                    }
-                }
-            } catch (final Throwable pT) {
-                mLogger.severe(FrameworkLogger.throwableToString(pT));
-            }
-        } finally {
-            if (bestCandidate instanceof DoubleCurveSegment) {
-                mLogger.fine("DoubleCurve added");
-                getPegCounter().increase(PegCounters.DoubleCurveSuccessful);
-            }
-            mSegments.set(currentSegment.getSegmentIndex(), bestCandidate);
-        }
     }
 
     /**

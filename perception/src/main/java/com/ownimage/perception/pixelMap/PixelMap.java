@@ -23,7 +23,6 @@ import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
-import com.ownimage.perception.pixelMap.segment.DoubleCurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
@@ -1443,7 +1442,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mPixelChains.forEach(pc -> pc.streamSegments().forEach(s -> {
                     if (s instanceof StraightSegment) {
                     } else if (s instanceof CurveSegment) {
-                    } else if (s instanceof DoubleCurveSegment) {
                     } else counter.incOther();
                 })
         );

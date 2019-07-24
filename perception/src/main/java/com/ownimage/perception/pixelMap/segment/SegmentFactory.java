@@ -8,7 +8,6 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
@@ -53,29 +52,6 @@ public class SegmentFactory {
         return Optional.of(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 
-    //public static ISegment createTempDoubleCurveSegment(PixelChain pPixelChain, final int pSegmentIndex, final CurveSegment pStartCurve, final CurveSegment pEndCurve, final IVertex pThrough) {
-    public static ISegment createTempDoubleCurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1, final IVertex pMidVertex, final Point pP2) {
-
-        try {
-            // note that no checking is done that the parameters give a sensible DoubleCurve
-            final CurveSegment startCurve = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1) {
-                @Override
-                public IVertex getEndVertex(final PixelChain pPixelChain) {
-                    return pMidVertex;
-                }
-            };
-            final CurveSegment endCurve = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP2) {
-                @Override
-                public IVertex getStartVertex(final PixelChain pPixelChain) {
-                    return pMidVertex;
-                }
-            };
-            return new DoubleCurveSegment(pPixelMap, pPixelChain, startCurve, endCurve);
-
-        } catch (final Throwable pT) {
-            return null;
-        }
-    }
 
     static public StraightSegment createTempStraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex) {
         return new StraightSegment(pPixelMap, pPixelChain, pSegmentIndex);
