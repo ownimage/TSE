@@ -856,26 +856,30 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process04a_removeLoneNodes(pProgressObserver);
             process05_generateChains(pProgressObserver);
             process05a_findLoops(pProgressObserver);
-            getPegCounter().clear(PixelChain.PegCounters.RefineCornersAttempted);
-            getPegCounter().clear(PixelChain.PegCounters.RefineCornersSuccessful);
+            var pegs = new Object[]{
+                    PixelChain.PegCounters.RefineCornersAttempted,
+                    PixelChain.PegCounters.RefineCornersSuccessful
+            };
+            getPegCounter().clear(pegs);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-            System.out.println("RefineCornersAttempted: " + getPegCounter().get(PixelChain.PegCounters.RefineCornersAttempted));
-            System.out.println("RefineCornersSuccessful: " + getPegCounter().get(PixelChain.PegCounters.RefineCornersSuccessful));
+            System.out.println(getPegCounter().getString(pegs));
             validate();
             mLogger.info(() -> "validate done");
             process07_mergeChains(pProgressObserver);
             mLogger.info(() -> "process07_mergeChains done");
             validate();
             mLogger.info(() -> "validate done");
-            getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
-            getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
-            getPegCounter().clear(PixelChain.PegCounters.MidSegmentEatForwardAttempted);
-            getPegCounter().clear(PixelChain.PegCounters.MidSegmentEatForwardSuccessful);
+            pegs = new Object[]{
+                    PixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
+                    PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
+                    PixelChain.PegCounters.MidSegmentEatForwardAttempted,
+                    PixelChain.PegCounters.MidSegmentEatForwardSuccessful,
+                    PixelChain.PegCounters.DoubleCurveAttempted,
+                    PixelChain.PegCounters.DoubleCurveSuccessful
+            };
+            getPegCounter().clear(pegs);
             process08_refine(pProgressObserver);
-            System.out.println("StartSegmentStraightToCurveAttempted: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted));
-            System.out.println("StartSegmentStraightToCurveSuccessful: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful));
-            System.out.println("MidSegmentEatForwardAttempted: " + getPegCounter().get(PixelChain.PegCounters.MidSegmentEatForwardAttempted));
-            System.out.println("MidSegmentEatForwardSuccessful: " + getPegCounter().get(PixelChain.PegCounters.MidSegmentEatForwardSuccessful));
+            System.out.println(getPegCounter().getString(pegs));
             mLogger.info(() -> "process08_refine done");
             validate();
             mLogger.info(() -> "validate done");
@@ -1196,7 +1200,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
     }
-
 
     @Override
     public void read(final IPersistDB pDB, final String pId) {

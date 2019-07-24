@@ -68,7 +68,9 @@ public class PixelChain implements Serializable, Cloneable {
         RefineCornersAttempted,
         RefineCornersSuccessful,
         MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful
+        MidSegmentEatForwardSuccessful,
+        DoubleCurveAttempted,
+        DoubleCurveSuccessful
     }
 
     public final static Logger mLogger = Framework.getLogger();
@@ -546,8 +548,8 @@ public class PixelChain implements Serializable, Cloneable {
     public PixelChain refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
         var copy = deepCopy();
         copy.refine01_matchCurves(pPixelMap, pSource);
-        copy.refine02_matchDoubleCurves(pSource, pPixelMap);
         copy.refine03_matchCurves(pPixelMap, pSource);
+        copy.refine02_matchDoubleCurves(pSource, pPixelMap);
 
 //        if (copy.containsStraightSegment()) {
 //            PixelChain reversed = copy.reverse(pPixelMap);
@@ -999,6 +1001,7 @@ public class PixelChain implements Serializable, Cloneable {
         final Line startTangent = getDCStartTangent(pPixelMap, currentSegment);
         final Line endTangent = getDCEndTangent(pPixelMap, currentSegment);
 
+        getPegCounter().increase(PegCounters.DoubleCurveAttempted);
         ISegment bestCandidate = currentSegment;
 
         // get error values from straight line to start the compare
@@ -1070,7 +1073,10 @@ public class PixelChain implements Serializable, Cloneable {
                 mLogger.severe(FrameworkLogger.throwableToString(pT));
             }
         } finally {
-            if (bestCandidate instanceof DoubleCurveSegment) mLogger.fine("DoubleCurve added");
+            if (bestCandidate instanceof DoubleCurveSegment) {
+                mLogger.fine("DoubleCurve added");
+                getPegCounter().increase(PegCounters.DoubleCurveSuccessful);
+            }
             mSegments.set(currentSegment.getSegmentIndex(), bestCandidate);
         }
     }
