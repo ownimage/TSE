@@ -856,7 +856,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process04a_removeLoneNodes(pProgressObserver);
             process05_generateChains(pProgressObserver);
             process05a_findLoops(pProgressObserver);
+            getPegCounter().clear(PixelChain.PegCounters.RefineCornersAttempted);
+            getPegCounter().clear(PixelChain.PegCounters.RefineCornersSuccessful);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            System.out.println("RefineCornersAttempted: " + getPegCounter().get(PixelChain.PegCounters.RefineCornersAttempted));
+            System.out.println("RefineCornersSuccessful: " + getPegCounter().get(PixelChain.PegCounters.RefineCornersSuccessful));
             validate();
             mLogger.info(() -> "validate done");
             process07_mergeChains(pProgressObserver);
@@ -865,9 +869,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.info(() -> "validate done");
             getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             getPegCounter().clear(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
+            getPegCounter().clear(PixelChain.PegCounters.MidSegmentEatForwardAttempted);
+            getPegCounter().clear(PixelChain.PegCounters.MidSegmentEatForwardSuccessful);
             process08_refine(pProgressObserver);
             System.out.println("StartSegmentStraightToCurveAttempted: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted));
             System.out.println("StartSegmentStraightToCurveSuccessful: " + getPegCounter().get(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful));
+            System.out.println("MidSegmentEatForwardAttempted: " + getPegCounter().get(PixelChain.PegCounters.MidSegmentEatForwardAttempted));
+            System.out.println("MidSegmentEatForwardSuccessful: " + getPegCounter().get(PixelChain.PegCounters.MidSegmentEatForwardSuccessful));
             mLogger.info(() -> "process08_refine done");
             validate();
             mLogger.info(() -> "validate done");
