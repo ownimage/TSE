@@ -5,25 +5,12 @@
  */
 package com.ownimage.perception.transformSequence;
 
-import static com.ownimage.framework.control.container.NullContainer.NullContainer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.IContainerList;
-import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ViewableBase;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
@@ -49,6 +36,18 @@ import com.ownimage.perception.transform.SoftSquarePolarTransform;
 import com.ownimage.perception.transform.SquarePolarTransform;
 import com.ownimage.perception.transform.VariableStretch3Transform;
 import com.ownimage.perception.transform.WoodcutTransform;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+import java.util.logging.Logger;
+
+import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class TransformSequence extends ViewableBase<TransformSequence, ISingleSelectView> implements IPersist, IContainerList {
 
@@ -152,22 +151,6 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         final ITransform transform = mTransforms.get(pTab);
         final IContainer controls = transform.getControls();
         return controls;
-    }
-
-    public IViewable<?> getContent() {
-
-        final HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
-
-        final BorderLayout buttonPanelAccordionLayout = new BorderLayout();
-        buttonPanelAccordionLayout.setTop(buttonLayout);
-        buttonPanelAccordionLayout.setCenter(this);
-
-        final ITransform transform = getSelectedTransform();
-
-        mBorderLayout.setCenter(transform.getContent());
-        mBorderLayout.setRight(buttonPanelAccordionLayout);
-
-        return mBorderLayout;
     }
 
     @Override
@@ -354,8 +337,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
             invokeOnAllViewsExcept(pView, (v) -> v.setSelectedIndex(mSelectedIndex));
 
             final ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
-            final IViewable<?> content = transform.getContent();
-            mBorderLayout.setCenter(content);
+
+            updateView();
             transform.refreshInputPreview();
 
             mRemoveAction.setEnabled(pIndex != 0);
@@ -364,6 +347,20 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         }
 
         Framework.logExit(mLogger);
+    }
+
+    public BorderLayout updateView() {
+        final ITransform transform = (mSelectedIndex == -1) ? getFirstTransform() : getTransform(mSelectedIndex);
+        final HFlowLayout buttonLayout = new HFlowLayout(mAddAction, mRemoveAction, mUpAction, mDownAction);
+
+        final BorderLayout buttonPanelAccordionLayout = new BorderLayout();
+        buttonPanelAccordionLayout.setTop(buttonLayout);
+        buttonPanelAccordionLayout.setCenter(this);
+
+        HFlowLayout hflow = new HFlowLayout(transform.getContent(), buttonPanelAccordionLayout);
+
+        mBorderLayout.setCenter(hflow);
+        return mBorderLayout;
     }
 
     private void upAction() {

@@ -116,9 +116,6 @@ public class AppControlView extends Application implements IAppControlView {
 
             mPrimaryStage.setTitle(mAppControl.getTitle());
 
-            final BorderPane root = new BorderPane();
-            // root.setTop(menuBar);
-            // Scene scene = new Scene(root, 600, 600);
             mPrimaryStage.setScene(mScene);
             mPrimaryStage.show();
         });

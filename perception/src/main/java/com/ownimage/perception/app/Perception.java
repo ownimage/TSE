@@ -8,10 +8,14 @@ package com.ownimage.perception.app;
 import com.ownimage.framework.app.AppControlBase;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.control.IAction;
+import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
-import com.ownimage.framework.control.layout.HSplitLayout;
+import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.layout.ScrollLayout;
 import com.ownimage.framework.control.type.FileType.FileControlType;
 import com.ownimage.framework.control.type.PictureType;
@@ -84,8 +88,13 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
+    private Optional<TransformSequence> getOptionalTransformSequence() {
+        return Services.getServices().getOptionalTransformSequence();
+    }
+
+    @Deprecated
     private TransformSequence getTransformSequence() {
-        return Services.getServices().getTransformSequence();
+        return Services.getServices().getOptionalTransformSequence().get();
     }
 
     private final IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
@@ -96,17 +105,8 @@ public class Perception extends AppControlBase {
 
     @Override
     protected IView createContentView() {
-        Framework.logEntry(mLogger);
-
         mBorderLayout = new BorderLayout();
-
-        if (getTransformSequence() != null) {
-            final ScrollLayout scrollableOutputPreview = new ScrollLayout(mOutputPreviewControl);
-            final HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollableOutputPreview);
-            mBorderLayout.setCenter(hSplitLayout);
-        }
-
-        Framework.logExit(mLogger);
+        getOptionalTransformSequence().ifPresent(ts -> updateView());
         return mBorderLayout.createView();
     }
 
@@ -196,9 +196,7 @@ public class Perception extends AppControlBase {
             transformOpenDefault();
         }
 
-        final ScrollLayout scrollablePreview = new ScrollLayout(mOutputPreviewControl);
-        final HSplitLayout hSplitLayout = new HSplitLayout(getTransformSequence().getContent(), scrollablePreview);
-        mBorderLayout.setCenter(hSplitLayout);
+        updateView();
 
         if (!getProperties().useAutoLoadTransformFile()) {
             // if the transform file has been loaded then the output will have already been updated
@@ -206,6 +204,17 @@ public class Perception extends AppControlBase {
         }
 
         Framework.logExit(mLogger);
+    }
+
+    private void updateView() {
+        getOptionalTransformSequence().ifPresent(ts -> {
+            mBorderLayout.setLeft(
+                    new HFlowLayout(
+                            ts.updateView(),
+                            new ScrollLayout(mOutputPreviewControl)
+                    )
+            );
+        });
     }
 
     private void fileRedraw() {

@@ -11,6 +11,7 @@ import com.ownimage.framework.util.PegCounter;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class Services {
@@ -44,8 +45,8 @@ public class Services {
         return mRenderService;
     }
 
-    public TransformSequence getTransformSequence() {
-        return mTransformSequence;
+    public Optional<TransformSequence> getOptionalTransformSequence() {
+        return Optional.ofNullable(mTransformSequence);
     }
 
     public PegCounter getPegCounter() {
