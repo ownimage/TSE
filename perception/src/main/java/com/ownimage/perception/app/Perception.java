@@ -32,6 +32,7 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+import lombok.val;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -286,42 +287,45 @@ public class Perception extends AppControlBase {
      */
     private void fileSaveUnchecked(final File pFile) {
         mLogger.info(() -> "fileSaveUnchecked");
+        getOptionalTransformSequence().ifPresent(ts -> {
+            val lastTransform = ts.getLastTransform();
 
-        final ActionControl ok = new ActionControl("OK", "ok", NullContainer, () -> {
-        }).setEnabled(false);
-        final ProgressControl progress = ProgressControl.builder("Progress", "progress", NullContainer)
-                .withCompleteAction(() -> ok.setEnabled(true))
-                .build();
-        showDialog(progress, DialogOptions.NONE, ok);
+            val ok = new ActionControl("OK", "ok", NullContainer, () -> {
+            }).setEnabled(false);
+            val progress = ProgressControl.builder("Progress", "progress", NullContainer)
+                    .withCompleteAction(() -> ok.setEnabled(true))
+                    .build();
+            showDialog(progress, DialogOptions.NONE, ok);
 
-        Framework.logEntry(mLogger);
-        new Thread(() -> {
-            try {
-                PictureType testSave = new PictureType(100, 100);
-                testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
+            Framework.logEntry(mLogger);
+            new Thread(() -> {
+                try {
+                    PictureType testSave = new PictureType(100, 100);
+                    testSave.getValue().save(pFile, getProperties().getImageQuality()); // no point generating a large file if we cant save it
 
-                PictureType output = new PictureType(getTransformSequence().getLastTransform().getWidth(), getTransformSequence().getLastTransform().getHeight());
-                getRenderService()
-                        .getRenderJobBuilder("Perception::fileSaveUnchecked", output, getTransformSequence().getLastTransform())
-                        .withControlObject(output)
-                        .withCompleteAction(() -> {
-                            try {
-                                output.getValue().save(pFile, getProperties().getImageQuality());
-                                mLogger.severe("Done");
-                            } catch (Exception e) {
-                                mLogger.severe("Unable to output file");
-                            }
-                        })
-                        .withProgressObserver(progress)
-                        .withOverSample(getTransformSequence().getLastTransform().getOversample())
-                        .build()
-                        .run();
-            } catch (Throwable pT) {
-                Framework.logThrowable(mLogger, Level.SEVERE, pT);
-                mLogger.info(() -> "Unable to save file");
+                    PictureType output = new PictureType(lastTransform.getWidth(), lastTransform.getHeight());
+                    getRenderService()
+                            .getRenderJobBuilder("Perception::fileSaveUnchecked", output, lastTransform)
+                            .withControlObject(output)
+                            .withCompleteAction(() -> {
+                                try {
+                                    output.getValue().save(pFile, getProperties().getImageQuality());
+                                    mLogger.severe("Done");
+                                } catch (Exception e) {
+                                    mLogger.severe("Unable to output file");
+                                }
+                            })
+                            .withProgressObserver(progress)
+                            .withOverSample(lastTransform.getOversample())
+                            .build()
+                            .run();
+                } catch (Throwable pT) {
+                    Framework.logThrowable(mLogger, Level.SEVERE, pT);
+                    mLogger.info(() -> "Unable to save file");
 
-            }
-        }).start();
+                }
+            }).start();
+        });
         Framework.logExit(mLogger);
     }
 

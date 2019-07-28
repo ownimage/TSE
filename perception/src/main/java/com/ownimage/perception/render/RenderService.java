@@ -5,10 +5,6 @@
  */
 package com.ownimage.perception.render;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.control.PictureControl;
@@ -19,6 +15,12 @@ import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
+import lombok.val;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 public class RenderService {
 
@@ -58,6 +60,10 @@ public class RenderService {
             mAllowTerminate = pFrom.mAllowTerminate;
         }
 
+        private Optional<IProgressObserver> getObserver() {
+            return Optional.ofNullable(mObserver);
+        }
+
         public void run() {
             Framework.logEntry(mLogger);
             // note slightly forced use of checkParmeter below
@@ -84,20 +90,20 @@ public class RenderService {
                 public void doJob() {
                     super.doJob();
 
-                    if (mObserver != null) mObserver.started();
+                    getObserver().ifPresent(IProgressObserver::started);
                     mJTPBatchEngine.setThreadPoolSize(
                             getProperties().getRenderThreadPoolSize(), getProperties().getRenderJTPBatchSize());
 
-                    final IBatchEngine preferredBatchEngine = mTransform.getPreferredBatchEngine();
-                    final IBatchEngine actualEngine = getActualBatchEngine(preferredBatchEngine);
+                    val preferredBatchEngine = mTransform.getPreferredBatchEngine();
+                    val actualEngine = getActualBatchEngine(preferredBatchEngine);
 
-                    final int maxBatchSize = getProperties().getRenderBatchSize();
-                    final TransformResultBatch batch = getBatch(mTransform.getDisplayName());
-                    final PictureType pictureType = mPictureType != null ? mPictureType : mPictureControl.getValue().createCompatible();
+                    val maxBatchSize = getProperties().getRenderBatchSize();
+                    val batch = getBatch(mTransform.getDisplayName());
+                    val pictureType = mPictureType != null ? mPictureType : mPictureControl.getValue().createCompatible();
                     batch.initialize(pictureType, actualEngine, maxBatchSize);
 
                     while (batch.hasNext() && !mTerminated) {
-                        if (mObserver != null) mObserver.setProgress("Transforming", batch.getPercentComplete());
+                        getObserver().ifPresent(o -> o.setProgress("Transforming", batch.getPercentComplete()));
                         batch.next(mOverSample);
                         transform(batch, mTransform);
                         batch.render(pictureType, mOverSample);
@@ -105,7 +111,7 @@ public class RenderService {
 
                     if (mPictureType == null) mPictureControl.setValue(pictureType);
                     if (mCompleteAction != null && !mTerminated) mCompleteAction.performAction();
-                    if (mObserver != null) mObserver.finished();
+                    getObserver().ifPresent(IProgressObserver::finished);
                 }
 
                 @Override
@@ -115,8 +121,7 @@ public class RenderService {
                 }
             }
 
-            final TransformJob job = new TransformJob(mReason, Priority.NORMAL, mControlObject);
-            job.submit();
+            new TransformJob(mReason, Priority.NORMAL, mControlObject).submit();
 
             Framework.logExit(mLogger);
         }

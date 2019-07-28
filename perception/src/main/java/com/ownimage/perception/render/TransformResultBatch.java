@@ -5,12 +5,12 @@
  */
 package com.ownimage.perception.render;
 
+import com.ownimage.framework.control.type.PictureType;
+import com.ownimage.framework.util.Framework;
+
 import java.awt.*;
 import java.util.Calendar;
 import java.util.logging.Logger;
-
-import com.ownimage.framework.control.type.PictureType;
-import com.ownimage.framework.util.Framework;
 
 public class TransformResultBatch implements ITransformResultBatch {
 
@@ -156,7 +156,7 @@ public class TransformResultBatch implements ITransformResultBatch {
     @Override
     public int getPercentComplete() {
         Framework.logEntry(Framework.mLogger);
-        final int percent = (100 * mXCurrent) / mXMax;
+        final int percent = (100 * mYCurrent) / mYMax;
         Framework.logExit(Framework.mLogger, percent);
         return percent;
     }
