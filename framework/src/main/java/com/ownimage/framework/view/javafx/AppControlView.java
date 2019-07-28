@@ -219,7 +219,7 @@ public class AppControlView extends Application implements IAppControlView {
         if (pFileControl.getFile().isDirectory()) {
             fileChooser.setInitialDirectory(pFileControl.getFile());
         }
-        if (pFileControl.getFile().isDirectory()) {
+        if (pFileControl.getFile().isFile()) {
             fileChooser.setInitialDirectory(pFileControl.getFile().getParentFile());
             fileChooser.setInitialFileName(pFileControl.getFile().getName());
         }
