@@ -3,6 +3,7 @@ package com.ownimage.framework.util.immutable;
 import lombok.val;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -43,7 +44,7 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
             val size = getMaster().size();
             Consumer<Vector<E>> redo = m -> m.addAll(all);
             Consumer<Vector<E>> undo = m -> m.setSize(size);
-            return new ImmutableVector<E>(this, redo, undo);
+            return new ImmutableVector<>(this, redo, undo);
         }
     }
 
@@ -81,6 +82,36 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
         }
     }
 
+    public ImmutableVector remove(final int pIndex) {
+        synchronized (getSynchronisationObject()) {
+            if (0 > pIndex || pIndex >= getMaster().size()) {
+                throw new IllegalArgumentException();
+            }
+            val element = getMaster().get(pIndex);
+            Consumer<Vector<E>> redo = m -> m.remove(pIndex);
+            Consumer<Vector<E>> undo = m -> m.add(pIndex, element);
+            return new ImmutableVector<>(this, redo, undo);
+        }
+    }
+
+    public Optional<E> firstElement() {
+        synchronized (getSynchronisationObject()) {
+            if (getMaster().size() == 0) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(getMaster().firstElement());
+        }
+    }
+
+    public Optional<E> lastElement() {
+        synchronized (getSynchronisationObject()) {
+            if (getMaster().size() == 0) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(getMaster().lastElement());
+        }
+    }
+
     /**
      * This will return:
      * EITHER the existing immutable if there are no elements in pAll,
@@ -89,7 +120,7 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
      * Because checking is potentially an o(2) operation and might then result in a clone this is potentially
      * an expensive operation.
      *
-     * @param pAll
+     * @param pAll a Collection of elements to add
      * @return an immutable representing the result
      */
     public ImmutableVector removeAll(Collection<E> pAll) {
@@ -100,17 +131,14 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
             Vector<E> master = getMaster();
             val change = pAll.stream()
                     .parallel()
-                    .filter(master::contains)
-                    .findAny()
-                    .isPresent();
+                    .anyMatch(master::contains);
             if (!change) {
                 return this;
             }
             // cloning technique done as trying to put removed elements back into a vector seems error prone
             val vector = (Vector<E>) master.clone();
             vector.removeAll(pAll);
-            val result = new ImmutableVector<E>(vector);
-            return result;
+            return new ImmutableVector<>(vector);
         }
     }
 
@@ -142,8 +170,7 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
     public Vector<E> toVector() {
         synchronized (getSynchronisationObject()) {
             Vector<E> master = getMaster();
-            Vector<E> copy = (Vector<E>) master.clone();
-            return copy;
+            return (Vector<E>) master.clone();
         }
     }
 

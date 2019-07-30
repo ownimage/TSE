@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class ImmutableVectorTest {
@@ -17,9 +18,7 @@ public class ImmutableVectorTest {
 
     private void assertEquals(final List<String> pExpected, final ImmutableVector<String> pActual) {
         Assert.assertEquals(pExpected.size(), pActual.size());
-        IntStream.range(0, pActual.size()).forEach(i -> {
-            Assert.assertEquals(pExpected.get(i), pActual.get(i));
-        });
+        IntStream.range(0, pActual.size()).forEach(i -> Assert.assertEquals(pExpected.get(i), pActual.get(i)));
     }
 
     @Test
@@ -136,11 +135,110 @@ public class ImmutableVectorTest {
     }
 
     @Test
+    public void remove_02() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.remove(0);
+        // THEN
+        assertEquals(List.of(s2, s3, s1, s4), underTest2);
+        assertEquals(all, underTest1);
+        assertEquals(List.of(s2, s3, s1, s4), underTest2);
+    }
+
+    @Test
+    public void remove_03() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.remove(2);
+        // THEN
+        assertEquals(List.of(s1, s2, s1, s4), underTest2);
+        assertEquals(all, underTest1);
+        assertEquals(List.of(s1, s2, s1, s4), underTest2);
+    }
+
+    @Test
+    public void remove_04() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.remove(4);
+        // THEN
+        assertEquals(List.of(s1, s2, s3, s1), underTest2);
+        assertEquals(all, underTest1);
+        assertEquals(List.of(s1, s2, s3, s1), underTest2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void remove_05() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.remove(10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void remove_06() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.remove(-1);
+    }
+
+    @Test
+    public void firstElement_01() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val actual = underTest1.firstElement().get();
+        // THEN
+        Assert.assertEquals(s1, actual);
+    }
+
+    @Test
+    public void firstElement_02() {
+        // GIVEN
+        val underTest1 = new ImmutableVector<String>();
+        // WHEN
+        val actual = underTest1.firstElement();
+        // THEN
+        Assert.assertEquals(Optional.empty(), actual);
+    }
+
+    @Test
+    public void lastElement_01() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s1, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val actual = underTest1.lastElement().get();
+        // THEN
+        Assert.assertEquals(s4, actual);
+    }
+
+    @Test
+    public void lastElement_02() {
+        // GIVEN
+        val underTest1 = new ImmutableVector<String>();
+        // WHEN
+        val actual = underTest1.lastElement();
+        // THEN
+        Assert.assertEquals(Optional.empty(), actual);
+    }
+
+    @Test
     public void removeAll_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s3);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        ImmutableVector<String> underTest1 = new ImmutableVector<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -200,7 +298,7 @@ public class ImmutableVectorTest {
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
-        Assert.assertTrue(underTest1 == underTest2);
+        Assert.assertSame(underTest1, underTest2);
     }
 
     @Test
@@ -212,7 +310,7 @@ public class ImmutableVectorTest {
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
-        Assert.assertTrue(underTest1 == underTest2);
+        Assert.assertSame(underTest1, underTest2);
     }
 
     @Test
@@ -250,26 +348,24 @@ public class ImmutableVectorTest {
         val underTest1 = new ImmutableVector<String>().addAll(all);
         val underTest2 = underTest1.removeAll(remove);
         val failures = new Boolean[]{false};
-        val thread1 = new Thread(() -> {
+        val thread1 = new Thread(() ->
             IntStream.range(0, 10000).forEach(i -> {
                 val sb = new StringBuilder();
                 underTest1.forEach(s -> sb.append(s).append(" "));
                 if (!"one two three four ".equals(sb.toString())) {
                     failures[0] = true;
                 }
-                ;
-            });
-        });
-        val thread2 = new Thread(() -> {
+            })
+        );
+        val thread2 = new Thread(() ->
             IntStream.range(0, 10000).forEach(i -> {
                 val sb = new StringBuilder();
                 underTest2.forEach(s -> sb.append(s).append(" "));
                 if (!"one three four ".equals(sb.toString())) {
                     failures[0] = true;
                 }
-                ;
-            });
-        });
+            })
+        );
         // WHEN
         thread1.start();
         thread2.start();
@@ -291,6 +387,24 @@ public class ImmutableVectorTest {
         assertEquals(expected, underTest2);
         assertEquals(all, underTest1);
         assertEquals(expected, underTest2);
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void set_02() throws InterruptedException {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.set(10, s5);
+    }
+
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void set_03() throws InterruptedException {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s4);
+        val underTest1 = new ImmutableVector<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.set(-1, s5);
     }
 
     @Test
@@ -321,7 +435,6 @@ public class ImmutableVectorTest {
                 if (!"one two three four ".equals(sb.toString())) {
                     failures[0] = true;
                 }
-                ;
             });
         });
         val thread2 = new Thread(() -> {
