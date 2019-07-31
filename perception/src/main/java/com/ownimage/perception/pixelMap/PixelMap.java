@@ -18,6 +18,7 @@ import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
@@ -820,6 +821,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public PixelMap actionReapproximate() {
+        SplitTimer.split("PixelMap actionReapproximate() start");
         PixelMap clone = new PixelMap(this);
         Vector<PixelChain> updates = new Vector<>();
         clone.mPixelChains.stream()
@@ -829,6 +831,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .map(pc -> pc.indexSegments(this))
                 .forEach(pc -> updates.add(pc));
         clone.mPixelChains = clone.mPixelChains.clear().addAll(updates);
+        SplitTimer.split("PixelMap actionReapproximate() end");
         return clone;
     }
 
@@ -846,6 +849,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     public void actionProcess(final IProgressObserver pProgressObserver) {
         try {
+            SplitTimer.split("PixelMap actionProcess() start");
             mAutoTrackChanges = false;
             // // pProgress.showProgressBar();
             process01_reset(pProgressObserver);
@@ -896,6 +900,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             Framework.logThrowable(mLogger, Level.INFO, pEx);
         } finally {
             // pProgress.hideProgressBar();
+            SplitTimer.split("PixelMap actionProcess() end");
             mAutoTrackChanges = true;
         }
     }

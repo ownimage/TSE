@@ -5,20 +5,31 @@
  */
 package com.ownimage.framework.util;
 
-import java.util.Date;
+import lombok.val;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.logging.Logger;
 
 public class SplitTimer {
 
     public final static Logger mLogger = Framework.getLogger();
+    private static final SplitTimer mInstance = new SplitTimer();
 
-    private static Date mPrevious = new Date();
+    private Instant mPrevious = Instant.now();
 
     public static void split(final String pMessage) {
-        final Date now = new Date();
-        final float miliseconds = now.getTime() - mPrevious.getTime();
-        mLogger.info(() -> miliseconds + " " + now + " " + pMessage);
+        val milliseconds = mInstance.split();
+        mLogger.info(() -> String.format("SplitTimer: %s %s", milliseconds, pMessage));
+    }
+
+    public long split() {
+        val now = Instant.now();
+        val duration = Duration.between(mPrevious, now);
         mPrevious = now;
+        return duration.toMillis();
     }
 
 }
+
+
