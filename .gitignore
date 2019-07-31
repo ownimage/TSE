@@ -1,6 +1,9 @@
 /bin/
 /javadoc/
 /doc/
+perception/target/
+framework/target/
+imageOrganizer/target/
 **/.idea/**
 ./.settings/**
 Framework/framework.iml
@@ -17,3 +20,4 @@ Perception.log.1
 Perception.log.1.lck
 Perception.log.2
 Perception.log.2.lck
+*.class
