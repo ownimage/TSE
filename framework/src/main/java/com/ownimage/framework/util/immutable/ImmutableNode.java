@@ -2,19 +2,20 @@ package com.ownimage.framework.util.immutable;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ImmutableNode<M> implements Serializable {
 
     private M mMaster;
     transient private WeakReference<ImmutableNode<M>> mPrevious;
-    private final Object mSynchronisation;
+    private final UUID mSynchronisation;
     private ImmutableNode<M> mToMaster;
-    private Consumer<M> mRedo;
-    private Consumer<M> mUndo;
+    private transient Consumer<M> mRedo;
+    private transient Consumer<M> mUndo;
 
     protected ImmutableNode(M pMaster) {
-        mSynchronisation = new Object();
+        mSynchronisation = UUID.randomUUID();
         setMasterAndToMaster(pMaster, null);
         mPrevious = new WeakReference<>(null);
         mUndo = m -> {

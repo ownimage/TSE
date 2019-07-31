@@ -2,6 +2,9 @@ package com.ownimage.framework.util.immutable;
 
 import lombok.val;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Vector;
@@ -178,6 +181,15 @@ public class ImmutableVector<E> extends ImmutableNode<Vector<E>> {
         synchronized (getSynchronisationObject()) {
             return getMaster().size();
         }
+    }
+
+    private void readObject(ObjectInputStream pInputStream) throws ClassNotFoundException, IOException {
+        Vector<E> master = (Vector<E>) pInputStream.readObject();
+        setMasterAndToMaster(master, null);
+    }
+
+    private void writeObject(ObjectOutputStream pOutputStream) throws IOException {
+        pOutputStream.writeObject(getMaster());
     }
 
 }
