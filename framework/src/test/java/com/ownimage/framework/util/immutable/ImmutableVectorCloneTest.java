@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-public class ImmutableVectorTest {
+public class ImmutableVectorCloneTest {
 
     private final String s1 = "one";
     private final String s2 = "two";
@@ -16,20 +16,20 @@ public class ImmutableVectorTest {
     private final String s4 = "four";
     private final String s5 = "five";
 
-    private void assertEquals(final List<String> pExpected, final ImmutableVector<String> pActual) {
+    private void assertEquals(final List<String> pExpected, final ImmutableVectorClone<String> pActual) {
         Assert.assertEquals(pExpected.size(), pActual.size());
         IntStream.range(0, pActual.size()).forEach(i -> Assert.assertEquals(pExpected.get(i), pActual.get(i)));
     }
 
     @Test
     public void constructor_01() {
-        new ImmutableVector<String>();
+        new ImmutableVectorClone<String>();
     }
 
     @Test
     public void add_01() {
         // GIVEN WHEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         val underTest2 = underTest1.add(s1);
         val underTest3 = underTest2.add(s2);
         val underTest4 = underTest3.add(s3);
@@ -43,7 +43,7 @@ public class ImmutableVectorTest {
     @Test
     public void addAt_01() {
         // GIVEN WHEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         val underTest2 = underTest1.add(s1);
         val underTest3 = underTest2.add(s2);
         val underTest4 = underTest3.add(s3);
@@ -61,7 +61,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val s2Tos4 = List.of(s2, s3, s4);
         // WHEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         val underTest2 = underTest1.add(s1);
         val underTest3 = underTest2.addAll(s2Tos4);
         val underTest4 = underTest3.add(s5);
@@ -76,7 +76,7 @@ public class ImmutableVectorTest {
     @Test
     public void clear_01() {
         // GIVEN WHEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         val underTest2 = underTest1.add(s1);
         val underTest3 = underTest2.add(s2);
         val underTest4 = underTest3.add(s3);
@@ -95,7 +95,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val s1Tos4 = List.of(s1, s2, s3, s4);
         // WHEN
-        val underTest = new ImmutableVector<String>()
+        val underTest = new ImmutableVectorClone<String>()
                 .addAll(s1Tos4);
         // THEN
         Assert.assertTrue(underTest.contains(s1));
@@ -110,7 +110,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val s1Tos4 = List.of(s1, s2, s3, s4);
         // WHEN
-        val underTest = new ImmutableVector<String>().addAll(s1Tos4);
+        val underTest = new ImmutableVectorClone<String>().addAll(s1Tos4);
         // THEN
         Assert.assertTrue(underTest.containsAll(s1Tos4));
         Assert.assertTrue(underTest.containsAll(List.of(s1)));
@@ -125,7 +125,7 @@ public class ImmutableVectorTest {
     public void remove_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.remove(s1);
         // THEN
@@ -138,7 +138,7 @@ public class ImmutableVectorTest {
     public void remove_02() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.remove(0);
         // THEN
@@ -151,7 +151,7 @@ public class ImmutableVectorTest {
     public void remove_03() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.remove(2);
         // THEN
@@ -164,7 +164,7 @@ public class ImmutableVectorTest {
     public void remove_04() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.remove(4);
         // THEN
@@ -177,7 +177,7 @@ public class ImmutableVectorTest {
     public void remove_05() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         underTest1.remove(10);
     }
@@ -186,7 +186,7 @@ public class ImmutableVectorTest {
     public void remove_06() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         underTest1.remove(-1);
     }
@@ -195,7 +195,7 @@ public class ImmutableVectorTest {
     public void firstElement_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val actual = underTest1.firstElement().get();
         // THEN
@@ -205,7 +205,7 @@ public class ImmutableVectorTest {
     @Test
     public void firstElement_02() {
         // GIVEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         // WHEN
         val actual = underTest1.firstElement();
         // THEN
@@ -216,7 +216,7 @@ public class ImmutableVectorTest {
     public void lastElement_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s1, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val actual = underTest1.lastElement().get();
         // THEN
@@ -226,7 +226,7 @@ public class ImmutableVectorTest {
     @Test
     public void lastElement_02() {
         // GIVEN
-        val underTest1 = new ImmutableVector<String>();
+        val underTest1 = new ImmutableVectorClone<String>();
         // WHEN
         val actual = underTest1.lastElement();
         // THEN
@@ -238,7 +238,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s3);
-        ImmutableVector<String> underTest1 = new ImmutableVector<String>().addAll(all);
+        ImmutableVectorClone<String> underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -252,7 +252,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -266,7 +266,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s1, s2, s3);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -280,7 +280,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s1, s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -290,35 +290,11 @@ public class ImmutableVectorTest {
     }
 
     @Test
-    public void removeAll_05() {
-        // GIVEN
-        val all = List.of(s1, s2, s3, s4);
-        val remove = List.of();
-        val underTest1 = new ImmutableVector<String>().addAll(all);
-        // WHEN
-        val underTest2 = underTest1.removeAll(remove);
-        // THEN
-        Assert.assertSame(underTest1, underTest2);
-    }
-
-    @Test
-    public void removeAll_06() {
-        // GIVEN
-        val all = List.of(s1, s2, s3, s4);
-        val remove = List.of(s5);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
-        // WHEN
-        val underTest2 = underTest1.removeAll(remove);
-        // THEN
-        Assert.assertSame(underTest1, underTest2);
-    }
-
-    @Test
     public void removeAll_07() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s5);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);
         // THEN
@@ -331,7 +307,7 @@ public class ImmutableVectorTest {
     public void forEach_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         val sb = new StringBuilder();
         // WHEN
         underTest1.forEach(s -> sb.append(s).append(" "));
@@ -344,7 +320,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s5);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         val underTest2 = underTest1.removeAll(remove);
         val failures = new Boolean[]{false};
         val thread1 = new Thread(() ->
@@ -379,7 +355,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val expected = List.of(s1, s2, s5, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.set(2, s5);
         // THEN
@@ -392,7 +368,7 @@ public class ImmutableVectorTest {
     public void set_02() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         underTest1.set(10, s5);
     }
@@ -401,7 +377,7 @@ public class ImmutableVectorTest {
     public void set_03() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         underTest1.set(-1, s5);
     }
@@ -410,7 +386,7 @@ public class ImmutableVectorTest {
     public void stream_01() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         val sb = new StringBuilder();
         // WHEN
         underTest1.stream().forEach(s -> sb.append(s).append(" "));
@@ -423,7 +399,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s2, s5);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         val underTest2 = underTest1.removeAll(remove);
         val failures = new Boolean[]{false};
         val thread1 = new Thread(() ->
@@ -458,7 +434,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val expected = new String[]{s1, s2, s3, s4};
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         // WHEN
         val actual = underTest1.toVector();
         // THEN
@@ -477,7 +453,7 @@ public class ImmutableVectorTest {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
         val remove = List.of(s1, s2, s3);
-        val underTest1 = new ImmutableVector<String>().addAll(all);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
         val underTest2 = underTest1.removeAll(remove);
         // THEN
         Assert.assertEquals(4, underTest1.size());

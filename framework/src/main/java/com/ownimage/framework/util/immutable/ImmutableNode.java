@@ -27,7 +27,7 @@ public class ImmutableNode<M> implements Serializable {
     protected ImmutableNode(ImmutableNode<M> pPrevious, Consumer<M> pRedo, Consumer<M> pUndo) {
         mSynchronisation = pPrevious.mSynchronisation;
         synchronized (getSynchronisationObject()) {
-            setMasterAndToMaster(pPrevious.mMaster, null);
+            setMasterAndToMaster(pPrevious.getMaster(), null);
             mPrevious = new WeakReference<>(pPrevious);
             pRedo.accept(mMaster);
             mRedo = pRedo;

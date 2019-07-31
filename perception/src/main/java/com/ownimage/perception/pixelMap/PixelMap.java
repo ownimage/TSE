@@ -240,6 +240,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void actionEqualizeValues(final EqualizeValues pValues) {
+        if (mPixelChains.size() == 0) {
+            return;
+        }
         // TODO do not like this mutable parameter
         StrongReference<Integer> totalLength = new StrongReference<>(0);
         mPixelChains.forEach(chain -> totalLength.set(totalLength.get() + chain.getPixelLength()));
