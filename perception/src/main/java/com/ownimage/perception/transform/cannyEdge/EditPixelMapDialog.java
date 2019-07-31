@@ -165,7 +165,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mOkAction = pOkAction;
         mCancelAction = pCancelAction;
         final Properties properties = Services.getServices().getProperties();
-        mPixelMapWidth = new IntegerControl("PixelMap Height", "pixelMapWidth", mGeneralContainer, getWidth(), 0, getWidth(), 50).setEnabled(false);
+        mPixelMapWidth = new IntegerControl("PixelMap Width", "pixelMapWidth", mGeneralContainer, getWidth(), 0, getWidth(), 50).setEnabled(false);
         mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, getHeight(), 50).setEnabled(false);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, properties.getCETEPMDPreviewSize(), properties.CETEPMDPreviewSizeModel);
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, properties.getCETEPMDZoom(), properties.CETEPMDZoomModel);
@@ -394,8 +394,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Point UHVWtoView(final Point pUHVW) {
-        final double x = ((mPixelMapHeight.getValue() / mPixelMapWidth.getValidateValue()) * getWidth() * pUHVW.getX() - getViewOriginX()) * getZoom() / getWidth();
-        final double y = (getHeight() * pUHVW.getY() - getViewOriginY()) * getZoom() / getHeight();
+        final double x = (pUHVW.getX() * getHeight() - getViewOriginX()) * getZoom() / getWidth();
+        final double y = (pUHVW.getY() * getHeight() - getViewOriginY()) * getZoom() / getHeight();
         return new Point(x, y);
     }
 
