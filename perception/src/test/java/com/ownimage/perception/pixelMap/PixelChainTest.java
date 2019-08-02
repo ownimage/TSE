@@ -189,10 +189,11 @@ public class PixelChainTest {
                 new Pixel(8, 7),
                 new Pixel(7, 7)
         };
+        var pixelMap = Utility.createMap(10, 2000);
 
         var pixelChain = new PixelChain(new Node(3, 7));
         for (Pixel pixel : pixels) {
-            pixelChain = pixelChain.add(pixel);
+            pixelChain = pixelChain.add(pixelMap, pixel);
         }
         pixelChain = pixelChain.setEndNode(null, new Node(6, 7));
         return pixelChain;

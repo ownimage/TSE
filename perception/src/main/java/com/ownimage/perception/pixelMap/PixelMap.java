@@ -284,7 +284,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             Framework.logExit(mLogger);
             return copy;
         }
-        PixelChain copy = pPixelChain.add(pCurrentPixel);
+        PixelChain copy = pPixelChain.add(pPixelMap, pCurrentPixel);
         pCurrentPixel.setInChain(this, true);
         pCurrentPixel.setVisited(this, true);
         // try to end quickly at a node to prevent bypassing
@@ -1413,7 +1413,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         invalidateSegmentIndex();
         calcSegmentIndex();
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-        mPixelChains.stream().parallel().forEach(pc -> pc.validate("PixelMap::validate"));
+        mPixelChains.stream().parallel().forEach(pc -> pc.validate(this, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
         for (int x = 0; x < mSegmentIndex.length; x++) {
             for (int y = 0; y < mSegmentIndex[x].length; y++) {
