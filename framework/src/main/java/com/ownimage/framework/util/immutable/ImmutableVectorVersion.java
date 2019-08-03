@@ -11,7 +11,7 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implements ImmutableVector<E> {
+public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implements IImmutableVector<E> {
 
     public ImmutableVectorVersion() {
         super(new Vector<>());

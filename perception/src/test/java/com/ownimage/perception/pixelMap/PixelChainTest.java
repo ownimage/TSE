@@ -1,11 +1,10 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import lombok.val;
+import org.junit.*;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -168,6 +167,62 @@ public class PixelChainTest {
         var actual = underTest.getWidth(ipmts);
         // THEN
         assertEquals(expected, actual, 0.0d);
+    }
+
+    @Test
+    public void getOptionalPixel_01() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getOptionalPixel(-1);
+        // THEN
+        Assert.assertEquals(Optional.empty(), actual);
+    }
+
+    @Test
+    public void getOptionalPixel_02() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getOptionalPixel(25);
+        // THEN
+        Assert.assertEquals(Optional.empty(), actual);
+    }
+
+    @Test
+    public void getOptionalPixel_03() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getOptionalPixel(2).get();
+        // THEN
+        Assert.assertEquals(new Pixel(3, 5), actual);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getPixel_01() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getPixel(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getPixel_02() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getPixel(25);
+    }
+
+    @Test
+    public void getlPixel_03() {
+        // GIVEN
+        val underTest = createPixelChain();
+        // WHEN
+        val actual = underTest.getPixel(2);
+        // THEN
+        Assert.assertEquals(new Pixel(3, 5), actual);
     }
 
     public PixelChain createPixelChain() {

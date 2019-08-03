@@ -26,10 +26,10 @@ public class ImmutableVectorPerformanceTest {
         System.out.println(String.format("Version : %s ms", timer.split()));
     }
 
-    private static int test(ImmutableVector<String> pUnderTest) {
+    private static int test(IImmutableVector<String> pUnderTest) {
         int total = 0;
         for (int j = 0; j < 100000; j++) {
-            StrongReference<ImmutableVector<String>> t = new StrongReference<>(pUnderTest);
+            StrongReference<IImmutableVector<String>> t = new StrongReference<>(pUnderTest);
             for (int i = 0; i < 10; i++) {
                 t.set(t.get().add("new string"));
             }

@@ -293,7 +293,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
             // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.count() == 2 &&
+            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelLength() == 2 &&
                     nodalNeighbour.samePosition(copy.firstPixel()))) {
                 copy = generateChain(pPixelMap, pStartNode, nodalNeighbour, copy);
                 Framework.logExit(mLogger);
@@ -306,7 +306,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
             // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.count() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
+            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.getPixelLength() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
                 copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
                 Framework.logExit(mLogger);
                 return copy;

@@ -7,7 +7,7 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ImmutableVectorClone<E> implements ImmutableVector<E>, Serializable {
+public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializable {
     
     private Vector<E> mVector = new Vector(); 
 
@@ -39,8 +39,8 @@ public class ImmutableVectorClone<E> implements ImmutableVector<E>, Serializable
     }
 
     @Override
-    public ImmutableVectorClone clear() {
-        return new ImmutableVectorClone();
+    public ImmutableVectorClone<E> clear() {
+        return new ImmutableVectorClone<>();
     }
 
     @Override

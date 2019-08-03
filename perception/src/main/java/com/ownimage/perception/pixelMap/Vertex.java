@@ -33,7 +33,7 @@ public class Vertex implements IVertex {
         mPosition = pPosition;
     }
 
-    public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex) {
+    public static Vertex createVertex(final IPixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
         }

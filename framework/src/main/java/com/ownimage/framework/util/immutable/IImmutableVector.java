@@ -6,14 +6,15 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface ImmutableVector<E> {
-    ImmutableVector<E> add(E pElement);
+public interface IImmutableVector<E> {
 
-    ImmutableVector<E> add(int pIndex, E pElement);
+    IImmutableVector<E> add(E pElement);
 
-    ImmutableVector addAll(Collection<E> pAll);
+    IImmutableVector<E> add(int pIndex, E pElement);
 
-    ImmutableVector clear();
+    IImmutableVector addAll(Collection<E> pAll);
+
+    IImmutableVector clear();
 
     boolean contains(E pElement);
 
@@ -21,19 +22,19 @@ public interface ImmutableVector<E> {
 
     E get(int pIndex);
 
-    ImmutableVector remove(E pElement);
+    IImmutableVector remove(E pElement);
 
-    ImmutableVector remove(int pIndex);
+    IImmutableVector remove(int pIndex);
 
     Optional<E> firstElement();
 
     Optional<E> lastElement();
 
-    ImmutableVector removeAll(Collection<E> pAll);
+    IImmutableVector removeAll(Collection<E> pAll);
 
     void forEach(Consumer<E> pFn);
 
-    ImmutableVector set(int pIndex, E pValue);
+    IImmutableVector set(int pIndex, E pValue);
 
     Stream<E> stream();
 
