@@ -76,8 +76,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public final static long serialVersionUID = 2L;
 
     private final ImmutableVectorClone<Pixel> mPixels;
-    private ImmutableVectorClone<ISegment> mSegmentsX;
-    private ImmutableVectorClone<IVertex> mVertexesX;
+    private  ImmutableVectorClone<ISegment> mSegmentsX;
+    private  ImmutableVectorClone<IVertex> mVertexesX;
     transient private double mLength;
     private Thickness mThickness;
 
@@ -201,58 +201,58 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     PixelChain approximate(final PixelMap pPixelMap, final IPixelMapTransformSource pTransformSource) {
         var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
         var copy = clone();
-        copy.approximate01_straightLines(pPixelMap, tolerance);
+        copy = copy.approximate01_straightLines(pPixelMap, tolerance);
         copy.approximate02_refineCorners(pPixelMap);
         copy.checkAllVertexesAttached();
         return copy;
     }
 
-    void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
+    PixelChain approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of length n will be close enough, a line of length n+1 will not be, but there exists an m such that a line of length m is close enough.
-        mSegmentsX = mSegmentsX.clear();
-        mVertexesX = mVertexesX.clear();
-
-        if (mPixels.size() <= 1) {
-            return;
+        if (getPixelCount() <= 1) {
+            return this;
         }
 
-        final IVertex startVertex = Vertex.createVertex(this, 0, 0);
-        setStartVertex(startVertex);
+        var builder = builder();
+        builder.changeSegments(s -> s.clear());
+        builder.changeVertexes(v -> v.clear());
+
+        val startVertex = Vertex.createVertex(builder, 0, 0);
+        builder.changeVertexes(v -> v.add(startVertex));
 
         int maxIndex = 0;
-        IVertex maxVertex = null;
-        StraightSegment maxSegment = null;
+        val maxVertex = new IVertex[]{null};
+        val maxSegment = new StraightSegment[]{null};
 
         int endIndex = 1;
 
-        while (endIndex < mPixels.size()) {
-            final int vertexIndex = mVertexesX.size();
-            mVertexesX = mVertexesX.add(null);
-            final int segmentIndex = mSegmentsX.size();
-            mSegmentsX = mSegmentsX.add(null);
+        while (endIndex < builder.getPixelCount()) {
+            val vertexIndex = builder.getVertexCount();
+            builder.changeVertexes(v -> v.add(null));
+            val segmentIndex = builder.getSegmentCount();
+            builder.changeSegments(s -> s.add(null));
 
-            for (int index = endIndex; index < mPixels.size(); index++) {
-                final IVertex candidateVertex = Vertex.createVertex(this, vertexIndex, index);
-                mVertexesX = mVertexesX.set(vertexIndex, candidateVertex);
-                final StraightSegment candidateSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex);
-                mSegmentsX = mSegmentsX.set(segmentIndex, candidateSegment);
+            for (int index = endIndex; index < builder.getPixelCount(); index++) {
+                val candidateVertex = Vertex.createVertex(builder, vertexIndex, index);
+                builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
+                val candidateSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder, segmentIndex);
+                builder.changeSegments(s -> s.set(segmentIndex, candidateSegment));
 
-                if (candidateSegment.noPixelFurtherThan(pPixelMap, this, pTolerance)) {
+                if (candidateSegment.noPixelFurtherThan(pPixelMap, builder, pTolerance)) {
                     maxIndex = index;
-                    maxVertex = candidateVertex;
-                    maxSegment = candidateSegment;
+                    maxVertex[0] = candidateVertex;
+                    maxSegment[0] = candidateSegment;
                     continue;
                 }
                 break;
             }
 
-            mVertexesX = mVertexesX.set(vertexIndex, maxVertex);
-            mSegmentsX = mSegmentsX.set(segmentIndex, maxSegment);
+            builder.changeVertexes(v -> v.set(vertexIndex, maxVertex[0]));
+            builder.changeSegments(s -> s.set(segmentIndex, maxSegment[0]));
             endIndex = maxIndex + 1;
         }
-
-        validate(pPixelMap, false, "approximate01_straightLines");
+        return builder.build(pPixelMap);
     }
 
     private void approximate02_refineCorners(final PixelMap pPixelMap) {
@@ -438,21 +438,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             mThickness = Thickness.Normal;
         }
         return mThickness;
-    }
-
-    /**
-     * Gets the UHVW value of the Pixel at the specified position.
-     *
-     * @param pIndex    the index
-     * @param pPixelMap
-     * @return the UHVW Point
-     */
-    public Point getUHVWPoint(final int pIndex, final PixelMap pPixelMap) {
-        if (pIndex < 0 || pIndex > length()) {
-            throw new IllegalArgumentException("pIndex, currently: " + pIndex + " must be between 0 and the length of mPixels, currently: " + length());
-        }
-
-        return mPixels.get(pIndex).getUHVWMidPoint(pPixelMap);
     }
 
     public double getWidth(final IPixelMapTransformSource pIPMTS) {
@@ -1077,7 +1062,9 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     private void setStartVertex(final IVertex pVertex) {
-        if (mVertexesX.size() >= 1) mVertexesX = mVertexesX.remove(0);
+        if (mVertexesX.size() >= 1) {
+            throw new IllegalStateException("can not setStartVertex when Vertexes already exist");
+        }
         mVertexesX = mVertexesX.add(0, pVertex);
     }
 

@@ -121,7 +121,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Pixel getPixel(final PixelChain pPixelChain) {
+    public Pixel getPixel(final IPixelChain pPixelChain) {
         return pPixelChain.getPixel(mPixelIndex);
     }
 
@@ -131,7 +131,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Point getUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Point getUHVWPoint(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return mPosition != null ? mPosition : getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
     }
 

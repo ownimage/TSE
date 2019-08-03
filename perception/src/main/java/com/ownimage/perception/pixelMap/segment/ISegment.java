@@ -40,7 +40,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end index
      */
-    int getEndIndex(PixelChain pPixelChain);
+    int getEndIndex(IPixelChain pPixelChain);
 
     Line getEndTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
 
@@ -60,7 +60,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
-    Point getEndUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Point getEndUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end Vertex of this segment.
@@ -68,13 +68,13 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end Vertex
      */
-    IVertex getEndVertex(PixelChain pPixelChain);
+    IVertex getEndVertex(IPixelChain pPixelChain);
 
     double getLength(final PixelMap pPixelMap, PixelChain pPixelChain);
 
     int getPixelLength(PixelChain pPixelChain);
 
-    Point getPointFromLambda(final PixelMap pPixelMap, PixelChain pPixelChain, double pT);
+    Point getPointFromLambda(final PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
 
     /**
      * Gets the start index (into the mPixels) of this segment.
@@ -82,7 +82,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start index
      */
-    int getStartIndex(PixelChain pPixelChain);
+    int getStartIndex(IPixelChain pPixelChain);
 
     Line getStartTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
 
@@ -103,7 +103,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
-    Point getStartUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Point getStartUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start Vertex of this segment.
@@ -111,7 +111,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start Vertex
      */
-    IVertex getStartVertex(PixelChain pPixelChain);
+    IVertex getStartVertex(IPixelChain pPixelChain);
 
     void graffiti(final PixelMap pPixelMap, PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 

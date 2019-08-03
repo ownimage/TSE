@@ -4,6 +4,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -381,6 +382,33 @@ public class ImmutableVectorCloneTest {
         // WHEN
         underTest1.set(-1, s5);
     }
+
+    @Test
+    public void set_04() {
+        // GIVEN
+        val all = List.of(s1, s2, s3, s4);
+        var expected = new ArrayList(all);
+        expected.set(1, null);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.set(1, null);
+        // THEN
+        assertEquals(expected, underTest2);
+    }
+
+    @Test
+    public void set_05() {
+        // GIVEN
+        var expected = List.of(s1, s2, s3, s4);
+        val all = new ArrayList(List.of(s1, s2, s3, s4));
+        all.set(1, null);
+        val underTest1 = new ImmutableVectorClone<String>().addAll(all);
+        // WHEN
+        val underTest2 = underTest1.set(1, s2);
+        // THEN
+        assertEquals(expected, underTest2);
+    }
+
 
     @Test
     public void stream_01() {

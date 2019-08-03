@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
@@ -53,7 +54,7 @@ public class SegmentFactory {
     }
 
 
-    static public StraightSegment createTempStraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex) {
+    static public StraightSegment createTempStraightSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex) {
         return new StraightSegment(pPixelMap, pPixelChain, pSegmentIndex);
     }
 

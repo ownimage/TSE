@@ -31,9 +31,9 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
     Line calcTangent(PixelChain pPixelChain, final PixelMap pPixelMap);
 
-    Point getUHVWPoint(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Point getUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    Pixel getPixel(PixelChain pPixelChain);
+    Pixel getPixel(IPixelChain pPixelChain);
 
     IVertex withPosition(PixelChain pPixelChain, Point pPosition);
 }

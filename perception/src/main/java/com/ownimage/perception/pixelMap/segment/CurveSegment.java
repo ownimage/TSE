@@ -12,6 +12,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.QuarticEquation;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -35,7 +36,7 @@ public class CurveSegment extends SegmentBase {
     public CurveSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1, final double pStartPosition) {
         super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
-        mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelChain, pPixelMap)).minus(getP1().multiply(2.0d));
+        mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelMap, pPixelChain)).minus(getP1().multiply(2.0d));
         mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
     }
 
@@ -99,7 +100,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public double distance(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pUVHWPoint) {
+    public double distance(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Point pUVHWPoint) {
         // note this is closely related to closestLambda
         final Point C = getP0(pPixelMap, pPixelChain).minus(pUVHWPoint);
 
@@ -171,7 +172,7 @@ public class CurveSegment extends SegmentBase {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 
-    Point getP0(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    Point getP0(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getStartUHVWPoint(pPixelMap, pPixelChain);
     }
 
@@ -190,7 +191,7 @@ public class CurveSegment extends SegmentBase {
         return mP1;
     }
 
-    Point getP2(final PixelChain pPixelChain, final PixelMap pPixelMap) {
+    Point getP2(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getEndUHVWPoint(pPixelMap, pPixelChain);
     }
 
@@ -202,14 +203,14 @@ public class CurveSegment extends SegmentBase {
      * @return the Vector
      */
     private Vector getP2P1(final PixelChain pPixelChain, final PixelMap pPixelMap) {
-        return getP2(pPixelChain, pPixelMap).minus(getP1());
+        return getP2(pPixelMap, pPixelChain).minus(getP1());
     }
 
     @Override
-    public Point getPointFromLambda(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pT) {
+    public Point getPointFromLambda(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pT) {
         return getP0(pPixelMap, pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
-                .add(getP2(pPixelChain, pPixelMap).multiply(pT * pT));
+                .add(getP2(pPixelMap, pPixelChain).multiply(pT * pT));
     }
 
     @Override
@@ -226,8 +227,8 @@ public class CurveSegment extends SegmentBase {
         var c = (getStartVertex(pPixelChain).isPositionSpecified() || getEndVertex(pPixelChain).isPositionSpecified())
                 ? Color.RED : Color.BLACK;
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP1(), c);
-        pGraphics.graffitiLine(getP1(), getP2(pPixelChain, pPixelMap), c);
-        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelChain, pPixelMap), c);
+        pGraphics.graffitiLine(getP1(), getP2(pPixelMap, pPixelChain), c);
+        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), c);
         //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }

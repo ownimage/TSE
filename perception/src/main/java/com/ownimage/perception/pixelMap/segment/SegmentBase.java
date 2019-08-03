@@ -8,11 +8,7 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.IVertex;
-import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.*;
 import lombok.val;
 
 import java.util.logging.Logger;
@@ -68,14 +64,14 @@ public abstract class SegmentBase implements ISegment {
         return false;
     }
 
-    public abstract double distance(final PixelMap pPixelMap, PixelChain pPixelChain, final Point pUVHWPoint);
+    public abstract double distance(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pUVHWPoint);
 
     double getActualThickness(final IPixelMapTransformSource pSource, final PixelChain pPixelChain, final double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
     }
 
     @Override
-    public int getEndIndex(final PixelChain pPixelChain) {
+    public int getEndIndex(final IPixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex + 1).getPixelIndex();
     }
 
@@ -85,12 +81,12 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Point getEndUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Point getEndUHVWPoint(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
     }
 
     @Override
-    public IVertex getEndVertex(final PixelChain pPixelChain) {
+    public IVertex getEndVertex(final IPixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
@@ -124,7 +120,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public int getStartIndex(final PixelChain pPixelChain) {
+    public int getStartIndex(final IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPixelIndex();
     }
 
@@ -141,12 +137,12 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Point getStartUHVWPoint(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Point getStartUHVWPoint(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
     }
 
     @Override
-    public IVertex getStartVertex(final PixelChain pPixelChain) {
+    public IVertex getStartVertex(final IPixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex);
     }
 
@@ -155,7 +151,7 @@ public abstract class SegmentBase implements ISegment {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
     }
 
-    public boolean noPixelFurtherThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pDistance) {
+    public boolean noPixelFurtherThan(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);
             if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {

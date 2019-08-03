@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -19,11 +20,11 @@ public class StraightSegment extends SegmentBase {
 
     private final LineSegment mLineSegment;
 
-    StraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex) {
+    StraightSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex) {
         this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
     }
 
-    StraightSegment(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final double pStartPosition) {
+    StraightSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final double pStartPosition) {
         super(pSegmentIndex, pStartPosition);
         final Point a = getStartUHVWPoint(pPixelMap, pPixelChain);
         final Point b = getEndUHVWPoint(pPixelMap, pPixelChain);
@@ -54,7 +55,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double distance(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pUVHWPoint) {
+    public double distance(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Point pUVHWPoint) {
         return mLineSegment.distance(pUVHWPoint);
     }
 
@@ -93,7 +94,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Point getPointFromLambda(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pLambda) {
+    public Point getPointFromLambda(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pLambda) {
         return mLineSegment.getPoint(pLambda);
     }
 

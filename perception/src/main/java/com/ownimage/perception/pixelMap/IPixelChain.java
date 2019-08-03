@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.immutable.IImmutableVector;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 
@@ -61,5 +62,20 @@ public interface IPixelChain {
 
     default int getVertexCount() {
         return getVertexes().size();
+    }
+
+    /**
+     * Gets the UHVW value of the Pixel at the specified position.
+     *
+     * @param pIndex    the index
+     * @param pPixelMap
+     * @return the UHVW Point
+     */
+    default Point getUHVWPoint(final int pIndex, final PixelMap pPixelMap) {
+        if (pIndex < 0 || pIndex > getPixelCount()) {
+            String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
+            throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
+        }
+        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap);
     }
 }

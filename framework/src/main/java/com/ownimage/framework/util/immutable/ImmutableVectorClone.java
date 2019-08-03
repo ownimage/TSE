@@ -116,6 +116,10 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
 
     @Override
     public ImmutableVectorClone set(final int pIndex, final E pValue) {
+        if (mVector.get(pIndex) == null && pValue == null
+                || ( pValue != null && pValue.equals(mVector.get(pIndex)))) {
+            return this;
+        }
         var clone = clone();
         clone.mVector.set(pIndex, pValue);
         return clone;
