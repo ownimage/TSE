@@ -30,7 +30,6 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The Class PixelChain. The following shows how a PixelChain would be constructed, populated with Pixels and ISegments
@@ -125,10 +124,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return new PixelChainBuilder(mPixels, mVertexesX, mSegmentsX, mLength, mThickness);
     }
 
-    Stream<Pixel> streamPixels() {
-        return mPixels.stream();
-    }
-
     private PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
     }
@@ -147,6 +142,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         builder.changePixels(p -> p.add(pPixel));
         return builder.build(pPixelMap);
     }
+
+    public IImmutableVector<Pixel> getPixels() { return mPixels;}
+
+    public IImmutableVector<ISegment> getSegments() { return mSegmentsX;}
+
+    public IImmutableVector<IVertex> getVertexes() { return mVertexesX;}
 
     /**
      * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
@@ -340,10 +341,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 .isPresent();
     }
 
-    public Stream<Pixel> stream() {
-        return mPixels.stream();
-    }
-
     @Deprecated
     Pixel firstPixel() {
         // happy for this to throw exception if first element does not exist
@@ -410,19 +407,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     }
 
-    public IImmutableVector<Pixel> getPixels() {
-        return mPixels;
-    }
-
-    public ImmutableVectorClone<ISegment> getSegments() {
-        return mSegmentsX;
-    }
-
-    public ImmutableVectorClone<IVertex> getVertexes() {
-        return mVertexesX;
-    }
-
-
     Optional<Node> getEndNode(PixelMap pPixelMap) {
         return mPixels.lastElement().flatMap(pPixelMap::getNode);
     }
@@ -432,28 +416,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mSegmentsX.firstElement().orElse(null);
     }
 
-    private Optional<ISegment> getOptionalFirstSegment() {
-        return mSegmentsX.firstElement();
-    }
-
     @Deprecated
     private ISegment getLastSegment() {
         return mSegmentsX.lastElement().orElse(null);
     }
 
-    private Optional<ISegment> getOptionalLastSegment() {
-        return mSegmentsX.lastElement();
-    }
-
     private double getLength() {
         return mLength;
-    }
-
-    public int getSegmentCount() {
-        Framework.logEntry(mLogger);
-        final int result = mSegmentsX.size();
-        Framework.logExit(mLogger);
-        return result;
     }
 
     Optional<Node> getStartNode(final PixelMap pPixelMap) {
@@ -566,7 +535,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 //        }
 
         // TODO should recalculate thickness from source values
-        mThickness = getPixelLength() > pOtherChain.getPixelLength() ? mThickness : pOtherChain.mThickness;
+        mThickness = getPixelCount() > pOtherChain.getPixelCount() ? mThickness : pOtherChain.mThickness;
         return merge(pPixelMap, pOtherChain);
     }
 
@@ -1095,8 +1064,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelLength() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelLength() - 3))) {
-            val index = builder.getPixelLength() - 2;
+        if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
+            val index = builder.getPixelCount() - 2;
             builder.getPixel(index).setVisited(pPixelMap, false);
             builder.changePixels(p -> p.remove(index));
         }

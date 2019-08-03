@@ -457,7 +457,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         StrongReference<Bounds> bounds = new StrongReference<>(null);
         mPixelMap.getPixelChains(pPixel).stream().findFirst().ifPresent(pixelChain -> {
             bounds.set(new Bounds());
-            pixelChain.stream().forEach(pixel -> bounds.set(bounds.get().getBounds(pixel)));
+            pixelChain.streamPixels().forEach(pixel -> bounds.set(bounds.get().getBounds(pixel)));
             builder.append("int xMargin = 2;\n");
             builder.append("int yMargin = 2;\n");
             builder.append("Pixel offset = new Pixel(xMargin, yMargin);\n");
@@ -478,7 +478,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
             builder.append("pixelMap.actionProcess(null);\n");
 
-            pixelChain.stream().forEach(pixel -> {
+            pixelChain.streamPixels().forEach(pixel -> {
                 builder.append("pixelMap = pixelMap.actionPixelOn(new Pixel(");
                 builder.append(pixel.minus(bounds.get().getLowerLeft()).getX());
                 builder.append(", ");

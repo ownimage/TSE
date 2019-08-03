@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.immutable.IImmutableVector;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 
@@ -57,15 +58,15 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
-    public ImmutableVectorClone<Pixel> getPixels() {
+    public IImmutableVector<Pixel> getPixels() {
         return mPixels;
     }
 
-    public ImmutableVectorClone<ISegment> getSegments() {
+    public IImmutableVector<ISegment> getSegments() {
         return mSegments;
     }
 
-    public ImmutableVectorClone<IVertex> getVertexes() {
+    public IImmutableVector<IVertex> getVertexes() {
         return mVertexes;
     }
 

@@ -93,7 +93,7 @@ public class PixelChainTest {
         var longThickness = 77d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelLength();
+        var length = underTest.getPixelCount();
         underTest = underTest.setThickness(1, length - 2, length - 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -112,7 +112,7 @@ public class PixelChainTest {
         var mediumThickness = 55d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelLength();
+        var length = underTest.getPixelCount();
         underTest = underTest.setThickness(1, length - 2, length + 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -133,7 +133,7 @@ public class PixelChainTest {
         var shortThickness = 33d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelLength();
+        var length = underTest.getPixelCount();
         underTest = underTest.setThickness(1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -155,7 +155,7 @@ public class PixelChainTest {
         var shortThickness = 33d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelLength();
+        var length = underTest.getPixelCount();
         underTest = underTest.setThickness(length + 1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);

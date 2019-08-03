@@ -14,11 +14,16 @@ public interface IPixelChain {
 
     IImmutableVector<IVertex> getVertexes();
 
+
+    default Stream<Pixel> streamPixels() {
+        return getPixels().stream();
+    }
+
     default Stream<ISegment> streamSegments() {
         return getSegments().stream();
     }
 
-    default int getPixelLength() {
+    default int getPixelCount() {
         return getPixels().size();
     }
 
@@ -35,18 +40,26 @@ public interface IPixelChain {
 
     @Deprecated
     default Pixel getPixel(final int pIndex) {
-        if (pIndex < 0 || pIndex > getPixelLength()) {
+        if (pIndex < 0 || pIndex > getPixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
-            throw new IllegalArgumentException(String.format(msg, pIndex, getPixelLength()));
+            throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
         }
 
         return getPixels().get(pIndex);
     }
 
     default Optional<Pixel> getOptionalPixel(final int pIndex) {
-        if (pIndex < 0 || pIndex > getPixelLength()) {
+        if (pIndex < 0 || pIndex > getPixelCount()) {
             return Optional.empty();
         }
         return Optional.of(getPixels().get(pIndex));
+    }
+
+    default int getSegmentCount() {
+        return getSegments().size();
+    }
+
+    default int getVertexCount() {
+        return getVertexes().size();
     }
 }

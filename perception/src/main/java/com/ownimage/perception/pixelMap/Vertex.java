@@ -34,16 +34,16 @@ public class Vertex implements IVertex {
     }
 
     public static Vertex createVertex(final IPixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
 
         return new Vertex(pVertexIndex, pPixelIndex, null);
     }
 
     public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex, final Point pPosition) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelLength()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelLength() + ")");
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
 
         return new Vertex(pVertexIndex, pPixelIndex, pPosition);

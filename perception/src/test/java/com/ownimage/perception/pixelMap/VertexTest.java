@@ -42,7 +42,7 @@ public class VertexTest {
         assertEquals(index, underTest.getPixelIndex());
         assertEquals(1, underTest.getVertexIndex());
         assertEquals(point, underTest.getUHVWPoint(mockPixelMap, mockPixelChain));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getPixel(index);
         verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap);
         verifyNoMoreInteractions(mockPixelMap, mockPixelChain, mockPixel);
@@ -61,7 +61,7 @@ public class VertexTest {
         assertEquals(index, underTest.getPixelIndex());
         assertEquals(1, underTest.getVertexIndex());
         assertEquals(pointCtor, underTest.getUHVWPoint(mockPixelMap, mockPixelChain));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verifyNoMoreInteractions(mockPixelMap, mockPixelChain);
     }
 
@@ -75,8 +75,8 @@ public class VertexTest {
         // WHEN THEN
         assertTrue(underTest1.equals(underTest2));
         assertTrue(underTest2.equals(underTest1));
-        verify(pixelChain1, times(1)).getPixelLength();
-        verify(pixelChain2, times(1)).getPixelLength();
+        verify(pixelChain1, times(1)).getPixelCount();
+        verify(pixelChain2, times(1)).getPixelCount();
         verifyNoMoreInteractions(pixelChain1, pixelChain2);
     }
 
@@ -90,8 +90,8 @@ public class VertexTest {
         // WHEN THEN
         assertTrue(underTest1.equals(underTest2));
         assertTrue(underTest2.equals(underTest1));
-        verify(pixelChain1, times(1)).getPixelLength();
-        verify(pixelChain2, times(1)).getPixelLength();
+        verify(pixelChain1, times(1)).getPixelCount();
+        verify(pixelChain2, times(1)).getPixelCount();
         verifyNoMoreInteractions(pixelChain1, pixelChain2);
     }
 
@@ -105,8 +105,8 @@ public class VertexTest {
         // WHEN THEN
         assertFalse(underTest1.equals(underTest2));
         assertFalse(underTest2.equals(underTest1));
-        verify(pixelChain1, times(1)).getPixelLength();
-        verify(pixelChain2, times(1)).getPixelLength();
+        verify(pixelChain1, times(1)).getPixelCount();
+        verify(pixelChain2, times(1)).getPixelCount();
         verifyNoMoreInteractions(pixelChain1, pixelChain2);
     }
 
@@ -119,7 +119,7 @@ public class VertexTest {
         var expected = "Vertex { vertexIndex: 1, pixelIndex: 5 }";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
-        verify(pixelChain, times(1)).getPixelLength();
+        verify(pixelChain, times(1)).getPixelCount();
         verifyNoMoreInteractions(pixelChain);
     }
 
@@ -132,7 +132,7 @@ public class VertexTest {
         var expected = "Vertex { vertexIndex: 1, pixelIndex: 5, position: Point{ x : 0.5, y: 0.3 } }";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
-        verify(pixelChain, times(1)).getPixelLength();
+        verify(pixelChain, times(1)).getPixelCount();
         verifyNoMoreInteractions(pixelChain);
     }
 
@@ -145,7 +145,7 @@ public class VertexTest {
         IVertex underTest1 = Vertex.createVertex(pixelChain, 1, pixelIndex);
         // WHEN THEN
         assertEquals(pixel, underTest1.getPixel(pixelChain));
-        verify(pixelChain, times(1)).getPixelLength();
+        verify(pixelChain, times(1)).getPixelCount();
         verify(pixelChain, times(1)).getPixel(eq(pixelIndex));
         verifyNoMoreInteractions(pixelChain);
     }
@@ -163,7 +163,7 @@ public class VertexTest {
         IVertex underTest = Vertex.createVertex(mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, underTest.getStartSegment(mockPixelChain));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
         verifyNoMoreInteractions(mockPixelChain, expected);
     }
@@ -181,7 +181,7 @@ public class VertexTest {
         IVertex underTest = Vertex.createVertex(mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, underTest.getEndSegment(mockPixelChain));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
         verifyNoMoreInteractions(mockPixelChain, expected);
     }
@@ -220,7 +220,7 @@ public class VertexTest {
         IVertex underTest = Vertex.createVertex(mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(null, underTest.calcTangent(mockPixelChain, mockPixelMap));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
         verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
         verifyNoMoreInteractions(mockPixelChain, mockPixelMap);
@@ -246,7 +246,7 @@ public class VertexTest {
         IVertex underTest = Vertex.createVertex(mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, underTest.calcTangent(mockPixelChain, mockPixelMap));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
         verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
         verify(mockStartSegment, times(1)).getEndTangent(mockPixelMap, mockPixelChain);
@@ -275,7 +275,7 @@ public class VertexTest {
         IVertex underTest = Vertex.createVertex(mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, underTest.calcTangent(mockPixelChain, mockPixelMap));
-        verify(mockPixelChain, times(1)).getPixelLength();
+        verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
         verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
         verify(mockEndSegment, times(1)).getStartTangent(mockPixelMap, mockPixelChain);
@@ -309,7 +309,7 @@ public class VertexTest {
         PixelChain mPixelChain = mock(PixelChain.class);
 
         public MockPixelChainBuilder(int pLength) {
-            when(mPixelChain.getPixelLength()).thenReturn(pLength);
+            when(mPixelChain.getPixelCount()).thenReturn(pLength);
         }
 
         MockPixelChainBuilder with_getPixel_returns(int pIndex, Pixel pPixel) {

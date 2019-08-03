@@ -245,7 +245,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
         // TODO do not like this mutable parameter
         StrongReference<Integer> totalLength = new StrongReference<>(0);
-        mPixelChains.forEach(chain -> totalLength.set(totalLength.get() + chain.getPixelLength()));
+        mPixelChains.forEach(chain -> totalLength.set(totalLength.get() + chain.getPixelCount()));
         final Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
         final int shortThreshold = (int) (totalLength.get() * pValues.getIgnoreFraction());
         final int mediumThreshold = (int) (totalLength.get() * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
@@ -256,15 +256,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Integer longLength = null;
         int currentLength = 0;
         for (final PixelChain chain : sortedChains) {
-            currentLength += chain.getPixelLength();
+            currentLength += chain.getPixelCount();
             if (shortLength == null && currentLength > shortThreshold) {
-                shortLength = chain.getPixelLength();
+                shortLength = chain.getPixelCount();
             }
             if (mediumLength == null && currentLength > mediumThreshold) {
-                mediumLength = chain.getPixelLength();
+                mediumLength = chain.getPixelCount();
             }
             if (longLength == null && currentLength > longThreshold) {
-                longLength = chain.getPixelLength();
+                longLength = chain.getPixelCount();
                 break;
             }
         }
@@ -293,7 +293,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
             // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelLength() == 2 &&
+            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelCount() == 2 &&
                     nodalNeighbour.samePosition(copy.firstPixel()))) {
                 copy = generateChain(pPixelMap, pStartNode, nodalNeighbour, copy);
                 Framework.logExit(mLogger);
@@ -306,7 +306,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
             // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.getPixelLength() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
+            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.getPixelCount() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
                 copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
                 Framework.logExit(mLogger);
                 return copy;
@@ -579,7 +579,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private Vector<PixelChain> getPixelChainsSortedByLength() {
         final Vector<PixelChain> chains = new Vector<>(mPixelChains.toCollection()); // this will be the sorted collection
-        Collections.sort(chains, (pChain1, pChain2) -> pChain1.getPixelLength() - pChain2.getPixelLength());
+        Collections.sort(chains, (pChain1, pChain2) -> pChain1.getPixelCount() - pChain2.getPixelCount());
         return chains;
     }
 
