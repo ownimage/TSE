@@ -31,7 +31,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);

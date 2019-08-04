@@ -78,4 +78,8 @@ public interface IPixelChain {
         }
         return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap);
     }
+
+    default Optional<ISegment> getOptionalLastSegment() {
+        return getSegments().lastElement();
+    }
 }

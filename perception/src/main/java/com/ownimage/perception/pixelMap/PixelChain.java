@@ -202,7 +202,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
         var copy = clone();
         copy = copy.approximate01_straightLines(pPixelMap, tolerance);
-        copy.approximate02_refineCorners(pPixelMap);
+        copy = copy.approximate02_refineCorners(pPixelMap);
         copy.checkAllVertexesAttached();
         return copy;
     }
@@ -255,58 +255,64 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-    private void approximate02_refineCorners(final PixelMap pPixelMap) {
-        mSegmentsX.forEach(segment -> {
-            if (segment.getSegmentIndex() == mSegmentsX.lastElement().get().getSegmentIndex()) return;
+    private PixelChain approximate02_refineCorners(final PixelMap pPixelMap) {
+        if (getSegmentCount() <= 1) {
+            return this;
+        }
+        val builder = builder();
+        // the for loop means that I am processing the current state of the builder, not the 'old' stream state
+        // this is important as the builder is being mutated.
+        for (int i = 0; i < builder.getSegmentCount() - 1; i++) { // do not process last segment
+            var segment = builder.getSegment(i);
 
-            final int firstSegmentIndex = segment.getSegmentIndex();
-            final int secondSegmentIndex = firstSegmentIndex + 1;
-            final int joinIndex = secondSegmentIndex;
-            final int joinPixelIndex = segment.getEndIndex(this);
+            val firstSegmentIndex = segment.getSegmentIndex();
+            val secondSegmentIndex = firstSegmentIndex + 1;
+            val joinIndex = secondSegmentIndex;
+            val joinPixelIndex = segment.getEndIndex(builder);
 
-            IVertex joinVertex = getVertex(joinIndex);
-            ISegment firstSegment = segment;
-            ISegment secondSegment = getSegment(segment.getSegmentIndex() + 1);
+            IVertex[] joinVertex = new IVertex[]{builder.getVertex(joinIndex)};
+            ISegment[] firstSegment = new ISegment[]{segment};
+            ISegment[] secondSegment = new ISegment[]{builder.getSegment(secondSegmentIndex)};
 
-            final int minPixelIndex = (segment.getStartVertex(this).getPixelIndex() + segment.getEndVertex(this).getPixelIndex()) / 2;
-            final int maxPixelIndex = (secondSegment.getStartVertex(this).getPixelIndex() + secondSegment.getEndVertex(this).getPixelIndex()) / 2;
+            val minPixelIndex = (segment.getStartVertex(builder).getPixelIndex() + segment.getEndVertex(builder).getPixelIndex()) / 2;
+            val maxPixelIndex = (secondSegment[0].getStartVertex(builder).getPixelIndex() + secondSegment[0].getEndVertex(builder).getPixelIndex()) / 2;
 
-            double currentError = segment.calcError(pPixelMap, this) + secondSegment.calcError(pPixelMap, this);
-            var best = new Tuple4<>(currentError, firstSegment, joinVertex, secondSegment);
+            var currentError = segment.calcError(pPixelMap, builder) + secondSegment[0].calcError(pPixelMap, builder);
+            var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
 
             getPegCounter().increase(PegCounters.RefineCornersAttempted);
             // the check below is needed as some segments may only be one index length so generating a midpoint might generate an invalid segment
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;
                 for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
-                    joinVertex = Vertex.createVertex(this, joinIndex, candidateIndex);
-                    mVertexesX = mVertexesX.set(joinIndex, joinVertex);
-                    firstSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, firstSegmentIndex);
-                    mSegmentsX = mSegmentsX.set(firstSegmentIndex, firstSegment);
-                    secondSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, secondSegmentIndex);
-                    mSegmentsX = mSegmentsX.set(secondSegmentIndex, secondSegment);
+                    joinVertex[0] = Vertex.createVertex(builder, joinIndex, candidateIndex);
+                    builder.changeVertexes(v -> v.set(joinIndex, joinVertex[0]));
+                    firstSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, builder, firstSegmentIndex);
+                    builder.changeSegments(s -> s.set(firstSegmentIndex, firstSegment[0]));
+                    secondSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, builder, secondSegmentIndex);
+                    builder.changeSegments(s -> s.set(secondSegmentIndex, secondSegment[0]));
 
-                    currentError = segment.calcError(pPixelMap, this) + secondSegment.calcError(pPixelMap, this);
+                    currentError = segment.calcError(pPixelMap, builder) + secondSegment[0].calcError(pPixelMap, builder);
 
                     if (currentError < best._1) {
-                        best = new Tuple4<>(currentError, firstSegment, joinVertex, secondSegment);
+                        best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
                         refined = true;
                     }
                 }
                 if (refined &&
-                        best._2.getEndTangentVector(pPixelMap, this)
-                                .dot(best._4.getStartTangentVector(pPixelMap, this))
+                        best._2.getEndTangentVector(pPixelMap, builder)
+                                .dot(best._4.getStartTangentVector(pPixelMap, builder))
                                 < 0.5d
                 ) {
                     getPegCounter().increase(PegCounters.RefineCornersSuccessful);
                 }
-                mVertexesX = mVertexesX.set(joinIndex, best._3);
-                mSegmentsX = mSegmentsX.set(firstSegmentIndex, best._2);
-                mSegmentsX = mSegmentsX.set(secondSegmentIndex, best._4);
+                val finalBest = best;
+                builder.changeVertexes(v -> v.set(joinIndex, finalBest._3));
+                builder.changeSegments(s -> s.set(firstSegmentIndex, finalBest._2));
+                builder.changeSegments(s -> s.set(secondSegmentIndex, finalBest._4));
             }
-        });
-
-        validate(pPixelMap, false, "approximate02_refineCorners");
+        }
+        return builder.build(pPixelMap);
     }
 
     private void checkAllVertexesAttached() {

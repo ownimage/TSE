@@ -64,7 +64,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getEndTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Vector getEndTangentVector(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getAB().normalize();
     }
 
@@ -99,7 +99,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getStartTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Vector getStartTangentVector(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getAB().minus().normalize();
     }
 

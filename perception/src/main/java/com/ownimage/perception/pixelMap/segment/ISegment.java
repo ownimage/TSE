@@ -22,7 +22,7 @@ public interface ISegment extends Serializable, Cloneable {
      *
      * @return the sum of the distances.
      */
-    double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain);
+    double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain);
 
     boolean closerThanActual(final PixelMap pPixelMap, final PixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
@@ -51,7 +51,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
-    Vector getEndTangentVector(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Vector getEndTangentVector(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end uhvw point.
@@ -91,9 +91,10 @@ public interface ISegment extends Serializable, Cloneable {
      *
      *
      * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelChain
      * @return the start tangent
      */
-    Vector getStartTangentVector(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Vector getStartTangentVector(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start uhvw point.

@@ -142,7 +142,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getEndTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Vector getEndTangentVector(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getP2P1(pPixelChain, pPixelMap).normalize();
     }
 
@@ -183,7 +183,7 @@ public class CurveSegment extends SegmentBase {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    private Vector getP0P1(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    private Vector getP0P1(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getP1().minus(getP0(pPixelMap, pPixelChain));
     }
 
@@ -202,7 +202,7 @@ public class CurveSegment extends SegmentBase {
      * @param pPixelMap   the PixelMap performing the this operation
      * @return the Vector
      */
-    private Vector getP2P1(final PixelChain pPixelChain, final PixelMap pPixelMap) {
+    private Vector getP2P1(final IPixelChain pPixelChain, final PixelMap pPixelMap) {
         return getP2(pPixelMap, pPixelChain).minus(getP1());
     }
 
@@ -214,7 +214,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getStartTangentVector(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Vector getStartTangentVector(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getP0P1(pPixelMap, pPixelChain).minus().normalize();
     }
 
