@@ -53,7 +53,7 @@ public class EqualizeValues {
     }
 
     public static EqualizeValues getDefaultValue() {
-        return mOptions[0];
+        return mOptions[1];
     }
 
     public double getIgnoreFraction() {

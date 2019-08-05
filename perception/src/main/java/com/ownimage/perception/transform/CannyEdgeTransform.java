@@ -85,10 +85,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new ColorControl("Pixel Colour", "pixelColor", getContainer(), Color.BLACK);
 
     private final BooleanControl mShowLines =
-            new BooleanControl("Show Lines", "showLines", getContainer(), false);
+            new BooleanControl("Show Lines", "showLines", getContainer(), true);
 
     private final ObjectControl<LineEndShape> mLineEndShape =
-            new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Square, LineEndShape.values());
+            new ObjectControl<>("Line End Shape", "lineEndShape", getContainer(), LineEndShape.Straight, LineEndShape.values());
 
     private final ObjectControl<LineEndLengthType> mLineEndLengthType =
             new ObjectControl<>(
@@ -112,11 +112,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final IntegerControl mLongLineLength =
             new IntegerControl("Long Line Length", "longLineLength", getContainer(), 50, 1, 500, 10);
     private final DoubleControl mLongLineThickness =
-            new DoubleControl("Long Line Thickness", "longLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+            new DoubleControl("Long Line Thickness", "longLineThickness", getContainer(), 3.0d, 0.0d, 10.0d);
     private final IntegerControl mMediumLineLength =
             new IntegerControl("Medium Line Length", "mediumLineLength", getContainer(), 0, 0, 1000, 20);
     private final DoubleControl mMediumLineThickness =
-            new DoubleControl("Medium Line Thickness", "mediumLineThickness", getContainer(), 1.0d, 0.0d, 10.0d);
+            new DoubleControl("Medium Line Thickness", "mediumLineThickness", getContainer(), 2.0d, 0.0d, 10.0d);
 
     private final IntegerControl mShortLineLength =
             new IntegerControl("Short Line Length", "shortLineLength", getContainer(), 0, 0, 1000, 20);
