@@ -25,15 +25,39 @@ public class CurveSegment extends SegmentBase {
     private final Point mA;
     private final Point mB;
 
-    CurveSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    CurveSegment(
+            final PixelMap pPixelMap,
+            final IPixelChain pPixelChain,
+            final int pSegmentIndex,
+            final Point pP1
+    ) {
         this(pPixelMap, pPixelChain, pSegmentIndex, pP1, 0.0d);
     }
 
-    public CurveSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1, final double pStartPosition) {
+    public CurveSegment(
+            final PixelMap pPixelMap,
+            final IPixelChain pPixelChain,
+            final int pSegmentIndex,
+            final Point pP1,
+            final double pStartPosition
+    ) {
         super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
         mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelMap, pPixelChain)).minus(getP1().multiply(2.0d));
         mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
+    }
+
+    public CurveSegment(
+            final int pSegmentIndex,
+            final Point pP1,
+            final Point pA,
+            final Point pB,
+            final double pStartPosition
+    ) {
+        super(pSegmentIndex, pStartPosition);
+        mP1 = pP1;
+        mA = pA;
+        mB = pB;
     }
 
     @Override
@@ -236,11 +260,9 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public CurveSegment withStartPosition(
-            final PixelMap pPixelMap,
-            final IPixelChain pPixelChain,
             final double pStartPosition
     ) {
         if (getStartPosition() == pStartPosition) return this;
-        return new CurveSegment(pPixelMap, pPixelChain, getSegmentIndex(), getP1(), pStartPosition);
+        return new CurveSegment(getSegmentIndex(), mP1, mA, mB, pStartPosition);
     }
 }

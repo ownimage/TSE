@@ -367,16 +367,17 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     PixelChain indexSegments(final PixelMap pPixelMap) {
-        final PixelChain copy = clone();
+        val builder = builder();
         final double[] startPosition = {0.0d};
-        copy.mSegmentsX.forEach(segment -> {
-            final ISegment segmentClone = segment.withStartPosition(pPixelMap, copy, startPosition[0]);
-            pPixelMap.index(copy, segmentClone);
-            copy.mSegmentsX = copy.mSegmentsX.set(segment.getSegmentIndex(), segmentClone);
-            startPosition[0] += segment.getLength(pPixelMap, copy);
+        streamSegments().forEach(segment -> {
+            final ISegment segmentClone = segment.withStartPosition(startPosition[0]);
+            builder.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone));
+            startPosition[0] += segment.getLength(pPixelMap, builder);
         });
-        copy.setLength(startPosition[0]);
-        return copy;
+        builder.setLength(startPosition[0]);
+        val newPixelChain = builder.build(pPixelMap);
+        newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment));
+        return newPixelChain;
     }
 
     private boolean isValid(final PixelMap pPixelMap, final ISegment pSegment) { // need to make sure that not only the pixels are close to the line but the line is close to the pixels
