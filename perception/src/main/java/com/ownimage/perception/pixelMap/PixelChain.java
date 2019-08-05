@@ -62,8 +62,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public final static long serialVersionUID = 2L;
 
     private final ImmutableVectorClone<Pixel> mPixels;
-    private  ImmutableVectorClone<ISegment> mSegmentsX;
-    private  ImmutableVectorClone<IVertex> mVertexesX;
+    private ImmutableVectorClone<ISegment> mSegmentsX;
+    private ImmutableVectorClone<IVertex> mVertexesX;
     transient private double mLength;
     private Thickness mThickness;
 
@@ -343,16 +343,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mPixels.lastElement().flatMap(pPixelMap::getNode);
     }
 
-    @Deprecated
-    private ISegment getFirstSegment() {
-        return mSegmentsX.firstElement().orElse(null);
-    }
-
-    @Deprecated
-    private ISegment getLastSegment() {
-        return mSegmentsX.lastElement().orElse(null);
-    }
-
     @Override
     public double getLength() {
         return mLength;
@@ -496,25 +486,27 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         validate(pPixelMap, false, "refine03_matchCurves");
     }
 
-    private void refine01_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
+    private PixelChain refine01_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
 
         if (mSegmentsX.size() == 1) {
-            return;
+            return this;
         }
 
-        mSegmentsX.forEach(currentSegment -> {
-            if (currentSegment == mSegmentsX.firstElement().get()) {
-                refine01FirstSegment(pPixelMap, pSource, currentSegment);
-            } else if (currentSegment == mSegmentsX.lastElement().get()) {
-                refine01EndSegment(pPixelMap, pSource, currentSegment);
+        val builder = builder();
+        streamSegments().forEach(segment -> {
+            val index = segment.getSegmentIndex();
+            if (segment == getFirstSegment()) {
+                refine01FirstSegment(pPixelMap, pSource, segment);
+            } else if (segment == getLastSegment()) {
+                builder.changeSegments(s ->s.set(index, refine01EndSegment(pPixelMap, pSource, segment)));
             } else {
-                refine01MidSegment(pPixelMap, pSource, currentSegment);
+                builder.changeSegments(s -> s.set(index, refine01MidSegment(pPixelMap, pSource, segment)));
             }
         });
-        validate(pPixelMap, false, "refine01_matchCurves");
+        return builder.build(pPixelMap);
     }
 
-    private void refine01MidSegment(
+    private ISegment refine01MidSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
             final ISegment pCurrentSegment
@@ -546,15 +538,16 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                         bestSegment = candidateSegment;
                     }
                 }
+
             }
         } catch (final Throwable pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            mSegmentsX = mSegmentsX.set(pCurrentSegment.getSegmentIndex(), bestSegment);
+            return bestSegment;
         }
     }
 
-    private void refine01EndSegment(
+    private ISegment refine01EndSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
             final ISegment pCurrentSegment
@@ -590,7 +583,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         } catch (final Throwable pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            mSegmentsX = mSegmentsX.set(pCurrentSegment.getSegmentIndex(), bestSegment);
+            return bestSegment;
         }
     }
 

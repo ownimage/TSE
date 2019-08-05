@@ -10,6 +10,18 @@ import java.util.stream.Stream;
 
 public interface IPixelChain {
 
+    enum Thickness {
+        None, Thin, Normal, Thick
+    }
+
+    enum PegCounters {
+        StartSegmentStraightToCurveAttempted,
+        StartSegmentStraightToCurveSuccessful,
+        RefineCornersAttempted,
+        RefineCornersSuccessful,
+        MidSegmentEatForwardAttempted,
+        MidSegmentEatForwardSuccessful
+    }
     IImmutableVector<Pixel> getPixels();
 
     IImmutableVector<ISegment> getSegments();
@@ -160,16 +172,11 @@ public interface IPixelChain {
 
     double getLength();
 
-    public enum Thickness {
-        None, Thin, Normal, Thick
+    default ISegment getFirstSegment() {
+        return getSegments().firstElement().orElse(null);
     }
 
-    public enum PegCounters {
-        StartSegmentStraightToCurveAttempted,
-        StartSegmentStraightToCurveSuccessful,
-        RefineCornersAttempted,
-        RefineCornersSuccessful,
-        MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful
+    default ISegment getLastSegment() {
+        return getSegments().lastElement().orElse(null);
     }
 }
