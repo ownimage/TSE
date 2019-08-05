@@ -62,8 +62,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public final static long serialVersionUID = 2L;
 
     private final ImmutableVectorClone<Pixel> mPixels;
-    private ImmutableVectorClone<ISegment> mSegmentsX;
-    private ImmutableVectorClone<IVertex> mVertexesX;
+    private  ImmutableVectorClone<ISegment> mSegmentsX;
+    private  ImmutableVectorClone<IVertex> mVertexesX;
     transient private double mLength;
     private Thickness mThickness;
 
@@ -496,7 +496,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         streamSegments().forEach(segment -> {
             val index = segment.getSegmentIndex();
             if (segment == getFirstSegment()) {
-                refine01FirstSegment(pPixelMap, pSource, segment);
+                builder.changeSegments(s ->s.set(index, refine01FirstSegment(pPixelMap, pSource, segment)));
             } else if (segment == getLastSegment()) {
                 builder.changeSegments(s ->s.set(index, refine01EndSegment(pPixelMap, pSource, segment)));
             } else {
@@ -587,31 +587,33 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
     }
 
-    private void refine01FirstSegment(
+    private ISegment refine01FirstSegment(
             PixelMap pPixelMap,
             final IPixelMapTransformSource pSource,
-            final ISegment pCurrentSegment
+            final ISegment pSegment
     ) {
-        var bestSegment = pCurrentSegment;
+        getPegCounter().increase(PegCounters.refine01FirstSegmentAttempted);
+        var bestSegment = pSegment;
+        var builder = builder();
         try {
             // get error values from straight line to start the compare
-            double lowestError = pCurrentSegment.calcError(pPixelMap, this);
+            double lowestError = pSegment.calcError(pPixelMap, this);
             lowestError *= pSource.getLineCurvePreference();
             // calculate end tangent
-            final Line tangent = pCurrentSegment.getEndVertex(this).calcTangent(this, pPixelMap);
+            final Line tangent = pSegment.getEndVertex(this).calcTangent(this, pPixelMap);
 
             // find closest point between start point and tangent line
-            final Point closest = tangent.closestPoint(pCurrentSegment.getStartUHVWPoint(pPixelMap, this));
+            final Point closest = tangent.closestPoint(pSegment.getStartUHVWPoint(pPixelMap, this));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
-            final LineSegment tangentRuler = new LineSegment(closest, pCurrentSegment.getEndUHVWPoint(pPixelMap, this));
-            for (int i = 1; i < pCurrentSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
+            final LineSegment tangentRuler = new LineSegment(closest, pSegment.getEndUHVWPoint(pPixelMap, this));
+            for (int i = 1; i < pSegment.getPixelLength(this); i++) { // first and last pixel will throw an error and are equivalent to the straight line
                 try {
-                    final double lambda = (double) i / pCurrentSegment.getPixelLength(this);
+                    final double lambda = (double) i / pSegment.getPixelLength(this);
                     final Point p1 = tangentRuler.getPoint(lambda);
-                    final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), p1);
-                    mSegmentsX = mSegmentsX.set(pCurrentSegment.getSegmentIndex(), candidateSegment);
-                    final double candidateError = candidateSegment != null ? candidateSegment.calcError(pPixelMap, this) : 0.0d;
+                    final ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pSegment.getSegmentIndex(), p1);
+                    builder.changeSegments(s -> s.set(pSegment.getSegmentIndex(), candidateSegment));
+                    final double candidateError = candidateSegment != null ? candidateSegment.calcError(pPixelMap, builder) : 0.0d;
 
                     if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
                         lowestError = candidateError;
@@ -622,10 +624,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                     mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
                 }
             }
+            if (bestSegment != pSegment) {
+                getPegCounter().increase(PegCounters.refine01FirstSegmentSuccessful);
+            }
         } catch (final Throwable pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            mSegmentsX = mSegmentsX.set(pCurrentSegment.getSegmentIndex(), bestSegment);
+            return bestSegment;
         }
     }
 

@@ -20,8 +20,11 @@ public interface IPixelChain {
         RefineCornersAttempted,
         RefineCornersSuccessful,
         MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful
+        MidSegmentEatForwardSuccessful,
+        refine01FirstSegmentAttempted,
+        refine01FirstSegmentSuccessful
     }
+
     IImmutableVector<Pixel> getPixels();
 
     IImmutableVector<ISegment> getSegments();
