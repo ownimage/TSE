@@ -19,21 +19,21 @@ import java.io.Serializable;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
-    ISegment getEndSegment(PixelChain pPixelChain);
+    ISegment getEndSegment(IPixelChain pPixelChain);
 
     int getPixelIndex();
 
-    ISegment getStartSegment(PixelChain pPixelChain);
+    ISegment getStartSegment(IPixelChain pPixelChain);
 
     int getVertexIndex();
 
     boolean isPositionSpecified();
 
-    Line calcTangent(PixelChain pPixelChain, final PixelMap pPixelMap);
+    Line calcTangent(IPixelChain pPixelChain, final PixelMap pPixelMap);
 
     Point getUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     Pixel getPixel(IPixelChain pPixelChain);
 
-    IVertex withPosition(PixelChain pPixelChain, Point pPosition);
+    IVertex withPosition(IPixelChain pPixelChain, Point pPosition);
 }

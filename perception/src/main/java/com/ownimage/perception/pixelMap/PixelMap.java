@@ -773,10 +773,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * getHeight())) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * getHeight()) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
                     for (final Tuple2<PixelChain, ISegment> tuple : getSegments(x, y)) {
-                        if (tuple._1().getThickness() == PixelChain.Thickness.None) {
+                        if (tuple._1().getThickness() == IPixelChain.Thickness.None) {
                             break;
                         }
-                        if (pThickOnly && tuple._1().getThickness() != PixelChain.Thickness.Thick) {
+                        if (pThickOnly && tuple._1().getThickness() != IPixelChain.Thickness.Thick) {
                             break;
                         }
                         candidateSegments.add(tuple);
@@ -863,8 +863,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process05_generateChains(pProgressObserver);
             process05a_findLoops(pProgressObserver);
             var pegs = new Object[]{
-                    PixelChain.PegCounters.RefineCornersAttempted,
-                    PixelChain.PegCounters.RefineCornersSuccessful
+                    IPixelChain.PegCounters.RefineCornersAttempted,
+                    IPixelChain.PegCounters.RefineCornersSuccessful
             };
             getPegCounter().clear(pegs);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
@@ -876,10 +876,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             validate();
             mLogger.info(() -> "validate done");
             pegs = new Object[]{
-                    PixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
-                    PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
-                    PixelChain.PegCounters.MidSegmentEatForwardAttempted,
-                    PixelChain.PegCounters.MidSegmentEatForwardSuccessful
+                    IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
+                    IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
+                    IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
+                    IPixelChain.PegCounters.MidSegmentEatForwardSuccessful
             };
             getPegCounter().clear(pegs);
             process08_refine(pProgressObserver);

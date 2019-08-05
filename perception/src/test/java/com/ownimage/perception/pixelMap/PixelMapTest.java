@@ -596,16 +596,16 @@ public class PixelMapTest {
             assertEquals(2, pPixelMap.getPixelChainCount());
             List<PixelChain> chains1 = pPixelMap.getPixelChains(start1);
             assertEquals(1, chains1.size());
-            assertEquals(PixelChain.Thickness.Normal, chains1.get(0).getThickness());
+            assertEquals(IPixelChain.Thickness.Normal, chains1.get(0).getThickness());
             List<PixelChain> chains2 = pPixelMap.getPixelChains(start2);
             assertEquals(1, chains2.size());
             assertEquals(pThickness, chains2.get(0).getThickness());
         };
-        test.accept(pixelMap, PixelChain.Thickness.Normal);
+        test.accept(pixelMap, IPixelChain.Thickness.Normal);
         // WHEN
-        pixelMap = pixelMap.actionSetPixelChainThickness(start2, PixelChain.Thickness.Thick);
+        pixelMap = pixelMap.actionSetPixelChainThickness(start2, IPixelChain.Thickness.Thick);
         // THEN
-        test.accept(pixelMap, PixelChain.Thickness.Thick);
+        test.accept(pixelMap, IPixelChain.Thickness.Thick);
     }
 
     @Before

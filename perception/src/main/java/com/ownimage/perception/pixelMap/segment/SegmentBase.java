@@ -48,7 +48,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(final PixelMap pPixelMap, final PixelChain pPixelChain, final Pixel pPixel) {
+    public double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Pixel pPixel) {
         val uhvw = pPixel.getUHVWMidPoint(pPixelMap);
         val distance = distance(pPixelMap, pPixelChain, uhvw);
         return distance * distance;
@@ -59,14 +59,14 @@ public abstract class SegmentBase implements ISegment {
         return mSegmentIndex;
     }
 
-    public boolean closerThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
     public abstract double distance(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pUVHWPoint);
 
-    double getActualThickness(final IPixelMapTransformSource pSource, final PixelChain pPixelChain, final double pPosition) {
+    double getActualThickness(final IPixelMapTransformSource pSource, final IPixelChain pPixelChain, final double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
     }
 
@@ -76,7 +76,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getEndTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Line getEndTangent(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
@@ -90,24 +90,24 @@ public abstract class SegmentBase implements ISegment {
         return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
-    public double getMaxX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMaxX(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMaxY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMaxY(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMinX(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
-    public double getMinY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMinY(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int getPixelLength(final PixelChain pPixelChain) {
+    public int getPixelLength(final IPixelChain pPixelChain) {
         final int length;
 
         if (getStartIndex(pPixelChain) == 0) {
@@ -129,7 +129,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getStartTangent(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public Line getStartTangent(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return new Line(
                 getStartUHVWPoint(pPixelMap, pPixelChain),
                 getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
@@ -147,7 +147,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(final PixelMap pPixelMap, final IPixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
     }
 
@@ -167,17 +167,17 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public ISegment getNextSegment(final PixelChain pPixelChain) {
+    public ISegment getNextSegment(final IPixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getEndSegment(pPixelChain);
     }
 
     @Override
-    public ISegment getPreviousSegment(final PixelChain pPixelChain) {
+    public ISegment getPreviousSegment(final IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getStartSegment(pPixelChain);
     }
 
     @Override
-    public boolean containsPixelIndex(final PixelChain pPixelChain, final int pIndex) {
+    public boolean containsPixelIndex(final IPixelChain pPixelChain, final int pIndex) {
         return getStartIndex(pPixelChain) <= pIndex && pIndex <= getEndIndex(pPixelChain);
     }
 }

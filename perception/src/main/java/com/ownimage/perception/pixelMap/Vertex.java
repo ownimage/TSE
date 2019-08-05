@@ -41,7 +41,7 @@ public class Vertex implements IVertex {
         return new Vertex(pVertexIndex, pPixelIndex, null);
     }
 
-    public static Vertex createVertex(final PixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex, final Point pPosition) {
+    public static Vertex createVertex(final IPixelChain pPixelChain, final int pVertexIndex, final int pPixelIndex, final Point pPosition) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
@@ -61,12 +61,11 @@ public class Vertex implements IVertex {
 
     /**
      * Calc tangent always generates a tangent line that goes in the direction of start to finish.
-     *
-     * @param pPixelChain the Pixel Chain performing this operation
+     *  @param pPixelChain the Pixel Chain performing this operation
      * @param pPixelMap
      */
     @Override
-    public Line calcTangent(final PixelChain pPixelChain, final PixelMap pPixelMap) {
+    public Line calcTangent(final IPixelChain pPixelChain, final PixelMap pPixelMap) {
         Line tangent;
         ISegment startSegment = getStartSegment(pPixelChain);
         ISegment endSegment = getEndSegment(pPixelChain);
@@ -111,7 +110,7 @@ public class Vertex implements IVertex {
 
 
     @Override
-    public ISegment getEndSegment(final PixelChain pPixelChain) {
+    public ISegment getEndSegment(final IPixelChain pPixelChain) {
         return pPixelChain.getSegment(mVertexIndex);
     }
 
@@ -126,7 +125,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public ISegment getStartSegment(final PixelChain pPixelChain) {
+    public ISegment getStartSegment(final IPixelChain pPixelChain) {
         return pPixelChain.getSegment(mVertexIndex - 1);
     }
 
@@ -136,7 +135,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public IVertex withPosition(PixelChain pPixelChain, Point pPosition) {
+    public IVertex withPosition(IPixelChain pPixelChain, Point pPosition) {
         return createVertex(pPixelChain, mVertexIndex, mPixelIndex, pPosition);
     }
 

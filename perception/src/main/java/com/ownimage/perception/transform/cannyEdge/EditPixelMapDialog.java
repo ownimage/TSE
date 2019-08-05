@@ -39,6 +39,7 @@ import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -138,7 +139,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<PixelAction> mPixelAction = new ObjectControl("Pixel Action", "pixelAction",
             mPixelControlContainer, PixelAction.On, PixelAction.values());
     private final ObjectControl<PixelChain.Thickness> mThickness = new ObjectControl("Thickness", "Thickness",
-            mPixelControlContainer, PixelChain.Thickness.None, PixelChain.Thickness.values());
+            mPixelControlContainer, IPixelChain.Thickness.None, IPixelChain.Thickness.values());
     private boolean mDialogIsAlive = false;
     private int mMouseDragStartX;
     private int mMouseDragStartY;

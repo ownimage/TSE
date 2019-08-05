@@ -19,7 +19,6 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
-import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple4;
 import lombok.val;
 
@@ -58,19 +57,6 @@ import java.util.stream.Collectors;
  */
 public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
-    public enum Thickness {
-        None, Thin, Normal, Thick
-    }
-
-    public enum PegCounters {
-        StartSegmentStraightToCurveAttempted,
-        StartSegmentStraightToCurveSuccessful,
-        RefineCornersAttempted,
-        RefineCornersSuccessful,
-        MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful
-    }
-
     public final static Logger mLogger = Framework.getLogger();
 
     public final static long serialVersionUID = 2L;
@@ -93,7 +79,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegmentsX = new ImmutableVectorClone<>();
         mVertexesX = new ImmutableVectorClone<>();
-        mThickness = Thickness.Normal;
+        mThickness = IPixelChain.Thickness.Normal;
 
         setStartVertex(Vertex.createVertex(this, mVertexesX.size(), 0));
     }
@@ -280,7 +266,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             var currentError = segment.calcError(pPixelMap, builder) + secondSegment[0].calcError(pPixelMap, builder);
             var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
 
-            getPegCounter().increase(PegCounters.RefineCornersAttempted);
+            getPegCounter().increase(IPixelChain.PegCounters.RefineCornersAttempted);
             // the check below is needed as some segments may only be one index length so generating a midpoint might generate an invalid segment
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;
@@ -304,7 +290,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                                 .dot(best._4.getStartTangentVector(pPixelMap, builder))
                                 < 0.5d
                 ) {
-                    getPegCounter().increase(PegCounters.RefineCornersSuccessful);
+                    getPegCounter().increase(IPixelChain.PegCounters.RefineCornersSuccessful);
                 }
                 val finalBest = best;
                 builder.changeVertexes(v -> v.set(joinIndex, finalBest._3));
@@ -353,66 +339,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mPixels.firstElement().get();
     }
 
-    private double getActualCurvedThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
-        var c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        var a = c - getWidth(pTransformSource);
-        var b = -2.0 * a;
-        return a * pFraction * pFraction + b * pFraction + c;
-    }
-
-    private double getActualSquareThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
-        return getWidth(pTransformSource);
-    }
-
-    private double getActualStraightThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
-        var min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        var max = getWidth(pTransformSource);
-        return min + pFraction * (max - min);
-    }
-
-    /**
-     * Gets the actual thickness of the line. This allows for the tapering of the line at the ends.
-     *
-     * @param pPosition the position
-     * @return the actual thickness
-     */
-    public double getActualThickness(final IPixelMapTransformSource pTransformSource, final double pPosition) {
-        // TODO needs refinement should not really pass the pTolerance in as this can be determined from the PixelChain.
-        // TODO this could be improved for performance
-        final double fraction = getActualThicknessEndFraction(pTransformSource, pPosition);
-
-        switch (pTransformSource.getLineEndShape()) {
-            case Curved:
-                return getActualCurvedThickness(pTransformSource, fraction);
-            case Square:
-                return getActualSquareThickness(pTransformSource, fraction);
-        }
-        // fall through to straight
-        return getActualStraightThickness(pTransformSource, fraction);
-    }
-
-    /**
-     * Gets fraction of the way along the end segment that the pPosition is. 0 would mean at the thinnest end. 1 would mean full thickness.
-     *
-     * @param pPosition the position
-     * @return the actual thickness end fraction
-     */
-    private double getActualThicknessEndFraction(final IPixelMapTransformSource pTransformSource, final double pPosition) {
-
-        var end2 = getLength() - pPosition;
-        var closestEnd = Math.min(pPosition, end2);
-
-        if (pTransformSource.getLineEndLengthType() == CannyEdgeTransform.LineEndLengthType.Percent) {
-            var closestPercent = 100.0d * closestEnd / getLength();
-            return Math.min(closestPercent / pTransformSource.getLineEndLengthPercent(), 1.0d);
-        }
-
-        // type is Pixels
-        var fraction = pTransformSource.getHeight() * closestEnd / pTransformSource.getLineEndLengthPixel();
-        return Math.min(fraction, 1.0d);
-
-    }
-
     Optional<Node> getEndNode(PixelMap pPixelMap) {
         return mPixels.lastElement().flatMap(pPixelMap::getNode);
     }
@@ -427,7 +353,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mSegmentsX.lastElement().orElse(null);
     }
 
-    private double getLength() {
+    @Override
+    public double getLength() {
         return mLength;
     }
 
@@ -437,25 +364,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     private IVertex getStartVertex() {
         return mVertexesX.firstElement().orElse(null);
-    }
-
-    synchronized Thickness getThickness() {
-        if (mThickness == null) {
-            mThickness = Thickness.Normal;
-        }
-        return mThickness;
-    }
-
-    public double getWidth(final IPixelMapTransformSource pIPMTS) {
-        switch (getThickness()) {
-            case Thin:
-                return pIPMTS.getShortLineThickness() / pIPMTS.getHeight();
-            case Normal:
-                return pIPMTS.getMediumLineThickness() / pIPMTS.getHeight();
-            case Thick:
-                return pIPMTS.getLongLineThickness() / pIPMTS.getHeight();
-        }
-        return 0.0d;
     }
 
     PixelChain indexSegments(final PixelMap pPixelMap) {
@@ -546,6 +454,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 //        }
 
         return copy;
+    }
+
+    public Thickness getThickness() {
+        if (mThickness == null) {
+            mThickness = IPixelChain.Thickness.Normal;
+        }
+        return mThickness;
     }
 
     private boolean containsStraightSegment() {
@@ -758,7 +673,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
 
         try {
-            getPegCounter().increase(PegCounters.MidSegmentEatForwardAttempted);
+            getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardAttempted);
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
             var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, this)
                     .add(
@@ -808,7 +723,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             }
         } finally {
             if (bestCandidateSegment != pCurrentSegment) {
-                getPegCounter().increase(PegCounters.MidSegmentEatForwardSuccessful);
+                getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
             }
             mVertexesX = mVertexesX.set(bestCandidateVertex.getVertexIndex(), bestCandidateVertex);
             mSegmentsX = mSegmentsX.set(bestCandidateSegment.getSegmentIndex(), bestCandidateSegment);
@@ -858,7 +773,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
 
         try {
-            getPegCounter().increase(PegCounters.StartSegmentStraightToCurveAttempted);
+            getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
             var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, this)
@@ -894,7 +809,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             }
         } finally {
             if (bestCandidateSegment != pCurrentSegment) {
-                getPegCounter().increase(PegCounters.StartSegmentStraightToCurveSuccessful);
+                getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
             mVertexesX = mVertexesX.set(bestCandidateVertex.getVertexIndex(), bestCandidateVertex);
             mSegmentsX = mSegmentsX.set(bestCandidateSegment.getSegmentIndex(), bestCandidateSegment);
@@ -920,7 +835,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
 
         try {
-            getPegCounter().increase(PegCounters.StartSegmentStraightToCurveAttempted);
+            getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
             var prevSegmentPixelLength = originalPrevSegment.getPixelLength(this);
             var controlPointEnd = originalStartVertex.getUHVWPoint(pPixelMap, this)
@@ -957,7 +872,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             }
         } finally {
             if (bestCandidateSegment != pCurrentSegment) {
-                getPegCounter().increase(PegCounters.StartSegmentStraightToCurveSuccessful);
+                getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
             mVertexesX = mVertexesX.set(bestCandidateVertex.getVertexIndex(), bestCandidateVertex);
             mSegmentsX = mSegmentsX.set(bestCandidateSegment.getSegmentIndex(), bestCandidateSegment);
@@ -1080,13 +995,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
         Thickness newThickness;
         if (length() < pThinLength) {
-            newThickness = Thickness.None;
+            newThickness = IPixelChain.Thickness.None;
         } else if (length() < pNormalLength) {
-            newThickness = Thickness.Thin;
+            newThickness = IPixelChain.Thickness.Thin;
         } else if (length() < pLongLength) {
-            newThickness = Thickness.Normal;
+            newThickness = IPixelChain.Thickness.Normal;
         } else {
-            newThickness = Thickness.Thick;
+            newThickness = IPixelChain.Thickness.Thick;
         }
 
         PixelChain result;

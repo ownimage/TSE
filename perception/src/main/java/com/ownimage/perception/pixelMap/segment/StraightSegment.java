@@ -10,7 +10,6 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
 public class StraightSegment extends SegmentBase {
@@ -32,12 +31,12 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public void graffiti(final PixelMap pPixelMap, final PixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(final PixelMap pPixelMap, final IPixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
         super.graffiti(pPixelMap, pPixelChain, pGraphics);
     }
 
     @Override
-    public boolean closerThanActual(final PixelMap pPixelMap, final PixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, final Point pPoint, final double pMultiplier) {
+    public boolean closerThanActual(final PixelMap pPixelMap, final IPixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, final Point pPoint, final double pMultiplier) {
         final double lambda = mLineSegment.closestLambda(pPoint);
         final double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
         final double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
@@ -45,12 +44,12 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public boolean closerThan(final PixelMap pPixelMap, final PixelChain pPixelChain, final Point pPoint, final double pTolerance) {
+    public boolean closerThan(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Point pPoint, final double pTolerance) {
         return mLineSegment.isCloserThan(pPoint, pTolerance);
     }
 
     @Override
-    public double closestLambda(final Point pPoint, final PixelChain pPixelChain, final PixelMap pPixelMap) {
+    public double closestLambda(final Point pPoint, final IPixelChain pPixelChain, final PixelMap pPixelMap) {
         return mLineSegment.closestLambda(pPoint);
     }
 
@@ -69,27 +68,27 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double getLength(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getLength(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return getAB().length();
     }
 
     @Override
-    public double getMaxX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMaxX(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return mLineSegment.getMaxX();
     }
 
     @Override
-    public double getMaxY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMaxY(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return mLineSegment.getMaxY();
     }
 
     @Override
-    public double getMinX(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMinX(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return mLineSegment.getMinX();
     }
 
     @Override
-    public double getMinY(final PixelMap pPixelMap, final PixelChain pPixelChain) {
+    public double getMinY(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         return mLineSegment.getMinY();
     }
 
@@ -109,7 +108,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public StraightSegment withStartPosition(final PixelMap pPixelMap, final PixelChain pPixelChain, final double pStartPosition) {
+    public StraightSegment withStartPosition(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pStartPosition) {
         if (getStartPosition() == pStartPosition) return this;
         return new StraightSegment(pPixelMap, pPixelChain, getSegmentIndex(), pStartPosition);
     }

@@ -47,6 +47,16 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
+    @Override
+    public double getLength() {
+        return mLength;
+    }
+
+    @Override
+    public PixelChain.Thickness getThickness() {
+        return mThickness;
+    }
+
     public PixelChainBuilder setLength(double pLength) {
         mLength = pLength;
         return this;

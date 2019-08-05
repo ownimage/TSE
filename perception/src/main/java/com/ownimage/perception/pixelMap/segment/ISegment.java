@@ -18,21 +18,21 @@ public interface ISegment extends Serializable, Cloneable {
     long serialVersionUID = 1L;
 
     /**
-     * This returns the sum of the distances that all of the pixels in the original PixelChain (covered by this segment) are.
+     * This returns the sum of the distances that all of the pixels in the original IPixelChain (covered by this segment) are.
      *
      * @return the sum of the distances.
      */
     double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain);
 
-    boolean closerThanActual(final PixelMap pPixelMap, final PixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
+    boolean closerThanActual(final PixelMap pPixelMap, final IPixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
-    double calcError(PixelMap pPixelMap, PixelChain pPixelChain, Pixel pPixel);
+    double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel);
 
     int getSegmentIndex();
 
-    boolean closerThan(final PixelMap pPixelMap, PixelChain pPixelChain, Point pPoint, double pTolerance);
+    boolean closerThan(final PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
 
-    double closestLambda(final Point pPoint, PixelChain pPixelChain, final PixelMap pPixelMap);
+    double closestLambda(final Point pPoint, IPixelChain pPixelChain, final PixelMap pPixelMap);
 
     /**
      * Gets the end index (into the mPixels) of this segment.
@@ -42,7 +42,7 @@ public interface ISegment extends Serializable, Cloneable {
      */
     int getEndIndex(IPixelChain pPixelChain);
 
-    Line getEndTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Line getEndTangent(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end tangent.
@@ -70,9 +70,9 @@ public interface ISegment extends Serializable, Cloneable {
      */
     IVertex getEndVertex(IPixelChain pPixelChain);
 
-    double getLength(final PixelMap pPixelMap, PixelChain pPixelChain);
+    double getLength(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    int getPixelLength(PixelChain pPixelChain);
+    int getPixelLength(final IPixelChain pPixelChain);
 
     Point getPointFromLambda(final PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
 
@@ -84,7 +84,7 @@ public interface ISegment extends Serializable, Cloneable {
      */
     int getStartIndex(IPixelChain pPixelChain);
 
-    Line getStartTangent(final PixelMap pPixelMap, PixelChain pPixelChain);
+    Line getStartTangent(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
@@ -114,21 +114,21 @@ public interface ISegment extends Serializable, Cloneable {
      */
     IVertex getStartVertex(IPixelChain pPixelChain);
 
-    void graffiti(final PixelMap pPixelMap, PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
+    void graffiti(final PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
-    double getMaxX(final PixelMap pPixelMap, PixelChain pPixelChain);
+    double getMaxX(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMaxY(final PixelMap pPixelMap, PixelChain pPixelChain);
+    double getMaxY(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMinX(final PixelMap pPixelMap, PixelChain pPixelChain);
+    double getMinX(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMinY(final PixelMap pPixelMap, PixelChain pPixelChain);
+    double getMinY(final PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    ISegment withStartPosition(final PixelMap pPixelMap, PixelChain pPixelChain, double pStartPosition);
+    ISegment withStartPosition(final PixelMap pPixelMap, IPixelChain pPixelChain, double pStartPosition);
 
-    ISegment getNextSegment(final PixelChain pPixelChain);
+    ISegment getNextSegment(final IPixelChain pPixelChain);
 
-    ISegment getPreviousSegment(final PixelChain pPixelChain);
+    ISegment getPreviousSegment(final IPixelChain pPixelChain);
 
-    boolean containsPixelIndex(final PixelChain pPixelChain, int pIndex);
+    boolean containsPixelIndex(final IPixelChain pPixelChain, int pIndex);
 }
