@@ -76,7 +76,6 @@ public class PixelChainTest {
         var underTest = createPixelChain();
 
         var tolerance = lineTolerance / pixelMap.getHeight();
-        underTest = underTest.approximate01_straightLines(pixelMap, tolerance);
         var approx = underTest.approximate(pixelMap, ipmts);
 
         // AND WHEN
