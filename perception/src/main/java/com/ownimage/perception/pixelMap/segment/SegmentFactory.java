@@ -35,7 +35,7 @@ public class SegmentFactory {
      * @param pP1         the point that the start and end gradient goes through
      * @return the curve approximation
      */
-    static public CurveSegment createTempCurveSegmentTowards(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    static public CurveSegment createTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
         try {
             final CurveSegment segment = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1);
             if (segment.getA().length2() != 0) {

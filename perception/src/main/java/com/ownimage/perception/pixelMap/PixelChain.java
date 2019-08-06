@@ -78,10 +78,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegmentsX = new ImmutableVectorClone<>();
-        mVertexesX = new ImmutableVectorClone<>();
+        mVertexesX = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(this, 0, 0));;
         mThickness = IPixelChain.Thickness.Normal;
-
-        setStartVertex(Vertex.createVertex(this, mVertexesX.size(), 0));
     }
 
     public PixelChain(
@@ -979,13 +977,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     private void setLength(final double pLength) {
         mLength = pLength;
-    }
-
-    private void setStartVertex(final IVertex pVertex) {
-        if (mVertexesX.size() >= 1) {
-            throw new IllegalStateException("can not setStartVertex when Vertexes already exist");
-        }
-        mVertexesX = mVertexesX.add(0, pVertex);
     }
 
     PixelChain setThickness(final int pThinLength, final int pNormalLength, final int pLongLength) {
