@@ -1,7 +1,9 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.IImmutableVector;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -23,6 +25,10 @@ public interface IPixelChain {
         MidSegmentEatForwardSuccessful,
         refine01FirstSegmentAttempted,
         refine01FirstSegmentSuccessful
+    }
+
+    default PegCounter getPegCounter() {
+        return Services.getServices().getPegCounter();
     }
 
     IImmutableVector<Pixel> getPixels();
