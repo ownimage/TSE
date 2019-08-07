@@ -5,16 +5,7 @@
  */
 package com.ownimage.perception.transform;
 
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.math.Rectangle;
@@ -32,6 +23,7 @@ import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.io.IOException;
@@ -539,8 +531,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         }
     }
 
-    public void setPixelMap(final PixelMap pPixelMap) {
-        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+    public void setPixelMap(@NonNull final PixelMap pPixelMap) {
         if (mPixelMap != null && (pPixelMap.getWidth() != getWidth() || pPixelMap.getHeight() != getHeight())) {
             throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
         }
@@ -557,8 +548,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         getPixelMap().ifPresent(pixelMap -> pixelMap.transform(pRenderResult));
 
         final float whiteFade = mWhiteFade.getValue().floatValue();

@@ -102,7 +102,7 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
     @Override
     public void setProgress(final String pProgressString, final int pPercent) {
         Framework.logEntry(mLogger);
-        Framework.logParams(Framework.mLogger, "pProgressString,pPercent", pProgressString, pPercent);
+        Framework.logParams(mLogger, "pProgressString,pPercent", pProgressString, pPercent);
         mStarted = true;
         int percent = pPercent;
         if (percent < 0) {
@@ -122,7 +122,7 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
             setValue(pPercent);
             mProgressString = pProgressString;
         }
-        Framework.logExit(Framework.mLogger);
+        Framework.logExit(mLogger);
     }
 
     @Override

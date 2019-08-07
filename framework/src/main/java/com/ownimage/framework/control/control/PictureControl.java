@@ -15,6 +15,7 @@ import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -72,13 +73,11 @@ public class PictureControl
         mViews.invokeAll(view -> view.drawGrafitti(this::drawGrafitti));
     }
 
-    public void updateGrafitti(final IGrafitti pGrafitti) {
-        Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
+    public void updateGrafitti(@NonNull final IGrafitti pGrafitti) {
         mViews.invokeAll(view -> view.updateGraffiti(grafittiImp -> pGrafitti.graffiti(new GrafittiHelper(grafittiImp))));
     }
 
-    public void drawCursor(final IGrafitti pGrafitti) {
-        Framework.checkParameterNotNull(mLogger, pGrafitti, "pGrafitti");
+    public void drawCursor(@NonNull final IGrafitti pGrafitti) {
         mViews.invokeAll(view -> view.drawCursor(grafittiImp -> pGrafitti.graffiti(new GrafittiHelper(grafittiImp))));
     }
 
@@ -87,9 +86,8 @@ public class PictureControl
         mGrafitti = pGrafitti;
     }
 
-    public void setUIListener(final IUIEventListener pUIEventListener) {
+    public void setUIListener(@NonNull final IUIEventListener pUIEventListener) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pUIEventListener, "pUIEventListener");
         if (mUIEventListener != null) {
             throw new IllegalStateException("setUIListener can only be called once during the lifetime of a control.");
         }
@@ -116,9 +114,8 @@ public class PictureControl
     }
 
     @Override
-    public void uiEvent(final IUIEvent pEvent) {
+    public void uiEvent(@NonNull final IUIEvent pEvent) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
 
         mLogger.fine(() -> String.format("uiEvent type=%s, isDragging=%s", pEvent.getEventType(), mIsDragging));
         final LocalTime start = LocalTime.now();

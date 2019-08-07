@@ -6,6 +6,7 @@
 package com.ownimage.framework.queue;
 
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
 
 import java.util.PriorityQueue;
 import java.util.Vector;
@@ -97,9 +98,8 @@ public class ExecuteQueue {
      *
      * @param pJob the job
      */
-    public void submit(final IJob pJob) {
+    public void submit(@NonNull final IJob pJob) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pJob, "pJob");
 
         synchronized (mQueue) {
             pJob.queued();

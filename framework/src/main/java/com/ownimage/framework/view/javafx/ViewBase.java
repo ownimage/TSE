@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 public class ViewBase<C extends IViewable> implements FXView {
 
-
     private final static Logger mLogger = Framework.getLogger();
 
     protected C mControl;
@@ -95,7 +94,7 @@ public class ViewBase<C extends IViewable> implements FXView {
             getUI().setManaged(pVisible);
             getUI().setVisible(pVisible);
         });
-        Framework.logExit(Framework.mLogger);
+        Framework.logExit(mLogger);
     }
 
     protected boolean isMutating() {

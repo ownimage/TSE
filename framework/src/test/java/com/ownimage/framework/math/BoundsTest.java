@@ -2,10 +2,7 @@ package com.ownimage.framework.math;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BoundsTest {
     @Test
@@ -68,7 +65,7 @@ public class BoundsTest {
         assertTrue(underTest.contains(point));
     }
 
-    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
+    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NonNull
     @Test(expected = IllegalArgumentException.class)
     public void contains_null() {
         // GIVEN WHEN
@@ -250,7 +247,7 @@ public class BoundsTest {
         assertTrue(actual.contains(point));
     }
 
-    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NotNull
+    // Note that this will fail if run in IntelliJ as it injects the runtime handling of the @NonNull
     @Test(expected = IllegalArgumentException.class)
     public void getBounds_null() {
         // GIVEN

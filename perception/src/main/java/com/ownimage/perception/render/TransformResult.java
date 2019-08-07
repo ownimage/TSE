@@ -5,11 +5,12 @@
  */
 package com.ownimage.perception.render;
 
-import java.awt.*;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 public class TransformResult implements ITransformResult {
 
@@ -30,9 +31,18 @@ public class TransformResult implements ITransformResult {
     private float mB;
     private float mA;
 
-    public TransformResult(final TransformResultBatch pTRB, final int pIndex, final int pXPixel, final int pYPixel, final double pX, final double pY, final float pR, final float pG, final float pB,
-                           final float pA) {
-        Framework.checkParameterNotNull(mLogger, pTRB, "pTRB");
+    public TransformResult(
+            @NonNull final TransformResultBatch pTRB,
+            final int pIndex,
+            final int pXPixel,
+            final int pYPixel,
+            final double pX,
+            final double pY,
+            final float pR,
+            final float pG,
+            final float pB,
+            final float pA
+    ) {
         Framework.checkParameterGreaterThanEqual(mLogger, pIndex, 0, "pIndex");
         Framework.checkParameterLessThan(mLogger, pIndex, pTRB.getBatchSize(), "pIndex");
 
@@ -120,8 +130,7 @@ public class TransformResult implements ITransformResult {
     }
 
     @Override
-    public void setColor(final Color pColor) {
-        Framework.checkParameterNotNull(mLogger, pColor, "pColor");
+    public void setColor(@NonNull final Color pColor) {
         final float[] c = pColor.getRGBComponents(null);
         setRGBA(c[0], c[1], c[2], c[3]);
     }

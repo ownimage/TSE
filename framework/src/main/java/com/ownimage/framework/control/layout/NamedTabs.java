@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.ControlBase;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -37,18 +38,15 @@ public class NamedTabs extends ViewableBase<NamedTabs, ISingleSelectView> implem
         Framework.logExit(mLogger);
     }
 
-    public INamedTabs addTab(final IContainer pContainer) {
+    public INamedTabs addTab(@NonNull final IContainer pContainer) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
         addTab(pContainer.getDisplayName(), pContainer);
         Framework.logExit(mLogger);
         return this;
     }
 
-    public INamedTabs addTab(final String pTabName, final IViewable<?> pContainer) {
+    public INamedTabs addTab(@NonNull final String pTabName, @NonNull final IViewable<?> pContainer) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pTabName, "pTabName");
-        Framework.checkParameterNotNull(mLogger, pContainer, "pContent");
 
         checkUniqueContainerPropertyName(pTabName);
 

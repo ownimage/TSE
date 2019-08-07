@@ -19,6 +19,7 @@ import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -53,9 +54,13 @@ public class Container extends ViewableBase<IViewable, IView> implements IContai
         this(pDisplayName, pPropertyName, pIGetUndoRedoBuffer, null);
     }
 
-    public Container(final String pDisplayName, final String pPropertyName, final IUndoRedoBufferProvider pGetUndoRedoBuffer, final IContainer pParent) {
+    public Container(
+            final String pDisplayName,
+            final String pPropertyName,
+            @NonNull final IUndoRedoBufferProvider pGetUndoRedoBuffer,
+            final IContainer pParent
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pGetUndoRedoBuffer, "pIGetUndoRedoBuffer");
 
         ControlBase.validate(pDisplayName, pPropertyName);
 

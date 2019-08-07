@@ -7,6 +7,7 @@ package com.ownimage.perception.render;
 
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.util.Calendar;
@@ -54,9 +55,8 @@ public class TransformResultBatch implements ITransformResultBatch {
     private int mPixelsProcessed;
     private final RenderService mRenderService;
 
-    public TransformResultBatch(final RenderService pRenderService, final int pMaxBatchSize) {
+    public TransformResultBatch(@NonNull final RenderService pRenderService, final int pMaxBatchSize) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderService, "pRenderService");
         Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
         Framework.checkParameterGreaterThan(mLogger, pMaxBatchSize, 0, "pMaxBatchSize");
 
@@ -155,9 +155,9 @@ public class TransformResultBatch implements ITransformResultBatch {
 
     @Override
     public int getPercentComplete() {
-        Framework.logEntry(Framework.mLogger);
+        Framework.logEntry(mLogger);
         final int percent = (100 * mYCurrent) / mYMax;
-        Framework.logExit(Framework.mLogger, percent);
+        Framework.logExit(mLogger, percent);
         return percent;
     }
 
@@ -198,11 +198,13 @@ public class TransformResultBatch implements ITransformResultBatch {
         return hasNext;
     }
 
-    public void initialize(final PictureType pPicture, final IBatchEngine pOwner, final int pMaxBatchSize) {
+    public void initialize(
+            @NonNull final PictureType pPicture,
+            @NonNull final IBatchEngine pOwner,
+            final int pMaxBatchSize
+    ) {
         Framework.logEntry(mLogger);
         Framework.logParams(mLogger, "pMaxBatchSize", pMaxBatchSize);
-        Framework.checkParameterNotNull(mLogger, pPicture, "pPicture");
-        Framework.checkParameterNotNull(mLogger, pOwner, "pOwner");
 
         mCurrentOwner = pOwner;
         setMaxBatchSize(pMaxBatchSize);
@@ -219,9 +221,8 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logExit(mLogger);
     }
 
-    void moveTo(final IBatchEngine pNewOwner) {
+    void moveTo(@NonNull final IBatchEngine pNewOwner) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pNewOwner, "pNewOwner");
 
         if (mCurrentOwner.getProcessingLocation() != pNewOwner.getProcessingLocation()) {
             mLogger.fine(String.format("Moving batch from %s to %s", pNewOwner.getProcessingLocation(), mCurrentOwner.getProcessingLocation()));
@@ -239,9 +240,8 @@ public class TransformResultBatch implements ITransformResultBatch {
         Framework.logExit(mLogger);
     }
 
-    public void render(final PictureType pPicture, final int pOverSample) {
+    public void render(@NonNull final PictureType pPicture, final int pOverSample) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPicture, "pPicture");
 
         moveTo(mRenderService.getBaseBatchEngine());
         final float divisor = pOverSample * pOverSample;

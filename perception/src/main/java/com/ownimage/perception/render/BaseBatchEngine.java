@@ -5,9 +5,10 @@
  */
 package com.ownimage.perception.render;
 
-import java.util.logging.Logger;
-
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
+
+import java.util.logging.Logger;
 
 public class BaseBatchEngine implements IBatchEngine {
 
@@ -43,9 +44,8 @@ public class BaseBatchEngine implements IBatchEngine {
     }
 
     @Override
-    public void next(final TransformResultBatch pBatch, final int pOverSample) {
+    public void next(@NonNull final TransformResultBatch pBatch, final int pOverSample) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 
         int index = 0;
         int x = pBatch.getXCurrent();
@@ -85,10 +85,11 @@ public class BaseBatchEngine implements IBatchEngine {
     }
 
     @Override
-    public void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
+    public void transform(
+            @NonNull final TransformResultBatch pBatch,
+            @NonNull final IBatchTransform pTransform
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
         pBatch.moveTo(this);
         pTransform.transform(pBatch);

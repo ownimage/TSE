@@ -5,12 +5,13 @@
  */
 package com.ownimage.perception.render;
 
+import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
+
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.ownimage.framework.util.Framework;
 
 public class JTPBatchEngine extends BaseBatchEngine {
 
@@ -66,15 +67,14 @@ public class JTPBatchEngine extends BaseBatchEngine {
     }
 
     @Override
-    public synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
+    public synchronized void transform(
+            @NonNull final TransformResultBatch pBatch,
+            @NonNull final IBatchTransform pTransform
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
-
         Framework.logValue(mLogger, "mThreadPoolSize", mThreadPoolSize);
 
         checkThreadPool();
-
         mForkJoinPool.invoke(new JTPTransformAction(pTransform, pBatch, mThreadBatchSize));
 
         Framework.logExit(mLogger);

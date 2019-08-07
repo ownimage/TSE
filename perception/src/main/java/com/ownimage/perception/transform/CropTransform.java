@@ -15,6 +15,7 @@ import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 
@@ -115,9 +116,8 @@ public class CropTransform extends BaseTransform implements IControlValidator {
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
         final double x = pRenderResult.getX();
         final double y = pRenderResult.getY();

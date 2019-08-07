@@ -7,6 +7,7 @@ package com.ownimage.framework.view.event;
 
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -64,9 +65,14 @@ public class UIEvent implements IUIEvent {
     private UIEvent() {
     }
 
-    public static UIEvent createKeyEvent(final EventType pEventType, final IControl pSource, final String pKey, final boolean pCtrl, final boolean pAlt,
-                                         final boolean pShift) {
-        Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
+    public static UIEvent createKeyEvent(
+            @NonNull final EventType pEventType,
+            final IControl pSource,
+            final String pKey,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
         if (!pEventType.isKeyEvent()) {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Key event.");
         }
@@ -84,9 +90,17 @@ public class UIEvent implements IUIEvent {
         return uiEvent;
     }
 
-    public static UIEvent createMouseEvent(final EventType pEventType, final IControl pSource, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
-                                           final boolean pShift) {
-        Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
+    public static UIEvent createMouseEvent(
+            @NonNull final EventType pEventType,
+            final IControl pSource,
+            final int pWidth,
+            final int pHeight,
+            final int pX,
+            final int pY,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
         if (!pEventType.isMouseEvent()) {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Mouse event");
         }
@@ -107,8 +121,7 @@ public class UIEvent implements IUIEvent {
         return uiEvent;
     }
 
-    public static UIEvent createMouseEvent(final IUIEvent pEvent, final int pX, final int pY) {
-        Framework.checkParameterNotNull(mLogger, pEvent, "pEvent");
+    public static UIEvent createMouseEvent(@NonNull final IUIEvent pEvent, final int pX, final int pY) {
         if (!pEvent.getEventType().isMouseEvent()) {
             throw new IllegalArgumentException("pEventType = " + pEvent.getEventType() + ", is not a valid Mouse event");
         }
@@ -131,9 +144,18 @@ public class UIEvent implements IUIEvent {
         return uiEvent;
     }
 
-    public static UIEvent createMouseScrollEvent(final EventType pEventType, final IControl pSource, final int pScroll, final int pWidth, final int pHeight, final int pX, final int pY, final boolean pCtrl, final boolean pAlt,
-                                                 final boolean pShift) {
-        Framework.checkParameterNotNull(mLogger, pEventType, "pEventType");
+    public static UIEvent createMouseScrollEvent(
+            @NonNull final EventType pEventType,
+            final IControl pSource,
+            final int pScroll,
+            final int pWidth,
+            final int pHeight,
+            final int pX,
+            final int pY,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
         if (!pEventType.isScrollEvent()) {
             throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid scroll event.");
         }

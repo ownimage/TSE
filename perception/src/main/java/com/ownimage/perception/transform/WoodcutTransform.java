@@ -5,17 +5,13 @@
  */
 package com.ownimage.perception.transform;
 
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.ITransformResult;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.util.logging.Level;
@@ -69,9 +65,8 @@ public class WoodcutTransform extends BaseTransform {
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
         final double x = pRenderResult.getX();
         final double y = pRenderResult.getY();

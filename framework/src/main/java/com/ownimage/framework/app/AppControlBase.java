@@ -20,6 +20,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.io.File;
@@ -85,12 +86,13 @@ public abstract class AppControlBase implements IAppControl {
 
     }
 
-    protected void dialogOKCancel(final String pTitle, final String pMessage, final IAction pOKAction, final IAction pCancelAction) {
+    protected void dialogOKCancel(
+            @NonNull final String pTitle,
+            @NonNull final String pMessage,
+            @NonNull final IAction pOKAction,
+            @NonNull final IAction pCancelAction
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-        Framework.checkParameterNotNull(mLogger, pMessage, "pMessage");
-        Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
-        Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
         final Container dialogContainer = new Container(pTitle, "title", this::getUndoRedoBuffer);
 
@@ -107,12 +109,13 @@ public abstract class AppControlBase implements IAppControl {
         System.exit(0);
     }
 
-    protected void fileExistsCheck(final File pFile, final String pTitle, final IAction pOKAction, final IAction pCancelAction) {
+    protected void fileExistsCheck(
+            @NonNull final File pFile,
+            @NonNull final String pTitle,
+            @NonNull final IAction pOKAction,
+            @NonNull final IAction pCancelAction
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
-        Framework.checkParameterNotNull(mLogger, pTitle, "pTitle");
-        Framework.checkParameterNotNull(mLogger, pOKAction, "pOKAction");
-        Framework.checkParameterNotNull(mLogger, pCancelAction, "pCancelAction");
 
         if (pFile.exists()) {
             final String message = "File " + pFile.getAbsolutePath() + " already exists.  Do you want to overwrite?";
@@ -210,8 +213,7 @@ public abstract class AppControlBase implements IAppControl {
     }
 
     @Override
-    public void setView(final IAppControlView pAppControlView) {
-        Framework.checkParameterNotNull(mLogger, pAppControlView, "pAppControlView");
+    public void setView(@NonNull final IAppControlView pAppControlView) {
         Framework.checkStateNoChangeOnceSet(mLogger, mAppControlView, "mAppControlView");
         mAppControlView = pAppControlView;
     }

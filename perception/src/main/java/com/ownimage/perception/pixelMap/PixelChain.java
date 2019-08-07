@@ -8,12 +8,12 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.util.immutable.IImmutableVector;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.val;
 
 import java.io.Serializable;
@@ -78,17 +78,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public PixelChain(
             final PixelMap pPixelMap,
-            final ImmutableVectorClone<Pixel> pPixels,
-            final ImmutableVectorClone<ISegment> pSegments,
-            final ImmutableVectorClone<IVertex> pVertexes,
+            @NonNull final ImmutableVectorClone<Pixel> pPixels,
+            @NonNull final ImmutableVectorClone<ISegment> pSegments,
+            @NonNull final ImmutableVectorClone<IVertex> pVertexes,
             final double pLength,
-            final Thickness pThickness
+            @NonNull final Thickness pThickness
     ) {
-        Framework.checkParameterNotNull(mLogger, pPixels, "pPixels");
-        Framework.checkParameterNotNull(mLogger, pSegments, "pSegments");
-        Framework.checkParameterNotNull(mLogger, pVertexes, "pVertexes");
-        Framework.checkParameterNotNull(mLogger, pThickness, "pThickness");
-
         mPixels = pPixels;
         mSegments = pSegments;
         mVertexes = pVertexes;
@@ -396,8 +391,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-    PixelChain setEndNode(final PixelMap pPixelMap, final Node pNode) {
-        Framework.checkParameterNotNull(mLogger, pNode, "pNode");
+    PixelChain setEndNode(final PixelMap pPixelMap, @NonNull final Node pNode) {
 
         val builder = builder();
         builder.changePixels(p-> p.add(pNode));

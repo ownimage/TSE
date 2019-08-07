@@ -13,6 +13,7 @@ import com.ownimage.framework.math.RectangleSize;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.ImageQuality;
 import com.ownimage.framework.util.Range2D;
+import lombok.NonNull;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -82,9 +83,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFile the file that holds the image data.
      * @throws FrameworkException if there is any underlying problem in instantiating the image.
      */
-    public PictureType(final File pFile) throws FrameworkException {
+    public PictureType(@NonNull final File pFile) throws FrameworkException {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         try {
             mImage = ImageIO.read(pFile);
@@ -143,9 +143,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         this(new File(pFilename));
     }
 
-    public PictureType(final PictureType pOrig) {
+    public PictureType(@NonNull final PictureType pOrig) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pOrig, "pOrig");
 
         mWidth = pOrig.getWidth();
         mHeight = pOrig.getHeight();
@@ -403,9 +402,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFile the file
      * @throws Exception the exception
      */
-    public void save(final File pFile, final ImageQuality pImageQuality) throws Exception {
+    public void save(@NonNull final File pFile, final ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         mLogger.info("mImage.getType() = " + mImage.getType());
 
         final String fileName = pFile.getName();
@@ -467,9 +465,8 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
      * @param pFileName the name
      * @throws Exception the exception
      */
-    public void save(final String pFileName, final ImageQuality pImageQuality) throws Exception {
+    public void save(@NonNull final String pFileName, final ImageQuality pImageQuality) throws Exception {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFileName, "pFileName");
 
         save(new File(pFileName), pImageQuality);
 

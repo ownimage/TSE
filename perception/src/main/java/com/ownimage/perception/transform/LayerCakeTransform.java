@@ -14,6 +14,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 
@@ -64,9 +65,8 @@ public class LayerCakeTransform extends BaseTransform {
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
         double x = pRenderResult.getPoint().getX();
         double y = 0;

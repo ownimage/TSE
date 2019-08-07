@@ -7,15 +7,8 @@ package com.ownimage.perception.transform;
 
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IGrafitti;
-import com.ownimage.framework.control.control.IMouseControl;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.ScrollLayout;
@@ -32,6 +25,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.render.IBatchEngine;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.render.ITransformResultBatch;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.io.IOException;
@@ -359,9 +353,8 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void transform(final ITransformResultBatch pBatch) {
+    public void transform(@NonNull final ITransformResultBatch pBatch) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
 
         for (int i = 0; i < pBatch.getBatchSize(); i++) {
             final ITransformResult rr = pBatch.getTransformResult(i);

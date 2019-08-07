@@ -5,11 +5,12 @@
  */
 package com.ownimage.perception.render;
 
-import java.awt.*;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 public class SingleTransformResult implements ITransformResult {
 
@@ -100,8 +101,7 @@ public class SingleTransformResult implements ITransformResult {
     }
 
     @Override
-    public void setColor(final Color pColor) {
-        Framework.checkParameterNotNull(mLogger, pColor, "pColor");
+    public void setColor(@NonNull final Color pColor) {
         final float[] c = pColor.getRGBComponents(null);
         setRGBA(c[0], c[1], c[2], c[3]);
     }

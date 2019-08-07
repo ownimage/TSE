@@ -5,7 +5,6 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.immutable.IImmutableVector;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -13,6 +12,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import io.vavr.Tuple4;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.val;
 
 import java.util.function.Function;
@@ -63,8 +63,7 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
-    public PixelChainBuilder setThickness(PixelChain.Thickness pThickness) {
-        Framework.checkParameterNotNull(mLogger, pThickness, "pThickness");
+    public PixelChainBuilder setThickness(@NonNull PixelChain.Thickness pThickness) {
         mThickness = pThickness;
         return this;
     }

@@ -8,14 +8,12 @@ package com.ownimage.perception.transform;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.PointControl;
-import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.math.Quadrilateral;
-import com.ownimage.framework.math.Range;
-import com.ownimage.framework.math.SSpline;
+import com.ownimage.framework.math.*;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.util.logging.Logger;
@@ -164,9 +162,8 @@ public class RuleOfThirdsTransform extends BaseTransform {
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
         final Point point = pRenderResult.getPoint();
 

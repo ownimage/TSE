@@ -2,12 +2,8 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import org.jetbrains.annotations.NotNull;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import lombok.NonNull;
+import org.junit.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,9 +11,7 @@ import java.util.function.BiConsumer;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PixelMapTest {
     private static List<Pixel> chainS1 = Arrays.asList(
@@ -419,7 +413,7 @@ public class PixelMapTest {
         pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
     }
 
-    public PixelMap addChain(@NotNull PixelMap pPixelMap, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
+    public PixelMap addChain(@NonNull PixelMap pPixelMap, @NonNull Pixel pStart, @NonNull List<Pixel> pChain) {
         StrongReference<PixelMap> pixelMapRef = new StrongReference<>(pPixelMap);
         pChain.forEach(pixel -> pixelMapRef.set(pixelMapRef.get().actionPixelOn(pStart.add(pixel))));
         return pixelMapRef.get();

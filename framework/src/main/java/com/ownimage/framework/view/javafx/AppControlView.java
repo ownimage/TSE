@@ -25,6 +25,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import lombok.NonNull;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -164,12 +165,13 @@ public class AppControlView extends Application implements IAppControlView {
         Platform.runLater(() -> showDialogLater(pViewable, pDialogOptions, pUndoRedo, pButtons));
     }
 
-    private void showDialogLater(final IViewable pViewable, final DialogOptions pDialogOptions, final UndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
-        Framework.checkParameterNotNull(mLogger, pViewable, "pViewable");
-        Framework.checkParameterNotNull(mLogger, pDialogOptions, "pDialogOptions");
-
+    private void showDialogLater(
+            @NonNull final IViewable pViewable,
+            @NonNull final DialogOptions pDialogOptions,
+            final UndoRedoBuffer pUndoRedo,
+            final ActionControl... pButtons
+    ) {
         new DialogView(pViewable, pDialogOptions, pUndoRedo, pButtons).showModal();
-
     }
 
     public void showDirectoryChooserDialog(final FileControl pFileControl) {
@@ -204,9 +206,7 @@ public class AppControlView extends Application implements IAppControlView {
         }
     }
 
-    public void showFileSaveChooserDialog(final FileControl pFileControl) {
-        Framework.checkParameterNotNull(mLogger, pFileControl, "pFileControl");
-
+    public void showFileSaveChooserDialog(@NonNull final FileControl pFileControl) {
         final String originalAbsolutePath = pFileControl.getFile().getAbsolutePath();
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pFileControl.getDisplayName());

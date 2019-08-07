@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -41,8 +42,7 @@ public interface IAppControlView {
                 return dialogOptions;
             }
 
-            public Builder withCompleteFunction(final IAction pCompleteFunciton) {
-                Framework.checkParameterNotNull(mLogger, pCompleteFunciton, "pCompleteFunction");
+            public Builder withCompleteFunction(@NonNull final IAction pCompleteFunciton) {
                 mDialogOptions.mCompleteFunction = pCompleteFunciton;
                 return this;
             }

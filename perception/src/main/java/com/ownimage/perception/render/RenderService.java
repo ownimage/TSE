@@ -15,6 +15,7 @@ import com.ownimage.framework.queue.Job;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
+import lombok.NonNull;
 import lombok.val;
 
 import java.util.Calendar;
@@ -67,7 +68,7 @@ public class RenderService {
         public void run() {
             Framework.logEntry(mLogger);
             // note slightly forced use of checkParmeter below
-            Framework.checkParameterNotNullOrEmpty(Framework.mLogger, mReason, "mReason");
+            Framework.checkParameterNotNullOrEmpty(mLogger, mReason, "mReason");
             Framework.checkParameterGreaterThanEqual(mLogger, mOverSample, 1, "pOverSample");
             Framework.checkParameterLessThanEqual(mLogger, mOverSample, 4, "pOverSample");
             if (mPictureControl == null && mPictureType == null)
@@ -191,9 +192,8 @@ public class RenderService {
         return new RenderJobBuilder(pReason, pPictureType, pTransform).withControlObject(pPictureType);
     }
 
-    private IBatchEngine getActualBatchEngine(final IBatchEngine pPreferredBatchEngine) {
+    private IBatchEngine getActualBatchEngine(@NonNull final IBatchEngine pPreferredBatchEngine) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPreferredBatchEngine, "pPreferredBatchEngine");
 
         return (getProperties().useJTP()) ? mJTPBatchEngine : mBaseBatchEngine;
     }
@@ -228,10 +228,11 @@ public class RenderService {
         return Services.getServices().getProperties();
     }
 
-    private synchronized void transform(final TransformResultBatch pBatch, final IBatchTransform pTransform) {
+    private synchronized void transform(
+            @NonNull final TransformResultBatch pBatch,
+            @NonNull final IBatchTransform pTransform
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pBatch, "pBatch");
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
         mLogger.fine("transform pBatch " + pTransform.getClass().getSimpleName());
 
         final IBatchEngine preferredBatchEngine = pTransform.getPreferredBatchEngine();

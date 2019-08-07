@@ -13,6 +13,7 @@ import com.ownimage.framework.math.RTheta;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 
@@ -96,9 +97,8 @@ public class SoftSquarePolarTransform extends BaseTransform {
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(@NonNull final ITransformResult pRenderResult) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pRenderResult, "pRenderResult");
 
         pRenderResult.setPoint(map(pRenderResult.getPoint()));
 

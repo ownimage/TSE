@@ -48,8 +48,8 @@ public class DialogView implements IDialogView {
     @Override
     public void showModal() {
         Platform.runLater(() -> {
-            Framework.checkParameterNotNull(mLogger, mViewable, "pViewable");
-            Framework.checkParameterNotNull(mLogger, mDialogOptions, "pDialogOptions");
+            Framework.checkStateNotNull(mLogger, mViewable, "pViewable");
+            Framework.checkStateNotNull(mLogger, mDialogOptions, "pDialogOptions");
 
             val buttonMap = new HashMap<ButtonType, ActionControl>();
             val content = (FXView) (mViewable.createView());

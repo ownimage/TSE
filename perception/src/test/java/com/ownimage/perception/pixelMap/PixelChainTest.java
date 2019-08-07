@@ -82,7 +82,7 @@ public class PixelChainTest {
         var reverse = approx.reverse(pixelMap);
         var compare = reverse.reverse(pixelMap);
         assertEquals(underTest.toString(), compare.toString());
-        assertEquals(dumpPixelChain(underTest), dumpPixelChain(compare));
+        assertEquals(dumpPixelChain(approx), dumpPixelChain(compare));
 
     }
 

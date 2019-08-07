@@ -8,11 +8,7 @@ package com.ownimage.perception.app;
 import com.ownimage.framework.app.AppControlBase;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.FileControl;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.BorderLayout;
 import com.ownimage.framework.control.layout.HFlowLayout;
@@ -32,6 +28,7 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+import lombok.NonNull;
 import lombok.val;
 
 import java.io.File;
@@ -181,9 +178,8 @@ public class Perception extends AppControlBase {
      * @param pFile the file
      * @throws IllegalArgumentException if pFile is null
      */
-    public void fileOpen(final File pFile) throws IllegalArgumentException {
+    public void fileOpen(@NonNull final File pFile) throws IllegalArgumentException {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         mFilename = pFile.getAbsolutePath();
 
@@ -252,9 +248,8 @@ public class Perception extends AppControlBase {
      *
      * @param pFile the file
      */
-    private void fileSave(final File pFile) {
+    private void fileSave(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         fileExistsCheck(pFile, "File Save", () -> fileSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -492,9 +487,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void loggingSave(final File pFile) {
+    private void loggingSave(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         fileExistsCheck(pFile, "Log Properties File", () -> loggingSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -521,9 +515,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void loggingSaveUnchecked(final File pFile) {
+    private void loggingSaveUnchecked(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         FrameworkLogger.getInstance().write(pFile, "Perception Logger");
 
@@ -583,9 +576,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void propertiesOpen(final File pFile) {
+    private void propertiesOpen(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         try (final FileInputStream fos = new FileInputStream(pFile)) {
             final PersistDB db = new PersistDB();
@@ -639,9 +631,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void propertiesSave(final File pFile) {
+    private void propertiesSave(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         fileExistsCheck(pFile, "Default Properties", () -> propertiesSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -667,9 +658,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void propertiesSaveUnchecked(final File pFile) {
+    private void propertiesSaveUnchecked(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         getProperties().write(pFile, "Perception Properties");
 
@@ -748,9 +738,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void transformOpen(final File pFile) {
+    private void transformOpen(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         try {
             getTransformSequence().read(pFile);
@@ -779,9 +768,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void transformSave(final File pFile) {
+    private void transformSave(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
 
         fileExistsCheck(pFile, "Transform File", () -> transformSaveUnchecked(pFile), () -> mLogger.log(Level.FINE, "Cancel pressed"));
 
@@ -798,9 +786,8 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
-    private void transformSaveUnchecked(final File pFile) {
+    private void transformSaveUnchecked(@NonNull final File pFile) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pFile, "pFile");
         Framework.logParams(mLogger, "pFile.getAbsolutePath()", pFile.getAbsolutePath());
 
         try (final FileOutputStream fos = new FileOutputStream(pFile)) {

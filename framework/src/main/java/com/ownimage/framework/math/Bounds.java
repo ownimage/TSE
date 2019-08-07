@@ -1,7 +1,6 @@
 package com.ownimage.framework.math;
 
-import com.ownimage.framework.util.Framework;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.Objects;
 
@@ -85,8 +84,7 @@ public class Bounds {
      * @param pPoint
      * @return whether the point is inside the bounds
      */
-    public boolean contains(@NotNull IntegerPoint pPoint) {
-        Framework.checkParameterNotNull(Framework.mLogger, pPoint, "pPoint");
+    public boolean contains(@NonNull IntegerPoint pPoint) {
         if (!testValid()) {
             return false;
         }
@@ -103,7 +101,7 @@ public class Bounds {
      * @param pPoint
      * @return Bounds object
      */
-    public Bounds getBounds(@NotNull IntegerPoint pPoint) {
+    public Bounds getBounds(@NonNull IntegerPoint pPoint) {
         if (!testValid()) {
             return new Bounds(pPoint);
         }

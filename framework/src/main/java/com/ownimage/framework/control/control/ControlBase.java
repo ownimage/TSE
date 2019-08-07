@@ -6,11 +6,7 @@
 package com.ownimage.framework.control.control;
 
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.event.ControlEventDispatcher;
-import com.ownimage.framework.control.event.EventDispatcher;
-import com.ownimage.framework.control.event.IControlChangeListener;
-import com.ownimage.framework.control.event.IControlEventDispatcher;
-import com.ownimage.framework.control.event.IControlValidator;
+import com.ownimage.framework.control.event.*;
 import com.ownimage.framework.control.type.IMetaType;
 import com.ownimage.framework.control.type.IType;
 import com.ownimage.framework.persist.IPersistDB;
@@ -18,7 +14,7 @@ import com.ownimage.framework.undo.IUndoRedoAction;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -111,31 +107,28 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
     }
 
     @Override
-    public C addControlChangeListener(final IControlChangeListener<?> pListener) {
-        Framework.checkParameterNotNull(mLogger, pListener, "pListener");
+    public C addControlChangeListener(@NonNull final IControlChangeListener<?> pListener) {
         mEventDispatcher.addControlChangeListener(pListener);
         return (C) this;
     }
 
-    public C addTypedControlChangeListener(@NotNull final IControlChangeListener<C> pListener) {
+    public C addTypedControlChangeListener(@NonNull final IControlChangeListener<C> pListener) {
         mEventDispatcher.addControlChangeListener(pListener);
         return (C) this;
     }
 
     @Override
-    public C addControlValidator(final IControlValidator<?> pValidator) {
-        Framework.checkParameterNotNull(mLogger, pValidator, "pValidator");
+    public C addControlValidator(@NonNull final IControlValidator<?> pValidator) {
         mEventDispatcher.addControlValidator(pValidator);
         return (C) this;
     }
 
-    public C addTypedControlValidator(@NotNull final IControlValidator<C> pValidator) {
+    public C addTypedControlValidator(@NonNull final IControlValidator<C> pValidator) {
         mEventDispatcher.addControlValidator(pValidator);
         return (C) this;
     }
 
-    protected void addView(final V pView) {
-        Framework.checkParameterNotNull(mLogger, pView, "pView");
+    protected void addView(@NonNull final V pView) {
         mViews.addListener(pView);
     }
 

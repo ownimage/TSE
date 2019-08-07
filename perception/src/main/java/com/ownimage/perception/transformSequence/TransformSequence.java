@@ -20,31 +20,13 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.ISingleSelectView;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Perception;
-import com.ownimage.perception.transform.BorderTransform;
-import com.ownimage.perception.transform.CannyEdgeTransform;
-import com.ownimage.perception.transform.CircleMaskTransform;
-import com.ownimage.perception.transform.CropTransform;
-import com.ownimage.perception.transform.ITransform;
-import com.ownimage.perception.transform.ImageLoadTransform;
-import com.ownimage.perception.transform.LayerCakeTransform;
-import com.ownimage.perception.transform.OutputTransform;
-import com.ownimage.perception.transform.PolarTransform;
-import com.ownimage.perception.transform.QuadSpaceTransform;
-import com.ownimage.perception.transform.RotateTransform;
-import com.ownimage.perception.transform.RuleOfThirdsTransform;
-import com.ownimage.perception.transform.SoftSquarePolarTransform;
-import com.ownimage.perception.transform.SquarePolarTransform;
-import com.ownimage.perception.transform.VariableStretch3Transform;
-import com.ownimage.perception.transform.WoodcutTransform;
+import com.ownimage.perception.transform.*;
+import lombok.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
@@ -94,9 +76,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.logExit(mLogger);
     }
 
-    private void addAvailableTransform(final ITransform pTransform) {
+    private void addAvailableTransform(@NonNull final ITransform pTransform) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
         mAvailableTransforms.add(pTransform);
         mAvailableTransformNameMap.put(pTransform.getPropertyName(), pTransform);
@@ -104,9 +85,8 @@ public class TransformSequence extends ViewableBase<TransformSequence, ISingleSe
         Framework.logExit(mLogger);
     }
 
-    private void addTransform(final ITransform pTransform) {
+    private void addTransform(@NonNull final ITransform pTransform) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pTransform, "pTransform");
 
         final ITransform transform = pTransform.duplicate();
         final int index = getSelectedIndex() + 1;

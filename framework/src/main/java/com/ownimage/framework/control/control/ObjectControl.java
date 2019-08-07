@@ -11,6 +11,7 @@ import com.ownimage.framework.control.type.ObjectType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,8 +49,7 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 
     // this is required as the UI can not support the Generic type
     @Override
-    public boolean setValue(final Object pObject) {
-        Framework.checkParameterNotNull(mLogger, pObject, "pObject");
+    public boolean setValue(@NonNull final Object pObject) {
 
         final R rObject = (R) pObject;
         final boolean b = super.setValue(rObject);

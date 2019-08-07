@@ -12,14 +12,7 @@ import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.util.Counter;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.KColor;
-import com.ownimage.framework.util.MyBase64;
-import com.ownimage.framework.util.PegCounter;
-import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.SplitTimer;
-import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.*;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
@@ -29,27 +22,12 @@ import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.io.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -222,8 +200,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    public List<PixelChain> getPixelChains(final Pixel pPixel) {
-        Framework.checkParameterNotNull(mLogger, pPixel, "pPixel");
+    public List<PixelChain> getPixelChains(@NonNull final Pixel pPixel) {
         Framework.logEntry(mLogger);
         final List<PixelChain> pixelChains = mPixelChains.stream()
                 .filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
@@ -955,7 +932,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         setData(pPixel, pValue, IN_CHAIN);
     }
 
-    void setEdge(@NotNull final Pixel pPixel, final boolean pValue) {
+    void setEdge(@NonNull final Pixel pPixel, final boolean pValue) {
         if (pPixel.isEdge(this) == pValue) return; // ignore no change
         if (pPixel.isNode(this) && !pValue) {
             setNode(pPixel, false);
@@ -976,7 +953,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    void setEdge(@NotNull final List<Pixel> pPixels, final boolean pValue) {
+    void setEdge(@NonNull final List<Pixel> pPixels, final boolean pValue) {
         pPixels.forEach(pixel -> {
             if (pixel.isEdge(this) == pValue) return; // ignore no change
             if (pixel.isNode(this) && !pValue) {
@@ -999,7 +976,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    private void trackPixelOn(@NotNull List<Pixel> pPixels) {
+    private void trackPixelOn(@NonNull List<Pixel> pPixels) {
         if (pPixels.isEmpty()) return;
 
         resetInChain();
@@ -1046,17 +1023,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .map(pc2 -> pc2.approximate(this, this.getTransformSource()));
     }
 
-    private void trackPixelOn(@NotNull Pixel pPixel) {
+    private void trackPixelOn(@NonNull Pixel pPixel) {
         List<Pixel> pixels = Arrays.asList(pPixel);
         trackPixelOn(pixels);
     }
 
-    private void trackPixelOff(@NotNull Pixel pPixel) {
+    private void trackPixelOff(@NonNull Pixel pPixel) {
         List<Pixel> pixels = Arrays.asList(pPixel);
         trackPixelOff(pixels);
     }
 
-    private void trackPixelOff(@NotNull List<Pixel> pPixels) {
+    private void trackPixelOff(@NonNull List<Pixel> pPixels) {
         pPixels.forEach(pixel -> {
             getPixelChains(pixel).forEach(pc -> {
                 mPixelChains = mPixelChains.remove(pc);
@@ -1077,7 +1054,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         });
     }
 
-    private Pixel setNode(@NotNull final Pixel pPixel, final boolean pValue) {
+    private Pixel setNode(@NonNull final Pixel pPixel, final boolean pValue) {
         if (pPixel.isNode(this) && !pValue) {
             nodeRemove(pPixel);
         }
@@ -1517,8 +1494,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains.stream();
     }
 
-    public void checkCompatibleSize(@NotNull final PixelMap pPixelMap) {
-        Framework.checkParameterNotNull(mLogger, pPixelMap, "pPixelMap");
+    public void checkCompatibleSize(@NonNull final PixelMap pPixelMap) {
         if (getWidth() != pPixelMap.getWidth() || getHeight() != pPixelMap.getHeight()) {
             throw new IllegalArgumentException("pPixelMap is different size to this.");
         }

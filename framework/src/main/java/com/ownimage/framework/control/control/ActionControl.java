@@ -13,6 +13,7 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 
@@ -31,9 +32,13 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
     private boolean mFullSize = true; // indicates that the button should be rendered full width.
     private String mImageName;
 
-    public ActionControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final IAction pAction) {
+    public ActionControl(
+            final String pDisplayName,
+            final String pPropertyName,
+            final IContainer pContainer,
+            @NonNull final IAction pAction
+    ) {
         super(pDisplayName, pPropertyName, pContainer, new BooleanType(false));
-        Framework.checkParameterNotNull(mLogger, pAction, "pAction");
         mAction = pAction;
     }
 

@@ -6,14 +6,7 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
@@ -31,6 +24,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.util.logging.Logger;
@@ -66,10 +60,12 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private IntegerPoint mDragStart = IntegerPoint.IntegerPoint00;
 
-    public GenerateEdgesDialog(final CannyEdgeTransform pParent, final String pDisplayName,
-                               final String pPropertyName) {
+    public GenerateEdgesDialog(
+            @NonNull final CannyEdgeTransform pParent,
+            final String pDisplayName,
+            final String pPropertyName
+    ) {
         super(pDisplayName, pPropertyName, Services.getServices()::getUndoRedoBuffer);
-        Framework.checkParameterNotNull(mLogger, pParent, "pParent");
 
         mTransform = pParent;
 

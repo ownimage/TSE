@@ -7,6 +7,7 @@ package com.ownimage.framework.queue;
 
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
+import lombok.NonNull;
 
 import java.util.Date;
 import java.util.logging.Logger;
@@ -65,9 +66,12 @@ public class Job implements IJob {
      * @param pName          the name
      * @param pControlObject the control object
      */
-    public Job(final String pName, final Priority pPriority, final Object pControlObject) {
+    public Job(
+            @NonNull String pName,
+            @NonNull final Priority pPriority,
+            final Object pControlObject
+    ) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
         Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
 
         mName = pName;
@@ -79,9 +83,8 @@ public class Job implements IJob {
         Framework.logExit(mLogger);
     }
 
-    public Job(final String pName, final Priority pPriority, final Runnable pDo) {
+    public Job(@NonNull final String pName, @NonNull final Priority pPriority, final Runnable pDo) {
         Framework.logEntry(mLogger);
-        Framework.checkParameterNotNull(mLogger, pPriority, "pPriority");
         Framework.checkParameterNotNullOrEmpty(mLogger, pName, "pName");
 
         mName = pName;

@@ -7,9 +7,11 @@ package com.ownimage.framework.util;
 
 import java.awt.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class KColor {
 
+    private final static Logger mLogger = Framework.getLogger();
 
     private final Color mColor;
 
@@ -31,7 +33,7 @@ public class KColor {
     }
 
     public static Color average(final Color... pColors) {
-        Framework.checkParameterGreaterThanEqual(Framework.mLogger, 0, pColors.length, "pColors.length");
+        Framework.checkParameterGreaterThanEqual(mLogger, 0, pColors.length, "pColors.length");
 
         int red = 0;
         int blue = 0;
