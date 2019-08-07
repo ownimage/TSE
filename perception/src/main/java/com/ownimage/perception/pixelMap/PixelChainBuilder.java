@@ -12,6 +12,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import io.vavr.Tuple4;
+import lombok.Getter;
 import lombok.val;
 
 import java.util.function.Function;
@@ -22,11 +23,11 @@ public class PixelChainBuilder implements IPixelChain {
 
     public final static Logger mLogger = Framework.getLogger();
 
-    private ImmutableVectorClone<Pixel> mPixels;
-    private ImmutableVectorClone<ISegment> mSegments;
-    private ImmutableVectorClone<IVertex> mVertexes;
-    private double mLength;
-    private PixelChain.Thickness mThickness;
+    @Getter private ImmutableVectorClone<Pixel> mPixels;
+    @Getter private ImmutableVectorClone<ISegment> mSegments;
+    @Getter private ImmutableVectorClone<IVertex> mVertexes;
+    @Getter private double mLength;
+    @Getter private PixelChain.Thickness mThickness;
 
     public PixelChainBuilder(
             ImmutableVectorClone<Pixel> pPixels,
@@ -57,16 +58,6 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
-    @Override
-    public double getLength() {
-        return mLength;
-    }
-
-    @Override
-    public PixelChain.Thickness getThickness() {
-        return mThickness;
-    }
-
     public PixelChainBuilder setLength(double pLength) {
         mLength = pLength;
         return this;
@@ -78,29 +69,17 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
-    public IImmutableVector<Pixel> getPixels() {
-        return mPixels;
-    }
-
-    public IImmutableVector<ISegment> getSegments() {
-        return mSegments;
-    }
-
-    public IImmutableVector<IVertex> getVertexes() {
-        return mVertexes;
-    }
-
     public PixelChain build(final PixelMap pPixelMap) {
         return new PixelChain(pPixelMap, mPixels, mSegments, mVertexes, mLength, mThickness);
     }
 
 
     public void setVertex(final IVertex pVertex) {
-        changeVertexes(v->v.set(pVertex.getVertexIndex(), pVertex));
+        changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 
     public void setSegment(final ISegment pSegment) {
-        changeSegments(v->v.set(pSegment.getSegmentIndex(),pSegment));
+        changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 
 
@@ -154,11 +133,11 @@ public class PixelChainBuilder implements IPixelChain {
             var length = pCurrentSegment.getLength(pPixelMap, this) / originalNextSegment.getLength(pPixelMap, this);
             controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
             for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
-                changeVertexes(v->v.set(originalEndVertex.getVertexIndex(), originalEndVertex));
+                changeVertexes(v -> v.set(originalEndVertex.getVertexIndex(), originalEndVertex));
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
                 var candidateVertex = Vertex.createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
-                changeVertexes(v->v.set(candidateVertex.getVertexIndex(), candidateVertex));
+                changeVertexes(v -> v.set(candidateVertex.getVertexIndex(), candidateVertex));
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 for (var controlPoint : controlPoints) {
                     var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
@@ -314,7 +293,7 @@ public class PixelChainBuilder implements IPixelChain {
             if (bestCandidateSegment != pCurrentSegment) {
                 getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
             }
-            setVertex( bestCandidateVertex);
+            setVertex(bestCandidateVertex);
             setSegment(bestCandidateSegment);
             // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
         }

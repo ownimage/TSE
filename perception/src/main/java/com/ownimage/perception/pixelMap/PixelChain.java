@@ -13,6 +13,7 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import lombok.Getter;
 import lombok.val;
 
 import java.io.Serializable;
@@ -54,9 +55,9 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public final static long serialVersionUID = 2L;
 
-    private final ImmutableVectorClone<Pixel> mPixels;
-    private final ImmutableVectorClone<ISegment> mSegments;
-    private final ImmutableVectorClone<IVertex> mVertexes;
+    @Getter private final ImmutableVectorClone<Pixel> mPixels;
+    @Getter private final ImmutableVectorClone<ISegment> mSegments;
+    @Getter private final ImmutableVectorClone<IVertex> mVertexes;
     transient private double mLength;
     private Thickness mThickness;
 
@@ -116,13 +117,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-    public IImmutableVector<Pixel> getPixels() { return mPixels;}
-
-    public IImmutableVector<ISegment> getSegments() { return mSegments;}
-
-    public IImmutableVector<IVertex> getVertexes() { return mVertexes;}
-
-    /**
+     /**
      * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the pOtherChain are all
      * LineApproximations.
