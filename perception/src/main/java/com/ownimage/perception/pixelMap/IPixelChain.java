@@ -89,11 +89,11 @@ public interface IPixelChain {
     /**
      * Gets the UHVW value of the Pixel at the specified position.
      *
-     * @param pIndex    the index
      * @param pPixelMap
+     * @param pIndex    the index
      * @return the UHVW Point
      */
-    default Point getUHVWPoint(final int pIndex, final PixelMap pPixelMap) {
+    default Point getUHVWPoint(final PixelMap pPixelMap, final int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));

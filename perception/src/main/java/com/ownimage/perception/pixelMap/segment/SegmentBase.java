@@ -34,7 +34,7 @@ public abstract class SegmentBase implements ISegment {
     public double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);
+            final Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
             final double distance = distance(pPixelMap, pPixelChain, uhvw);
 
             error += distance * distance;
@@ -153,7 +153,7 @@ public abstract class SegmentBase implements ISegment {
 
     public boolean noPixelFurtherThan(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            final Point uhvw = pPixelChain.getUHVWPoint(i, pPixelMap);
+            final Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
             if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {
                 return false;
             }

@@ -168,7 +168,15 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-
+    PixelChain approximateCurvesOnly(
+            final PixelMap pPixelMap,
+            final double pTolerance,
+            final double pLineCurvePreference
+    ) {
+        val builder = builder();
+        builder.approximateCurvesOnly(pPixelMap, pTolerance, pLineCurvePreference);
+        return builder.build(pPixelMap);
+    }
 
     private void checkAllVertexesAttached() {
         mSegments.forEach(segment -> {
@@ -399,7 +407,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
         if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
-            val index = builder.getPixelCount() - 2;
+            var index = builder.getPixelCount() - 2;
             builder.getPixel(index).setVisited(pPixelMap, false);
             builder.changePixels(p -> p.remove(index));
         }

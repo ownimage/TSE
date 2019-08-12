@@ -70,7 +70,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         DeletePixelChainWide("Delete Pixel Chain Wide", 15),
         DeletePixelChainVeryWide("Delete Pixel Chain Very Wide", 45),
         PixelChainThickness("Change Pixel Chain Thickness", 2),
-        CopyToClipboard("Copy To Clipboard", 1);
+        CopyToClipboard("Copy To Clipboard", 1),
+        ApproximateCurvesOnly("Approximate Curves Only", 1);
+
         private final String mName;
         private final int mCursorSize;
 
@@ -434,6 +436,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(pPixel);
             if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
             if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
+            if (isPixelChainApproximateCurvesOnly()) actionPixelChainApproximateCurvesOnly(pPixel);
             if (change) {
                 drawGrafitti();
                 autoUpdatePreview();
@@ -507,6 +510,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean isPixelChainThickness() {
         return mPixelAction.getValue() == PixelAction.PixelChainThickness;
+    }
+
+    private boolean isPixelChainApproximateCurvesOnly() {
+        return mPixelAction.getValue() == PixelAction.ApproximateCurvesOnly;
     }
 
     private boolean isCopyToClipboard() {
@@ -719,6 +726,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         addUndoRedoEntry("Action Pixel Off", undo, mPixelMap);
         mPictureControl.drawGrafitti();
         return true;
+    }
+
+    synchronized private boolean actionPixelChainApproximateCurvesOnly(@NonNull final Pixel pPixel) {
+        final PixelMap undo = mPixelMap;
+        mPixelMap = mPixelMap.actionPixelChainApproximateCurvesOnly(pPixel);
+        if (undo != mPixelMap) {
+            addUndoRedoEntry("Reapproximate PixelChain", undo, mPixelMap);
+            mPictureControl.drawGrafitti();
+            return true;
+        }
+        return false;
     }
 
     private boolean actionPixelChainThickness(@NonNull final Pixel pPixel) {

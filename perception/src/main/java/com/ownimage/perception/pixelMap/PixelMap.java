@@ -23,6 +23,7 @@ import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.NonNull;
+import lombok.val;
 
 import java.awt.*;
 import java.io.*;
@@ -130,6 +131,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 );
         clone.mAutoTrackChanges = true;
         return changesMade.get() ? clone : this;
+    }
+
+    public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {
+        double tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
+        double lineCurvePreference = getTransformSource().getLineCurvePreference();
+        if (getPixelChains(pPixel).isEmpty()) return this;
+        PixelMap clone = new PixelMap(this);
+        clone.mAutoTrackChanges = false;
+        clone.getPixelChains(pPixel).forEach(pc -> {
+            clone.removePixelChain(pc);
+            val pc2 = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
+            clone.addPixelChain(pc2);
+        });
+        clone.mAutoTrackChanges = true;
+        clone.indexSegments();
+        return clone;
     }
 
     public String toString() {
