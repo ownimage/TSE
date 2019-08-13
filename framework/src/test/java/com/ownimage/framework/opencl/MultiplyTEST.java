@@ -14,8 +14,8 @@ public class MultiplyTEST implements ITransform {
 
     }
 
-    public static double transformMultiply(final double pDoubleParams, final int[] pB, final double pC) {
-        return pDoubleParams * pC;
+    public static double transformMultiply(final double pDoubleParams, final double pC[]) {
+        return pDoubleParams * pC[0];
     }
 
     @Override

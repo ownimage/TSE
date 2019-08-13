@@ -14,8 +14,8 @@ public class AddTEST implements ITransform {
 
     }
 
-    public static double transformAdd(final double pDoubleParams, final int[] pIntParams, final double pC) {
-        return pDoubleParams + pC;
+    public static double transformAdd(final double pDoubleParams, final double[] pC) {
+        return pDoubleParams + pC[0];
     }
 
     @Override
