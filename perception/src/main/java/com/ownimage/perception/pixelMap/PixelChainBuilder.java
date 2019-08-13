@@ -6,17 +6,20 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.Tuple4;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -388,6 +391,7 @@ public class PixelChainBuilder implements IPixelChain {
         var segmentIndex = getSegmentCount();
         changeSegments(s -> s.add(null));
         Tuple3<Integer, ISegment, IVertex> bestFit;
+        val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
         for (int i = 4; i < getPixelCount(); i++) {
             try {
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
@@ -404,18 +408,27 @@ public class PixelChainBuilder implements IPixelChain {
                 val lineCE = new Line(pointC, pointE);
                 var candidateVertex = Vertex.createVertex(this, vertexIndex, i);
                 setVertex(candidateVertex);
-                lineCE.stream()
-                var candidateSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex);
-                if (candidateSegment != null) {
-                    setSegment(candidateSegment);
-                    refine01FirstSegment(pPixelMap, pLineCurvePreference, candidateSegment);
-                }
+                lineCE.streamFromCenter(20)
+                        .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pPixelMap, this, segmentIndex, p))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .filter(s -> s.noPixelFurtherThan(pPixelMap, this, pTolerance * pLineCurvePreference))
+                        .findFirst()
+                        .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
             } catch(Throwable pT) {
 
             }
         }
-        changeVertexes(v-> v.add(Vertex.createVertex(this, getVertexCount(), getPixelCount() -1)));
-        changeSegments(s -> s.add(SegmentFactory.createTempStraightSegment(pPixelMap, this, getSegmentCount())));
+        setSegment(best.get()._1);
+        setVertex(best.get()._2);
+        if (getSegment(0) == null) {
+            setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, 0));
+        }
+
+        if (best.get()._2.getPixelIndex() != getPixelCount() -1 ) {
+            changeVertexes(v -> v.add(Vertex.createVertex(this, getVertexCount(), getPixelCount() - 1)));
+            changeSegments(s -> s.add(SegmentFactory.createTempStraightSegment(pPixelMap, this, getSegmentCount())));
+        }
     }
 
     private void approximate01_straightLines(final PixelMap pPixelMap, final double pTolerance) {

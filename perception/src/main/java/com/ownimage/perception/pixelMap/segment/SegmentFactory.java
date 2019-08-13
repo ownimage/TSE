@@ -49,7 +49,7 @@ public class SegmentFactory {
         return null;
     }
 
-    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(final PixelMap pPixelMap, final PixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
         return Optional.of(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 

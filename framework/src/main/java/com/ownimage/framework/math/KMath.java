@@ -6,6 +6,7 @@
 package com.ownimage.framework.math;
 
 import com.ownimage.framework.util.Framework;
+import lombok.val;
 
 import java.util.logging.Logger;
 
@@ -202,6 +203,25 @@ public class KMath {
             return mod1(pD - 1.0d);
         }
         return 0.0;
+    }
+
+
+    /**
+     * This method is intended to be used to map an increasing IntStream into one that starts its values at the
+     * center value of the stream and works alternating outwards,
+     * <pre>
+     *       IntStream.rangeClosed(0, 10).map(i -> KMath.fromCenter(i, max)).forEach(i -> System.out.print(i + ", "));
+     * </pre>
+     * Would yield
+     * <pre>5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10</pre>
+     *
+     * @param pI   the current value in the stream
+     * @param pMax the max value of the stream
+     * @return
+     */
+    public static int fromCenter(final int pI, final int pMax) {
+        val sign = (pI & 1) == 0 ? 1 : -1;
+        return (int) (Math.ceil(pMax / 2.0d) + sign * Math.ceil(pI / 2.0d));
     }
 
     /**

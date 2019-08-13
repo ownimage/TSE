@@ -7,6 +7,7 @@ package com.ownimage.framework.math;
 
 import Jama.Matrix;
 import com.ownimage.framework.util.Framework;
+import lombok.val;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -153,7 +154,16 @@ public class Line implements Serializable {
     }
 
     public Stream<Point> stream(final int mCount) {
-        return IntStream.rangeClosed(0, mCount).mapToDouble(i -> (double) i / mCount).mapToObj(this::getPoint);
+        return IntStream.rangeClosed(0, mCount)
+                .mapToDouble(i -> (double) i / mCount)
+                .mapToObj(this::getPoint);
+    }
+
+    public Stream<Point> streamFromCenter(final int mCount) {
+        return IntStream.rangeClosed(0, mCount)
+                .map(i -> KMath.fromCenter(i, mCount))
+                .mapToDouble(i -> (double) i / mCount)
+                .mapToObj(this::getPoint);
     }
 
 }
