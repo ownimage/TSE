@@ -2,10 +2,12 @@ package com.ownimage.framework.util.immutable;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Framework;
+import lombok.val;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
@@ -79,6 +81,12 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
         }
     }
 
+    public int getSize() {
+        synchronized (getSynchronisationObject()) {
+            return getMaster().mValues.size();
+        }
+    }
+
     public ImmutableMap2D<E> set(final int pX, final int pY, final E pNewValue) {
         synchronized (getSynchronisationObject()) {
             E currentValue = getMaster().get(pX, pY);
@@ -99,4 +107,17 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
         }
     }
 
+    public ImmutableMap2D<E> forEach(Function<E, E> pFn) {
+        synchronized (getSynchronisationObject()) {
+            val master = getMaster();
+            val copy = new Map2D<E>(
+                    master.mWidth,
+                    master.mHeight,
+                    pFn.apply(master.mDefaultValue),
+                    master.mDensity
+            );
+            master.mValues.forEach((k, v) -> copy.mValues.put(k, pFn.apply(v)));
+            return new ImmutableMap2D<>(copy);
+        }
+    }
 }

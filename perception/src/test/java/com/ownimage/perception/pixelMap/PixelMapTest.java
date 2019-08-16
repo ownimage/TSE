@@ -3,14 +3,16 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import lombok.NonNull;
+import lombok.val;
 import org.junit.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
-import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
+import static com.ownimage.perception.pixelMap.PixelConstants.*;
 import static org.junit.Assert.*;
 
 public class PixelMapTest {
@@ -35,6 +37,38 @@ public class PixelMapTest {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
+    }
+
+    @Test
+    public void process01_reset_01() {
+        // GIVEN
+        val underTest = Utility.createMap(2000, 1500);
+        underTest.setValue(1, 1, (byte)(VISITED | IN_CHAIN | NODE ));
+        val start = Instant.now();
+        // WHEN
+        underTest.process01_reset(null);
+        val end = Instant.now();
+        // THEN
+        Assert.assertEquals(0, underTest.getValue(1, 1));
+        val duration = Duration.between(start, end);
+        System.out.println("Duration = " + duration.toMillis());
+        Assert.assertEquals(1, underTest.getDataSize());
+    }
+
+    @Test
+    public void process01_reset_02() {
+        // GIVEN
+        val underTest = Utility.createMap(2000, 1500);
+        underTest.setValue(1, 1, (byte)(VISITED | IN_CHAIN | NODE | EDGE));
+        val start = Instant.now();
+        // WHEN
+        underTest.process01_reset(null);
+        val end = Instant.now();
+        // THEN
+        Assert.assertEquals(EDGE, underTest.getValue(1, 1));
+        val duration = Duration.between(start, end);
+        System.out.println("Duration = " + duration.toMillis());
+        Assert.assertEquals(1, underTest.getDataSize());
     }
 
     @Test

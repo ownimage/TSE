@@ -1302,17 +1302,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void resetInChain() {
-        forEach((x, y) -> {
-            final byte newValue = (byte) (getValue(x, y) & (ALL ^ IN_CHAIN));
-            setValue(x, y, newValue);
-        });
+        mData = mData.forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
     }
 
     private void resetNode() {
-        forEach((x, y) -> {
-            final byte newValue = (byte) (getValue(x, y) & (ALL ^ NODE));
-            setValue(x, y, newValue);
-        });
+        mData = mData.forEach(v ->  (byte) (v & (ALL ^ NODE)));
     }
 
     private void resetSegmentIndex() {
@@ -1322,10 +1316,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void resetVisited() {
-        forEach((x, y) -> {
-            final byte newValue = (byte) (getValue(x, y) & (ALL ^ VISITED));
-            setValue(x, y, newValue);
-        });
+        mData = mData.forEach(v -> (byte) (v & (ALL ^ VISITED)));
     }
 
     // access weakened for testing only
@@ -1489,11 +1480,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Framework.logExit(mLogger);
     }
 
-    // Move to a stream
-    @Deprecated
-    private void forEach(final BiConsumer<Integer, Integer> pFunction) {
-        new Range2D(getWidth(), getHeight()).forEach(pFunction);
-    }
+
 
     // move to a stream
     @Deprecated
@@ -1515,5 +1502,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         if (getWidth() != pPixelMap.getWidth() || getHeight() != pPixelMap.getHeight()) {
             throw new IllegalArgumentException("pPixelMap is different size to this.");
         }
+    }
+
+    public int getDataSize() {
+        return mData.getSize();
     }
 }

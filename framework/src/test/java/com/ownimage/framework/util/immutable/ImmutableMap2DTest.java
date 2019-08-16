@@ -6,6 +6,7 @@
 
 package com.ownimage.framework.util.immutable;
 
+import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -126,5 +127,69 @@ public class ImmutableMap2DTest {
         Assert.assertEquals("0", c.get(2, 2));
         Assert.assertEquals("c31", c.get(3, 1));
         Assert.assertEquals("c32", c.get(3, 2));
+    }
+
+    @Test
+    public void getSize_01() {
+        // GIVEN
+        val underTest = new ImmutableMap2D<>(100, 100, "0");
+        // THEN
+        Assert.assertEquals(0, underTest.getSize());
+   }
+
+    @Test
+    public void getSize_02() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(100, 100, "0");
+        // WHEN
+        underTest = underTest.set(1, 1, "1");
+        // THEN
+        Assert.assertEquals(1, underTest.getSize());
+    }
+
+    @Test
+    public void getSize_03() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(100, 100, "0");
+        // WHEN
+        underTest = underTest.set(1, 1, "1");
+        underTest = underTest.set(1, 1, "2");
+        // THEN
+        Assert.assertEquals(1, underTest.getSize());
+    }
+
+    @Test
+    public void getSize_04() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(100, 100, "0");
+        // WHEN
+        underTest = underTest.set(1, 1, "1");
+        underTest = underTest.set(2, 2, "2");
+        // THEN
+        Assert.assertEquals(2, underTest.getSize());
+    }
+
+    @Test
+    public void forAll_01() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(100, 100, "0");
+        // WHEN
+        var result = underTest.forEach(v -> "1");
+        // THEN
+        Assert.assertEquals(0, underTest.getSize());
+        Assert.assertEquals(result.get(1, 1), "1");
+    }
+
+    @Test
+    public void forAll_02() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(100, 100, "0");
+        underTest = underTest.set(1, 1, "1");
+        // WHEN
+        var result = underTest.forEach(v -> "2");
+        // THEN
+        Assert.assertEquals(1, underTest.getSize());
+        Assert.assertEquals(result.get(2, 2), "2");
+        Assert.assertEquals(result.get(1, 1), "2");
     }
 }
