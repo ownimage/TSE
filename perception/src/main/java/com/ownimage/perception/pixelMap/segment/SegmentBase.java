@@ -11,6 +11,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.*;
 import lombok.val;
 
+import java.awt.*;
 import java.util.logging.Logger;
 
 public abstract class SegmentBase implements ISegment {
@@ -148,7 +149,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public void graffiti(final PixelMap pPixelMap, final IPixelChain pPixelChain, final ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain));
+        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
     }
 
     public boolean noPixelFurtherThan(final PixelMap pPixelMap, final IPixelChain pPixelChain, final double pDistance) {

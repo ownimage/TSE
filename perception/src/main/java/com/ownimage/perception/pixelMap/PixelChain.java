@@ -94,7 +94,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     private PixelChainBuilder builder() {
-        return new PixelChainBuilder(mPixels, mVertexes, mSegments, mLength, mThickness);
+        return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
     }
 
     @Override
@@ -162,7 +162,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     PixelChain approximate(final PixelMap pPixelMap, final IPixelMapTransformSource pTransformSource) {
-        var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+        val tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+        val lineCurvePreference = pTransformSource.getLineCurvePreference();
         val builder = builder();
         builder.approximate(pPixelMap, tolerance);
         return builder.build(pPixelMap);
@@ -293,7 +294,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public PixelChain refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
         var builder = builder();
-        builder.refine(pPixelMap, pSource);
+        // builder.refine(pPixelMap, pSource);
+        val tolerance = pSource.getLineTolerance() / pSource.getHeight();
+        val lineCurvePreference = pSource.getLineCurvePreference();
+        builder.approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
         return builder.build(pPixelMap);
     }
 

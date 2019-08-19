@@ -19,6 +19,8 @@ import java.io.Serializable;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
+    Line calcLocalTangent(PixelMap pPixelMap, IPixelChain pPixelChain, int pLength);
+
     ISegment getEndSegment(IPixelChain pPixelChain);
 
     int getPixelIndex();

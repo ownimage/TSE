@@ -50,6 +50,9 @@ public interface IPixelChain {
         return getPixels().size();
     }
 
+    default int getMaxPixelIndex() {
+        return getPixelCount() -1;
+    }
 
     default ISegment getSegment(final int i) {
         if (getSegments().size() <= i || i < 0) return null;
@@ -187,5 +190,9 @@ public interface IPixelChain {
 
     default ISegment getLastSegment() {
         return getSegments().lastElement().orElse(null);
+    }
+
+    default IVertex getLastVertex() {
+        return getVertexes().lastElement().orElse(null);
     }
 }

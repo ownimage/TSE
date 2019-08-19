@@ -71,7 +71,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         DeletePixelChainVeryWide("Delete Pixel Chain Very Wide", 45),
         PixelChainThickness("Change Pixel Chain Thickness", 2),
         CopyToClipboard("Copy To Clipboard", 1),
-        ApproximateCurvesOnly("Approximate Curves Only", 1);
+        ApproximateCurvesOnly("Approximate Curves Only", 1),
+        DeleteAllButThisPixelChain("Delete all but this PixelChain", 1);
 
         private final String mName;
         private final int mCursorSize;
@@ -436,7 +437,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(pPixel);
             if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
             if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
-            if (isPixelChainApproximateCurvesOnly()) actionPixelChainApproximateCurvesOnly(pPixel);
+            if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
+            if (isPixelChainDeleteAllButThis()) change |= actionPixelChainDeleteAllButThis(pPixel);
             if (change) {
                 drawGrafitti();
                 autoUpdatePreview();
@@ -514,6 +516,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean isPixelChainApproximateCurvesOnly() {
         return mPixelAction.getValue() == PixelAction.ApproximateCurvesOnly;
+    }
+
+    private boolean isPixelChainDeleteAllButThis() {
+        return mPixelAction.getValue() == PixelAction.DeleteAllButThisPixelChain;
     }
 
     private boolean isCopyToClipboard() {
@@ -728,11 +734,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return true;
     }
 
+    synchronized private boolean actionPixelChainDeleteAllButThis(@NonNull final Pixel pPixel) {
+        final PixelMap undo = mPixelMap;
+        mPixelMap = mPixelMap.actionPixelChainDeleteAllButThis(pPixel);
+        if (undo != mPixelMap) {
+            addUndoRedoEntry("Delete all but this PixelChain", undo, mPixelMap);
+            mPictureControl.drawGrafitti();
+            return true;
+        }
+        return false;
+    }
     synchronized private boolean actionPixelChainApproximateCurvesOnly(@NonNull final Pixel pPixel) {
         final PixelMap undo = mPixelMap;
         mPixelMap = mPixelMap.actionPixelChainApproximateCurvesOnly(pPixel);
         if (undo != mPixelMap) {
-            addUndoRedoEntry("Reapproximate PixelChain", undo, mPixelMap);
+            addUndoRedoEntry("Approximate Curves Only PixelChain", undo, mPixelMap);
             mPictureControl.drawGrafitti();
             return true;
         }

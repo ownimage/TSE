@@ -1,12 +1,12 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.logging.FrameworkLogger;
-import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.val;
 
 import java.util.Optional;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -32,18 +33,18 @@ public class PixelChainBuilder implements IPixelChain {
     @Getter private ImmutableVectorClone<ISegment> mSegments;
     @Getter private ImmutableVectorClone<IVertex> mVertexes;
     @Getter private double mLength;
-    @Getter private PixelChain.Thickness mThickness;
+    @Getter private Thickness mThickness;
 
     public PixelChainBuilder(
-            ImmutableVectorClone<Pixel> pPixels,
-            ImmutableVectorClone<IVertex> pVertexes,
-            ImmutableVectorClone<ISegment> pSegments,
+            Vector<Pixel> pPixels,
+            Vector<IVertex> pVertexes,
+            Vector<ISegment> pSegments,
             double pLength,
-            PixelChain.Thickness pThickness
+            Thickness pThickness
     ) {
-        mPixels = pPixels;
-        mVertexes = pVertexes;
-        mSegments = pSegments;
+        mPixels = new ImmutableVectorClone<Pixel>().addAll(pPixels);
+        mVertexes = new ImmutableVectorClone<IVertex>().addAll(pVertexes);
+        mSegments = new ImmutableVectorClone<ISegment>().addAll(pSegments);
         mLength = pLength;
         mThickness = pThickness;
     }
@@ -68,13 +69,20 @@ public class PixelChainBuilder implements IPixelChain {
         return this;
     }
 
-    public PixelChainBuilder setThickness(@NonNull PixelChain.Thickness pThickness) {
+    public PixelChainBuilder setThickness(@NonNull Thickness pThickness) {
         mThickness = pThickness;
         return this;
     }
 
     public PixelChain build(final PixelMap pPixelMap) {
-        return new PixelChain(pPixelMap, mPixels, mSegments, mVertexes, mLength, mThickness);
+        return new PixelChain(
+                pPixelMap,
+                new ImmutableVectorClone<Pixel>().addAll(mPixels.toVector()),
+                new ImmutableVectorClone<ISegment>().addAll(mSegments.toVector()),
+                new ImmutableVectorClone<IVertex>().addAll(mVertexes.toVector()),
+                mLength,
+                mThickness
+        );
     }
 
 
@@ -331,11 +339,11 @@ public class PixelChainBuilder implements IPixelChain {
 
         final int startIndexPlus = pSegment.getStartIndex(this) + 1;
         final Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap);
-        final double startPlusLambda = pSegment.closestLambda(startPointPlus, this, pPixelMap);
+        final double startPlusLambda = pSegment.closestLambda(pPixelMap, this, startPointPlus);
 
         final int endIndexMinus = pSegment.getEndIndex(this) - 1;
         final Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap);
-        final double endMinusLambda = pSegment.closestLambda(endPointMinus, this, pPixelMap);
+        final double endMinusLambda = pSegment.closestLambda(pPixelMap, this, endPointMinus);
 
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
     }
@@ -373,10 +381,57 @@ public class PixelChainBuilder implements IPixelChain {
             final double pTolerance,
             final double pLineCurvePreference
     ) {
+        if (getPixelCount() <= 4) return;
         changeVertexes(v->v.clear());
         changeSegments(s-> s.clear());
-        if (getPixelCount() <= 4) return;
         approximateCurvesOnly_firstSegment(pPixelMap, pTolerance, pLineCurvePreference);
+        while (getLastVertex().getPixelIndex() != getMaxPixelIndex()) {
+            approximateCurvesOnly_subsequentSegments(pPixelMap, pTolerance, pLineCurvePreference);
+        }
+    }
+
+    void approximateCurvesOnly_subsequentSegments(
+            final PixelMap pPixelMap,
+            final double pTolerance,
+            final double pLineCurvePreference
+    ) {
+        val startVertex = getLastVertex();
+        val startPixelIndex = getLastVertex().getPixelIndex() + 1;
+        val vertexIndex = getVertexCount();
+        val segmentIndex = getSegmentCount();
+        val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+        changeVertexes(v -> v.add(null));
+        changeSegments(s -> s.add(null));
+        Tuple3<Integer, ISegment, IVertex> bestFit;
+
+        for (int i = startPixelIndex; i < getPixelCount(); i++) {
+            try {
+                val candidateVertex = Vertex.createVertex(this, vertexIndex, i);
+                val lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
+                val startTangent = startVertex.getStartSegment(this).getEndTangent(pPixelMap, this);
+                val p = lt3.intersect(startTangent);
+                if (p != null) {
+                    setVertex(candidateVertex);
+                    SegmentFactory.createOptionalTempCurveSegmentTowards(pPixelMap, this, segmentIndex, p)
+                            .filter(s -> s.noPixelFurtherThan(pPixelMap, this, pTolerance * pLineCurvePreference))
+                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
+                }
+            } catch (Throwable pT) {
+                System.out.println(pT.getMessage());
+                System.out.println(pT.toString());
+            }
+            if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) break;
+        }
+        if (best.get() != null) {
+            setSegment(best.get()._1);
+            setVertex(best.get()._2);
+            if (best.get()._1 == null) {
+                setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
+            }
+        } else {
+            setVertex(Vertex.createVertex(this, vertexIndex, getMaxPixelIndex()));
+            setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
+        }
     }
 
     void approximateCurvesOnly_firstSegment(
@@ -384,20 +439,19 @@ public class PixelChainBuilder implements IPixelChain {
             final double pTolerance,
             final double pLineCurvePreference
     ) {
-        var startVertex = Vertex.createVertex(this, 0, 0);
-        changeVertexes(v -> v.add(startVertex));
-        var vertexIndex = getVertexCount();
+        changeVertexes(v -> v.add(Vertex.createVertex(this, 0, 0)));
+        val vertexIndex = getVertexCount();
+        val segmentIndex = getSegmentCount();
+        val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
         changeVertexes(v -> v.add(null));
-        var segmentIndex = getSegmentCount();
         changeSegments(s -> s.add(null));
         Tuple3<Integer, ISegment, IVertex> bestFit;
-        val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+
         for (int i = 4; i < getPixelCount(); i++) {
             try {
+                val candidateVertex = Vertex.createVertex(this, vertexIndex, i);
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
-                val lt3End = KMath.min(i + 3, getPixelCount() - 1);
-                val lt3Dir = getUHVWPoint(pPixelMap, i - 3).minus(getUHVWPoint(pPixelMap, lt3End));
-                val lt3 = new Line(lineAB.getB(), lineAB.getB().add(lt3Dir));
+                val lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
                 val pointL = lineAB.getPoint(0.25d);
                 val pointN = lineAB.getPoint(0.75d);
                 val normal = lineAB.getANormal();
@@ -405,29 +459,30 @@ public class PixelChainBuilder implements IPixelChain {
                 val lineN = new Line(pointN, pointN.add(normal));
                 val pointC = lt3.intersect(lineL);
                 val pointE = lt3.intersect(lineN);
-                val lineCE = new Line(pointC, pointE);
-                var candidateVertex = Vertex.createVertex(this, vertexIndex, i);
-                setVertex(candidateVertex);
-                lineCE.streamFromCenter(20)
-                        .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pPixelMap, this, segmentIndex, p))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .filter(s -> s.noPixelFurtherThan(pPixelMap, this, pTolerance * pLineCurvePreference))
-                        .findFirst()
-                        .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
-            } catch(Throwable pT) {
-
+                if (pointC != null && pointE != null) {
+                    val lineCE = new Line(pointC, pointE);
+                    setVertex(candidateVertex);
+                    lineCE.streamFromCenter(20)
+                            .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pPixelMap, this, segmentIndex, p))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .filter(s -> s.noPixelFurtherThan(pPixelMap, this, pTolerance * pLineCurvePreference))
+                            .findFirst()
+                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
+                }
+            } catch (Throwable pT) {
             }
+            if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) break;
         }
-        setSegment(best.get()._1);
-        setVertex(best.get()._2);
-        if (getSegment(0) == null) {
-            setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, 0));
-        }
-
-        if (best.get()._2.getPixelIndex() != getPixelCount() -1 ) {
-            changeVertexes(v -> v.add(Vertex.createVertex(this, getVertexCount(), getPixelCount() - 1)));
-            changeSegments(s -> s.add(SegmentFactory.createTempStraightSegment(pPixelMap, this, getSegmentCount())));
+        if (best.get() != null) {
+            setSegment(best.get()._1);
+            setVertex(best.get()._2);
+            if (getSegment(0) == null) {
+                setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, 0));
+            }
+        } else {
+            setVertex(Vertex.createVertex(this, vertexIndex, getMaxPixelIndex()));
+            setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
         }
     }
 
@@ -538,10 +593,13 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    public void refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
+    public void refine(final PixelMap pPixelMap, final IPixelMapTransformSource pTransformSource) {
         // TODO dont really want to have to pass a IMPTS in here
-        refine01_matchCurves(pPixelMap, pSource);
-        refine03_matchCurves(pPixelMap, pSource);
+        refine01_matchCurves(pPixelMap, pTransformSource);
+        refine03_matchCurves(pPixelMap, pTransformSource);
+        val tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+        val lineCurvePreference = pTransformSource.getLineCurvePreference();
+        //approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
     }
 
     private void refine01_matchCurves(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {

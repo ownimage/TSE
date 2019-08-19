@@ -74,7 +74,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double closestLambda(final Point pPoint, final IPixelChain pPixelChain, final PixelMap pPixelMap) {
+    public double closestLambda(final PixelMap pPixelMap, final IPixelChain pPixelChain, final Point pPoint) {
         return mLineSegment.closestLambda(pPoint);
     }
 
@@ -135,7 +135,7 @@ public class StraightSegment extends SegmentBase {
     @Override
     public StraightSegment withStartPosition(final double pStartPosition) {
         if (getStartPosition() == pStartPosition) return this;
-        return new StraightSegment(getSegmentIndex(), getStartPosition(), mLineSegment);
+        return new StraightSegment(getSegmentIndex(), pStartPosition, mLineSegment);
     }
 
 }

@@ -9,7 +9,6 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.util.Optional;
@@ -38,7 +37,13 @@ public class SegmentFactory {
     static public CurveSegment createTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
         try {
             final CurveSegment segment = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1);
-            if (segment.getA().length2() != 0) {
+            if (
+                    segment.getA().length2() != 0
+                    && segment.getMinX(pPixelMap, pPixelChain) > 0.0d
+                    && segment.getMaxX(pPixelMap, pPixelChain) < (double) pPixelMap.getWidth() / pPixelMap.getHeight()
+                    && segment.getMinY(pPixelMap, pPixelChain) > 0.0d
+                    && segment.getMinY(pPixelMap, pPixelChain) < 1.0d
+            ) {
                 return segment;
             } else {
                 return null;
@@ -50,7 +55,7 @@ public class SegmentFactory {
     }
 
     static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
-        return Optional.of(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
+        return Optional.ofNullable(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 
 

@@ -1,12 +1,17 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import lombok.val;
 import org.junit.*;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
+import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -222,6 +227,17 @@ public class PixelChainTest {
         val actual = underTest.getPixel(2);
         // THEN
         Assert.assertEquals(new Pixel(3, 5), actual);
+    }
+
+    @Test
+    public void getMaxPixelIndex_01() {
+        // GIVEN
+        val underTest = createPixelChain();
+        val expected = 17;
+        // WHEN
+        val actual = underTest.getMaxPixelIndex();
+        // THEN
+        Assert.assertEquals(expected, actual);
     }
 
     public PixelChain createPixelChain() {

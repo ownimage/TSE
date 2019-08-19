@@ -6,6 +6,7 @@
  */
 package com.ownimage.perception.pixelMap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.KMath;
@@ -29,7 +30,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.List;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,7 +80,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         setHeight(pHeight);
         m360 = p360;
         mTransformSource = pTransformSource;
-        resetSegmentIndex();
+        clearSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
         mData = new ImmutableMap2D<>(pWidth, pHeight, (byte) 0);
@@ -133,18 +133,28 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return changesMade.get() ? clone : this;
     }
 
+    public PixelMap actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
+        val pixelChains = getPixelChains(pPixel);
+        if (getPixelChains(pPixel).isEmpty() || pixelChains.size() != 1) return this;
+
+        PixelMap clone = new PixelMap(this);
+        clone.mPixelChains = clone.mPixelChains.clear().addAll(pixelChains);
+        clone.indexSegments();
+        return clone;
+    }
+
+
+
     public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {
+        if (getPixelChains(pPixel).isEmpty()) return this;
         double tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
         double lineCurvePreference = getTransformSource().getLineCurvePreference();
-        if (getPixelChains(pPixel).isEmpty()) return this;
         PixelMap clone = new PixelMap(this);
-        clone.mAutoTrackChanges = false;
         clone.getPixelChains(pPixel).forEach(pc -> {
             clone.removePixelChain(pc);
             val pc2 = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
             clone.addPixelChain(pc2);
         });
-        clone.mAutoTrackChanges = true;
         clone.indexSegments();
         return clone;
     }
@@ -599,7 +609,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mSegmentIndex;
     }
 
-    private Map<ISegment, PixelChain> getSegmentToPixelChainMap() {
+    @VisibleForTesting
+    Map<ISegment, PixelChain> getSegmentToPixelChainMap() {
         calcSegmentIndex();
         return mSegmentToPixelChainMap;
     }
@@ -692,7 +703,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mUHVWHalfPixel;
     }
 
-    private byte getValue(final int pX, final int pY) {
+    byte getValue(final int pX, final int pY) {
         // TODO change these to Framework checks
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
@@ -732,14 +743,38 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
         int maxY = (int) Math.ceil(pSegment.getMaxY(this, pPixelChain) * getHeight()) + 1;
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
-        new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
-            final Pixel pixel = getPixelAt(x, y);
-            final Point centre = pixel.getUHVWMidPoint(this).add(getUHVWHalfPixel());
-            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
+// TODO why is this slow        new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
+//            final Pixel pixel = getPixelAt(x, y);
+//            final Point centre = pixel.getUHVWMidPoint(this).add(getUHVWHalfPixel());
+//            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
+//                getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
+//            }
+//        });
+        for (int x = minX; x < maxX; x++) {
+            for (int y = minY; y < maxY; y++) {
+                final Pixel pixel = getPixelAt(x, y);
+                final Point centre = pixel.getUHVWMidPoint(this);
+                if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
+                    getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
+                }
             }
-        });
+        }
         mSegmentToPixelChainMap.put(pSegment, pPixelChain);
+    }
+
+    @VisibleForTesting
+    HashSet<ISegment> getAllSegmentsFromSegmentIndex() {
+        val segments = new HashSet<ISegment>();
+        for (int x = 0; x < getWidth() - 1; x++) {
+            for (int y = 0; y < getHeight() - 1; y++) {
+                final LinkedList<Tuple2<PixelChain, ISegment>>[][] segmentIndex = getSegmentIndex();
+                Stream.of(segmentIndex[x][y])
+                        .filter(i -> i != null)
+                        .flatMap((i -> i.stream()))
+                        .forEach(s -> segments.add(s._2));
+            }
+        }
+        return segments;
     }
 
     public Optional<PixelChain> getPixelChainForSegment(final ISegment pSegment) {
@@ -752,11 +787,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private synchronized void invalidateSegmentIndex() {
         Framework.logEntry(mLogger);
-        resetSegmentIndex();
+        clearSegmentIndex();
         Framework.logExit(mLogger);
     }
 
-    private boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final double pMultiplier, final boolean pThickOnly) {
+    boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final double pMultiplier, final boolean pThickOnly) {
         calcSegmentIndex();
         final double maxThickness = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         final Point uhvw = toUHVW(pPoint);
@@ -1183,7 +1218,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             reportProgress(pProgressObserver, "Refining ...", 0);
             Vector<PixelChain> refined = new Vector<>();
             mPixelChains.stream().parallel().forEach(pc -> {
-                PixelChain refinedPC = pc.refine(this, getTransformSource());
+                //PixelChain refinedPC = pc.refine(this, getTransformSource());
+                val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
+                val lineCurvePreference = getTransformSource().getLineCurvePreference();
+                PixelChain refinedPC = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
                 refined.add(refinedPC);
                 counter.increase();
                 reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
@@ -1309,7 +1347,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mData = mData.forEach(v ->  (byte) (v & (ALL ^ NODE)));
     }
 
-    private void resetSegmentIndex() {
+    public void clearSegmentIndex() {
         mSegmentIndex = new LinkedList[getWidth()][getHeight()];
         mSegmentToPixelChainMap = new HashMap<>();
         mSegmentCount = 0;

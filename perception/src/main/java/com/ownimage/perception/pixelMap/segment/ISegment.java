@@ -32,7 +32,9 @@ public interface ISegment extends Serializable, Cloneable {
 
     boolean closerThan(final PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
 
-    double closestLambda(final Point pPoint, IPixelChain pPixelChain, final PixelMap pPixelMap);
+    double closestLambda(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pPoint);
+
+    double distance(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pUVHWPoint);
 
     /**
      * Gets the end index (into the mPixels) of this segment.
