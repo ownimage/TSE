@@ -743,22 +743,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
         int maxY = (int) Math.ceil(pSegment.getMaxY(this, pPixelChain) * getHeight()) + 1;
         maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
-// TODO why is this slow        new Range2D(minX, maxX, minY, maxY).forEach((x, y) -> {
-//            final Pixel pixel = getPixelAt(x, y);
-//            final Point centre = pixel.getUHVWMidPoint(this).add(getUHVWHalfPixel());
-//            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-//                getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
-//            }
-//        });
-        for (int x = minX; x < maxX; x++) {
-            for (int y = minY; y < maxY; y++) {
-                final Pixel pixel = getPixelAt(x, y);
-                final Point centre = pixel.getUHVWMidPoint(this);
-                if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                    getSegments(x, y).add(new Tuple2<>(pPixelChain, pSegment));
-                }
+
+        new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
+            final Pixel pixel = getPixelAt(i.getX(), i.getY());
+            final Point centre = pixel.getUHVWMidPoint(this);
+            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
+                getSegments(i.getX(), i.getY()).add(new Tuple2<>(pPixelChain, pSegment));
             }
-        }
+        });
+
         mSegmentToPixelChainMap.put(pSegment, pPixelChain);
     }
 

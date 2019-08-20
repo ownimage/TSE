@@ -5,10 +5,16 @@
  */
 package com.ownimage.framework.util;
 
-import java.util.function.BiConsumer;
-import java.util.stream.IntStream;
+import com.ownimage.framework.math.IntegerPoint;
+import lombok.val;
 
-public class Range2D {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+public class Range2D implements Iterable<IntegerPoint> {
 
     private final int mXFrom;
     private final int mXTo;
@@ -59,14 +65,54 @@ public class Range2D {
     }
 
     public void forEach(final BiConsumer<Integer, Integer> pFunction) {
-        IntStream.range(0, Math.floorDiv(mXTo - mXFrom, mXStep))
-                .forEach(x -> IntStream.range(0, Math.floorDiv(mYTo - mYFrom, mYStep))
-                        .forEach(y -> pFunction.accept(mXFrom + x * mXStep, mYFrom + y * mYStep)));
+        for (int x = mXFrom; x < mXTo; x = x + mXStep)
+            for (int y = mYFrom; y < mYTo; y = y + mYStep)
+                pFunction.accept(x, y);
     }
 
+    /**
+     * Possible performance impacts
+     *
+     * @param pFunction
+     */
+    @Deprecated
     public void forEachParallel(final BiConsumer<Integer, Integer> pFunction) {
-        IntStream.range(0, Math.floorDiv(mXTo - mXFrom, mXStep)).parallel()
-                .forEach(x -> IntStream.range(0, Math.floorDiv(mYTo - mYFrom, mYStep))
-                        .forEach(y -> pFunction.accept(mXFrom + x * mXStep, mYFrom + y * mYStep)));
+        stream().parallel().forEach(i -> pFunction.accept(i.getX(), i.getY()));
+    }
+
+    public Iterator<IntegerPoint> iterator() {
+        return new Iterator<>() {
+
+            private int mX = mXFrom;
+            private int mY = mYFrom;
+            private IntegerPoint mNext = new IntegerPoint(mX, mY);
+
+            @Override
+            public boolean hasNext() {
+                return mNext.getX() < mXTo && mNext.getY() < mYTo;
+            }
+
+            @Override
+            public IntegerPoint next() {
+                if (!hasNext()) throw new NoSuchElementException();
+                val current = mNext;
+                mY += mYStep;
+                if (mY >= mYTo) {
+                    mY = mYFrom;
+                    mX += mXStep;
+                }
+                mNext = new IntegerPoint(mX, mY);
+                return current;
+            }
+        };
+    }
+
+    /**
+     * There are concerns that making this into a parallel stream might impact performance
+     *
+     * @return
+     */
+    public Stream<IntegerPoint> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 }
