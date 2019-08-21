@@ -108,27 +108,22 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains.size();
     }
 
-    public PixelMap actionDeletePixelChain(Pixel pPixel, int pCursorSize) {
+    public PixelMap actionDeletePixelChain(List<Pixel> pPixels) {
         PixelMap clone = new PixelMap(this);
         clone.mAutoTrackChanges = false;
         StrongReference<Boolean> changesMade = new StrongReference<>(false);
-        final double radius = (double) pCursorSize / getHeight();
-        new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize, pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
-                .forEach((x, y) ->
-                        clone.getOptionalPixelAt(x, y)
-                                .filter(pPixel1 -> pPixel1.isEdge(clone))
-                                .filter(p -> pPixel.getUHVWMidPoint(clone).distance(p.getUHVWMidPoint(clone)) < radius)
-                                .ifPresent(p -> {
-                                    clone.getPixelChains(p).forEach(pc -> {
-                                        pc.delete(clone);
-                                        pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
-                                        pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
-                                        clone.mPixelChains = clone.mPixelChains.remove(pc);
-                                        clone.invalidateSegmentIndex();
-                                        changesMade.set(true);
-                                    });
-                                })
-                );
+        pPixels.stream()
+                .filter(p -> p.isEdge(clone))
+                .forEach(p -> {
+                    clone.getPixelChains(p).forEach(pc -> {
+                        pc.delete(clone);
+                        pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
+                        pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
+                        clone.mPixelChains = clone.mPixelChains.remove(pc);
+                        clone.invalidateSegmentIndex();
+                        changesMade.set(true);
+                    });
+                });
         clone.mAutoTrackChanges = true;
         return changesMade.get() ? clone : this;
     }

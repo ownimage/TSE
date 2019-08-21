@@ -8,6 +8,7 @@ import org.junit.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -310,8 +311,10 @@ public class PixelMapTest {
         final PixelMap pixelMap = Utility.createMap(input);
         pixelMap.actionProcess(null);
         assertEquals(3, pixelMap.getPixelChainCount());
+        val deletePixels = new ArrayList<Pixel>();
+        deletePixels.add(new Pixel(4, 1));
         // WHEN
-        final PixelMap result = pixelMap.actionDeletePixelChain(pixelMap.getPixelAt(4, 1), 1);
+        final PixelMap result = pixelMap.actionDeletePixelChain(deletePixels);
         // THEN
         result.calcSegmentIndex();
         assertEquals(2, result.getPixelChainCount());

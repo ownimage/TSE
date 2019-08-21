@@ -42,10 +42,9 @@ import lombok.NonNull;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -140,7 +139,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private Pixel mMouseLastPixelPosition = null;
     private Pixel mMouseDragLastPixel = null;
     private Id mSavepointId;
-    private final ArrayList<Pixel> mDragPixels = new ArrayList();
+    private final ArrayList<Pixel> mDragPixelsArray = new ArrayList();
     private boolean mAutoUpdateCurvesDirty = false;
 
     public EditPixelMapDialog(
@@ -434,7 +433,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOn()) change |= actionPixelOn(pPixel);
             if (isPixelActionOff()) change |= actionPixelOff(pPixel);
             if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
-            if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(pPixel);
+            if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(Arrays.asList(pPixel));
             if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
             if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
             if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
@@ -529,7 +528,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public boolean actionPixelOn(@NonNull List<Pixel> pPixels) {
         if (pPixels.isEmpty()) return false;
         final PixelMap undo = mPixelMap;
-        mPixelMap = mPixelMap.actionPixelOn(pPixels);
+        mPixelMap = mPixelMap.actionPixelOn(mDragPixelsArray);
         if (mPixelMap != undo) {
             addUndoRedoEntry("Action Pixel Off", undo, mPixelMap);
             return true;
@@ -560,12 +559,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEndEventPixelView(final IUIEvent pEventl) {
-        Framework.logValue(mLogger, "mDragPixels.size()", mDragPixels.size());
+        Framework.logValue(mLogger, "mDragPixels.size()", mDragPixelsArray.size());
         Framework.logValue(mLogger, "mPixelMap", mPixelMap);
         if (isPixelActionOn()) {
-            actionPixelOn(mDragPixels);
+            actionPixelOn(mDragPixelsArray);
         }
-        mDragPixels.clear();
+        if (isPixelActionDeletePixelChain()) {
+            actionDeletePixelChain(mDragPixelsArray);
+        }
+        mDragPixelsArray.clear();
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
         drawGrafitti();
@@ -590,7 +592,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
      **/
     private void mouseDragEventPixelViewFillIn(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
         mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
-        if (pPixel != null && (isPixelActionOn() || isPixelActionOff())) {
+        if (pPixel != null && (isPixelActionOn() || isPixelActionOff() || isPixelActionDeletePixelChain())) {
             if (mMouseDragLastPixel != null && !mMouseDragLastPixel.equals(pPixel)) {
                 mLogger.fine("mouseDragEventPixelViewFillIn ...");
                 final int dX = pPixel.getX() - mMouseDragLastPixel.getX();
@@ -633,20 +635,41 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void mouseDragEventPixelView(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
         boolean change = false;
         if (pPixel != null) {
-            if (isPixelActionOn()) mouseDragEventPixelViewOn(pEvent, pPixel);
+            if (isPixelActionOn()) mouseDragEventPixelViewOn(pPixel);
             if (isPixelActionOff()) change |= actionPixelOff(pPixel);
-            if (isPixelActionToggle()) change |= mouseDragEventPixelViewToggle(pEvent, pPixel);
-            if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(pPixel);
+            if (isPixelActionToggle()) change |= mouseDragEventPixelViewToggle(pPixel);
+            if (isPixelActionDeletePixelChain()) {
+                change = true;
+                mouseDragEventPixelViewDeletePixelChain(pPixel, getCursorSize());
+            }
             if (change) {
                 graffitiCursor(pEvent, pPixel);
             }
         }
     }
 
-    private void mouseDragEventPixelViewOn(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
+    public void mouseDragEventPixelViewDeletePixelChain(Pixel pPixel, int pCursorSize) {
+        //if (mDragPixelsArray.contains(pPixel)) return;
+        graffitiPixelWorkingColor(pPixel);
+        //if (!pPixel.isEdge(mPixelMap)) return;
+        final double radius = (double) pCursorSize / getHeight();
+        new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
+                pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
+                .forEach((x, y) ->
+                        getPixelMap().getOptionalPixelAt(x, y)
+                                .filter(Predicate.not(mDragPixelsArray::contains))
+                                .filter(p -> pPixel.getUHVWMidPoint(getPixelMap())
+                                        .distance(p.getUHVWMidPoint(mPixelMap)) < radius)
+                                .filter(pPixel1 -> pPixel1.isEdge(getPixelMap()))
+                                .map(this::graffitiPixelWorkingColor)
+                                .ifPresent(mDragPixelsArray::add)
+                );
+    }
+
+    private void mouseDragEventPixelViewOn(@NonNull final Pixel pPixel) {
         if (pPixel.isEdge(mPixelMap)) return;
-        if (mDragPixels.contains(pPixel)) return;
-        mDragPixels.add(pPixel);
+        if (mDragPixelsArray.contains(pPixel)) return;
+        mDragPixelsArray.add(pPixel);
         graffitiPixelWorkingColor(pPixel);
     }
 
@@ -657,11 +680,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         );
     }
 
-    private void graffitiPixelWorkingColor(@NonNull Pixel pPixel) {
+    private Pixel graffitiPixelWorkingColor(@NonNull Pixel pPixel) {
         Framework.logEntry(mLogger);
         mPictureControl.updateGrafitti(
                 g -> g.drawFilledRectangle(pixelToGrafittiRectangle(pPixel), mWorkingColor)
         );
+        return pPixel;
     }
 
     synchronized private boolean actionPixelOff(@NonNull final Pixel pPixel) {
@@ -705,7 +729,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.drawGrafitti();
     }
 
-    private boolean mouseDragEventPixelViewToggle(@NonNull final IUIEvent pEvent, @NonNull final Pixel pPixel) {
+    private boolean mouseDragEventPixelViewToggle(@NonNull final Pixel pPixel) {
         boolean change = false;
         if (!pPixel.equals(mMouseLastPixelPosition)) {
             change |= actionPixelToggle(pPixel);
@@ -714,9 +738,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return change;
     }
 
-    private boolean actionDeletePixelChain(@NonNull final Pixel pPixel) {
+    private boolean actionDeletePixelChain(@NonNull List<Pixel> pPixels) {
         final PixelMap undo = mPixelMap;
-        mPixelMap = mPixelMap.actionDeletePixelChain(pPixel, getCursorSize());
+        mPixelMap = mPixelMap.actionDeletePixelChain(pPixels);
         if (undo != mPixelMap) {
             addUndoRedoEntry("Delete PixelChain", undo, mPixelMap);
             mPictureControl.drawGrafitti();
@@ -796,7 +820,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             graffitiCursor(pEvent, p);
             mMouseDragLastPixel = p;
         });
-        mDragPixels.clear();
+        mDragPixelsArray.clear();
     }
 
     @Override
