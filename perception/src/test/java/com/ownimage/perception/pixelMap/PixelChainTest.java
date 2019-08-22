@@ -1,17 +1,12 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.math.Point;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import lombok.val;
 import org.junit.*;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
-import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,11 +35,14 @@ public class PixelChainTest {
                 "   N  NEE                 ",
                 "                          ",
         };
-
-        IPixelMapTransformSource ipmts = mock(IPixelMapTransformSource.class);
+        var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(input.length);
-        when(ipmts.getLineTolerance()).thenReturn(1.2);
+        when(ipmts.getLineTolerance()).thenReturn(1.2d);
         when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
+        final double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
+        final double lineCurvePreference = ipmts.getLineCurvePreference();
+
+
 
         PixelMap pixelMap = Utility.createMap(input, ipmts);
         pixelMap.process03_generateNodes(null);
@@ -55,7 +53,7 @@ public class PixelChainTest {
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().get();
-        chain = chain.approximate(pixelMap, ipmts);
+        chain = chain.approximate(pixelMap, tolerance, lineCurvePreference);
         assertEquals(3, chain.getSegmentCount());
     }
 
@@ -76,12 +74,12 @@ public class PixelChainTest {
         when(ipmts.getHeight()).thenReturn(2000);
         when(ipmts.getLineTolerance()).thenReturn(lineTolerance);
         when(ipmts.getLineCurvePreference()).thenReturn(3.0d);
+        final double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
+        final double lineCurvePreference = ipmts.getLineCurvePreference();
 
         // WHEN
         var underTest = createPixelChain();
-
-        var tolerance = lineTolerance / pixelMap.getHeight();
-        var approx = underTest.approximate(pixelMap, ipmts);
+        var approx = underTest.approximate(pixelMap, tolerance, lineCurvePreference);
 
         // AND WHEN
         var reverse = approx.reverse(pixelMap);

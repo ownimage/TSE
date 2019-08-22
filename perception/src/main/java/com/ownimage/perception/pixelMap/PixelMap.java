@@ -844,10 +844,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         SplitTimer.split("PixelMap actionReapproximate() start");
         PixelMap clone = new PixelMap(this);
         Vector<PixelChain> updates = new Vector<>();
+        val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
+        val lineCurvePreference = getTransformSource().getLineCurvePreference();
         clone.mPixelChains.stream()
                 .parallel()
-                .map(pc -> pc.approximate(this, getTransformSource()))
-                .map(pc -> pc.refine(this, getTransformSource()))
+                .map(pc -> pc.approximate(this, tolerance, lineCurvePreference))
+                .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
                 .map(pc -> pc.indexSegments(this))
                 .forEach(pc -> updates.add(pc));
         clone.mPixelChains = clone.mPixelChains.clear().addAll(updates);
@@ -858,9 +860,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public PixelMap actionRerefine() {
         PixelMap clone = new PixelMap(this);
         Vector<PixelChain> updates = new Vector<>();
+        val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
+        val lineCurvePreference = getTransformSource().getLineCurvePreference();
         mPixelChains.stream()
                 .parallel()
-                .map(pc -> pc.refine(this, getTransformSource()))
+                .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
                 .map(pc -> pc.indexSegments(this))
                 .forEach(pc -> updates.add(pc));
         clone.mPixelChains = clone.mPixelChains.clear().addAll(updates);
@@ -1060,7 +1064,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final double lineCurvePreference = getLineCurvePreference();
         return generateChains(this, pNode)
                 .parallelStream()
-                .map(pc2 -> pc2.approximate(this, this.getTransformSource()));
+                .map(pc2 -> pc2.approximate(this, tolerance, lineCurvePreference));
     }
 
     private void trackPixelOn(@NonNull Pixel pPixel) {
@@ -1074,6 +1078,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void trackPixelOff(@NonNull List<Pixel> pPixels) {
+        final double tolerance = getLineTolerance() / getHeight();
+        final double lineCurvePreference = getLineCurvePreference();
         pPixels.forEach(pixel -> {
             getPixelChains(pixel).forEach(pc -> {
                 mPixelChains = mPixelChains.remove(pc);
@@ -1085,7 +1091,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                                 .ifPresent(node -> {
                                     final List<PixelChain> chains = generateChains(this, node)
                                             .parallelStream()
-                                            .map(pc2 -> pc2.approximate(this, this.getTransformSource()))
+                                            .map(pc2 -> pc2.approximate(this, tolerance, lineCurvePreference))
                                             .collect(Collectors.toList());
                                     addPixelChains(chains);
                                 })
@@ -1182,10 +1188,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             final IProgressObserver pProgressObserver,
             final double pMaxiLineTolerance
     ) {
+        final double tolerance = getLineTolerance() / getHeight();
+        final double lineCurvePreference = getLineCurvePreference();
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
-        mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, mTransformSource)));
+        mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, tolerance, lineCurvePreference)));
         mPixelChains = mPixelChains.clear().addAll(refined);
         mLogger.info("approximate - done");
         invalidateSegmentIndex();

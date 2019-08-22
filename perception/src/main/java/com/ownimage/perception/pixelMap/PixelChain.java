@@ -55,9 +55,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public final static long serialVersionUID = 2L;
 
-    @Getter private final ImmutableVectorClone<Pixel> mPixels;
-    @Getter private final ImmutableVectorClone<ISegment> mSegments;
-    @Getter private final ImmutableVectorClone<IVertex> mVertexes;
+    @Getter
+    private final ImmutableVectorClone<Pixel> mPixels;
+    @Getter
+    private final ImmutableVectorClone<ISegment> mSegments;
+    @Getter
+    private final ImmutableVectorClone<IVertex> mVertexes;
     transient private double mLength;
     private Thickness mThickness;
 
@@ -72,7 +75,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(this, 0, 0));;
+        mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(this, 0, 0));
+        ;
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -112,7 +116,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-     /**
+    /**
      * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the pOtherChain are all
      * LineApproximations.
@@ -161,11 +165,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build(pPixelMap);
     }
 
-    PixelChain approximate(final PixelMap pPixelMap, final IPixelMapTransformSource pTransformSource) {
-        val tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-        val lineCurvePreference = pTransformSource.getLineCurvePreference();
+    PixelChain approximate(
+            final PixelMap pPixelMap,
+            final double pTolerance,
+            final double pLineCurvePreference
+    ) {
         val builder = builder();
-        builder.approximate(pPixelMap, tolerance);
+        builder.approximate(pPixelMap, pTolerance);
         return builder.build(pPixelMap);
     }
 
@@ -292,11 +298,9 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return merge(pPixelMap, pOtherChain);
     }
 
-    public PixelChain refine(final PixelMap pPixelMap, final IPixelMapTransformSource pSource) {
+    public PixelChain refine(final PixelMap pPixelMap, double tolerance, double lineCurvePreference) {
         var builder = builder();
         // builder.refine(pPixelMap, pSource);
-        val tolerance = pSource.getLineTolerance() / pSource.getHeight();
-        val lineCurvePreference = pSource.getLineCurvePreference();
         builder.approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
         return builder.build(pPixelMap);
     }
@@ -314,12 +318,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 .findFirst()
                 .isPresent();
     }
-
-
-
-
-
-
 
     private Line calcStartTangent(PixelMap pPixelMap, final ISegment pSegment, boolean pInitialRun) {
         var previousSegment = pSegment.getStartVertex(this).getStartSegment(this);
@@ -406,7 +404,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     PixelChain setEndNode(final PixelMap pPixelMap, @NonNull final Node pNode) {
 
         val builder = builder();
-        builder.changePixels(p-> p.add(pNode));
+        builder.changePixels(p -> p.add(pNode));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
@@ -513,7 +511,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             if (mVertexes.size() != 0) {
                 if (mVertexes.firstElement().get().getStartSegment(this) != null)
                     throw new RuntimeException("wrong start vertex");
-                if (mVertexes.lastElement().get().getEndSegment(this) != null) throw new RuntimeException("wrong end vertex");
+                if (mVertexes.lastElement().get().getEndSegment(this) != null)
+                    throw new RuntimeException("wrong end vertex");
             }
 
             int currentMax = -1;
@@ -565,7 +564,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
         mLogger.severe(sb::toString);
     }
-
 
 
     void setInChain(final PixelMap pPixelMap, final boolean pValue) {
