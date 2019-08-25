@@ -14,7 +14,7 @@ public class PixelChainTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
+        FXViewFactory.setAsViewFactory(false);
     }
 
     @AfterClass

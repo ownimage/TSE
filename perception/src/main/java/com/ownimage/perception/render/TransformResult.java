@@ -143,9 +143,9 @@ public class TransformResult implements ITransformResult {
     @Override
     public void setRGBA(final float pR, final float pG, final float pB, final float pA) {
         // TODO there is some speed improvements that can be made here by taking out out (1.0f - mA)*pA
-        mR = mA * mR + (1.0f - mA) * pA * pR;
-        mG = mA * mG + (1.0f - mA) * pA * pG;
-        mB = mA * mB + (1.0f - mA) * pA * pB;
+        mR = mR + (1.0f - mA) * pA * pR;
+        mG = mG + (1.0f - mA) * pA * pG;
+        mB = mB + (1.0f - mA) * pA * pB;
         mA = mA + (1.0f - mA) * pA;
 
         mTransformResultBatch.getR()[mIndex] = mR;

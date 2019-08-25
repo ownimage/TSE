@@ -30,6 +30,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -230,12 +231,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return pixelChains;
     }
 
-    protected synchronized void calcSegmentIndex() {
-        Framework.logEntry(mLogger);
+    protected void calcSegmentIndex() {
         if (!isSegmentIndexValid()) {
-            indexSegments();
+            // double test means that you only synchronise if there is work to do, improves performance
+            synchronized (this) {
+                if (!isSegmentIndexValid()) {
+                    indexSegments();
+                }
+            }
         }
-        Framework.logExit(mLogger);
     }
 
     public void actionEqualizeValues(final EqualizeValues pValues) {
@@ -890,11 +894,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             getPegCounter().clear(pegs);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
             System.out.println(getPegCounter().getString(pegs));
-            validate();
+            //validate();
             mLogger.info(() -> "validate done");
             process07_mergeChains(pProgressObserver);
             mLogger.info(() -> "process07_mergeChains done");
-            validate();
+            //validate();
             mLogger.info(() -> "validate done");
             pegs = new Object[]{
                     IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
@@ -908,17 +912,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             process08_refine(pProgressObserver);
             System.out.println(getPegCounter().getString(pegs));
             mLogger.info(() -> "process08_refine done");
-            validate();
+            //validate();
             mLogger.info(() -> "validate done");
             // // reapproximate(null, mTransformSource.getLineTolerance());
-            validate();
+            //validate();
             mLogger.info(() -> "validate done");
             //process04a_removeLoneNodes();
-            invalidateSegmentIndex();
-            mLogger.info(() -> "invalidateSegmentIndex done");
-            printCount();
-            invalidateSegmentIndex();
-            calcSegmentIndex();
             validate();
             //
         } catch (final Exception pEx) {
@@ -1203,7 +1202,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
-        mSegmentCount = 0;
         invalidateSegmentIndex();
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
@@ -1287,9 +1285,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 objectBytes = null;
                 mLogger.info("mAllNodes size() = " + nodeCount());
                 mLogger.info("mPixelChains size() = " + mPixelChains.size());
-                indexSegments();
-                mLogger.info("mSegmentCount = " + mSegmentCount);
                 calcSegmentIndex();
+                mLogger.info("mSegmentCount = " + mSegmentCount);
             }
         } catch (final Exception pEx) {
             mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
@@ -1305,10 +1302,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mNodes.clear();
     }
 
-    private void indexSegments() {
-        final Vector<PixelChain> pixelChains = new Vector<>();
-        mPixelChains.forEach(pc -> pixelChains.add(pc.indexSegments(this)));
+    private synchronized void indexSegments() {
+        var pixelChains = new ArrayList<PixelChain>();
+        mPixelChains.stream().forEach(pc -> pixelChains.add(pc.indexSegments(this)));
         mPixelChains = mPixelChains.clear().addAll(pixelChains);
+        val count = new AtomicInteger();
+        pixelChains.stream().parallel()
+                .flatMap(PixelChain::streamSegments)
+                .filter(s -> s instanceof StraightSegment)
+                .forEach(s -> count.incrementAndGet());
+        System.out.println("Number of straight segments = " + count.get());
     }
 
     /**
@@ -1422,7 +1425,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void transform(final ITransformResult pRenderResult) {
-        // public Color transform(final Point pIn, final Color pColor) {
         final Point pIn = pRenderResult.getPoint();
         Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
         color = transformGetLineColor(pIn, color, false);

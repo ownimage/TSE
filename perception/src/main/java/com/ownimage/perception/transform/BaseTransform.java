@@ -31,6 +31,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public abstract class BaseTransform implements IGrafitti, ITransform, IControlChangeListener, IUIEventListener {
 
@@ -356,10 +357,15 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     public void transform(@NonNull final ITransformResultBatch pBatch) {
         Framework.logEntry(mLogger);
 
-        for (int i = 0; i < pBatch.getBatchSize(); i++) {
-            final ITransformResult rr = pBatch.getTransformResult(i);
-            transform(rr);
-        }
+        IntStream.range(0, pBatch.getBatchSize()).parallel()
+                .forEach(i -> {
+                    final ITransformResult rr = pBatch.getTransformResult(i);
+                    transform(rr);
+                });
+//        for (int i = 0; i < pBatch.getBatchSize(); i++) {
+//            final ITransformResult rr = pBatch.getTransformResult(i);
+//            transform(rr);
+//        }
 
         Framework.logExit(mLogger);
     }

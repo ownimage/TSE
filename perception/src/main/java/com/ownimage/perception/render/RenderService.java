@@ -18,9 +18,12 @@ import com.ownimage.perception.app.Services;
 import lombok.NonNull;
 import lombok.val;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RenderService {
@@ -45,6 +48,7 @@ public class RenderService {
         private IProgressObserver mObserver;
         private int mOverSample = 1;
         private boolean mAllowTerminate = true;
+        private Duration mDuration;
 
         private RenderJob() {
         }
@@ -63,6 +67,10 @@ public class RenderService {
 
         private Optional<IProgressObserver> getObserver() {
             return Optional.ofNullable(mObserver);
+        }
+
+        public Optional<Duration> getDuration() {
+            return Optional.ofNullable(mDuration);
         }
 
         public void run() {
@@ -89,6 +97,7 @@ public class RenderService {
 
                 @Override
                 public void doJob() {
+                    val start = Instant.now();
                     super.doJob();
 
                     getObserver().ifPresent(IProgressObserver::started);
@@ -113,6 +122,9 @@ public class RenderService {
                     if (mPictureType == null) mPictureControl.setValue(pictureType);
                     if (mCompleteAction != null && !mTerminated) mCompleteAction.performAction();
                     getObserver().ifPresent(IProgressObserver::finished);
+                    val end = Instant.now();
+                    mDuration = Duration.between(start, end);
+                    Framework.log(mLogger, Level.INFO, () -> mReason + " duration = " + mDuration.toMillis());
                 }
 
                 @Override
@@ -123,7 +135,6 @@ public class RenderService {
             }
 
             new TransformJob(mReason, Priority.NORMAL, mControlObject).submit();
-
             Framework.logExit(mLogger);
         }
     }

@@ -7,6 +7,7 @@ package com.ownimage.framework.queue;
 
 import com.ownimage.framework.util.Framework;
 import lombok.NonNull;
+import lombok.val;
 
 import java.util.PriorityQueue;
 import java.util.Vector;
@@ -132,5 +133,10 @@ public class ExecuteQueue {
     public void submit(final String pName, final IJob.Priority pPriority, final Runnable pDo) {
         var job = new Job(pName, pPriority, pDo);
         submit(job);
+    }
+
+    public boolean isBusy() {
+        val runningThread = mRunningThread;
+        return runningThread != null && runningThread.isAlive();
     }
 }

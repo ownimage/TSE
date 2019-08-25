@@ -422,9 +422,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void autoUpdatePreview() {
+    private void autoUpdateCurves() {
         if (mAutoUpdateCurves.getValue()) updateCurves();
-        else mAutoUpdateCurvesDirty = true;
+        else {
+            mAutoUpdateCurvesDirty = true;
+            drawGraffiti();
+        }
     }
 
     private void mouseClickEventPixelView(@NonNull final IUIEvent pEvent, @NonNull final Pixel pPixel) {
@@ -439,8 +442,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
             if (isPixelChainDeleteAllButThis()) change |= actionPixelChainDeleteAllButThis(pPixel);
             if (change) {
-                drawGrafitti();
-                autoUpdatePreview();
+                autoUpdateCurves();
             }
         }
         graffitiCursor(pEvent, pPixel);
@@ -487,7 +489,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void drawGrafitti() {
         Framework.logEntry(mLogger);
-        mPictureControl.drawGrafitti();
+        //       mPictureControl.drawGrafitti();
     }
 
     private boolean isPixelActionOn() {
@@ -570,8 +572,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mDragPixelsArray.clear();
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
-        drawGrafitti();
-        autoUpdatePreview();
+        autoUpdateCurves();
         mMouseDragLastPixel = null;
         Framework.logExit(mLogger);
     }
@@ -638,12 +639,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionOn()) mouseDragEventPixelViewOn(pPixel);
             if (isPixelActionOff()) change |= actionPixelOff(pPixel);
             if (isPixelActionToggle()) change |= mouseDragEventPixelViewToggle(pPixel);
-            if (isPixelActionDeletePixelChain()) {
-                change = true;
-                mouseDragEventPixelViewDeletePixelChain(pPixel, getCursorSize());
-            }
+            if (isPixelActionDeletePixelChain()) mouseDragEventPixelViewDeletePixelChain(pPixel, getCursorSize());
             if (change) {
                 graffitiCursor(pEvent, pPixel);
+                autoUpdateCurves();
             }
         }
     }
@@ -743,7 +742,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMap = mPixelMap.actionDeletePixelChain(pPixels);
         if (undo != mPixelMap) {
             addUndoRedoEntry("Delete PixelChain", undo, mPixelMap);
-            mPictureControl.drawGrafitti();
             return true;
         }
         return false;
@@ -754,7 +752,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         graffitiPixelWorkingColor(pPixel);
         mPixelMap = mPixelMap.actionPixelToggle(pPixel);
         addUndoRedoEntry("Action Pixel Off", undo, mPixelMap);
-        mPictureControl.drawGrafitti();
         return true;
     }
 
@@ -763,7 +760,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMap = mPixelMap.actionPixelChainDeleteAllButThis(pPixel);
         if (undo != mPixelMap) {
             addUndoRedoEntry("Delete all but this PixelChain", undo, mPixelMap);
-            mPictureControl.drawGrafitti();
             return true;
         }
         return false;
@@ -773,7 +769,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMap = mPixelMap.actionPixelChainApproximateCurvesOnly(pPixel);
         if (undo != mPixelMap) {
             addUndoRedoEntry("Approximate Curves Only PixelChain", undo, mPixelMap);
-            mPictureControl.drawGrafitti();
             return true;
         }
         return false;
@@ -787,7 +782,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMap = mPixelMap.actionSetPixelChainThickness(pPixel, mThickness.getValue());
         if (undo != mPixelMap) {
             addUndoRedoEntry("Delete PixelChain", undo, mPixelMap);
-            mPictureControl.drawGrafitti();
             return true;
         }
         return false;

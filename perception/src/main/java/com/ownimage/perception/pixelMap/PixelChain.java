@@ -18,6 +18,7 @@ import lombok.val;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -76,7 +77,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
         mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(this, 0, 0));
-        ;
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -215,6 +215,23 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 .filter(p -> p.samePosition(pPixel))
                 .findAny()
                 .isPresent();
+    }
+
+    @Override
+    public boolean equals(Object pO) {
+        if (this == pO) return true;
+        if (pO == null || getClass() != pO.getClass()) return false;
+        PixelChain that = (PixelChain) pO;
+        return Double.compare(that.mLength, mLength) == 0 &&
+                mPixels.equals(that.mPixels) &&
+                mSegments.equals(that.mSegments) &&
+                mVertexes.equals(that.mVertexes) &&
+                mThickness == that.mThickness;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mPixels, mSegments, mVertexes, mLength, mThickness);
     }
 
     @Deprecated

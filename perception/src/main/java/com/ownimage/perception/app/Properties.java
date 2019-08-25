@@ -6,13 +6,9 @@
 package com.ownimage.perception.app;
 
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.control.BooleanControl.BooleanProperty;
-import com.ownimage.framework.control.control.ColorControl;
 import com.ownimage.framework.control.control.ColorControl.ColorProperty;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.control.control.IntegerControl.IntegerProperty;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
@@ -75,7 +71,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
     private final BooleanControl mUseJTP = new BooleanControl("Use JTP", "useJTP", mContainer, true);
     private final IntegerControl mRenderBatchSize = new IntegerControl("Batch size", "batchSize", mContainer, 1000, 1, 1000000, 100000);
     private final IntegerControl mRenderThreadPoolSize = new IntegerControl("Thread pool size", "threadPoolSize", mContainer, 8, 1, 32, 1);
-    private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100, 1, 100000, 1000);
+    private final IntegerControl mRenderJTPBatchSize = new IntegerControl("JTP batch size", "JTPBatchSize", mContainer, 100000, 1, 100000, 1000);
     private final BooleanControl mUseOpenCL = new BooleanControl("Use OpenCL", "useOpenCL", mContainer, true);
 
     // output
