@@ -257,7 +257,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mVertexes.firstElement().orElse(null);
     }
 
-    PixelChain indexSegments(final PixelMap pPixelMap) {
+    PixelChain indexSegments(final PixelMap pPixelMap, final boolean pAdd) {
         val builder = builder();
         final double[] startPosition = {0.0d};
         streamSegments().forEach(segment -> {
@@ -267,7 +267,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         });
         builder.setLength(startPosition[0]);
         val newPixelChain = builder.build(pPixelMap);
-        newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment));
+        newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment, pAdd));
         return newPixelChain;
     }
 

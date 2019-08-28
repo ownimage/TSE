@@ -192,6 +192,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             }
             Services.getServices().getRenderService()
                     .getRenderJobBuilder("EditPixelMapDialog::updateCurves", mPictureControl, mCropTransform)
+//                    .withCompleteAction(this::drawGraffiti)
                     .withAllowTerminate(false)
                     .build()
                     .run();
@@ -376,13 +377,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void graffitiPixelChain(final GrafittiHelper pGrafittiHelper, final PixelChain pPixelChain) {
         Framework.logEntry(mLogger);
-        pPixelChain.streamSegments().forEach(s -> graffitiSegment(pGrafittiHelper, s));
+        pPixelChain.streamSegments().forEach(s -> graffitiSegment(pGrafittiHelper, pPixelChain, s));
     }
 
-    private void graffitiSegment(final GrafittiHelper pGrafittiHelper, final ISegment pSegment) {
+    private void graffitiSegment(
+            final GrafittiHelper pGrafittiHelper,
+            final PixelChain pPixelChain,
+            final ISegment pSegment
+    ) {
         Framework.logEntry(mLogger);
         final SegmentGraffitiHelper segmentGrafittiHelper = new SegmentGraffitiHelper(pGrafittiHelper, this::UHVWtoView);
-        mPixelMap.getPixelChainForSegment(pSegment).ifPresent(pc -> pSegment.graffiti(mPixelMap, pc, segmentGrafittiHelper));
+        pSegment.graffiti(mPixelMap, pPixelChain, segmentGrafittiHelper);
     }
 
     private Point UHVWtoView(final Point pUHVW) {

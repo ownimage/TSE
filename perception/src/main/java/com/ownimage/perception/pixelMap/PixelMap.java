@@ -14,6 +14,8 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.*;
+import com.ownimage.framework.util.immutable.Immutable2DArray;
+import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
@@ -67,8 +69,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private ImmutableMap2D<Byte> mData;
     private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
-    private LinkedList<Tuple2<PixelChain, ISegment>>[][] mSegmentIndex;
-    private Map<ISegment, PixelChain> mSegmentToPixelChainMap = new HashMap<>();
+    private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
+    private ImmutableMap<ISegment, PixelChain> mSegmentToPixelChainMapXY = new ImmutableMap<>(); // TODO why do we need this as there is the Tuple2 above
     private int mSegmentCount;
     /**
      * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
@@ -101,24 +103,29 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mData = pFrom.mData;
         mNodes = (HashMap<IntegerPoint, Node>) pFrom.mNodes.clone(); // TODO
         mPixelChains = pFrom.mPixelChains;
+        mSegmentIndex = pFrom.mSegmentIndex;
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
         invalidateSegmentIndex();
     }
 
     public void pixelChainsAddAll(Collection<PixelChain> pAll) {
         mPixelChains = mPixelChains.addAll(pAll);
+        pAll.forEach(pc -> pc.indexSegments(this, true));
     }
 
     public void pixelChainsAdd(PixelChain pChain) {
         mPixelChains = mPixelChains.add(pChain);
+        pChain.indexSegments(this, true);
     }
 
     public void pixelChainsRemove(PixelChain pChain) {
         mPixelChains = mPixelChains.remove(pChain);
+        pChain.indexSegments(this, false);
     }
 
     public void pixelChainsClear() {
         mPixelChains = mPixelChains.clear();
+        mSegmentIndex = mSegmentIndex.clear();
     }
 
     public int getPixelChainCount() {
@@ -152,7 +159,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         PixelMap clone = new PixelMap(this);
         clone.pixelChainsClear();
         clone.pixelChainsAddAll(pixelChains);
-        clone.indexSegments();
+        //clone.indexSegments();
         return clone;
     }
 
@@ -168,7 +175,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             val pc2 = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
             clone.addPixelChain(pc2);
         });
-        clone.indexSegments();
+        //clone.indexSegments();
         return clone;
     }
 
@@ -249,14 +256,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     protected void calcSegmentIndex() {
-        if (!isSegmentIndexValid()) {
-            // double test means that you only synchronise if there is work to do, improves performance
-            synchronized (this) {
-                if (!isSegmentIndexValid()) {
-                    indexSegments();
-                }
-            }
-        }
+//        if (!isSegmentIndexValid()) {
+//            // double test means that you only synchronise if there is work to do, improves performance
+//            synchronized (this) {
+//                if (!isSegmentIndexValid()) {
+//                    indexSegments();
+//                }
+//            }
+//        }
     }
 
     public void actionEqualizeValues(final EqualizeValues pValues) {
@@ -620,25 +627,18 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return null;
     }
 
-    private LinkedList<Tuple2<PixelChain, ISegment>>[][] getSegmentIndex() {
+    private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         calcSegmentIndex();
         return mSegmentIndex;
     }
 
-    @VisibleForTesting
-    Map<ISegment, PixelChain> getSegmentToPixelChainMap() {
-        calcSegmentIndex();
-        return mSegmentToPixelChainMap;
-    }
-
-    private AbstractCollection<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
+    private LinkedList<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
         Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
         Framework.checkParameterLessThan(mLogger, pY, getHeight(), "pY");
-        final LinkedList<Tuple2<PixelChain, ISegment>>[][] segmentIndex = getSegmentIndex();
-        if (segmentIndex[pX][pY] == null) segmentIndex[pX][pY] = new LinkedList<>();
-        return segmentIndex[pX][pY];
+        val segmentIndex = getSegmentIndex().get(pX, pY);
+        return segmentIndex != null ? segmentIndex : new LinkedList<>();
     }
 
     private Color getShadowColor() {
@@ -744,7 +744,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mSegmentCount;
     }
 
-    void index(final PixelChain pPixelChain, final ISegment pSegment) {
+    void index(final PixelChain pPixelChain, final ISegment pSegment, final boolean pAdd) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
@@ -764,11 +764,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             final Pixel pixel = getPixelAt(i.getX(), i.getY());
             final Point centre = pixel.getUHVWMidPoint(this);
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                getSegments(i.getX(), i.getY()).add(new Tuple2<>(pPixelChain, pSegment));
+                val segments = getSegments(i.getX(), i.getY());
+                if (pAdd) {
+                    segments.add(new Tuple2<>(pPixelChain, pSegment));
+                } else {
+                    segments.remove(new Tuple2<>(pPixelChain, pSegment));
+                }
+                mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), segments);
             }
         });
-
-        mSegmentToPixelChainMap.put(pSegment, pPixelChain);
     }
 
     @VisibleForTesting
@@ -776,8 +780,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         val segments = new HashSet<ISegment>();
         for (int x = 0; x < getWidth() - 1; x++) {
             for (int y = 0; y < getHeight() - 1; y++) {
-                final LinkedList<Tuple2<PixelChain, ISegment>>[][] segmentIndex = getSegmentIndex();
-                Stream.of(segmentIndex[x][y])
+                val segmentIndex = getSegmentIndex();
+                Stream.of(segmentIndex.get(x, y))
                         .filter(i -> i != null)
                         .flatMap((i -> i.stream()))
                         .forEach(s -> segments.add(s._2));
@@ -786,17 +790,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return segments;
     }
 
-    public Optional<PixelChain> getPixelChainForSegment(final ISegment pSegment) {
-        return Optional.ofNullable(getSegmentToPixelChainMap().get(pSegment));
-    }
-
     private boolean isSegmentIndexValid() {
         return mSegmentCount != 0;
     }
 
     private synchronized void invalidateSegmentIndex() {
         Framework.logEntry(mLogger);
-        clearSegmentIndex();
+//        clearSegmentIndex();
         Framework.logExit(mLogger);
     }
 
@@ -871,7 +871,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .parallel()
                 .map(pc -> pc.approximate(this, tolerance, lineCurvePreference))
                 .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
-                .map(pc -> pc.indexSegments(this))
+                //.map(pc -> pc.indexSegments(this, true))
                 .forEach(pc -> updates.add(pc));
         clone.pixelChainsClear();
         clone.pixelChainsAddAll(updates);
@@ -887,7 +887,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mPixelChains.stream()
                 .parallel()
                 .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
-                .map(pc -> pc.indexSegments(this))
+                //.map(pc -> pc.indexSegments(this, true))
                 .forEach(pc -> updates.add(pc));
         clone.pixelChainsClear();
         clone.pixelChainsAddAll(updates);
@@ -1061,7 +1061,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         nodes.stream()
                 .flatMap(this::generateChainsAndApproximate)
-                .map(chain -> chain.indexSegments(this))
+                //.map(chain -> chain.indexSegments(this, true))
                 .forEach(this::addPixelChain);
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
@@ -1073,7 +1073,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .stream()
                 .map(p -> setNode(p, true))
                 .flatMap(p -> generateChainsAndApproximate(new Node(p)))
-                .map(chain -> chain.indexSegments(this))
+//                .map(chain -> chain.indexSegments(this, true))
                 .forEach(this::addPixelChain);
     }
 
@@ -1326,7 +1326,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private synchronized void indexSegments() {
         var pixelChains = new ArrayList<PixelChain>();
-        mPixelChains.stream().forEach(pc -> pixelChains.add(pc.indexSegments(this)));
+        mPixelChains.stream().forEach(pc -> pixelChains.add(pc.indexSegments(this, true)));
         pixelChainsClear();
         pixelChainsAddAll(pixelChains);
         val count = new AtomicInteger();
@@ -1370,8 +1370,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void clearSegmentIndex() {
-        mSegmentIndex = new LinkedList[getWidth()][getHeight()];
-        mSegmentToPixelChainMap = new HashMap<>();
+        mSegmentIndex = new Immutable2DArray<>(mWidth, mHeight, 20);
         mSegmentCount = 0;
     }
 
@@ -1462,16 +1461,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         mPixelChains.stream().parallel().forEach(pc -> pc.validate(this, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
-        for (int x = 0; x < mSegmentIndex.length; x++) {
-            for (int y = 0; y < mSegmentIndex[x].length; y++) {
-                LinkedList<Tuple2<PixelChain, ISegment>> list = mSegmentIndex[x][y];
+        for (int x = 0; x < mWidth; x++) {
+            for (int y = 0; y < mHeight; y++) {
+                LinkedList<Tuple2<PixelChain, ISegment>> list = mSegmentIndex.get(x, y);
                 if (list != null) {
                     list.stream().forEach(t -> segments.add(t._2));
                 }
             }
         }
-        if (mSegmentCount != segments.size() || mSegmentCount != mSegmentToPixelChainMap.keySet().size()) {
-            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s, mSegmentToPixelChainMap.keySet().size()=%s", mSegmentCount, segments.size(), mSegmentToPixelChainMap.keySet().size());
+        if (mSegmentCount != segments.size()) {
+            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
             throw new IllegalStateException(message);
         }
     }
