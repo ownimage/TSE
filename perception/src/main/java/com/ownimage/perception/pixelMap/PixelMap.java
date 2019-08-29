@@ -105,7 +105,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mPixelChains = pFrom.mPixelChains;
         mSegmentIndex = pFrom.mSegmentIndex;
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
-        invalidateSegmentIndex();
     }
 
     public void pixelChainsAddAll(Collection<PixelChain> pAll) {
@@ -144,7 +143,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                         pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
                         pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
                         clone.pixelChainsRemove(pc);
-                        clone.invalidateSegmentIndex();
                         changesMade.set(true);
                     });
                 });
@@ -227,7 +225,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         clone.getPixelChains(pPixel).forEach(pc -> {
             clone.pixelChainsRemove(pc);
             clone.pixelChainsAdd(pc.setThickness(pThickness));
-            clone.invalidateSegmentIndex();
         });
         return clone;
     }
@@ -242,7 +239,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
-        invalidateSegmentIndex();
         pPixelChains.stream().forEach(pc -> addPixelChain(pc));
         Framework.logExit(mLogger);
     }
@@ -253,17 +249,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
         Framework.logExit(mLogger);
         return pixelChains;
-    }
-
-    protected void calcSegmentIndex() {
-//        if (!isSegmentIndexValid()) {
-//            // double test means that you only synchronise if there is work to do, improves performance
-//            synchronized (this) {
-//                if (!isSegmentIndexValid()) {
-//                    indexSegments();
-//                }
-//            }
-//        }
     }
 
     public void actionEqualizeValues(final EqualizeValues pValues) {
@@ -628,7 +613,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
-        calcSegmentIndex();
         return mSegmentIndex;
     }
 
@@ -768,6 +752,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 if (pAdd) {
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {
+                    if (segments.contains(new Tuple2<>(pPixelChain, pSegment))) {
+                        System.out.println("Removable");
+                    }
                     segments.remove(new Tuple2<>(pPixelChain, pSegment));
                 }
                 mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), segments);
@@ -794,14 +781,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mSegmentCount != 0;
     }
 
-    private synchronized void invalidateSegmentIndex() {
-        Framework.logEntry(mLogger);
-//        clearSegmentIndex();
-        Framework.logExit(mLogger);
-    }
-
     boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final double pMultiplier, final boolean pThickOnly) {
-        calcSegmentIndex();
         final double maxThickness = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         final Point uhvw = toUHVW(pPoint);
         // to prevent the expensive closerThanActual being run against the same segment more than once they
@@ -1215,14 +1195,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pixelChainsClear();
         pixelChainsAddAll(refined);
         mLogger.info("approximate - done");
-        invalidateSegmentIndex();
     }
 
     private void process07_mergeChains(final IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
-        invalidateSegmentIndex();
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
@@ -1307,7 +1285,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 objectBytes = null;
                 mLogger.info("mAllNodes size() = " + nodeCount());
                 mLogger.info("mPixelChains size() = " + mPixelChains.size());
-                calcSegmentIndex();
                 mLogger.info("mSegmentCount = " + mSegmentCount);
             }
         } catch (final Exception pEx) {
@@ -1347,14 +1324,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pixelChainsRemove(pPixelChain);
         pPixelChain.getStartNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
         pPixelChain.getEndNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
-        invalidateSegmentIndex();
     }
 
     synchronized void addPixelChain(final PixelChain pPixelChain) {
         pixelChainsAdd(pPixelChain);
         replaceNode(pPixelChain.getStartNode(this).get().addPixelChain(pPixelChain));
         replaceNode(pPixelChain.getEndNode(this).get().addPixelChain(pPixelChain));
-        invalidateSegmentIndex();
     }
 
     private void replaceNode(Node pNode) {
@@ -1407,7 +1382,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mPixelChains.forEach(chain -> updates.add(chain.setThickness(shortLength, mediumLength, longLength)));
         pixelChainsClear();
         pixelChainsAddAll(updates);
-        invalidateSegmentIndex();
         Framework.logExit(mLogger);
     }
 
@@ -1456,8 +1430,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void validate() {
-        invalidateSegmentIndex();
-        calcSegmentIndex();
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
         mPixelChains.stream().parallel().forEach(pc -> pc.validate(this, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();

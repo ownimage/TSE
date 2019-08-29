@@ -258,17 +258,22 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     PixelChain indexSegments(final PixelMap pPixelMap, final boolean pAdd) {
-        val builder = builder();
-        final double[] startPosition = {0.0d};
-        streamSegments().forEach(segment -> {
-            final ISegment segmentClone = segment.withStartPosition(startPosition[0]);
-            builder.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone));
-            startPosition[0] += segment.getLength(pPixelMap, builder);
-        });
-        builder.setLength(startPosition[0]);
-        val newPixelChain = builder.build(pPixelMap);
-        newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment, pAdd));
-        return newPixelChain;
+        if (pAdd) {
+            val builder = builder();
+            final double[] startPosition = {0.0d};
+            streamSegments().forEach(segment -> {
+                final ISegment segmentClone = segment.withStartPosition(startPosition[0]);
+                builder.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone));
+                startPosition[0] += segment.getLength(pPixelMap, builder);
+            });
+            builder.setLength(startPosition[0]);
+            val newPixelChain = builder.build(pPixelMap);
+            newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment, true));
+            return newPixelChain;
+        } else {
+            this.streamSegments().forEach(segment -> pPixelMap.index(this, segment, false));
+            return this;
+        }
     }
 
     @Deprecated
