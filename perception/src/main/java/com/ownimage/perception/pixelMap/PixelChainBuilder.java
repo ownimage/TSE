@@ -7,7 +7,6 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
@@ -745,10 +744,6 @@ public class PixelChainBuilder implements IPixelChain {
         } finally {
             setSegment(bestSegment);
         }
-    }
-
-    public PixelChainBuilder approximateCurveOnly(ApporximateCurveOnlyParams pACOParams) {
-        return null;
     }
 
 }

@@ -113,8 +113,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void pixelChainsAdd(PixelChain pChain) {
-        mPixelChains = mPixelChains.add(pChain);
-        pChain.indexSegments(this, true);
+        val chain = pChain.indexSegments(this, true);
+        mPixelChains = mPixelChains.add(chain);
     }
 
     public void pixelChainsRemove(PixelChain pChain) {
