@@ -1040,7 +1040,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         nodes.stream()
                 .flatMap(this::generateChainsAndApproximate)
-                //.map(chain -> chain.indexSegments(this, true))
                 .forEach(this::addPixelChain);
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
@@ -1052,7 +1051,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .stream()
                 .map(p -> setNode(p, true))
                 .flatMap(p -> generateChainsAndApproximate(new Node(p)))
-//                .map(chain -> chain.indexSegments(this, true))
                 .forEach(this::addPixelChain);
     }
 
@@ -1061,7 +1059,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final double lineCurvePreference = getLineCurvePreference();
         return generateChains(this, pNode)
                 .parallelStream()
-                .map(pc2 -> pc2.approximate(this, tolerance, lineCurvePreference));
+                .map(pc -> pc.approximate(this, tolerance, lineCurvePreference))
+                .map(pc -> pc.approximateCurvesOnly(this, tolerance, lineCurvePreference));
     }
 
     private void trackPixelOn(@NonNull Pixel pPixel) {
