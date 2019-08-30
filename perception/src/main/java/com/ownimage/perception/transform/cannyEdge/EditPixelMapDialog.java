@@ -192,7 +192,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             }
             Services.getServices().getRenderService()
                     .getRenderJobBuilder("EditPixelMapDialog::updateCurves", mPictureControl, mCropTransform)
-//                    .withCompleteAction(this::drawGraffiti)
                     .withAllowTerminate(false)
                     .build()
                     .run();
@@ -413,7 +412,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             final double bottom = (double) getViewOriginY() / getHeight();
             final double top = bottom + 1.0d / getZoom();
             mCropTransform.setCrop(left, bottom, right, top);
-            if (mShowCurves.getValue())
+            if (mShowCurves.getValue() && !mMutating)
                 mCropTransform.setPreviousTransform(mTransform);
             else mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
         }
@@ -561,6 +560,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void mouseDragEndEvent(final IUIEvent pEvent) {
         if (isPixelView()) {
             mouseDragEndEventPixelView(pEvent);
+        } else if (isMoveView()) {
+            updateCurves();
         }
         Framework.logExit(mLogger);
     }
