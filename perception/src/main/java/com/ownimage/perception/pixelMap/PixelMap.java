@@ -108,8 +108,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     public void pixelChainsAddAll(Collection<PixelChain> pAll) {
-        mPixelChains = mPixelChains.addAll(pAll);
-        pAll.forEach(pc -> pc.indexSegments(this, true));
+        pAll.forEach(this::pixelChainsAdd);
     }
 
     public void pixelChainsAdd(PixelChain pChain) {
