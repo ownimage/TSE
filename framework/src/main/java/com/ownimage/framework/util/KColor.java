@@ -141,4 +141,8 @@ public class KColor {
     public static String toHex(final Color pC) {
         return String.format("#%02x%02x%02x", pC.getRed(), pC.getGreen(), pC.getBlue());
     }
+
+    public static Color alphaMultiply(final Color pColor, final double pMultiplier) {
+        return new Color(pColor.getRed(), pColor.getGreen(), pColor.getBlue(), (int) (pColor.getAlpha() * pMultiplier));
+    }
 }

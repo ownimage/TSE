@@ -18,10 +18,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.Id;
-import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.*;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
@@ -38,6 +35,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
+import lombok.val;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -121,6 +119,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mViewOriginX;
     private final IntegerControl mViewOriginY;
     // Pixel Container
+    private final BooleanControl mShowEdges =
+            new BooleanControl("Show Edges", "showEdges", mPixelControlContainer, true);
+    private final DoubleControl mEdgesOpacity =
+            new DoubleControl("Edges Opacity", "edgesOpacity", mPixelControlContainer, 1.0d);
     private final ColorControl mEdgeColor = new ColorControl("Edge Color", "edgeColor",
             mPixelControlContainer, getProperties().getCETEPMDEdgeColor());
     private final ColorControl mNodeColor = new ColorControl("Node Color", "nodeColor",
@@ -260,13 +262,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
                 updateCurves();
             }
-            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction)) {
+            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction, mShowEdges)) {
                 updateControlVisibility();
             }
             if (pControl.isOneOf(mAutoUpdateCurves)) {
                 if (mAutoUpdateCurvesDirty) updateCurves();
             }
-            if (pControl.isOneOf(mShowGraffiti)) {
+            if (pControl.isOneOf(mShowGraffiti, mShowEdges, mEdgesOpacity, mNodeColor, mEdgeColor)) {
                 drawGraffiti();
             }
         }
@@ -276,6 +278,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mAutoUpdateCurves.setVisible(mShowCurves.getValue());
         mUpdateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
         mThickness.setEnabled(mPixelAction.getValue() == PixelAction.PixelChainThickness);
+        mEdgeColor.setVisible(mShowEdges.getValue());
+        mNodeColor.setVisible(mShowEdges.getValue());
+        mEdgesOpacity.setVisible(mShowEdges.getValue());
     }
 
     @Override
@@ -325,9 +330,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     synchronized public void graffiti(final GrafittiHelper pGrafittiHelper) {
         Framework.logEntry(mLogger);
         Framework.checkStateNotNull(mLogger, mPixelMap, "mPixelMap");
-        final int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;
-        final int ySize = Math.floorDiv(getHeight(), getZoom()) + 1;
-        graffiti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
+        if (mShowEdges.getValue()) {
+            final int xSize = Math.floorDiv(getWidth(), getZoom()) + 1;
+            final int ySize = Math.floorDiv(getHeight(), getZoom()) + 1;
+            graffiti(pGrafittiHelper, getViewOriginX(), getViewOriginY(), getViewOriginX() + xSize, getViewOriginY() + ySize);
+        }
         if (mShowGraffiti.getValue()) {
             mPixelMap.streamPixelChains().forEach(pc -> graffitiPixelChain(pGrafittiHelper, pc));
         }
@@ -353,7 +360,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private Color getPixelColor(@NonNull final Pixel pPixel) {
-        return pPixel.isNode(mPixelMap) ? mNodeColor.getValue() : mEdgeColor.getValue();
+        val color = pPixel.isNode(mPixelMap) ? mNodeColor.getValue() : mEdgeColor.getValue();
+        return KColor.alphaMultiply(color, mEdgesOpacity.getValue());
     }
 
     private Rectangle pixelToGrafittiRectangle(@NonNull final Pixel pPixel) {
