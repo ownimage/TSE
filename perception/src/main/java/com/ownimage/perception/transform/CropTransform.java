@@ -154,8 +154,8 @@ public class CropTransform extends BaseTransform implements IControlValidator {
         final double y = pRenderResult.getY();
 
         final Point point = new Point( //
-                                       mLeft + x * (mRight - mLeft), //
-                                       mBottom + y * (mTop - mBottom) //
+                mLeft + x * (mRight - mLeft), //
+                mBottom + y * (mTop - mBottom) //
         );
 
         pRenderResult.setPoint(point);
