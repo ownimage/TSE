@@ -6,11 +6,11 @@
 package com.ownimage.framework.view.javafx;
 
 import com.ownimage.framework.view.IGrafittiImp;
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import lombok.val;
 
 import java.awt.*;
 
@@ -90,28 +90,30 @@ public class GrafittiImp implements IGrafittiImp {
 
     @Override
     public void drawString(final String pLabel, final double pX, final double pY) {
-        final double x = pX * mWidth;
-        final double y = (1.0 - pY) * mHeight;
-        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
-        final double w = textWidth(mGraphicsContext.getFont(), pLabel);
-        double h = fm.getAscent() + fm.getDescent(); // fm.getLineHeight() gets the leading as well
-        final double d = fm.getMaxDescent();
+        val x = pX * mWidth;
+        val y = (1.0 - pY) * mHeight;
 
-        final double xpadding = 3;
-        final double ypadding = 1;
+        val bounds = textBounds(mGraphicsContext.getFont(), pLabel);
+        val h = bounds.getHeight();
+        val w = bounds.getWidth();
 
+        val text = new Text(pLabel);
+        val yoff = text.getBaselineOffset();
+
+        val xpadding = 2;
+        val ypadding = 0;
 
         mGraphicsContext.setFill(convert(Color.WHITE));
         mGraphicsContext.fillRect(x, y - (h + 2 * ypadding), w + 2 * xpadding, h + 2 * ypadding);
 
         mGraphicsContext.setFill(convert(Color.BLACK));
-        mGraphicsContext.fillText(pLabel, x + xpadding, y - d - ypadding);
+        mGraphicsContext.fillText(pLabel, x + xpadding, y - h + yoff - ypadding);
     }
 
-    private double textWidth(Font font, String s) {
+    private Bounds textBounds(Font font, String s) {
         Text text = new Text(s);
         text.setFont(font);
-        return text.getBoundsInLocal().getWidth();
+        return text.getBoundsInLocal();
     }
 
     private void setDashed(final boolean pDashed) {
@@ -125,8 +127,8 @@ public class GrafittiImp implements IGrafittiImp {
 
     @Override
     public void setFontSize(final double pFontSize) {
-        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(mGraphicsContext.getFont());
-        final double existingHieght = fm.getAscent() + fm.getDescent();
+        val bounds = textBounds(mGraphicsContext.getFont(), "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        final double existingHieght = bounds.getHeight();
         final double newSize = mGraphicsContext.getFont().getSize() * pFontSize / existingHieght;
         final Font font = new Font(newSize);
         mGraphicsContext.setFont(font);

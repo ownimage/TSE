@@ -108,7 +108,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
             if (pControl == mPreviewSize) {
                 getTransform().redrawGrafitti();
             }
-            mPreviewPicture.setValue(updatePreview());
+            //mPreviewPicture.setValue(updatePreview());
+            updatePreview();
         }
     }
 
