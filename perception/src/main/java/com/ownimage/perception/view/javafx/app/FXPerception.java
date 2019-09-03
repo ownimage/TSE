@@ -21,7 +21,7 @@ public class FXPerception extends AppControlView {
 
     public static void main(final String[] pArgs) {
         FrameworkLogger.getInstance().init("logging.properties", "Perception.log");
-
+        Thread.currentThread().setName("main");
         FXViewFactory.setAsViewFactory();
 
         final Perception app = Services.getServices().getPerception();

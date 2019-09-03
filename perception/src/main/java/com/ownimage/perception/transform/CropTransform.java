@@ -5,9 +5,11 @@
  */
 package com.ownimage.perception.transform;
 
+import com.ownimage.framework.control.container.NullContainer;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.GrafittiHelper;
 import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.PointControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
@@ -16,6 +18,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.render.ITransformResult;
 import lombok.NonNull;
+import lombok.val;
 
 import java.util.logging.Logger;
 
@@ -39,6 +42,7 @@ public class CropTransform extends BaseTransform implements IControlValidator {
     private final DoubleControl mTopControl;
     private final DoubleControl mLeftControl;
     private final DoubleControl mRightControl;
+    private final PointControl mMoveControl;
 
     public CropTransform(final Perception pPerception) {
         this(pPerception, false);
@@ -53,6 +57,8 @@ public class CropTransform extends BaseTransform implements IControlValidator {
         mTopControl = new DoubleControl("Top", "top", getContainer(), 0.9d);
         mLeftControl = new DoubleControl("Left", "left", getContainer(), 0.1d);
         mRightControl = new DoubleControl("Right", "right", getContainer(), 0.9d);
+        mMoveControl = new PointControl("Move", "move", NullContainer.NullContainer,
+                new Point(mLeftControl.getValue(), mBottomControl.getValue()));
         setValues();
 
         mBottomControl.addControlValidator(this);
@@ -60,10 +66,12 @@ public class CropTransform extends BaseTransform implements IControlValidator {
         mLeftControl.addControlValidator(this);
         mRightControl.addControlValidator(this);
 
+
         addYControl(mTopControl);
         addXControl(mLeftControl);
         addXControl(mRightControl);
         addYControl(mBottomControl);
+        addXYControl(mMoveControl);
     }
 
     @Override
@@ -84,10 +92,11 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 
     @Override
     public void graffiti(final GrafittiHelper pGrafittiHelper) {
-        pGrafittiHelper.drawHorizontalLine(mTop, getGrafitiColor1(), isControlSelected(mTopControl));
-        pGrafittiHelper.drawHorizontalLine(mBottom, getGrafitiColor1(), isControlSelected(mBottomControl));
-        pGrafittiHelper.drawVerticalLine(mLeft, getGrafitiColor1(), isControlSelected(mLeftControl));
-        pGrafittiHelper.drawVerticalLine(mRight, getGrafitiColor1(), isControlSelected(mRightControl));
+        val allSelected = isControlSelected(mMoveControl);
+        pGrafittiHelper.drawHorizontalLine(mTop, getGrafitiColor1(), allSelected || isControlSelected(mTopControl));
+        pGrafittiHelper.drawHorizontalLine(mBottom, getGrafitiColor1(), allSelected || isControlSelected(mBottomControl));
+        pGrafittiHelper.drawVerticalLine(mLeft, getGrafitiColor1(), allSelected || isControlSelected(mLeftControl));
+        pGrafittiHelper.drawVerticalLine(mRight, getGrafitiColor1(), allSelected || isControlSelected(mRightControl));
     }
 
     public void setCrop(final double pLeft, final double pBottom, final double pRight, final double pTop) {
@@ -109,10 +118,32 @@ public class CropTransform extends BaseTransform implements IControlValidator {
 
     @Override
     public void setValues() {
-        mBottom = KMath.limit01(mBottomControl.getValue());
-        mTop = KMath.limit01(mTopControl.getValue());
-        mLeft = KMath.limit01(mLeftControl.getValue());
-        mRight = KMath.limit01(mRightControl.getValue());
+        setMutating(true);
+        try {
+            if (isControlSelected(mMoveControl)) {
+                double w = mRight - mLeft;
+                double h = mTop - mBottom;
+                double x = Math.min(mMoveControl.getValue().getX(), 1.0d - w);
+                double y = Math.min(mMoveControl.getValue().getY(), 1.0d - h);
+                mBottom = KMath.limit01(y);
+                mTop = KMath.limit01(y + h);
+                mLeft = KMath.limit01(x);
+                mRight = KMath.limit01(x + w);
+                mBottomControl.setValue(mBottom);
+                mTopControl.setValue(mTop);
+                mLeftControl.setValue(mLeft);
+                mRightControl.setValue(mRight);
+                mMoveControl.setValue(new Point(mLeftControl.getValue(), mBottomControl.getValue()));
+            } else {
+                mBottom = KMath.limit01(mBottomControl.getValue());
+                mTop = KMath.limit01(mTopControl.getValue());
+                mLeft = KMath.limit01(mLeftControl.getValue());
+                mRight = KMath.limit01(mRightControl.getValue());
+                mMoveControl.setValue(new Point(mLeftControl.getValue(), mBottomControl.getValue()));
+            }
+        } finally {
+            setMutating(false);
+        }
     }
 
     @Override
