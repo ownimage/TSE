@@ -112,6 +112,8 @@ public class AppControlView extends Application implements IAppControlView {
             scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
             mScene = new Scene(border, mAppControl.getWidth(), mAppControl.getHeight());
+            mScene.widthProperty().addListener((obs, oldVal, newVal) -> mAppControl.setWidth(newVal.intValue()));
+            mScene.heightProperty().addListener((obs, oldVal, newVal) -> mAppControl.setHeight(newVal.intValue()));
             menuBar.prefWidthProperty().bind(mScene.widthProperty());
             menuBar.setUseSystemMenuBar(true);
 

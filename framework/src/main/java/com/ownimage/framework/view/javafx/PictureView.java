@@ -14,14 +14,10 @@ import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
@@ -78,7 +74,6 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
             runOnFXApplicationThread(() -> {
                 updatePicture();
                 mControl.drawGrafitti();
-                resizeTopParent();
             });
         }
     }
@@ -164,17 +159,6 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     @Override
     public void updateGraffiti(final Consumer<IGrafittiImp> pGrafitti) {
         runOnFXApplicationThread(() -> pGrafitti.accept(mGraffitiImp));
-    }
-
-
-    private void resizeTopParent() {
-        Parent parent = mUI;
-        while (parent.getParent() != null) {
-            parent = parent.getParent();
-        }
-        if (parent.getScene() != null && parent.getScene().getWindow() != null) {
-            parent.getScene().getWindow().sizeToScene();
-        }
     }
 
     private void scrollEvent(final ScrollEvent pSE) {

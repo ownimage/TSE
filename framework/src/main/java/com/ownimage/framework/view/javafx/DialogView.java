@@ -70,8 +70,8 @@ public class DialogView implements IDialogView {
             dialog.getDialogPane().layout();
             dialog.setResultConverter(buttonMap::get);
             dialog.initOwner(AppControlView.getInstance().getPrimaryStage());
+            dialog.getDialogPane().getScene().getWindow().sizeToScene();
 
-            //set the icon
             val stage = (Stage) dialog.getDialogPane().getScene().getWindow();
             stage.getIcons().add(AppControlView.getInstance().getApplicationIcon());
             mDialogOptions.getCompleteFunction().ifPresent(cf -> stage.setOnCloseRequest(x -> cf.performAction()));

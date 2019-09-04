@@ -377,11 +377,6 @@ public class Perception extends AppControlBase {
         return stem;
     }
 
-    @Override
-    public int getHeight() {
-        return 900;
-    }
-
     private String getLoggingDefaultFilename() {
         return mLoggingPropertiesFilename;
     }
@@ -458,11 +453,6 @@ public class Perception extends AppControlBase {
 
     private UndoRedoBuffer getUndoRedoBuffer() {
         return Services.getServices().getUndoRedoBuffer();
-    }
-
-    @Override
-    public int getWidth() {
-        return 1800;
     }
 
     private void loggingEdit() {
