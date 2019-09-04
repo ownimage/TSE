@@ -14,6 +14,7 @@ import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -74,7 +75,19 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
             runOnFXApplicationThread(() -> {
                 updatePicture();
                 mControl.drawGrafitti();
+                mUI.getParent().requestLayout();
+                resizeTopParent();
             });
+        }
+    }
+
+    private void resizeTopParent() {
+        Parent parent = mUI;
+        while (parent.getParent() != null) {
+            parent = parent.getParent();
+        }
+        if (parent.getScene() != null && parent.getScene().getWindow() != null && parent.getScene() != AppControlView.getInstance().getScene()) {
+            parent.getScene().getWindow().sizeToScene();
         }
     }
 
