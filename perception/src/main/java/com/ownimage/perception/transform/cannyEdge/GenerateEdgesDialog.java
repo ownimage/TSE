@@ -15,6 +15,8 @@ import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.queue.ExecuteQueue;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.SplitTimer;
+import com.ownimage.framework.util.runWhenDirty.IRunWhenDirty;
+import com.ownimage.framework.util.runWhenDirty.RunWhenDirtyFactory;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
@@ -44,6 +46,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private final CannyEdgeTransform mTransform;
     private final PictureControl mPreviewPicture;
+    private PictureControl mInputPictureControl;
     private final IntegerControl mPreviewSize;
 
     private final IntegerControl mPreviewPositionX;
@@ -59,6 +62,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     private final Container mControlContainer;
 
     private IntegerPoint mDragStart = IntegerPoint.IntegerPoint00;
+
+    private final IRunWhenDirty mDetector;
 
     public GenerateEdgesDialog(
             @NonNull final CannyEdgeTransform pParent,
@@ -91,6 +96,8 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         if (mTransform.isInitialized()) {
             updatePreview();
         }
+
+        mDetector = RunWhenDirtyFactory.createOnNewThread(this::runDetector);
     }
 
     @Override
@@ -108,8 +115,13 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
             if (pControl == mPreviewSize) {
                 getTransform().redrawGrafitti();
             }
-            //mPreviewPicture.setValue(updatePreview());
-            updatePreview();
+            if (pControl.isOneOf(mPreviewPositionX, mPreviewPositionY, mPreviewSize)) {
+                updatePreview();
+            }
+            if (pControl.isOneOf(mHighThreshold, mLowThreshold, mGaussianKernelRadius,
+                    mGaussianKernelWidth, mContrastNormalized)) {
+                mDetector.markDirty();
+            }
         }
     }
 
@@ -132,7 +144,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     private void generatePreviewPictureFromData(final PixelMap pPixelMap) {
-        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) start");
+        //SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) start");
         final int size = getSize();
 
         final PictureType preview;
@@ -155,7 +167,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
             }
         }
         mPreviewPicture.setValue(preview);
-        SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) end");
+        //SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) end");
     }
 
     private int getDefaultSize() {
@@ -219,13 +231,13 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         SplitTimer.split("updatePreview() start");
         final int size = getSize();
         final PictureType inputPicture = new PictureType(size, size);
-        final PictureControl inputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
+        mInputPictureControl = new PictureControl("InputPicture", "inputPicture", NullContainer, inputPicture);
         final CropTransform crop = new CropTransform(Services.getServices().getPerception(), true);
         crop.setPreviousTransform(getTransform().getPreviousTransform());
         crop.setCrop(getPreviewRectangle());
         Services.getServices().getRenderService().
-                getRenderJobBuilder("GenerateEdgesDialog::updatePreview", inputPictureControl, crop)
-                .withCompleteAction(() -> updatePreview(inputPictureControl.getValue()))
+                getRenderJobBuilder("GenerateEdgesDialog::updatePreview", mInputPictureControl, crop)
+                .withCompleteAction(this::runDetector)
                 .build()
                 .run();
         mLogger.info(() -> "ExecuteQueue depth:" + ExecuteQueue.getInstance().getDepth());
@@ -233,11 +245,11 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         return mPreviewPicture.getValue();
     }
 
-    private void updatePreview(final PictureType pInputPicture) {
+    private void runDetector() {
         SplitTimer.split("updatePreview(final PictureType pInputPicture) start");
         final ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
         try {
-            detector.setSourceImage(pInputPicture);
+            detector.setSourceImage(mInputPictureControl.getValue());
             detector.process(null);
 
             if (detector.getKeepRunning()) {
@@ -249,6 +261,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
             if (detector != null) {
                 detector.dispose();
             }
+            SplitTimer.split("updatePreview(final PictureType pInputPicture) end");
         }
     }
 
