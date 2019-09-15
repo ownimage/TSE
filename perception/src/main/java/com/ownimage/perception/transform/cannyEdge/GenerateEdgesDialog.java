@@ -247,7 +247,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private void runDetector() {
         SplitTimer.split("updatePreview(final PictureType pInputPicture) start");
-        final ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.JAVA_THREADS);
+        final ICannyEdgeDetector detector = createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.OPENCL);
         try {
             detector.setSourceImage(mInputPictureControl.getValue());
             detector.process(null);
