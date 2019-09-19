@@ -24,6 +24,7 @@ import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
 import lombok.NonNull;
+import lombok.val;
 
 import java.awt.*;
 import java.io.IOException;
@@ -222,18 +223,25 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void generateEdges() {
-        mEditPixelMapButton.setEnabled(false);
-        final ActionControl ok = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
-        final ActionControl cancel = ActionControl.create("Cancel", NullContainer, this::setEditPixelMapButtonEnabledState);
-        final IAction completeAction = this::setEditPixelMapButtonEnabledState;
-        getGenerateEdgesDialog().showDialog(cancel, ok, completeAction);
+        val undo = mPixelMap;
+        mPixelMap = null;
+        setGenEditPixelMapButtonState(false);
+        val okControl = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
+        final IAction cancelActon = () -> {
+            mPixelMap = undo;
+            setGenEditPixelMapButtonState(mPixelMap != null);
+        };
+        val cancelControl = ActionControl.create("Cancel", NullContainer,cancelActon);
+        getGenerateEdgesDialog().showDialog(cancelControl, okControl, cancelActon);
     }
 
-    private void setEditPixelMapButtonEnabledState() {
-        mEditPixelMapButton.setEnabled(mPixelMap != null);
+    private void setGenEditPixelMapButtonState(final boolean pState) {
+        mEditPixelMapButton.setEnabled(pState);
+        mGeneratePixelMapButton.setEnabled(pState);
     }
 
     private void generateEdgesOK() {
+        setGenEditPixelMapButtonState(false);
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
         mPixelMap = null;
@@ -244,6 +252,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 .withCompleteAction(() -> {
                     regeneratePixelMap(inputPictureControl);
                     equalize();
+                    setGenEditPixelMapButtonState(true);
                 })
                 .build()
                 .run();
@@ -531,6 +540,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         }
     }
 
+    public Optional<PixelMap> getPixelMap() {
+        return Optional.ofNullable(mPixelMap);
+    }
+
     public void setPixelMap(@NonNull final PixelMap pPixelMap) {
         if (mPixelMap != null && (pPixelMap.getWidth() != getWidth() || pPixelMap.getHeight() != getHeight())) {
             throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
@@ -540,11 +553,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         if (mEditPixelMapDialog != null && mEditPixelMapDialog.getPixelMap() != pPixelMap) {
             mEditPixelMapDialog = null;
         }
-        setEditPixelMapButtonEnabledState();
-    }
-
-    public Optional<PixelMap> getPixelMap() {
-        return Optional.ofNullable(mPixelMap);
+        setGenEditPixelMapButtonState(true);
     }
 
     @Override
@@ -558,4 +567,5 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             pRenderResult.setColor(actual);
         }
     }
+
 }
