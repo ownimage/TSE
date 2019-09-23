@@ -5,17 +5,18 @@
  */
 package com.ownimage.framework.view.factory;
 
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.*;
-import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.*;
 
 public interface IViewFactory {
 
-    public IView createMenuItemView(ActionControl pActionControl);
+    public IView createMenuItemView(MenuAction pMenuAction);
 
     public IView createMenuView(MenuControl pMenuControl);
 

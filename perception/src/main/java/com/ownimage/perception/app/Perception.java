@@ -6,6 +6,7 @@
 package com.ownimage.perception.app;
 
 import com.ownimage.framework.app.AppControlBase;
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.*;
@@ -28,15 +29,15 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+import io.vavr.control.Try;
 import lombok.NonNull;
 import lombok.val;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,31 +49,35 @@ public class Perception extends AppControlBase {
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
+    private static final int RECENT_FILE_LENGTH = 20;
     private static final String PACKAGE_PREFIX = "com.ownimage";
     private static final String mLoggingPropertiesFilename = new File("logging.properties").getAbsolutePath();
 
     private final Container mContainer;
     private final FileControl mFileControl;
     private final PictureControl mOutputPreviewControl;
+    private final ActionControl mPropertiesSaveDefault = new ActionControl("Save Default", "propertiesSaveDefault", NullContainer, this::propertiesSaveDefault);
+    // Logging actions
+    private final ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
+    private final Vector<String> mRecentFiles = new Vector();
     private BorderLayout mBorderLayout;
-
+    private String mFilename;
     // Properties actions
     private final ActionControl mPropertiesSave = new ActionControl("Save", "propertiesSave", NullContainer, this::propertiesSave);
     private final ActionControl mPropertiesSaveAs = new ActionControl("Save As", "propertiesSaveAs", NullContainer, this::propertiesSaveAs);
-    private final ActionControl mPropertiesSaveDefault = new ActionControl("Save Default", "propertiesSaveDefault", NullContainer, this::propertiesSaveDefault);
-
-    // Logging actions
-    private final ActionControl mLoggingSaveDefaultAction = new ActionControl("Save Default", "loggingSaveDefault", NullContainer, this::loggingSaveDefault);
     private final ActionControl mLoggingSaveAsAction = new ActionControl("Save As", "loggingSaveAs", NullContainer, this::loggingSaveAs);
-
-
-    private String mFilename;
+    private final IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
+        String filename = f.getString();
+        mLogger.info(() -> "filename = " + filename);
+        fileOpen(f.getFile());
+    };
 
     Perception() {
         super("Perception");
         Framework.logEntry(mLogger);
 
         propertiesInit();
+        recentFilesInit();
 
         mContainer = new Container("Container", "container", this::getUndoRedoBuffer);
         mFileControl = new FileControl("File Name", "fileName"
@@ -86,6 +91,21 @@ public class Perception extends AppControlBase {
         Framework.logExit(mLogger);
     }
 
+    private void recentFilesInit() {
+        try (InputStream is = new FileInputStream("recent.properties")) {
+            java.util.Properties recentProperties = new java.util.Properties();
+            recentProperties.load(is);
+            AtomicInteger i = new AtomicInteger();
+            String filename = (String) recentProperties.get(Integer.toString(i.getAndIncrement()));
+            while (filename != null) {
+                mRecentFiles.add(filename);
+                filename = (String) recentProperties.get(Integer.toString(i.getAndIncrement()));
+            }
+        } catch (IOException pE) {
+            mLogger.severe("Unable to load recent.properties: " + pE.getMessage());
+        }
+    }
+
     private Optional<TransformSequence> getOptionalTransformSequence() {
         return Services.getServices().getOptionalTransformSequence();
     }
@@ -95,12 +115,6 @@ public class Perception extends AppControlBase {
         return Services.getServices().getOptionalTransformSequence().get();
     }
 
-    private final IControlChangeListener<FileControl> fileOpenHandler = (f, m) -> {
-        String filename = f.getString();
-        mLogger.info(() -> "filename = " + filename);
-        fileOpen(f.getFile());
-    };
-
     @Override
     protected IView createContentView() {
         mBorderLayout = new BorderLayout();
@@ -108,45 +122,52 @@ public class Perception extends AppControlBase {
         return mBorderLayout.createView();
     }
 
+    private MenuControl createFileMenu() {
+        val fileMenuBulider = new MenuControl.Builder().setDisplayName("File")
+                .addAction(new MenuAction("Open", this::fileOpen))
+                .addAction(new MenuAction("Save", this::fileSave))
+                .addAction(new MenuAction("Save As", this::fileSaveAs))
+                .addAction(new MenuAction("Exit", this::fileExit));
+
+        if (!mRecentFiles.isEmpty()) {
+            val recent = new MenuControl.Builder().setDisplayName("Recent");
+            mRecentFiles.forEach(s -> recent.addAction(new MenuAction(s, () -> fileOpen(s))));
+            fileMenuBulider.addMenu(recent.build());
+        }
+        fileMenuBulider.addAction(new MenuAction("Redraw", this::fileRedraw));
+        return fileMenuBulider.build();
+    }
+
     @Override
     protected MenuControl createMenuView() {
         Framework.logEntry(mLogger);
 
-        final Container menuContainer = new Container("MainMenu", "mainMenu", this::getUndoRedoBuffer);
-
         final MenuControl menu = new MenuControl.Builder()
-                .addMenu(new MenuControl.Builder().setDisplayName("File")
-                                 .addAction(new ActionControl("Open", "fileOpen", menuContainer, this::fileOpen))
-                                 .addAction(new ActionControl("Save", "fileSave", menuContainer, this::fileSave))
-                                 .addAction(new ActionControl("Save As", "fileSaveAs", menuContainer, this::fileSaveAs))
-                                 .addAction(new ActionControl("Exit", "fileExit", menuContainer, this::fileExit))
-                                 .addAction(new ActionControl("Redraw", "redraw", menuContainer, this::fileRedraw))
-                                 .build())
-
+                .addMenu(createFileMenu())
                 .addMenu(new MenuControl.Builder().setDisplayName("Transform")
-                                 .addAction(new ActionControl("Open", "transformOpen", menuContainer, this::transformOpen))
-                                 .addAction(new ActionControl("Save", "transformSave", menuContainer, this::transformSave))
-                                 .addAction(new ActionControl("Save As", "SaveAs", menuContainer, this::transformSaveAs))
-                                 .build())
+                        .addAction(new MenuAction("Open", this::transformOpen))
+                        .addAction(new MenuAction("Save", this::transformSave))
+                        .addAction(new MenuAction("Save As", this::transformSaveAs))
+                        .build())
 
                 .addMenu(new MenuControl.Builder().setDisplayName("Properties")
-                                 .addAction(new ActionControl("Edit", "propertiesEdit", menuContainer, this::propertiesEdit))
-                                 .addAction(new ActionControl("Open", "propertiesOpen", menuContainer, this::propertiesOpen))
-                                 .addAction(mPropertiesSave)
-                                 .addAction(mPropertiesSaveAs)
-                                 .addAction(mPropertiesSaveDefault)
-                                 .addAction(new ActionControl("Load Default", "propertiesLoadDefault", menuContainer, this::propertiesOpenSystemDefault))
-                                 .addAction(new ActionControl("Reset to System Default", "propertiesResetToSystemDefault", menuContainer, this::propertiesResetToSystemDefault))
-                                 .build())
+                        .addAction(new MenuAction("Edit", this::propertiesEdit))
+                        .addAction(new MenuAction("Open", this::propertiesOpen))
+                        .addAction(mPropertiesSave)
+                        .addAction(mPropertiesSaveAs)
+                        .addAction(mPropertiesSaveDefault)
+                        .addAction(new MenuAction("Load Default", this::propertiesOpenSystemDefault))
+                        .addAction(new MenuAction("Reset to System Default", this::propertiesResetToSystemDefault))
+                        .build())
 
                 .addMenu(new MenuControl.Builder().setDisplayName("Logging")
-                                 .addAction(new ActionControl("Edit", "loggingEdit", menuContainer, this::loggingEdit))
-                                 .addAction(new ActionControl("Open Default", "loggingOpenDefault", menuContainer, this::loggingOpenDefault))
-                                 .addAction(new ActionControl("Open", "loggingOpen", menuContainer, this::loggingOpenDefault))
-                                 .addAction(mLoggingSaveDefaultAction)
-                                 .addAction(mLoggingSaveAsAction)
-                                 .addAction(new ActionControl("Test", "loggingTest", menuContainer, this::loggingTest))
-                                 .build())
+                        .addAction(new MenuAction("Edit", this::loggingEdit))
+                        .addAction(new MenuAction("Open Default", this::loggingOpenDefault))
+                        .addAction(new MenuAction("Open", this::loggingOpenDefault))
+                        .addAction(mLoggingSaveDefaultAction)
+                        .addAction(mLoggingSaveAsAction)
+                        .addAction(new MenuAction("Test", this::loggingTest))
+                        .build())
                 .build();
 
         Framework.logExit(mLogger);
@@ -163,12 +184,34 @@ public class Perception extends AppControlBase {
 
     private void fileOpen() {
         Framework.logEntry(mLogger);
-
         mFileControl.showDialog();
-
         Framework.logExit(mLogger);
     }
 
+    private void recentFilesAdd(final String pFilename) {
+        mRecentFiles.remove(pFilename);
+        mRecentFiles.add(0, pFilename);
+        while (mRecentFiles.size() > RECENT_FILE_LENGTH) {
+            mRecentFiles.remove(RECENT_FILE_LENGTH);
+        }
+        Try.of(() -> writeRecentFiles()).onFailure(f -> mLogger.severe("Unable to write recent.properties file"));
+        menuRegenerate();
+    }
+
+    private Void writeRecentFiles() throws IOException {
+        java.util.Properties recent = new java.util.Properties();
+        AtomicInteger i = new AtomicInteger();
+        mRecentFiles.forEach(f -> recent.put(Integer.toString(i.getAndIncrement()), f));
+        Writer writer = new FileWriter("recent.properties");
+        recent.store(writer, "Recent Files");
+        writer.close();
+        return null;
+    }
+
+    public void fileOpen(@NonNull final String pFilename) {
+        File file = new File(pFilename);
+        fileOpen(file);
+    }
 
     /**
      * File open will open the specified File in the application. It will set the Properties to the System Default, or if the
@@ -182,6 +225,7 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         mFilename = pFile.getAbsolutePath();
+        recentFilesAdd(mFilename);
 
         propertiesOpenSystemDefault();
         if (getProperties().useDefaultPropertyFile()) {

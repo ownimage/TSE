@@ -5,34 +5,14 @@
  */
 package com.ownimage.framework.view.factory;
 
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.FileControl;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
-import com.ownimage.framework.control.control.ProgressControl;
-import com.ownimage.framework.control.control.StringControl;
-import com.ownimage.framework.control.layout.BorderLayout;
-import com.ownimage.framework.control.layout.HFlowLayout;
-import com.ownimage.framework.control.layout.HSplitLayout;
-import com.ownimage.framework.control.layout.IContainerList;
-import com.ownimage.framework.control.layout.INamedTabs;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.layout.IViewable;
-import com.ownimage.framework.control.layout.ScrollLayout;
-import com.ownimage.framework.control.layout.VFlowLayout;
+import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.undo.UndoRedoBuffer;
-import com.ownimage.framework.view.IAppControlView;
-import com.ownimage.framework.view.IBorderView;
-import com.ownimage.framework.view.IDialogView;
-import com.ownimage.framework.view.IDoubleView;
-import com.ownimage.framework.view.IPictureView;
-import com.ownimage.framework.view.ISingleSelectView;
-import com.ownimage.framework.view.IView;
+import com.ownimage.framework.view.*;
 
 public class ViewFactory implements IViewFactory {
 
@@ -65,15 +45,15 @@ public class ViewFactory implements IViewFactory {
     }
 
     @Override
-    public IView createMenuItemView(final ActionControl pActionControl) {
-        stateCheck();
-        return mViewFactory.createMenuItemView(pActionControl);
-    }
-
-    @Override
     public IView createMenuView(final MenuControl pMenuControl) {
         stateCheck();
         return mViewFactory.createMenuView(pMenuControl);
+    }
+
+    @Override
+    public IView createMenuItemView(final MenuAction pMenuAction) {
+        stateCheck();
+        return mViewFactory.createMenuItemView(pMenuAction);
     }
 
     @Override

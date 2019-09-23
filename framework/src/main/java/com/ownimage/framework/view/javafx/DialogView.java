@@ -127,11 +127,8 @@ public class DialogView implements IDialogView {
             val dialogResult = dialog.showAndWait();
 
             new Thread(() -> {
-                // this needs to be done here as the complete function might not be specified.
-                dialogResult.ifPresent(ActionControl::performAction);
-
-                // the value is passed into the completeFunction only to indicate how the mDialog ended.
                 mDialogOptions.getCompleteFunction().ifPresent(IAction::performAction);
+                dialogResult.ifPresent(ActionControl::performAction);
             }).start();
         });
     }

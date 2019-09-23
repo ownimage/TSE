@@ -72,10 +72,8 @@ public class ActionControl extends ControlBase<ActionControl, BooleanType, IMeta
         return super.clone();
     }
 
-    public IView createMenuItemView() { // TODO can we push this into the base class
-        final IView view = ViewFactory.getInstance().createMenuItemView(this);
-        addView(view);
-        return view;
+    public IAction getAction() {
+        return mAction;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.ownimage.framework.factory;
 
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.*;
-import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.control.view.ViewASSISTANT;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.*;
@@ -13,8 +14,7 @@ import com.ownimage.framework.view.factory.IViewFactory;
 public class ViewFactoryASSISTANT implements IViewFactory {
 
     @Override
-    public IView createMenuItemView(final ActionControl pActionControl) {
-        // TODO Auto-generated method stub
+    public IView createMenuItemView(MenuAction pMenuAction) {
         return null;
     }
 

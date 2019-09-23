@@ -9,6 +9,7 @@ import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import lombok.NonNull;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -50,12 +51,13 @@ public class MenuControl implements IMenuItem, IViewable {
             return this;
         }
 
-        public Builder addAction(final ActionControl pAction) {
-            if (pAction == null) {
-                throw new IllegalArgumentException("pAction must not be null");
-            }
+        public Builder addAction(@NonNull final ActionControl pAction) {
+             mMenuControl.mMenuItems.add(new MenuAction(pAction.getDisplayName(), pAction.getAction()));
+            return this;
+        }
 
-            mMenuControl.mMenuItems.add(pAction);
+        public Builder addAction(@NonNull final MenuAction pMenuAction) {
+            mMenuControl.mMenuItems.add(pMenuAction);
             return this;
         }
 

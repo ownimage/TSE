@@ -4,12 +4,13 @@
  */
 package com.ownimage.framework.control.view;
 
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.control.*;
-import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.control.layout.IViewable;
+import com.ownimage.framework.control.layout.*;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.factory.ViewFactoryDELEGATOR;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
@@ -95,8 +96,7 @@ public class DoubleControlViewTEST {
     private static class TestViewFactory implements IViewFactory {
 
         @Override
-        public IView createMenuItemView(final ActionControl pActionControl) {
-            // TODO Auto-generated method stub
+        public IView createMenuItemView(MenuAction pMenuAction) {
             return null;
         }
 

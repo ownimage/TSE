@@ -63,6 +63,10 @@ public class AppControlView extends Application implements IAppControlView {
         return mAppControl;
     }
 
+    public static void setAppControl(final IAppControl pAppControl) {
+        mAppControl = pAppControl;
+    }
+
     public static AppControlView getAppControlView() {
         return mAppControlView;
     }
@@ -84,10 +88,6 @@ public class AppControlView extends Application implements IAppControlView {
         }
     }
 
-    public static void setAppControl(final IAppControl pAppControl) {
-        mAppControl = pAppControl;
-    }
-
     @Override
     public void exit() {
         Platform.exit();
@@ -101,7 +101,6 @@ public class AppControlView extends Application implements IAppControlView {
     public void redraw() {
         Platform.runLater(() -> {
             final MenuBar menuBar = ((MenuBarView) mAppControl.getMenu().createView()).getUI();
-
             final IView content = mAppControl.getContent();
             final BorderPane border = new BorderPane();
             border.setTop(menuBar);
@@ -117,7 +116,7 @@ public class AppControlView extends Application implements IAppControlView {
             menuBar.prefWidthProperty().bind(mScene.widthProperty());
             menuBar.setUseSystemMenuBar(true);
 
-            mPrimaryStage.setTitle(mAppControl.getTitle());
+            mPrimaryStage.titleProperty().setValue(mAppControl.getTitle());
 
             mPrimaryStage.setScene(mScene);
             mPrimaryStage.show();

@@ -6,6 +6,7 @@
 package com.ownimage.framework.view.javafx;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
@@ -125,8 +126,8 @@ public class FXViewFactory implements IViewFactory {
     }
 
     @Override
-    public IView createMenuItemView(final ActionControl pActionControl) {
-        return new MenuItemView(pActionControl);
+    public IView createMenuItemView(final MenuAction pMenuAction) {
+        return new MenuItemView(pMenuAction);
     }
 
     @Override

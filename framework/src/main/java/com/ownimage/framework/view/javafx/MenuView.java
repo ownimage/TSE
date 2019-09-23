@@ -6,8 +6,8 @@
 package com.ownimage.framework.view.javafx;
 
 import com.ownimage.framework.app.menu.IMenuItem;
+import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
-import com.ownimage.framework.control.control.ActionControl;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
@@ -50,11 +50,11 @@ public class MenuView implements IView {
         while (childIterator.hasNext()) {
             final IMenuItem child = childIterator.next();
 
-            if (child instanceof ActionControl) {
-                final ActionControl actionControl = (ActionControl) child;
-                final MenuItemView menuItem = (MenuItemView) actionControl.createMenuItemView();
+            if (child instanceof MenuAction) {
+                final MenuAction menuControl = (MenuAction) child;
+                final MenuItemView menuItem = (MenuItemView) menuControl.createMenuItemView();
                 menu.getItems().add(menuItem.getUI());
-                mLogger.fine(() -> "Menu created: " + actionControl.getDisplayName());
+                mLogger.fine(() -> "Menu created: " + menuControl.getDisplayName());
 
             } else if (child instanceof MenuControl) {
                 final MenuControl menuControl = (MenuControl) child;

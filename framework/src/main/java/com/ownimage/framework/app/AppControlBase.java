@@ -24,6 +24,7 @@ import lombok.NonNull;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
@@ -83,7 +84,15 @@ public abstract class AppControlBase implements IAppControl {
                 .build();
 
         return menu;
+    }
 
+    protected void menuRegenerate() {
+        mMenu = null;
+        getAppControlView().ifPresent(IAppControlView::redraw);
+    }
+
+    private Optional<IAppControlView> getAppControlView() {
+        return Optional.ofNullable(mAppControlView);
     }
 
     protected void dialogOKCancel(
