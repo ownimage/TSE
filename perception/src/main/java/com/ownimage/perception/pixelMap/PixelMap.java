@@ -133,7 +133,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public PixelMap actionDeletePixelChain(List<Pixel> pPixels) {
         PixelMap clone = new PixelMap(this);
         clone.mAutoTrackChanges = false;
-        StrongReference<Boolean> changesMade = new StrongReference<>(false);
+        val changesMade = new StrongReference<>(false);
         pPixels.stream()
                 .filter(p -> p.isEdge(clone))
                 .forEach(p -> {

@@ -549,10 +549,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
         }
 
-        mPixelMap = pPixelMap;
         if (mEditPixelMapDialog != null && mEditPixelMapDialog.getPixelMap() != pPixelMap) {
             mEditPixelMapDialog = null;
         }
+        mPixelMap = pPixelMap;
         setGenEditPixelMapButtonState(true);
     }
 
