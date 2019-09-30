@@ -7,6 +7,8 @@ package com.ownimage.framework.view;
 
 public interface IDialogView {
 
-    public void showModal();
+    void showModal();
+
+    void setEnabled(boolean pEnabled);
 
 }

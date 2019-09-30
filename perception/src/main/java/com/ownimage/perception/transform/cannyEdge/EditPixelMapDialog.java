@@ -408,21 +408,23 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseClickEventPixelView(@NonNull final IUIEvent pEvent, @NonNull final Pixel pPixel) {
-        boolean change = false;
-        if (pPixel != null) {
-            if (isPixelActionOn()) change |= actionPixelOn(pPixel);
-            if (isPixelActionOff()) change |= actionPixelOff(pPixel);
-            if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
-            if (isPixelActionDeletePixelChain()) change |= actionDeletePixelChain(Arrays.asList(pPixel));
-            if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
-            if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
-            if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
-            if (isPixelChainDeleteAllButThis()) change |= actionPixelChainDeleteAllButThis(pPixel);
-            if (change) {
-                autoUpdateCurves();
+        disableDialogWhile(() -> {
+            boolean change = false;
+            if (pPixel != null) {
+                if (isPixelActionOn()) change |= actionPixelOn(pPixel);
+                if (isPixelActionOff()) change |= actionPixelOff(pPixel);
+                if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
+                if (isPixelActionDeletePixelChain()) change |= actionPixelChainDelete(Arrays.asList(pPixel));
+                if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
+                if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
+                if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
+                if (isPixelChainDeleteAllButThis()) change |= actionPixelChainDeleteAllButThis(pPixel);
+                if (change) {
+                    autoUpdateCurves();
+                }
             }
-        }
-        graffitiCursor(pEvent, pPixel);
+            graffitiCursor(pEvent, pPixel);
+        });
     }
 
     private void actionCopyToClipboard(Pixel pPixel) {
@@ -531,11 +533,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseDragEndEvent(final IUIEvent pEvent) {
-        if (isPixelView()) {
-            mouseDragEndEventPixelView(pEvent);
-        } else if (isMoveView()) {
-            updateCurves();
-        }
+        disableDialogWhile(() -> {
+            if (isPixelView()) {
+                mouseDragEndEventPixelView(pEvent);
+            } else if (isMoveView()) {
+                updateCurves();
+            }
+        });
         Framework.logExit(mLogger);
     }
 
@@ -546,7 +550,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             actionPixelOn(mDragPixelsArray);
         }
         if (isPixelActionDeletePixelChain()) {
-            actionDeletePixelChain(mDragPixelsArray);
+            actionPixelChainDelete(mDragPixelsArray);
         }
         mDragPixelsArray.clear();
         getUndoRedoBuffer().endSavepoint(mSavepointId);
@@ -712,7 +716,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return change;
     }
 
-    private boolean actionDeletePixelChain(@NonNull List<Pixel> pPixels) {
+    private boolean actionPixelChainDelete(@NonNull List<Pixel> pPixels) {
         final PixelMap undo = getPixelMap();
         setPixelMap(getPixelMap().actionDeletePixelChain(pPixels));
         if (undo != getPixelMap()) {
@@ -763,6 +767,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return false;
     }
 
+    private void disableDialogWhile(IAction pAction) {
+        setViewEnabled(false);
+        try {
+            pAction.performAction();
+        } finally {
+            setViewEnabled(true);
+        }
+    }
+
     @Override
     public void mouseMoveEvent(final IUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
@@ -773,8 +786,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 });
     }
 
+    private void setViewEnabled(boolean pEnabled) {
+        if (mEditPixelMapDialogView != null) {
+            mEditPixelMapDialogView.setEnabled(pEnabled);
+        }
+    }
+
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
+        setViewEnabled(false);
         if (isMoveView()) mouseDragStartEventMoveView(pEvent);
         if (isPixelView()) mouseDragStartEventPixelView(pEvent);
     }

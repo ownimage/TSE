@@ -110,7 +110,6 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
         contrastNormalized = false;
 
         mKeepRunning = true;
-//        setExplicit(true);
     }
 
     /**

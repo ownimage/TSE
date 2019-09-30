@@ -23,6 +23,8 @@ import javafx.scene.control.Dialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -37,6 +39,10 @@ public class DialogView implements IDialogView {
     final private IAppControlView.DialogOptions mDialogOptions;
     private UndoRedoBuffer mUndoRedo;
     private final ActionControl[] mButtons;
+
+    @Getter
+    @Setter
+    private Dialog mDialog;
 
     public DialogView(final IViewable pViewable, final IAppControlView.DialogOptions pDialogOptions, final UndoRedoBuffer pUndoRedo, final ActionControl... pButtons) {
         mViewable = pViewable;
@@ -55,6 +61,7 @@ public class DialogView implements IDialogView {
             val content = (FXView) (mViewable.createView());
             val contentUI = content.getUI();
             val dialog = new Dialog<ActionControl>();
+            setDialog(dialog);
 
             // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
             // themselves which would mean that the mDialog would need to change size as the controls change value.
@@ -125,11 +132,21 @@ public class DialogView implements IDialogView {
             });
 
             val dialogResult = dialog.showAndWait();
+            setDialog(null);
 
             new Thread(() -> {
                 mDialogOptions.getCompleteFunction().ifPresent(IAction::performAction);
                 dialogResult.ifPresent(ActionControl::performAction);
             }).start();
         });
+    }
+
+    @Override
+    public void setEnabled(boolean pEnabled) {
+        if (getDialog() != null) {
+            getDialog().getDialogPane().getContent().setDisable(!pEnabled);
+            getDialog().getDialogPane().getButtonTypes()
+                    .forEach(bt -> getDialog().getDialogPane().lookupButton(bt).setDisable(!pEnabled));
+        }
     }
 }
