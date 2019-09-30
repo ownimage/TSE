@@ -631,13 +631,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void mouseDragEventPixelViewDeletePixelChain(Pixel pPixel, int pCursorSize) {
-        //if (mDragPixelsArray.contains(pPixel)) return;
         graffitiPixelWorkingColor(pPixel);
-        //if (!pPixel.isEdge(mPixelMap)) return;
         final double radius = (double) pCursorSize / getHeight();
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
-                .forEach((x, y) ->
+                .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), (x, y) ->
                         getPixelMap().getOptionalPixelAt(x, y)
                                 .filter(Predicate.not(mDragPixelsArray::contains))
                                 .filter(p -> pPixel.getUHVWMidPoint(getPixelMap())

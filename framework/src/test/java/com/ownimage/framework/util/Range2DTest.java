@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Vector;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Range2DTest {
@@ -126,6 +127,60 @@ public class Range2DTest {
         val underTest = new Range2D(minX, maxX, stepX, minY, maxY, stepY);
         // WHEN
         underTest.forEachParallel((x, y) -> actual.add(new IntegerPoint(x, y)));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_01() {
+        // GIVEN
+        int minX = 0;
+        int maxX = 30;
+        int stepX = 1;
+        int minY = 0;
+        int maxY = 50;
+        int stepY = 1;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(maxX, maxY);
+        // WHEN
+        underTest.forEachParallelThread(8, (x, y) -> actual.add(new IntegerPoint(x, y)));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_02() {
+        // GIVEN
+        int minX = 10;
+        int maxX = 30;
+        int stepX = 1;
+        int minY = 12;
+        int maxY = 50;
+        int stepY = 1;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(minX, maxX, minY, maxY);
+        // WHEN
+        underTest.forEachParallelThread(8, (x, y) -> actual.add(new IntegerPoint(x, y)));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_03() {
+        // GIVEN
+        int minX = 10;
+        int maxX = 30;
+        int stepX = 2;
+        int minY = 12;
+        int maxY = 50;
+        int stepY = 3;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(minX, maxX, stepX, minY, maxY, stepY);
+        // WHEN
+        underTest.forEachParallelThread(8, (x, y) -> actual.add(new IntegerPoint(x, y)));
         // THEN
         actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
         Assert.assertArrayEquals(expected.toArray(), actual.toArray());
@@ -284,6 +339,28 @@ public class Range2DTest {
         // THEN
         System.out.println(streamParallel + " " + stream + " " + forEach);
         Assert.assertTrue(stream < forEach * 1.1);
+        Assert.assertTrue(streamParallel < forEach);
+    }
+
+    @Test
+    public void performance_03() {
+        // GIVEN
+        int minX = 0;
+        int maxX = 1000;
+        int stepX = 3;
+        int minY = 0;
+        int maxY = 1000;
+        int stepY = 2;
+        val underTest = new Range2D(minX, maxX, stepX, minY, maxY, stepY);
+        int iterations = 100000;
+        BiConsumer<Integer, Integer> hardSum = (x, y) -> hardSum(iterations);
+
+        // GIVEN WARM-UP
+        underTest.forEach(hardSum);
+        // WHEN
+        val streamParallel = timeInMillis(() -> underTest.forEachParallelThread(8, hardSum));
+        val forEach = timeInMillis(() -> underTest.forEach(hardSum));
+        // THEN
         Assert.assertTrue(streamParallel < forEach);
     }
 

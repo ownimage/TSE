@@ -5,12 +5,16 @@
  */
 package com.ownimage.framework.util;
 
+import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.math.IntegerPoint;
+import io.vavr.Tuple2;
 import lombok.val;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -71,13 +75,67 @@ public class Range2D implements Iterable<IntegerPoint> {
     }
 
     /**
-     * Possible performance impacts
+     * Possible performance impacts.  Use forEachParallelThread instead
      *
      * @param pFunction
      */
     @Deprecated
     public void forEachParallel(final BiConsumer<Integer, Integer> pFunction) {
         stream().parallel().forEach(i -> pFunction.accept(i.getX(), i.getY()));
+    }
+
+    private interface CheckedFn {
+        void fn() throws Throwable;
+    }
+
+    private void checkedToRuntime(CheckedFn pFn) {
+        try {
+            pFn.fn();
+        } catch (Throwable pThrowable) {
+            throw new RuntimeException(pThrowable);
+        }
+    }
+
+    private class ThreadSet {
+        public void run(int pSize, final BiConsumer<Integer, Integer> pFunction) {
+            val iterator = new ParallelIterator();
+            IAction action = () -> {
+                while (true) {
+                    Tuple2<Integer, Integer> t = iterator.nextOrNull();
+                    if (t == null) {
+                        break;
+                    }
+                    pFunction.accept(t._1, t._2);
+                }
+            };
+            val threads = new ArrayList<Thread>();
+            IntStream.range(0, pSize).forEach(i -> threads.add(new Thread(action::performAction)));
+            threads.forEach(Thread::start);
+            threads.forEach(t -> checkedToRuntime(t::join));
+        }
+    }
+
+    private class ParallelIterator {
+        private int mX = mXFrom;
+        private int mY = mYFrom;
+        private boolean done;
+
+        public synchronized Tuple2<Integer, Integer> nextOrNull() {
+            Tuple2<Integer, Integer> result = !done ? new Tuple2(mX, mY) : null;
+            mX += mXStep;
+            if (mX >= mXTo) {
+                mX = mXFrom;
+                mY += mYStep;
+            }
+            if (mY >= mYTo) {
+                done = true;
+            }
+            return result;
+        }
+    }
+
+    public void forEachParallelThread(final int pSize, final BiConsumer<Integer, Integer> pFunction) {
+        new ThreadSet().run(pSize, pFunction);
     }
 
     public Iterator<IntegerPoint> iterator() {
