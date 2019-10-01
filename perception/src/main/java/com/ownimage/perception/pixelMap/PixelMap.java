@@ -130,7 +130,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains.size();
     }
 
-    public PixelMap actionDeletePixelChain(List<Pixel> pPixels) {
+    public PixelMap actionDeletePixelChain(Collection<Pixel> pPixels) {
         PixelMap clone = new PixelMap(this);
         clone.mAutoTrackChanges = false;
         val changesMade = new StrongReference<>(false);
@@ -197,7 +197,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return changesMade.get() ? clone : this;
     }
 
-    public PixelMap actionPixelOn(List<Pixel> pPixels) {
+    public PixelMap actionPixelOn(Collection<Pixel> pPixels) {
         PixelMap clone = new PixelMap(this);
         clone.mAutoTrackChanges = false;
         pPixels.forEach(pixel -> pixel.setEdge(clone, true));
@@ -579,6 +579,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
     }
 
+    public Optional<Pixel> getOptionalPixelAt(final IntegerPoint pPoint) {
+        return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
+    }
+
     @Deprecated
     public Pixel getPixelAt(final Point pPoint) {
         Framework.logEntry(mLogger);
@@ -751,9 +755,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 if (pAdd) {
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {
-                    if (segments.contains(new Tuple2<>(pPixelChain, pSegment))) {
-                        System.out.println("Removable");
-                    }
                     segments.remove(new Tuple2<>(pPixelChain, pSegment));
                 }
                 mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), segments);
@@ -1017,7 +1018,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    private void trackPixelOn(@NonNull List<Pixel> pPixels) {
+    private void trackPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) return;
 
         resetInChain();

@@ -91,7 +91,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             mPixelControlContainer, PixelAction.On, PixelAction.values());
     private final ObjectControl<PixelChain.Thickness> mThickness = new ObjectControl("Thickness", "Thickness",
             mPixelControlContainer, IPixelChain.Thickness.None, IPixelChain.Thickness.values());
-    private final ArrayList<Pixel> mDragPixelsArray = new ArrayList();
+    private final Collection<Pixel> mDragPixelsArray = new HashSet();
+
     private IDialogView mEditPixelMapDialogView;
     private UndoRedoBuffer mPixelMapUndoRedoBuffer = new UndoRedoBuffer(100);
     private boolean mMutating = false;
@@ -506,7 +507,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mPixelAction.getValue() == PixelAction.CopyToClipboard;
     }
 
-    public boolean actionPixelOn(@NonNull List<Pixel> pPixels) {
+    public boolean actionPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) return false;
         final PixelMap undo = getPixelMap();
         setPixelMap(getPixelMap().actionPixelOn(mDragPixelsArray));
@@ -714,7 +715,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return change;
     }
 
-    private boolean actionPixelChainDelete(@NonNull List<Pixel> pPixels) {
+    private boolean actionPixelChainDelete(@NonNull Collection<Pixel> pPixels) {
         final PixelMap undo = getPixelMap();
         setPixelMap(getPixelMap().actionDeletePixelChain(pPixels));
         if (undo != getPixelMap()) {
