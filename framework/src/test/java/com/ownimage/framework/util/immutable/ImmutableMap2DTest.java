@@ -71,6 +71,22 @@ public class ImmutableMap2DTest {
     }
 
     @Test
+    public void setValueAndSwitchBetweenversionsStressTest() {
+        ImmutableMap2D<String> underTest = new ImmutableMap2D<>(10, 20, "0");
+        underTest = underTest.set(5, 5, "1");
+        ImmutableMap2D<String> other = underTest;
+        other = other.set(5, 5, "2");
+
+        for (int i = 0; i < 50000; i++) {
+            other = other.set(6, 6, Integer.toString(i));
+        }
+
+        Assert.assertEquals("1", underTest.get(5, 5));
+        Assert.assertEquals("2", other.get(5, 5));
+        Assert.assertEquals("1", underTest.get(5, 5));
+    }
+
+    @Test
     public void setDefaultValueAndSwitchBetweenversions() {
         ImmutableMap2D<String> underTest = new ImmutableMap2D<>(10, 20, "0");
         underTest = underTest.set(5, 5, "1");

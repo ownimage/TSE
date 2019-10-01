@@ -1,7 +1,10 @@
 package com.ownimage.framework.util.immutable;
 
+import lombok.val;
+
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -14,10 +17,11 @@ public class ImmutableNode<M> implements Serializable {
     private transient Consumer<M> mRedo;
     private transient Consumer<M> mUndo;
 
+
     protected ImmutableNode(M pMaster) {
         mSynchronisation = UUID.randomUUID();
         setMasterAndToMaster(pMaster, null);
-        mPrevious = new WeakReference<>(null);
+        mPrevious = new WeakReference(null);
         mUndo = m -> {
         };
         mRedo = m -> {
@@ -28,7 +32,7 @@ public class ImmutableNode<M> implements Serializable {
         mSynchronisation = pPrevious.mSynchronisation;
         synchronized (getSynchronisationObject()) {
             setMasterAndToMaster(pPrevious.getMaster(), null);
-            mPrevious = new WeakReference<>(pPrevious);
+            mPrevious = new WeakReference(pPrevious);
             pRedo.accept(mMaster);
             mRedo = pRedo;
             mUndo = pUndo;
@@ -71,15 +75,30 @@ public class ImmutableNode<M> implements Serializable {
             }
             M master = mMaster;
             if (master == null) {
-                master = mToMaster.getMaster(this);
+                val stack = new Stack<ImmutableNode<M>>();
+                stack.push(this);
+                while (stack.peek().mMaster == null) {
+                    stack.push(stack.peek().mToMaster);
+                }
+                master = stack.peek().mMaster;
+                while (!stack.empty()) {
+                    val current = stack.pop();
+                    if (current == this) {
+                        if (current.mToMaster == current.mPrevious.get()) {
+                            current.mRedo.accept(master);
+                        }
+                        current.setMasterAndToMaster(master, null);
+                    } else {
+                        val to = stack.peek();
+                        if (to == current.mPrevious.get()) {
+                            current.mUndo.accept(master);
+                        } else if (current.mToMaster == current.mPrevious.get()) {
+                            current.mRedo.accept(master);
+                        }
+                        current.setMasterAndToMaster(null, to);
+                    }
+                }
             }
-            if (pToMe == mPrevious.get()) {
-                mUndo.accept(master);
-            } else if (mToMaster == mPrevious.get()) {
-                mRedo.accept(master);
-            }
-
-            setMasterAndToMaster(null, pToMe);
             return master;
         }
     }
