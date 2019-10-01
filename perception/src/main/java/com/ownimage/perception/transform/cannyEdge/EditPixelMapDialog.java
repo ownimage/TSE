@@ -40,8 +40,8 @@ import lombok.val;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -94,10 +94,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final Collection<Pixel> mDragPixelsArray = new HashSet();
 
     private IDialogView mEditPixelMapDialogView;
-    private UndoRedoBuffer mPixelMapUndoRedoBuffer = new UndoRedoBuffer(100);
-    private boolean mMutating = false;
     private IView mView;
     private boolean mDialogIsAlive = false;
+    private ReentrantLock mViewEnabledLock = new ReentrantLock();
+
+    private UndoRedoBuffer mPixelMapUndoRedoBuffer = new UndoRedoBuffer(100);
+    private boolean mMutating = false;
+
     private int mMouseDragStartX;
     private int mMouseDragStartY;
     private Pixel mMouseLastPixelPosition = null;
@@ -264,7 +267,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (mEditPixelMapDialogView == null) {
             mEditPixelMapDialogView = ViewFactory.getInstance().createDialog(this,
                     DialogOptions.builder().withCompleteFunction(() -> {
-                        mTransform.setPixelMap(getPixelMap());
+                        mViewEnabledLock.lock();
+                        mViewEnabledLock.unlock();
+                        mCancelAction.performAction();
                         dialogClose();
                     }).build(),
                     mPixelMapUndoRedoBuffer,
@@ -276,10 +281,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog() {
+        mDialogIsAlive = true;
         PixelMap pixelMap = mTransform.getPixelMap().get();
         getPixelMap().checkCompatibleSize(pixelMap);
         setPixelMap(pixelMap);
-        mDialogIsAlive = true;
+        setViewEnabled(true);
         updateCurves();
         getDialogView().showModal();
     }
@@ -541,6 +547,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 updateCurves();
             }
         });
+        mViewEnabledLock.unlock();
         Framework.logExit(mLogger);
     }
 
@@ -794,6 +801,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragStartEvent(final IUIEvent pEvent) {
         setViewEnabled(false);
+        mViewEnabledLock.lock();
         if (isMoveView()) mouseDragStartEventMoveView(pEvent);
         if (isPixelView()) mouseDragStartEventPixelView(pEvent);
     }
