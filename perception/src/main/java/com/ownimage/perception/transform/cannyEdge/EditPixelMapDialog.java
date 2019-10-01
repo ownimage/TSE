@@ -575,7 +575,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             pixel.ifPresent(p -> mouseDragEventMoveView(pEvent, p));
         }
         if (isPixelView()) {
-            pixel.ifPresent(p -> mouseDragEventPixelViewFillIn(pEvent, p));
+            pixel.ifPresent(p -> {
+                graffitiCursor(pEvent, p);
+                mouseDragEventPixelViewFillIn(pEvent, p);
+            });
         }
     }
 
@@ -632,7 +635,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionToggle()) change |= mouseDragEventPixelViewToggle(pPixel);
             if (isPixelActionDeletePixelChain()) mouseDragEventPixelViewDeletePixelChain(pPixel, getCursorSize());
             if (change) {
-                graffitiCursor(pEvent, pPixel);
                 autoUpdateCurves();
             }
         }
