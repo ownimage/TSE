@@ -635,8 +635,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         final double radius = (double) pCursorSize / getHeight();
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
-                .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), (x, y) ->
-                        getPixelMap().getOptionalPixelAt(x, y)
+                .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), ip ->
+                        getPixelMap().getOptionalPixelAt(ip)
                                 .filter(Predicate.not(mDragPixelsArray::contains))
                                 .filter(p -> pPixel.getUHVWMidPoint(getPixelMap())
                                         .distance(p.getUHVWMidPoint(getPixelMap())) < radius)

@@ -7,13 +7,13 @@ package com.ownimage.framework.util;
 
 import com.ownimage.framework.control.control.IAction;
 import com.ownimage.framework.math.IntegerPoint;
-import io.vavr.Tuple2;
 import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -98,33 +98,48 @@ public class Range2D implements Iterable<IntegerPoint> {
 
     private class ThreadSet {
         public void run(int pSize, final BiConsumer<Integer, Integer> pFunction) {
-            val iterator = new ParallelIterator();
-            IAction action = () -> {
-                while (true) {
-                    Tuple2<Integer, Integer> t = iterator.nextOrNull();
-                    if (t == null) {
-                        break;
-                    }
-                    pFunction.accept(t._1, t._2);
-                }
-            };
             val threads = new ArrayList<Thread>();
-            IntStream.range(0, pSize).forEach(i -> threads.add(new Thread(action::performAction)));
+            IntStream.range(0, pSize).forEach(i -> {
+                val iterator = new ParallelIterator(i, pSize);
+                IAction action = () -> {
+                    while (true) {
+                        IntegerPoint ip = iterator.nextOrNull();
+                        if (ip == null) {
+                            break;
+                        }
+                        pFunction.accept(ip.getX(), ip.getY());
+                    }
+                };
+
+                threads.add(new Thread(action::performAction));
+            });
             threads.forEach(Thread::start);
             threads.forEach(t -> checkedToRuntime(t::join));
         }
     }
 
     private class ParallelIterator {
-        private int mX = mXFrom;
-        private int mY = mYFrom;
+        private int mX;
+        private int mY;
+        private int mXGroupStep;
+        private int mOffset;
+        private int mGroupSize;
         private boolean done;
 
-        public synchronized Tuple2<Integer, Integer> nextOrNull() {
-            Tuple2<Integer, Integer> result = !done ? new Tuple2(mX, mY) : null;
-            mX += mXStep;
+        public ParallelIterator(int pOffset, int pGroupSize) {
+            mOffset = pOffset;
+            mGroupSize = pGroupSize;
+            mX = mXFrom + mOffset * mXStep;
+            mY = mYFrom;
+            mXGroupStep = mXStep * mGroupSize;
+        }
+
+
+        public IntegerPoint nextOrNull() {
+            IntegerPoint result = !done ? new IntegerPoint(mX, mY) : null;
+            mX += mXGroupStep;
             if (mX >= mXTo) {
-                mX = mXFrom;
+                mX = mXFrom + mOffset * mXStep;
                 mY += mYStep;
             }
             if (mY >= mYTo) {
@@ -136,6 +151,10 @@ public class Range2D implements Iterable<IntegerPoint> {
 
     public void forEachParallelThread(final int pSize, final BiConsumer<Integer, Integer> pFunction) {
         new ThreadSet().run(pSize, pFunction);
+    }
+
+    public void forEachParallelThread(final int pSize, final Consumer<IntegerPoint> pFunction) {
+        new ThreadSet().run(pSize, (x, y) -> pFunction.accept(new IntegerPoint(x, y)));
     }
 
     public Iterator<IntegerPoint> iterator() {

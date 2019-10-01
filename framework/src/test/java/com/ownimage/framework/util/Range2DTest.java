@@ -133,7 +133,7 @@ public class Range2DTest {
     }
 
     @Test
-    public void forEachParallelThread_01() {
+    public void forEachParallelThread_xy__01() {
         // GIVEN
         int minX = 0;
         int maxX = 30;
@@ -151,7 +151,7 @@ public class Range2DTest {
     }
 
     @Test
-    public void forEachParallelThread_02() {
+    public void forEachParallelThread_xy__02() {
         // GIVEN
         int minX = 10;
         int maxX = 30;
@@ -169,7 +169,7 @@ public class Range2DTest {
     }
 
     @Test
-    public void forEachParallelThread_03() {
+    public void forEachParallelThread_xy_03() {
         // GIVEN
         int minX = 10;
         int maxX = 30;
@@ -181,6 +181,60 @@ public class Range2DTest {
         val underTest = new Range2D(minX, maxX, stepX, minY, maxY, stepY);
         // WHEN
         underTest.forEachParallelThread(8, (x, y) -> actual.add(new IntegerPoint(x, y)));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_ip_01() {
+        // GIVEN
+        int minX = 0;
+        int maxX = 30;
+        int stepX = 1;
+        int minY = 0;
+        int maxY = 50;
+        int stepY = 1;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(maxX, maxY);
+        // WHEN
+        underTest.forEachParallelThread(8, ip -> actual.add(ip));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_ip_02() {
+        // GIVEN
+        int minX = 10;
+        int maxX = 30;
+        int stepX = 1;
+        int minY = 12;
+        int maxY = 50;
+        int stepY = 1;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(minX, maxX, minY, maxY);
+        // WHEN
+        underTest.forEachParallelThread(8, ip -> actual.add(ip));
+        // THEN
+        actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
+        Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    public void forEachParallelThread_ip_03() {
+        // GIVEN
+        int minX = 10;
+        int maxX = 30;
+        int stepX = 2;
+        int minY = 12;
+        int maxY = 50;
+        int stepY = 3;
+        setupTest(minX, maxX, stepX, minY, maxY, stepY);
+        val underTest = new Range2D(minX, maxX, stepX, minY, maxY, stepY);
+        // WHEN
+        underTest.forEachParallelThread(8, ip -> actual.add(ip));
         // THEN
         actual.sort((o1, o2) -> o1.getX() == o2.getX() ? o1.getY() - o2.getY() : o1.getX() - o2.getX());
         Assert.assertArrayEquals(expected.toArray(), actual.toArray());
@@ -306,7 +360,7 @@ public class Range2DTest {
         underTest.stream().parallel().forEach(NOOP);
         underTest.forEach(NOOP);
         // WHEN
-        val streamParallel = timeInMillis(() -> underTest.stream().forEach(NOOP));
+        val streamParallel = timeInMillis(() -> underTest.stream().parallel().forEach(NOOP));
         val stream = timeInMillis(() -> underTest.stream().forEach(NOOP));
         val forEach = timeInMillis(() -> underTest.forEach(NOOP));
         // THEN
@@ -357,10 +411,12 @@ public class Range2DTest {
 
         // GIVEN WARM-UP
         underTest.forEach(hardSum);
+        underTest.forEachParallelThread(8, hardSum);
         // WHEN
         val streamParallel = timeInMillis(() -> underTest.forEachParallelThread(8, hardSum));
         val forEach = timeInMillis(() -> underTest.forEach(hardSum));
         // THEN
+        System.out.println(streamParallel + " " + forEach);
         Assert.assertTrue(streamParallel < forEach);
     }
 
