@@ -40,7 +40,10 @@ import lombok.val;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -91,7 +94,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             mPixelControlContainer, PixelAction.On, PixelAction.values());
     private final ObjectControl<PixelChain.Thickness> mThickness = new ObjectControl("Thickness", "Thickness",
             mPixelControlContainer, IPixelChain.Thickness.None, IPixelChain.Thickness.values());
-    private final Collection<Pixel> mDragPixelsArray = new HashSet();
+    private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
 
     private IDialogView mEditPixelMapDialogView;
     private IView mView;
@@ -421,7 +424,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 if (isPixelActionOn()) change |= actionPixelOn(pPixel);
                 if (isPixelActionOff()) change |= actionPixelOff(pPixel);
                 if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
-                if (isPixelActionDeletePixelChain()) change |= actionPixelChainDelete(Arrays.asList(pPixel));
+                if (isPixelActionDeletePixelChain()) change |= mouseClickEventPixelViewPixelChainDelete(pPixel);
                 if (isPixelChainThickness()) change |= actionPixelChainThickness(pPixel);
                 if (isCopyToClipboard()) actionCopyToClipboard(pPixel);
                 if (isPixelChainApproximateCurvesOnly()) change |= actionPixelChainApproximateCurvesOnly(pPixel);
@@ -432,6 +435,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             }
             graffitiCursor(pEvent, pPixel);
         });
+    }
+
+    private boolean mouseClickEventPixelViewPixelChainDelete(@NonNull final Pixel pPixel) {
+        mWorkingPixelsArray.clear();
+        addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
+        return actionPixelChainDelete(mWorkingPixelsArray);
     }
 
     private void actionCopyToClipboard(Pixel pPixel) {
@@ -516,7 +525,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public boolean actionPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) return false;
         final PixelMap undo = getPixelMap();
-        setPixelMap(getPixelMap().actionPixelOn(mDragPixelsArray));
+        setPixelMap(getPixelMap().actionPixelOn(mWorkingPixelsArray));
         if (getPixelMap() != undo) {
             addUndoRedoEntry("Action Pixel Off", undo, getPixelMap());
             return true;
@@ -552,15 +561,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEndEventPixelView(final IUIEvent pEventl) {
-        Framework.logValue(mLogger, "mDragPixels.size()", mDragPixelsArray.size());
+        Framework.logValue(mLogger, "mDragPixels.size()", mWorkingPixelsArray.size());
         Framework.logValue(mLogger, "mPixelMap", getPixelMap());
         if (isPixelActionOn()) {
-            actionPixelOn(mDragPixelsArray);
+            actionPixelOn(mWorkingPixelsArray);
         }
         if (isPixelActionDeletePixelChain()) {
-            actionPixelChainDelete(mDragPixelsArray);
+            actionPixelChainDelete(mWorkingPixelsArray);
         }
-        mDragPixelsArray.clear();
+        mWorkingPixelsArray.clear();
         getUndoRedoBuffer().endSavepoint(mSavepointId);
         mSavepointId = null;
         autoUpdateCurves();
@@ -640,26 +649,30 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    public void mouseDragEventPixelViewDeletePixelChain(Pixel pPixel, int pCursorSize) {
-        graffitiPixelWorkingColor(pPixel);
+    private void addPixelsToWorkingPixelsArray(Pixel pPixel, int pCursorSize) {
         final double radius = (double) pCursorSize / getHeight();
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
                 .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), ip ->
                         getPixelMap().getOptionalPixelAt(ip)
-                                .filter(Predicate.not(mDragPixelsArray::contains))
+                                .filter(Predicate.not(mWorkingPixelsArray::contains))
                                 .filter(p -> pPixel.getUHVWMidPoint(getPixelMap())
                                         .distance(p.getUHVWMidPoint(getPixelMap())) < radius)
                                 .filter(pPixel1 -> pPixel1.isEdge(getPixelMap()))
                                 .map(this::graffitiPixelWorkingColor)
-                                .ifPresent(mDragPixelsArray::add)
+                                .ifPresent(mWorkingPixelsArray::add)
                 );
+    }
+
+    private void mouseDragEventPixelViewDeletePixelChain(Pixel pPixel, int pCursorSize) {
+        graffitiPixelWorkingColor(pPixel);
+        addPixelsToWorkingPixelsArray(pPixel, pCursorSize);
     }
 
     private void mouseDragEventPixelViewOn(@NonNull final Pixel pPixel) {
         if (pPixel.isEdge(getPixelMap())) return;
-        if (mDragPixelsArray.contains(pPixel)) return;
-        mDragPixelsArray.add(pPixel);
+        if (mWorkingPixelsArray.contains(pPixel)) return;
+        mWorkingPixelsArray.add(pPixel);
         graffitiPixelWorkingColor(pPixel);
     }
 
@@ -819,7 +832,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             graffitiCursor(pEvent, p);
             mMouseDragLastPixel = p;
         });
-        mDragPixelsArray.clear();
+        mWorkingPixelsArray.clear();
     }
 
     @Override
