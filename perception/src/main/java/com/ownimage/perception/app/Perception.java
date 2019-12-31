@@ -29,6 +29,8 @@ import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.javafx.DialogView;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
 import io.vavr.control.Try;
 import lombok.NonNull;
 import lombok.val;
@@ -50,6 +52,11 @@ public class Perception extends AppControlBase {
     public final static long serialVersionUID = 1L;
 
     private static final int RECENT_FILE_LENGTH = 20;
+    private final List<Tuple2<String, List<String>>> TRANSFORM_EXTENSIONS = List.of(
+            new Tuple2("Transforms", List.of("*.x", "*.transform")),
+            new Tuple2("All", List.of("*.*"))
+    );
+
     private static final String PACKAGE_PREFIX = "com.ownimage";
     private static final String mLoggingPropertiesFilename = new File("logging.properties").getAbsolutePath();
 
@@ -80,8 +87,14 @@ public class Perception extends AppControlBase {
         recentFilesInit();
 
         mContainer = new Container("Container", "container", this::getUndoRedoBuffer);
-        mFileControl = new FileControl("File Name", "fileName"
-                , mContainer, Paths.get(".").toAbsolutePath().normalize().toString(), FileControlType.FILEOPEN);
+        mFileControl = new FileControl(
+                "File Name",
+                "fileName",
+                mContainer,
+                Paths.get(".").toAbsolutePath().normalize().toString(),
+                FileControlType.FILEOPEN,
+                null
+        );
         mFileControl.addControlChangeListener(fileOpenHandler);
         mLogger.fine(() -> String.format("mFileControl set to %s", mFileControl.getValue()));
 
@@ -407,12 +420,12 @@ public class Perception extends AppControlBase {
         Framework.logEntry(mLogger);
 
         if (mFilename == null) {
-            return "UNKONWN";
+            return "UNKNOWN";
         }
 
         final int i = mFilename.lastIndexOf('.');
         if (i <= 0) {
-            return "UNKONWN";
+            return "UNKNOWN";
         }
 
         final String stem = mFilename.substring(0, i);
@@ -470,13 +483,16 @@ public class Perception extends AppControlBase {
         return filename;
     }
 
-    private String getTransformFilename() {
+    private String getFullTransformFilename() {
         Framework.logEntry(mLogger);
         final String filename = getFilenameStem() + ".transform";
         Framework.logExit(mLogger, filename);
         return filename;
     }
 
+    private String getTransformFilename() {
+        return new File(getFullTransformFilename()).getName();
+    }
 
     private void propertiesInit() {
         Framework.logEntry(mLogger);
@@ -765,7 +781,12 @@ public class Perception extends AppControlBase {
     private void transformOpen() {
         Framework.logEntry(mLogger);
 
-        final FileControl transformFile = FileControl.createFileOpen("Transform Open", NullContainer, getTransformFilename());
+        final FileControl transformFile = FileControl.createFileOpen(
+                "Transform Open",
+                NullContainer,
+                getFullTransformFilename(),
+                TRANSFORM_EXTENSIONS.prepend(new Tuple2("default", List.of(getTransformFilename())))
+        );
         transformFile.addControlChangeListener((c, m) -> transformOpen(transformFile.getFile()));
         transformFile.showDialog();
 
@@ -787,7 +808,7 @@ public class Perception extends AppControlBase {
     private synchronized void transformOpenDefault() {
         Framework.logEntry(mLogger);
 
-        final File file = new File(getTransformFilename());
+        final File file = new File(getFullTransformFilename());
         transformOpen(file);
 
         Framework.logExit(mLogger);
@@ -796,7 +817,7 @@ public class Perception extends AppControlBase {
     private void transformSave() {
         Framework.logEntry(mLogger);
 
-        final File file = new File(getTransformFilename());
+        final File file = new File(getFullTransformFilename());
         transformSave(file);
 
         Framework.logExit(mLogger);
@@ -813,7 +834,7 @@ public class Perception extends AppControlBase {
     private void transformSaveAs() {
         Framework.logEntry(mLogger);
 
-        final FileControl transformFile = FileControl.createFileSave("Transform Save As", NullContainer, getTransformFilename());
+        final FileControl transformFile = FileControl.createFileSave("Transform Save As", NullContainer, getFullTransformFilename());
         transformFile.addControlChangeListener((c, m) -> transformSaveUnchecked(((FileControl) c).getFile()));
         transformFile.showDialog();
 

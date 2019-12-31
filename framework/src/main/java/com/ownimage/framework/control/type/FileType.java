@@ -6,8 +6,11 @@
 package com.ownimage.framework.control.type;
 
 import com.ownimage.framework.util.Framework;
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class FileType extends StringType {
@@ -16,24 +19,25 @@ public class FileType extends StringType {
         FILEOPEN, FILESAVE, DIRECTORY
     }
 
-
     public final static Logger mLogger = Framework.getLogger();
-
     public final static long serialVersionUID = 1L;
-    ;
 
     private final FileControlType mFileControlType;
+    private final List<Tuple2<String, List<String>>> mExtensions;
 
-    /**
-     * Instantiates a new FileType
-     *
-     * @param pFilename        the value
-     * @param pFileControlType the type of the control
-     */
     public FileType(final String pFilename, final FileControlType pFileControlType) {
+        this(pFilename, pFileControlType, null);
+    }
+
+    public FileType(
+            final String pFilename,
+            final FileControlType pFileControlType,
+            final List<Tuple2<String, List<String>>> pExtensions
+    ) {
         super(pFilename);
         mValue = pFilename; // special case where we want to initialize to a directory
         mFileControlType = pFileControlType;
+        mExtensions = pExtensions;
     }
 
     /*
@@ -44,6 +48,10 @@ public class FileType extends StringType {
     @Override
     public FileType clone() {
         return new FileType(mValue, mFileControlType);
+    }
+
+    public Optional<List<Tuple2<String, List<String>>>> getExtensions() {
+        return Optional.ofNullable(mExtensions);
     }
 
     public FileControlType getFileControlType() {

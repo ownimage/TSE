@@ -12,8 +12,11 @@ import com.ownimage.framework.control.type.StringMetaType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class FileControl extends ControlBase<FileControl, FileType, StringMetaType, String, IView> {
@@ -24,16 +27,47 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
 
     private File mFile;
 
-    public FileControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final String pValue, final FileControlType pFileControlType) {
-        super(pDisplayName, pPropertyName, pContainer, new FileType(pValue, pFileControlType));
+    public FileControl(
+            final String pDisplayName,
+            final String pPropertyName,
+            final IContainer pContainer,
+            final String pValue,
+            final FileControlType pFileControlType,
+            final List<Tuple2<String, List<String>>> pExtensions
+    ) {
+        super(pDisplayName, pPropertyName, pContainer, new FileType(pValue, pFileControlType, pExtensions));
     }
 
-    public static FileControl createFileOpen(final String pDisplayName, final IContainer pContainer, final String pFilename) {
-        return new FileControl(pDisplayName, "fileName", pContainer, pFilename, FileControlType.FILEOPEN);
+    public static FileControl createFileOpen(
+            final String pDisplayName,
+            final IContainer pContainer,
+            final String pFilename
+    ) {
+        return new FileControl(pDisplayName, "fileName", pContainer, pFilename, FileControlType.FILEOPEN, null);
     }
 
-    public static FileControl createFileSave(final String pDisplayName, final IContainer pContainer, final String pFilename) {
-        return new FileControl(pDisplayName, "fileName", pContainer, pFilename, FileControlType.FILESAVE);
+    public static FileControl createFileOpen(
+            final String pDisplayName,
+            final IContainer pContainer,
+            final String pFilename,
+            final List<Tuple2<String, List<String>>> pExtensions
+    ) {
+        return new FileControl(
+                pDisplayName,
+                "fileName",
+                pContainer,
+                pFilename,
+                FileControlType.FILEOPEN,
+                pExtensions
+        );
+    }
+
+    public static FileControl createFileSave(
+            final String pDisplayName,
+            final IContainer pContainer,
+            final String pFilename
+    ) {
+        return new FileControl(pDisplayName, "fileName", pContainer, pFilename, FileControlType.FILESAVE, null);
     }
 
     @Override
@@ -59,6 +93,10 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
 
     public FileControlType getFileControlType() {
         return mValue.getFileControlType();
+    }
+
+    public Optional<List<Tuple2<String, List<String>>>> getExtensions() {
+        return mValue.getExtensions();
     }
 
     @Override

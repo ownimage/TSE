@@ -188,11 +188,9 @@ public class AppControlView extends Application implements IAppControlView {
     public void showFileOpenChooserDialog(final FileControl pFileControl) {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(pFileControl.getDisplayName());
-        fileChooser.getExtensionFilters().addAll(
-                // new ExtensionFilter("Text Files", "*.txt"),
-                // new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
-                // new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
-                new ExtensionFilter("All Files", "*.*"));
+        pFileControl.getExtensions().ifPresent(es -> es.forEach(e ->
+                fileChooser.getExtensionFilters().add(new ExtensionFilter(e._1, e._2.toJavaList()))
+        ));
 
         if (pFileControl.getFile().isDirectory()) {
             fileChooser.setInitialDirectory(pFileControl.getFile());
