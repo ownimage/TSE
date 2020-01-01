@@ -32,6 +32,15 @@ public class FileControl extends ControlBase<FileControl, FileType, StringMetaTy
             final String pPropertyName,
             final IContainer pContainer,
             final String pValue,
+            final FileControlType pFileControlType
+    ) {
+        super(pDisplayName, pPropertyName, pContainer, new FileType(pValue, pFileControlType, null));
+    }
+    public FileControl(
+            final String pDisplayName,
+            final String pPropertyName,
+            final IContainer pContainer,
+            final String pValue,
             final FileControlType pFileControlType,
             final List<Tuple2<String, List<String>>> pExtensions
     ) {
