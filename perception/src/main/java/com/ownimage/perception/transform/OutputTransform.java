@@ -5,10 +5,7 @@
  */
 package com.ownimage.perception.transform;
 
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Perception;
@@ -96,6 +93,8 @@ public class OutputTransform extends BaseTransform {
         final IntegerMetaType dpiMetaModel = new IntegerMetaType(30, 1000, 50);
         final IntegerMetaType oversampleMetaModel = new IntegerMetaType(1, 3, 1);
 
+        new ActionControl("Original Size", "originalSize", getContainer(), this::useOriginalSize);
+        new ActionControl("Last Size", "lastSize", getContainer(), this::useLastSize);
         mUseCustomSize = new BooleanControl("Use custom size", "useCustomSize", getContainer(), false);
         mWidth = new IntegerControl("Image out width", "imageOutWidth", getContainer(), 1000, outputMetaModel).setEnabled(false);
         mHeight = new IntegerControl("Image out height", "imageOutHeight", getContainer(), 1000, outputMetaModel).setEnabled(false);
@@ -103,6 +102,22 @@ public class OutputTransform extends BaseTransform {
         mDPI = new IntegerControl("DPI", "dpi", getContainer(), 30, dpiMetaModel);
         mOversample = new IntegerControl("Oversample", "oversample", getContainer(), 1, oversampleMetaModel);
         setValues();
+    }
+
+    private void useOriginalSize() {
+        setMutating(true);
+        mUseCustomSize.setValue(true);
+        mWidth.setValue(getFirstTransform().getWidth());
+        setMutating(false);
+        mHeight.setValue((getFirstTransform().getHeight()));
+    }
+
+    private void useLastSize() {
+        setMutating(true);
+        mUseCustomSize.setValue(true);
+        mWidth.setValue(getPreviousTransform().getWidth());
+        setMutating(false);
+        mHeight.setValue((getPreviousTransform().getHeight()));
     }
 
     @Override

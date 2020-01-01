@@ -211,6 +211,13 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return mPreviousTransform;
     }
 
+    public ITransform getFirstTransform() {
+        if (mPreviousTransform == null) {
+            return this;
+        }
+        return mPreviousTransform.getFirstTransform();
+    }
+
     public Properties getProperties() {
         return Services.getServices().getProperties();
     }

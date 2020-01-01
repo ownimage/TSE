@@ -31,6 +31,8 @@ public interface ITransform extends IBatchTransform, IPersist { // extends , IGr
     @Override
     ITransform getPreviousTransform();
 
+    ITransform getFirstTransform();
+
     int getWidth();
 
     RectangleSize getSize();
