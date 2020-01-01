@@ -8,7 +8,11 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.*;
+import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelMap;
 import lombok.val;
 
 import java.awt.*;
@@ -122,7 +126,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public int getStartIndex(final IPixelChain pPixelChain) {
-        return getStartVertex(pPixelChain).getPixelIndex();
+        return pPixelChain.getVertex(mSegmentIndex).getPixelIndex();
     }
 
     double getStartPosition() {

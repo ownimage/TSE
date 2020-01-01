@@ -381,8 +381,8 @@ public class PixelChainBuilder implements IPixelChain {
             final double pLineCurvePreference
     ) {
         if (getPixelCount() <= 4) return;
-        changeVertexes(v->v.clear());
-        changeSegments(s-> s.clear());
+        changeVertexes(v -> v.clear());
+        changeSegments(s -> s.clear());
         approximateCurvesOnly_firstSegment(pPixelMap, pTolerance, pLineCurvePreference);
         while (getLastVertex().getPixelIndex() != getMaxPixelIndex()) {
             approximateCurvesOnly_subsequentSegments(pPixelMap, pTolerance, pLineCurvePreference);
@@ -413,6 +413,7 @@ public class PixelChainBuilder implements IPixelChain {
                     setVertex(candidateVertex);
                     SegmentFactory.createOptionalTempCurveSegmentTowards(pPixelMap, this, segmentIndex, p)
                             .filter(s -> s.noPixelFurtherThan(pPixelMap, this, pTolerance * pLineCurvePreference))
+                            .filter(s -> segmentMidpointValid(pPixelMap, s, pTolerance * pLineCurvePreference))
                             .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
                 }
             } catch (Throwable pT) {
@@ -431,6 +432,11 @@ public class PixelChainBuilder implements IPixelChain {
             setVertex(Vertex.createVertex(this, vertexIndex, getMaxPixelIndex()));
             setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
         }
+    }
+
+    private boolean segmentMidpointValid(PixelMap pPixelMap, CurveSegment pSegment, double pDistance) {
+        Point curveMidPoint = pSegment.getPointFromLambda(pPixelMap, this, 0.5d);
+        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap).distance(curveMidPoint) < pDistance);
     }
 
     void approximateCurvesOnly_firstSegment(

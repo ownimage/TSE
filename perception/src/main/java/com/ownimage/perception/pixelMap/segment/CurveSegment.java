@@ -5,9 +5,12 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.framework.math.*;
+import com.ownimage.framework.math.CubicEquation;
 import com.ownimage.framework.math.CubicEquation.Root;
+import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
+import com.ownimage.framework.math.QuarticEquation;
+import com.ownimage.framework.math.Vector;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
