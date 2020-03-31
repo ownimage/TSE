@@ -23,6 +23,7 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
@@ -402,7 +403,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void mouseClickEvent(final IUIEvent pEvent) {
+    public void mouseClickEvent(final ImmutableUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
         if (isPixelView()) {
             pixel.ifPresent(p -> mouseClickEventPixelView(pEvent, p));
@@ -544,11 +545,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void mouseDoubleClickEvent(final IUIEvent pEvent) {
+    public void mouseDoubleClickEvent(final ImmutableUIEvent pEvent) {
     }
 
     @Override
-    public void mouseDragEndEvent(final IUIEvent pEvent) {
+    public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
         disableDialogWhile(() -> {
             if (isPixelView()) {
                 mouseDragEndEventPixelView(pEvent);
@@ -578,7 +579,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void mouseDragEvent(final IUIEvent pEvent) {
+    public void mouseDragEvent(final ImmutableUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
         if (isMoveView()) {
             pixel.ifPresent(p -> mouseDragEventMoveView(pEvent, p));
@@ -627,13 +628,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEventMoveView(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
-        setMutating(true);
-        final int x = mViewOriginX.getValue();
-        final int y = mViewOriginY.getValue();
-        mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX() * mTransform.getWidth() / getZoom()));
-        mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY() * mTransform.getHeight() / getZoom()));
-        if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updateCurves();
-        setMutating(false);
+        if (!pEvent.getDeltaX().isPresent() || !pEvent.getDeltaY().isPresent()) {
+            mLogger.severe(pEvent.toString());
+            throw new RuntimeException("this does not look like dragEvent no getDeltaX or getDeltaY");
+        }
+
+        try {
+            setMutating(true);
+            final int x = mViewOriginX.getValue();
+            final int y = mViewOriginY.getValue();
+            mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX().get() * mTransform.getWidth() / getZoom()));
+            mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY().get() * mTransform.getHeight() / getZoom()));
+            if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updateCurves();
+        } finally {
+            setMutating(false);
+        }
     }
 
     private void mouseDragEventPixelView(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
@@ -798,7 +807,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void mouseMoveEvent(final IUIEvent pEvent) {
+    public void mouseMoveEvent(final ImmutableUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
         pixel.filter(p -> !p.equals(mMouseLastPixelPosition))
                 .ifPresent(p -> {
@@ -814,7 +823,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void mouseDragStartEvent(final IUIEvent pEvent) {
+    public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
         setViewEnabled(false);
         mViewEnabledLock.lock();
         if (isMoveView()) mouseDragStartEventMoveView(pEvent);
@@ -836,11 +845,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void scrollEvent(final IUIEvent pEvent) {
+    public void scrollEvent(final ImmutableUIEvent pEvent) {
     }
 
     @Override
-    public void keyPressed(final IUIEvent pEvent) {
+    public void keyPressed(final ImmutableUIEvent pEvent) {
         mLogger.fine(() -> "keyPressed " + pEvent.getKey());
         if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mMoveContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
@@ -848,12 +857,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     @Override
-    public void keyReleased(final IUIEvent pEvent) {
+    public void keyReleased(final ImmutableUIEvent pEvent) {
         mLogger.fine(() -> "keyReleased " + pEvent.getKey());
     }
 
     @Override
-    public void keyTyped(final IUIEvent pEvent) {
+    public void keyTyped(final ImmutableUIEvent pEvent) {
         mLogger.fine(() -> "keyTyped " + pEvent.getKey());
     }
 

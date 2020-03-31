@@ -9,47 +9,43 @@ import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 
 import java.util.Date;
+import java.util.Optional;
 
 public interface IUIEvent {
 
-    public Integer getDeltaX();
+    EventType getEventType();
 
-    public Integer getDeltaY();
+    Date getWhen();
 
-    public EventType getEventType();
+    Integer getX();
 
-    public Integer getHeight();
+    Integer getY();
 
-    double getNormalizedDeltaX();
+    Integer getWidth();
 
-    double getNormalizedDeltaY();
+    Integer getHeight();
+
+    int getScroll();
+
+    IControl getSource();
+
+    Optional<Double> getNormalizedDeltaX();
+
+    Optional<Double> getNormalizedDeltaY();
 
     double getNormalizedX();
 
-    double getNormalizedY();
+    double getNormalizedY();    Optional<Integer> getDeltaX();
 
-    public int getScroll();
+    Optional<Integer> getDeltaY();
 
-    public IControl getSource();
+    String getKey();
 
-    public Date getWhen();
+    boolean isAlt();
 
-    public Integer getWidth();
+    boolean isCtrl();
 
-    public Integer getX();
+    boolean isNormal();
 
-    public Integer getY();
-
-    public String getKey();
-
-    public boolean isAlt();
-
-    public boolean isCtrl();
-
-    public boolean isNormal();
-
-    public boolean isShift();
-
-    public void setDelta(IUIEvent pDragStartEvent);
-
+    boolean isShift();
 }

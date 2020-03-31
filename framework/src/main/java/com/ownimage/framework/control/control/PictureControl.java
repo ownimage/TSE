@@ -13,7 +13,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
 import com.ownimage.framework.view.IView;
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import lombok.NonNull;
 
@@ -40,7 +40,7 @@ public class PictureControl
      */
     private boolean mIsDragging;
     private IUIEventListener mUIEventListener;
-    private IUIEvent mDragStartEvent;
+    private ImmutableUIEvent mDragStartEvent;
 
     public PictureControl(final String pDisplayName, final String pPropertyName, final IContainer pContainer, final PictureType pPicture) {
         super(pDisplayName, pPropertyName, pContainer, pPicture);
@@ -114,7 +114,7 @@ public class PictureControl
     }
 
     @Override
-    public void uiEvent(@NonNull final IUIEvent pEvent) {
+    public void uiEvent(final ImmutableUIEvent pEvent) {
         Framework.logEntry(mLogger);
 
         mLogger.fine(() -> String.format("uiEvent type=%s, isDragging=%s", pEvent.getEventType(), mIsDragging));
@@ -140,8 +140,9 @@ public class PictureControl
                         mDragStartEvent = pEvent;
                         mUIEventListener.mouseDragStartEvent(pEvent);
                     }
-                    pEvent.setDelta(mDragStartEvent);
-                    mUIEventListener.mouseDragEvent(pEvent);
+
+                    ImmutableUIEvent mdEvent = ImmutableUIEvent.delta(pEvent, mDragStartEvent);
+                    mUIEventListener.mouseDragEvent(mdEvent);
                     break;
 
                 case MouseDown:
@@ -150,8 +151,8 @@ public class PictureControl
 
                 case MouseUp:
                     if (mIsDragging) {
-                        pEvent.setDelta(mDragStartEvent);
-                        mUIEventListener.mouseDragEndEvent(pEvent);
+                        ImmutableUIEvent muEvent = ImmutableUIEvent.delta(pEvent, mDragStartEvent);
+                        mUIEventListener.mouseDragEndEvent(muEvent);
                         mIsDragging = false;
                     }
                     break;

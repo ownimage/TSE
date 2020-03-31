@@ -1,20 +1,213 @@
-/*
- *  This code is part of the Perception programme.
- *
- *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
- */
 package com.ownimage.framework.view.event;
 
 import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.util.Framework;
 import lombok.NonNull;
+import org.immutables.value.Value;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
+import java.util.Optional;
 
-public class UIEvent implements IUIEvent {
+@Value.Immutable
+public abstract class UIEvent implements IUIEvent {
+
+    public static ImmutableUIEvent createKeyEvent(
+            @NonNull final UIEvent.EventType pEventType,
+            final IControl pSource,
+            @NonNull final String pKey,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
+        if (!pEventType.isKeyEvent()) {
+            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Key event.");
+        }
+
+        return ImmutableUIEvent.builder()
+                .eventType(pEventType)
+                .source(pSource)
+                .when(new Date())
+                .key(pKey)
+                .isCtrl(pCtrl)
+                .isAlt(pAlt)
+                .isShift(pShift)
+                .build();
+    }
+
+    public static ImmutableUIEvent createMouseEvent(
+            @NonNull final UIEvent.EventType pEventType,
+            final IControl pSource,
+            final int pWidth,
+            final int pHeight,
+            final int pX,
+            final int pY,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
+        if (!pEventType.isMouseEvent()) {
+            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Mouse event");
+        }
+
+        return ImmutableUIEvent.builder()
+                .eventType(pEventType)
+                .source(pSource)
+                .when(new Date())
+                .width(pWidth)
+                .height(pHeight)
+                .x(pX)
+                .y(pY)
+                .isCtrl(pCtrl)
+                .isAlt(pAlt)
+                .isShift(pShift)
+                .build();
+    }
+
+    public static ImmutableUIEvent createMouseEvent(@NonNull final IUIEvent pEvent, final int pX, final int pY) {
+        if (!pEvent.getEventType().isMouseEvent()) {
+            throw new IllegalArgumentException("pEventType = " + pEvent.getEventType() + ", is not a valid Mouse event");
+        }
+
+        return ImmutableUIEvent.builder()
+                .eventType(pEvent.getEventType())
+                .source(pEvent.getSource())
+                .when(pEvent.getWhen())
+                .width(pEvent.getWidth())
+                .height(pEvent.getHeight())
+                .x(pX)
+                .y(pY)
+                .isCtrl(pEvent.isCtrl())
+                .isAlt(pEvent.isAlt())
+                .isShift(pEvent.isShift())
+                .build();
+    }
+
+    public static ImmutableUIEvent createMouseScrollEvent(
+            @NonNull final UIEvent.EventType pEventType,
+            final IControl pSource,
+            final int pScroll,
+            final int pWidth,
+            final int pHeight,
+            final int pX,
+            final int pY,
+            final boolean pCtrl,
+            final boolean pAlt,
+            final boolean pShift
+    ) {
+        if (!pEventType.isScrollEvent()) {
+            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid scroll event.");
+        }
+
+        return ImmutableUIEvent.builder()
+                .eventType(pEventType)
+                .source(pSource)
+                .when(new Date())
+                .scroll(pScroll)
+                .width(pWidth)
+                .height(pHeight)
+                .x(pX)
+                .y(pY)
+                .isCtrl(pCtrl)
+                .isAlt(pAlt)
+                .isShift(pShift)
+                .build();
+    }
+
+    public static ImmutableUIEvent delta(final ImmutableUIEvent pDragEvent, final ImmutableUIEvent pDragStartEvent) {
+        if (pDragEvent.getDeltaX().isPresent() || pDragEvent.getDeltaY().isPresent()) {
+            throw new IllegalStateException("delta can only be called once during the lifetime of a UIEvent.");
+        }
+        return pDragEvent
+                .withDeltaX(Optional.of(pDragEvent.getX() - pDragStartEvent.getX()))
+                .withDeltaY(Optional.of(pDragEvent.getY() - pDragStartEvent.getY()));
+    }
+
+    public abstract UIEvent.EventType getEventType();
+
+    public abstract Integer getHeight();
+
+    @Value.Default
+    public int getScroll() {
+        return 0;
+    }
+
+    public abstract IControl getSource();
+
+    public abstract Date getWhen();
+
+    public abstract Integer getWidth();
+
+    public abstract Integer getX();
+
+    public abstract Integer getY();
+
+    public abstract Optional<Integer> getDeltaX();
+
+    public abstract Optional<Integer> getDeltaY() ;
+
+    @Value.Default
+    public String getKey() {
+        return "";
+    }
+
+    public abstract boolean isAlt();
+
+    public abstract boolean isCtrl();
+
+    public abstract boolean isShift();
+
+    @Value.Derived
+    public boolean isNormal() {
+        return !isAlt() && !isCtrl() && !isShift();
+    }
+
+    @Value.Derived
+    public Optional<Double> getNormalizedDeltaX() {
+        return getDeltaX().map(dx -> Optional.of((double) dx / getWidth())).orElse(Optional.empty());
+    }
+
+    @Value.Derived
+    public Optional<Double> getNormalizedDeltaY() {
+        return getDeltaY().map(dy -> Optional.of((double) dy / getHeight())).orElse(Optional.empty());
+    }
+
+    @Value.Derived
+    public double getNormalizedX() {
+        final double x = (double) getX() / getWidth();
+        return x;
+    }
+
+    @Value.Derived
+    public double getNormalizedY() {
+        final double y = (double) getY() / getHeight();
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("mUIEvent:{");
+        sb.append("mSource:" + getSource());
+        sb.append(",mEventType:" + getEventType());
+        sb.append(",mWhen:" + df.format(getWhen()));
+        sb.append(",mWidth:" + getWidth());
+        sb.append(",mScroll:" + getScroll());
+        sb.append(",mHeight:" + getHeight());
+        sb.append(",mX:" + getX());
+        sb.append(",mY:" + getY());
+        sb.append(",mDeltaX:" + getDeltaX());
+        sb.append(",mDeltaY:" + getDeltaY());
+        sb.append(",mKey:" + getKey());
+        sb.append(",mCtrl:" + isCtrl());
+        sb.append(",mAlt:" + isAlt());
+        sb.append(",mShift:" + isShift());
+        sb.append("}");
+
+        return sb.toString();
+    }
 
     public enum EventType {
         Click, DoubleClick, Drag, MouseDown, MouseUp, MouseMoved, Scroll, KeyPressed, KeyReleased, KeyTyped;
@@ -38,275 +231,5 @@ public class UIEvent implements IUIEvent {
             return this == EventType.Scroll;
         }
 
-    }
-
-
-    private final static Logger mLogger = Framework.getLogger();
-
-    private IControl mSource;
-    private EventType mEventType;
-    private Date mWhen;
-
-    private Integer mWidth;
-    private Integer mHeight;
-    private Integer mX;
-    private Integer mY;
-    private Integer mDeltaX;
-    private Integer mDeltaY;
-
-    private int mScroll;
-
-    private boolean mCtrl;
-    private boolean mAlt;
-    private boolean mShift;
-
-    private String mKey;
-
-    private UIEvent() {
-    }
-
-    public static UIEvent createKeyEvent(
-            @NonNull final EventType pEventType,
-            final IControl pSource,
-            final String pKey,
-            final boolean pCtrl,
-            final boolean pAlt,
-            final boolean pShift
-    ) {
-        if (!pEventType.isKeyEvent()) {
-            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Key event.");
-        }
-
-        final UIEvent uiEvent = new UIEvent();
-
-        uiEvent.mEventType = pEventType;
-        uiEvent.mSource = pSource;
-        uiEvent.mWhen = new Date();
-        uiEvent.mKey = pKey;
-        uiEvent.mCtrl = pCtrl;
-        uiEvent.mAlt = pAlt;
-        uiEvent.mShift = pShift;
-
-        return uiEvent;
-    }
-
-    public static UIEvent createMouseEvent(
-            @NonNull final EventType pEventType,
-            final IControl pSource,
-            final int pWidth,
-            final int pHeight,
-            final int pX,
-            final int pY,
-            final boolean pCtrl,
-            final boolean pAlt,
-            final boolean pShift
-    ) {
-        if (!pEventType.isMouseEvent()) {
-            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid Mouse event");
-        }
-
-        final UIEvent uiEvent = new UIEvent();
-
-        uiEvent.mEventType = pEventType;
-        uiEvent.mSource = pSource;
-        uiEvent.mWhen = new Date();
-        uiEvent.mWidth = pWidth;
-        uiEvent.mHeight = pHeight;
-        uiEvent.mX = pX;
-        uiEvent.mY = pY;
-        uiEvent.mCtrl = pCtrl;
-        uiEvent.mAlt = pAlt;
-        uiEvent.mShift = pShift;
-
-        return uiEvent;
-    }
-
-    public static UIEvent createMouseEvent(@NonNull final IUIEvent pEvent, final int pX, final int pY) {
-        if (!pEvent.getEventType().isMouseEvent()) {
-            throw new IllegalArgumentException("pEventType = " + pEvent.getEventType() + ", is not a valid Mouse event");
-        }
-
-        final UIEvent uiEvent = new UIEvent();
-
-        uiEvent.mEventType = pEvent.getEventType();
-        uiEvent.mSource = pEvent.getSource();
-        uiEvent.mWhen = pEvent.getWhen();
-        uiEvent.mWidth = pEvent.getWidth();
-        uiEvent.mHeight = pEvent.getHeight();
-        uiEvent.mX = pX;
-        uiEvent.mY = pY;
-        uiEvent.mCtrl = pEvent.isCtrl();
-        uiEvent.mAlt = pEvent.isAlt();
-        uiEvent.mShift = pEvent.isShift();
-        uiEvent.mDeltaX = 0;
-        uiEvent.mDeltaY = 0;
-
-        return uiEvent;
-    }
-
-    public static UIEvent createMouseScrollEvent(
-            @NonNull final EventType pEventType,
-            final IControl pSource,
-            final int pScroll,
-            final int pWidth,
-            final int pHeight,
-            final int pX,
-            final int pY,
-            final boolean pCtrl,
-            final boolean pAlt,
-            final boolean pShift
-    ) {
-        if (!pEventType.isScrollEvent()) {
-            throw new IllegalArgumentException("pEventType = " + pEventType + ", is not a valid scroll event.");
-        }
-
-        final UIEvent uiEvent = new UIEvent();
-
-        uiEvent.mEventType = pEventType;
-        uiEvent.mSource = pSource;
-        uiEvent.mScroll = pScroll;
-        uiEvent.mWhen = new Date();
-        uiEvent.mWidth = pWidth;
-        uiEvent.mHeight = pHeight;
-        uiEvent.mX = pX;
-        uiEvent.mY = pY;
-        uiEvent.mCtrl = pCtrl;
-        uiEvent.mAlt = pAlt;
-        uiEvent.mShift = pShift;
-
-        return uiEvent;
-    }
-
-    @Override
-    public Integer getDeltaX() {
-        return mDeltaX;
-    }
-
-    @Override
-    public Integer getDeltaY() {
-        return mDeltaY;
-    }
-
-    @Override
-    public EventType getEventType() {
-        return mEventType;
-    }
-
-    @Override
-    public Integer getHeight() {
-        return mHeight;
-    }
-
-    @Override
-    public double getNormalizedDeltaX() {
-        final double dx = (double) mDeltaX / mWidth;
-        return dx;
-    }
-
-    @Override
-    public double getNormalizedDeltaY() {
-        final double dy = (double) mDeltaY / mHeight;
-        return dy;
-    }
-
-    @Override
-    public double getNormalizedX() {
-        final double x = (double) mX / mWidth;
-        return x;
-    }
-
-    @Override
-    public double getNormalizedY() {
-        final double y = (double) mY / mHeight;
-        return y;
-    }
-
-    @Override
-    public int getScroll() {
-        return mScroll;
-    }
-
-    @Override
-    public IControl getSource() {
-        return mSource;
-    }
-
-    @Override
-    public Date getWhen() {
-        return mWhen;
-    }
-
-    @Override
-    public Integer getWidth() {
-        return mWidth;
-    }
-
-    @Override
-    public Integer getX() {
-        return mX;
-    }
-
-    @Override
-    public Integer getY() {
-        return mY;
-    }
-
-    @Override
-    public String getKey() {
-        return mKey;
-    }
-
-    @Override
-    public boolean isAlt() {
-        return mAlt;
-    }
-
-    @Override
-    public boolean isCtrl() {
-        return mCtrl;
-    }
-
-    @Override
-    public boolean isNormal() {
-        return !isAlt() && !isCtrl() && !isShift();
-    }
-
-    @Override
-    public boolean isShift() {
-        return mShift;
-    }
-
-    @Override
-    public void setDelta(final IUIEvent pDragStartEvent) {
-        if (mDeltaX != null) {
-            throw new IllegalStateException("setDelta can only be called once during the lifetime of a UIEvent.");
-        }
-        mDeltaX = mX - pDragStartEvent.getX();
-        mDeltaY = mY - pDragStartEvent.getY();
-    }
-
-    @Override
-    public String toString() {
-        final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
-        final StringBuffer sb = new StringBuffer();
-        sb.append("mUIEvent:{");
-        sb.append("mSource:" + mSource);
-        sb.append(",mEventType:" + mEventType);
-        sb.append(",mWhen:" + df.format(mWhen));
-        sb.append(",mWidth:" + mWidth);
-        sb.append(",mScroll:" + mScroll);
-        sb.append(",mHeight:" + mHeight);
-        sb.append(",mX:" + mX);
-        sb.append(",mY:" + mY);
-        sb.append(",mDeltaX:" + mDeltaX);
-        sb.append(",mDeltaY:" + mDeltaY);
-        sb.append(",mKey:" + mKey);
-        sb.append(",mCtrl:" + mCtrl);
-        sb.append(",mAlt:" + mAlt);
-        sb.append(",mShift:" + mShift);
-        sb.append("}");
-
-        return sb.toString();
     }
 }

@@ -1,3 +1,1 @@
-mvn clean install -DskipTests
-cd perception
-run
+mvn clean install -DskipTests -T 4C

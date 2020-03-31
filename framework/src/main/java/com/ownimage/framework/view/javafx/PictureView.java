@@ -10,6 +10,7 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IGrafittiImp;
 import com.ownimage.framework.view.IPictureView;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.event.UIEvent;
 import com.ownimage.framework.view.event.UIEvent.EventType;
 import javafx.geometry.Pos;
@@ -91,22 +92,22 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
         }
     }
 
-    private UIEvent createMouseEvent(final EventType pEventType, final MouseEvent pME) {
+    private ImmutableUIEvent createMouseEvent(final EventType pEventType, final MouseEvent pME) {
         final int width = mControl.getValue().getWidth();
         final int height = mControl.getValue().getHeight();
         final int x = (int) pME.getX();
         final int y = (int) (height - pME.getY());
-        final UIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
+        final ImmutableUIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
         return event;
     }
 
-    private UIEvent createScrollEvent(final ScrollEvent pSE) {
+    private ImmutableUIEvent createScrollEvent(final ScrollEvent pSE) {
         final int width = mControl.getValue().getWidth();
         final int height = mControl.getValue().getHeight();
         final int x = (int) pSE.getX();
         final int y = (int) (height - pSE.getY());
         final int scroll = (int) Math.signum(pSE.getDeltaY());
-        final UIEvent event = UIEvent.createMouseScrollEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
+        final ImmutableUIEvent event = UIEvent.createMouseScrollEvent(EventType.Scroll, mControl, scroll, width, height, x, y, pSE.isControlDown(), pSE.isAltDown(), pSE.isShiftDown());
         return event;
     }
 
@@ -121,12 +122,12 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
             if (pME.getClickCount() == 1) {
                 mLogger.finest("createMouseEvent Click");
-                final UIEvent event = createMouseEvent(EventType.Click, pME);
+                final ImmutableUIEvent event = createMouseEvent(EventType.Click, pME);
                 queueApplicationEvent(() -> mControl.uiEvent(event));
             }
             if (pME.getClickCount() == 2) {
                 mLogger.finest("createMouseEvent DoubleClick");
-                final UIEvent event = createMouseEvent(EventType.DoubleClick, pME);
+                final ImmutableUIEvent event = createMouseEvent(EventType.DoubleClick, pME);
                 queueApplicationEvent(() -> mControl.uiEvent(event));
             }
         }
@@ -134,22 +135,22 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private void mouseDraggedEvent(final MouseEvent pME) {
         Framework.logEntry(mLogger);
-        final UIEvent event = createMouseEvent(EventType.Drag, pME);
+        final ImmutableUIEvent event = createMouseEvent(EventType.Drag, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mousePressedEvent(final MouseEvent pME) {
-        final UIEvent event = createMouseEvent(EventType.MouseDown, pME);
+        final ImmutableUIEvent event = createMouseEvent(EventType.MouseDown, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseReleasedEvent(final MouseEvent pME) {
-        final UIEvent event = createMouseEvent(EventType.MouseUp, pME);
+        final ImmutableUIEvent event = createMouseEvent(EventType.MouseUp, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
     private void mouseMovedEvent(final MouseEvent pME) {
-        final UIEvent event = createMouseEvent(EventType.MouseMoved, pME);
+        final ImmutableUIEvent event = createMouseEvent(EventType.MouseMoved, pME);
         queueApplicationEvent(() -> mControl.uiEvent(event));
     }
 
@@ -176,7 +177,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private void scrollEvent(final ScrollEvent pSE) {
         Framework.logEntry(mLogger);
-        final UIEvent event = createScrollEvent(pSE);
+        final ImmutableUIEvent event = createScrollEvent(pSE);
         queueApplicationEvent(() -> mControl.uiEvent(event));
         Framework.logExit(mLogger);
     }

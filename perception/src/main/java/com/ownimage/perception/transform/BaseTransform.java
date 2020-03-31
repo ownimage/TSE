@@ -18,7 +18,7 @@ import com.ownimage.framework.math.RectangleSize;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
@@ -274,28 +274,28 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void mouseClickEvent(final IUIEvent pEvent) {
+    public void mouseClickEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragEndEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDoubleClickEvent(final IUIEvent pEvent) {
+    public void mouseDoubleClickEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDoubleClickEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDragEndEvent(final IUIEvent pEvent) {
+    public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragEndEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDragEvent(final IUIEvent pEvent) {
+    public void mouseDragEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             setValues();
             getPreviewImage().drawGrafitti();
@@ -304,7 +304,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void mouseDragStartEvent(final IUIEvent pEvent) {
+    public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragStartEvent(pEvent);
         }
@@ -326,7 +326,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void scrollEvent(final IUIEvent pEvent) {
+    public void scrollEvent(final ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.scrollEvent(pEvent);
         }

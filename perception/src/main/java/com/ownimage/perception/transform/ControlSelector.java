@@ -5,14 +5,14 @@
  */
 package com.ownimage.perception.transform;
 
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import com.ownimage.framework.control.control.IMouseControl;
 import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
+
+import java.util.Vector;
+import java.util.logging.Logger;
 
 public class ControlSelector implements IUIEventListener {
 
@@ -80,19 +80,19 @@ public class ControlSelector implements IUIEventListener {
     }
 
     @Override
-    public void mouseClickEvent(final IUIEvent pEvent) {
+    public void mouseClickEvent(final ImmutableUIEvent pEvent) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void mouseDoubleClickEvent(final IUIEvent pEvent) {
+    public void mouseDoubleClickEvent(final ImmutableUIEvent pEvent) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void mouseDragEndEvent(final IUIEvent pEvent) {
+    public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
         Framework.logEntry(mLogger);
         mDragging = false;
 
@@ -116,11 +116,14 @@ public class ControlSelector implements IUIEventListener {
     }
 
     @Override
-    public void mouseDragEvent(final IUIEvent pEvent) {
+    public void mouseDragEvent(final ImmutableUIEvent pEvent) {
         Framework.logEntry(mLogger);
-        mLogger.severe(pEvent.toString());
+        if (!pEvent.getDeltaX().isPresent() || !pEvent.getDeltaY().isPresent()) {
+            mLogger.severe(pEvent.toString());
+            throw new RuntimeException("this does not look like dragEvent no getDeltaX or getDeltaY");
+        }
 
-        setXYControlValue(pEvent.getNormalizedDeltaX(), pEvent.getNormalizedDeltaY());
+        setXYControlValue(pEvent.getNormalizedDeltaX().get(), pEvent.getNormalizedDeltaY().get());
 
         mTransform.setValues();
         mTransform.getPreviewImage().drawGrafitti();
@@ -128,7 +131,7 @@ public class ControlSelector implements IUIEventListener {
     }
 
     @Override
-    public void mouseDragStartEvent(final IUIEvent pEvent) {
+    public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
         Framework.logEntry(mLogger);
         mDragging = true;
 
@@ -151,7 +154,7 @@ public class ControlSelector implements IUIEventListener {
     }
 
     @Override
-    public void scrollEvent(final IUIEvent pEvent) {
+    public void scrollEvent(final ImmutableUIEvent pEvent) {
         Framework.logEntry(mLogger);
         mIndex += pEvent.getScroll();
         mIndex = KMath.mod(mIndex, mControlX.size());

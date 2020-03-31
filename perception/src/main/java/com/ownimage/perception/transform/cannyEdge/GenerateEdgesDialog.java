@@ -19,7 +19,7 @@ import com.ownimage.framework.util.runWhenDirty.IRunWhenDirty;
 import com.ownimage.framework.util.runWhenDirty.RunWhenDirtyFactory;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IView;
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
@@ -204,20 +204,25 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
     }
 
     @Override
-    public void mouseDragEndEvent(final IUIEvent pEvent) {
+    public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
         mTransform.redrawGrafitti();
         updatePreview();
     }
 
     @Override
-    public void mouseDragEvent(final IUIEvent pEvent) {
-        mPreviewPositionX.setValue(mDragStart.getX() + pEvent.getDeltaX());
-        mPreviewPositionY.setValue(mDragStart.getY() + pEvent.getDeltaY());
+    public void mouseDragEvent(final ImmutableUIEvent pEvent) {
+        if (!pEvent.getDeltaX().isPresent() || !pEvent.getDeltaY().isPresent()) {
+            mLogger.severe(pEvent.toString());
+            throw new RuntimeException("this does not look like dragEvent no getDeltaX or getDeltaY");
+        }
+
+        mPreviewPositionX.setValue(mDragStart.getX() + pEvent.getDeltaX().get());
+        mPreviewPositionY.setValue(mDragStart.getY() + pEvent.getDeltaY().get());
         mTransform.redrawGrafitti();
     }
 
     @Override
-    public void mouseDragStartEvent(final IUIEvent pEvent) {
+    public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
         mDragStart = new IntegerPoint(mPreviewPositionX.getValue(), mPreviewPositionY.getValue());
     }
 

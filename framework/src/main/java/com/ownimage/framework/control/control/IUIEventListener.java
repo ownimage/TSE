@@ -5,38 +5,38 @@
  */
 package com.ownimage.framework.control.control;
 
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 
 public interface IUIEventListener {
 
-    default void mouseClickEvent(final IUIEvent pEvent) {
+    default void mouseClickEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void mouseDoubleClickEvent(final IUIEvent pEvent) {
+    default void mouseDoubleClickEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void mouseDragEndEvent(final IUIEvent pEvent) {
+    default void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void mouseDragEvent(final IUIEvent pEvent) {
+    default void mouseDragEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void mouseDragStartEvent(final IUIEvent pEvent) {
+    default void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void mouseMoveEvent(final IUIEvent pEvent) {
+    default void mouseMoveEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void scrollEvent(final IUIEvent pEvent) {
+    default void scrollEvent(final ImmutableUIEvent pEvent) {
     }
 
-    default void keyPressed(final IUIEvent pEvent) {
+    default void keyPressed(final ImmutableUIEvent pEvent) {
     }
 
-    default void keyReleased(final IUIEvent pEvent) {
+    default void keyReleased(final ImmutableUIEvent pEvent) {
     }
 
-    default void keyTyped(final IUIEvent pEvent) {
+    default void keyTyped(final ImmutableUIEvent pEvent) {
     }
 
 }

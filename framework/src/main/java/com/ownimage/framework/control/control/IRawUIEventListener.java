@@ -5,10 +5,10 @@
  */
 package com.ownimage.framework.control.control;
 
-import com.ownimage.framework.view.event.IUIEvent;
+import com.ownimage.framework.view.event.ImmutableUIEvent;
 
 public interface IRawUIEventListener {
 
-    public void uiEvent(final IUIEvent pEvent);
+    void uiEvent(final ImmutableUIEvent pEvent);
 
 }
