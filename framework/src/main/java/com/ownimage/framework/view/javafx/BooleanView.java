@@ -30,6 +30,7 @@ public class BooleanView extends ViewBase<BooleanControl> {
         mUI = new HBox();
         mUI.setAlignment(Pos.CENTER);
         mUI.getChildren().addAll(mLabel, mCheckbox);
+        setEnabled(pBooleanControl.isEnabled());
     }
 
     @Override
