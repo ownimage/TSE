@@ -58,7 +58,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private PixelMap mPixelMap;
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
-    private final CannyEdgeTransform mTransform;
+    private final CannyEdgeTransform mCannyEdgeTransform;
     private final CropTransform mCropTransform;
     private final PictureControl mPictureControl = new PictureControl("Preview", "preview",
             NullContainer, new PictureType(100, 100));
@@ -123,7 +123,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             final ActionControl pCancelAction
     ) {
         super(pDisplayName, pPropertyName, Services.getServices().getUndoRedoBuffer());
-        mTransform = pTransform;
+        mCannyEdgeTransform = pTransform;
         mPixelMap = pPixelMap;
         mOkAction = pOkAction;
         mCancelAction = pCancelAction;
@@ -159,8 +159,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void updateCurves() {
         mAutoUpdateCurvesDirty = false;
         setCrop();
-        if (mTransform.isInitialized()) {
-            mTransform.setPixelMap(getPixelMap());
+        if (mCannyEdgeTransform.isInitialized()) {
+            mCannyEdgeTransform.setPixelMap(getPixelMap());
             if (getPreviewSize() != mPictureControl.getWidth()) {
                 final PictureType pictureType = new PictureType(getPreviewSize(), getPreviewSize());
                 mPictureControl.setValue(pictureType);
@@ -286,7 +286,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public void showDialog() {
         mDialogIsAlive = true;
-        PixelMap pixelMap = mTransform.getPixelMap().get();
+        PixelMap pixelMap = mCannyEdgeTransform.getPixelMap().get();
         getPixelMap().checkCompatibleSize(pixelMap);
         setPixelMap(pixelMap);
         setViewEnabled(true);
@@ -397,8 +397,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             final double top = bottom + 1.0d / getZoom();
             mCropTransform.setCrop(left, bottom, right, top);
             if (mShowCurves.getValue() && !mMutating)
-                mCropTransform.setPreviousTransform(mTransform);
-            else mCropTransform.setPreviousTransform(mTransform.getPreviousTransform());
+                mCropTransform.setPreviousTransform(mCannyEdgeTransform);
+            else mCropTransform.setPreviousTransform(mCannyEdgeTransform.getPreviousTransform());
         }
     }
 
@@ -637,8 +637,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             setMutating(true);
             final int x = mViewOriginX.getValue();
             final int y = mViewOriginY.getValue();
-            mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX().get() * mTransform.getWidth() / getZoom()));
-            mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY().get() * mTransform.getHeight() / getZoom()));
+            mViewOriginX.setValue((int) (mMouseDragStartX - pEvent.getNormalizedDeltaX().get() * mCannyEdgeTransform.getWidth() / getZoom()));
+            mViewOriginY.setValue((int) (mMouseDragStartY - pEvent.getNormalizedDeltaY().get() * mCannyEdgeTransform.getHeight() / getZoom()));
             if (x != mViewOriginX.getValue() || y != mViewOriginY.getValue()) updateCurves();
         } finally {
             setMutating(false);

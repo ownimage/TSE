@@ -80,7 +80,7 @@ public class DialogView implements IDialogView {
 
             val stage = (Stage) dialog.getDialogPane().getScene().getWindow();
             stage.getIcons().add(AppControlView.getInstance().getApplicationIcon());
-            mDialogOptions.getCompleteFunction().ifPresent(cf -> stage.setOnCloseRequest(x -> cf.performAction()));
+            stage.setOnCloseRequest(x -> {}); // without this the dialog does not close when pressing X
 
             val enabledListeners = new ArrayList<IEnabledListener>(); // prevent garbage collection of listener
             for (val action : mButtons) {

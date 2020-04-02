@@ -281,6 +281,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         if (mEditPixelMapDialog == null) {
             final ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
                 mLogger.info(() -> "edit pixelmap OK");
+                setPixelMap(mEditPixelMapDialog.getPixelMap());
                 refreshOutputPreview();
             });
             final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
