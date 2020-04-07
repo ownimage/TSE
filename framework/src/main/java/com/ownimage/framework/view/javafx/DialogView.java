@@ -110,7 +110,7 @@ public class DialogView implements IDialogView {
                 }
                 if (mViewable instanceof IUIEventListener) {
                     val listener = (IUIEventListener) mViewable;
-                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyPressed, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyPressed, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyPressed(event);
                 }
             });
@@ -118,7 +118,7 @@ public class DialogView implements IDialogView {
             dialog.getDialogPane().setOnKeyReleased(pKE -> {
                 if (mViewable instanceof IUIEventListener) {
                     val listener = (IUIEventListener) mViewable;
-                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyReleased, null, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyReleased, pKE.getCode().getName(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyReleased(event);
                 }
             });
@@ -126,7 +126,7 @@ public class DialogView implements IDialogView {
             dialog.getDialogPane().setOnKeyTyped(pKE -> {
                 if (mViewable instanceof IUIEventListener) {
                     val listener = (IUIEventListener) mViewable;
-                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyTyped, null, pKE.getCharacter().toUpperCase(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
+                    val event = UIEvent.createKeyEvent(UIEvent.EventType.KeyTyped, pKE.getCharacter().toUpperCase(), pKE.isControlDown(), pKE.isAltDown(), pKE.isShiftDown());
                     listener.keyTyped(event);
                 }
             });

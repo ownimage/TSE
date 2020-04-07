@@ -14,7 +14,6 @@ public abstract class UIEvent implements IUIEvent {
 
     public static ImmutableUIEvent createKeyEvent(
             @NonNull final UIEvent.EventType pEventType,
-            final IControl pSource,
             @NonNull final String pKey,
             final boolean pCtrl,
             final boolean pAlt,
@@ -26,9 +25,13 @@ public abstract class UIEvent implements IUIEvent {
 
         return ImmutableUIEvent.builder()
                 .eventType(pEventType)
-                .source(pSource)
                 .when(new Date())
+                .source(Optional.empty())
                 .key(pKey)
+                .height(0) // TODO make this optional
+                .width(0) // TODO make this optional
+                .x(0) // TODO make this optional
+                .y(0) // TODO make this optional
                 .isCtrl(pCtrl)
                 .isAlt(pAlt)
                 .isShift(pShift)
@@ -132,7 +135,7 @@ public abstract class UIEvent implements IUIEvent {
         return 0;
     }
 
-    public abstract IControl getSource();
+    public abstract Optional<IControl> getSource();
 
     public abstract Date getWhen();
 
@@ -190,7 +193,7 @@ public abstract class UIEvent implements IUIEvent {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("mUIEvent:{");
-        sb.append("mSource:" + getSource());
+        getSource().ifPresent(s -> sb.append("mSource:" + s));
         sb.append(",mEventType:" + getEventType());
         sb.append(",mWhen:" + df.format(getWhen()));
         sb.append(",mWidth:" + getWidth());

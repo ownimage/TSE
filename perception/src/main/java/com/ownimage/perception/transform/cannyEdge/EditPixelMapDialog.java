@@ -851,9 +851,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void keyPressed(final ImmutableUIEvent pEvent) {
         mLogger.fine(() -> "keyPressed " + pEvent.getKey());
-        if ("G".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mMoveContainer);
+        if ("M".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mMoveContainer);
         if ("P".equals(pEvent.getKey())) mContainerList.setSelectedIndex(mPixelControlContainer);
-        mPictureControl.drawGrafitti(); // TODO should only be for the undo redo events
     }
 
     @Override

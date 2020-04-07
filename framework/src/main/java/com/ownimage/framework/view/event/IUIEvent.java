@@ -27,7 +27,7 @@ public interface IUIEvent {
 
     int getScroll();
 
-    IControl getSource();
+    Optional<IControl> getSource();
 
     Optional<Double> getNormalizedDeltaX();
 
@@ -35,7 +35,9 @@ public interface IUIEvent {
 
     double getNormalizedX();
 
-    double getNormalizedY();    Optional<Integer> getDeltaX();
+    double getNormalizedY();
+
+    Optional<Integer> getDeltaX();
 
     Optional<Integer> getDeltaY();
 
