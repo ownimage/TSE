@@ -55,7 +55,6 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
-    private PixelMap mPixelMap;
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
     private final CannyEdgeTransform mCannyEdgeTransform;
@@ -96,7 +95,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<PixelChain.Thickness> mThickness = new ObjectControl("Thickness", "Thickness",
             mPixelControlContainer, IPixelChain.Thickness.None, IPixelChain.Thickness.values());
     private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
-
+    private PixelMap mPixelMap;
     private IDialogView mEditPixelMapDialogView;
     private IView mView;
     private boolean mDialogIsAlive = false;
@@ -104,6 +103,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private UndoRedoBuffer mPixelMapUndoRedoBuffer = new UndoRedoBuffer(100);
     private boolean mMutating = false;
+    private boolean mIsMoveModeActive = false;
 
     private int mMouseDragStartX;
     private int mMouseDragStartY;
@@ -405,7 +405,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseClickEvent(final ImmutableUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
-        if (isPixelView()) {
+        if (isPixelModeActive()) {
             pixel.ifPresent(p -> mouseClickEventPixelView(pEvent, p));
         }
     }
@@ -550,14 +550,18 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
-        disableDialogWhile(() -> {
-            if (isPixelView()) {
-                mouseDragEndEventPixelView(pEvent);
-            } else if (isMoveView()) {
-                updateCurves();
-            }
-        });
-        mViewEnabledLock.unlock();
+        try {
+            disableDialogWhile(() -> {
+                if (isPixelModeActive()) {
+                    mouseDragEndEventPixelView(pEvent);
+                } else if (isMoveModeActive()) {
+                    updateCurves();
+                }
+            });
+        } finally {
+            setMoveModeInActive();
+            mViewEnabledLock.unlock();
+        }
         Framework.logExit(mLogger);
     }
 
@@ -581,10 +585,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     @Override
     public void mouseDragEvent(final ImmutableUIEvent pEvent) {
         final Optional<Pixel> pixel = eventToPixel(pEvent);
-        if (isMoveView()) {
+        if (isMoveModeActive()) {
             pixel.ifPresent(p -> mouseDragEventMoveView(pEvent, p));
         }
-        if (isPixelView()) {
+        if (isPixelModeActive()) {
             pixel.ifPresent(p -> {
                 graffitiCursor(pEvent, p);
                 mouseDragEventPixelViewFillIn(pEvent, p);
@@ -826,8 +830,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
         setViewEnabled(false);
         mViewEnabledLock.lock();
-        if (isMoveView()) mouseDragStartEventMoveView(pEvent);
-        if (isPixelView()) mouseDragStartEventPixelView(pEvent);
+        if (pEvent.isShift()) setMoveModeActive();
+        if (isMoveModeActive()) mouseDragStartEventMoveView(pEvent);
+        if (isPixelModeActive()) mouseDragStartEventPixelView(pEvent);
     }
 
     private void mouseDragStartEventMoveView(final IUIEvent pEvent) {
@@ -877,20 +882,24 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         pDB.write(pId + ".selectedContainer", String.valueOf(mContainerList.getSelectedIndex()));
     }
 
-    private boolean isMoveView() {
-        return mContainerList.getSelectedContainer() == mMoveContainer;
+    private boolean isMoveModeActive() {
+        return mIsMoveModeActive;
     }
 
-    private boolean isPixelView() {
-        return mContainerList.getSelectedContainer() == mPixelControlContainer;
+    private void setMoveModeActive() {
+        mIsMoveModeActive = true;
+    }
+
+    private void setMoveModeInActive() {
+        mIsMoveModeActive = false;
+    }
+
+    private boolean isPixelModeActive() {
+        return !isMoveModeActive();
     }
 
     private Properties getProperties() {
         return Services.getServices().getProperties();
-    }
-
-    private enum GraffitiAction {
-        On, Off
     }
 
     private enum PixelAction {
