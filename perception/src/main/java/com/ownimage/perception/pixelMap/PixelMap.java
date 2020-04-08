@@ -70,7 +70,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
     private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
-    private ImmutableMap<ISegment, PixelChain> mSegmentToPixelChainMapXY = new ImmutableMap<>(); // TODO why do we need this as there is the Tuple2 above
     private int mSegmentCount;
     /**
      * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
