@@ -139,28 +139,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new DoubleControl("Shadow Opacity", "shadowOpacity", getContainer(), 1.0d);
 
     private PixelMap mPixelMap; // this is the picture from the file processed for edges
-
-    private PictureControl mPreviewPictureControl;
+    private PixelMap mUndoPixelMap;
 
     public CannyEdgeTransform(final Perception pPerception) {
         super("Canny Edge", "cannyEdge");
-        // getPreviewImage().setGrafitti(this);
-
-        // mWidth.setEnabled(false);
-        // mHeight.setEnabled(false);
-
-        // TODO mEditPixelMapPixelsDialog = EditPixelMapDialog.createPixelEditorDialog(this, "Edit PixelMapPixels",
-        // "editPixelMapPixels");
-        // TODO mEditPixelMapSegmentsDialog = EditPixelMapDialog.createSegmentEditDialog(this, "Edit PixelMapSegments",
-        // "editPixelMapSegments");
-
-        // setUseTransform(false);
-        // TODO makePersistant(mGenerateEdgesDialog);
-        // TODO makePersistant(mEditPixelMapPixelsDialog);
-        // TODO makePersistant(mEditPixelMapSegmentsDialog);
-
-        // setPopupMenuControls(mUseTransform, mGeneratePixelMapButton, mEditPixelMapButton);
-
     }
 
     @Override
@@ -219,6 +201,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void editPixels() {
+        mUndoPixelMap = mPixelMap;
         getEditPixelMapDialog().showDialog();
     }
 
@@ -280,11 +263,12 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
             final ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
-                mLogger.info(() -> "edit pixelmap OK");
                 setPixelMap(mEditPixelMapDialog.getPixelMap());
                 refreshOutputPreview();
             });
-            final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> mLogger.fine("Cancel"));
+            final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> {
+                setPixelMap(mUndoPixelMap);
+            });
             mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
         }
         return mEditPixelMapDialog;

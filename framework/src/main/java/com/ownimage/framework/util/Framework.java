@@ -87,7 +87,7 @@ public class Framework {
 
     public static void checkStateNotNull(
             @NonNull final Logger pLogger,
-            @NonNull final Object pObject,
+            final Object pObject,
             @NonNull final String pName
     ) {
         if (pObject == null) {

@@ -22,7 +22,7 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 /**
  * The Class ActionControl uses the BooleanType only so that it can use the rest of the framework. The value is is not persisted.
  */
-public class ActionControl extends ControlBase<ActionControl, BooleanType, IMetaType<Boolean>, Boolean, IView> implements IMenuItem {
+public class ActionControl extends ControlBase<ActionControl, BooleanType, IMetaType<Boolean>, Boolean, IView> implements IMenuItem, IAction {
 
 
     public final static Logger mLogger = Framework.getLogger();

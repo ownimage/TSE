@@ -16,6 +16,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.*;
+import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
@@ -82,7 +83,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private IView mView;
     private boolean mDialogIsAlive = false;
     private ReentrantLock mViewEnabledLock = new ReentrantLock();
-    private UndoRedoBuffer mPixelMapUndoRedoBuffer = new EPMDUndoRedoBuffer();
+    private UndoRedoBuffer mPixelMapUndoRedoBuffer;
     private boolean mMutating = false;
     private boolean mIsMoveModeActive = false;
     private int mMouseDragStartX;
@@ -277,12 +278,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     public void showDialog() {
         mDialogIsAlive = true;
+        mPixelMapUndoRedoBuffer = new EPMDUndoRedoBuffer();
         PixelMap pixelMap = mCannyEdgeTransform.getPixelMap().get();
         getPixelMap().checkCompatibleSize(pixelMap);
         setPixelMap(pixelMap);
         setViewEnabled(true);
         updateCurves();
-        getDialogView().showModal();
+        getDialogView().showModal(mPixelMapUndoRedoBuffer);
     }
 
     private void dialogClose() {

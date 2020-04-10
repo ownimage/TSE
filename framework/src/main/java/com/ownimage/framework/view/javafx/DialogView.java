@@ -51,16 +51,28 @@ public class DialogView implements IDialogView {
         mButtons = pButtons;
     }
 
+    public DialogView(final IViewable pViewable, final IAppControlView.DialogOptions pDialogOptions, final ActionControl... pButtons) {
+        mViewable = pViewable;
+        mDialogOptions = pDialogOptions;
+        mButtons = pButtons;
+    }
+
+    @Override
+    public void showModal(final UndoRedoBuffer pUndoRedo) {
+        mUndoRedo = pUndoRedo;
+        showModal();
+    }
+
     @Override
     public void showModal() {
         Platform.runLater(() -> {
             Framework.checkStateNotNull(mLogger, mViewable, "pViewable");
             Framework.checkStateNotNull(mLogger, mDialogOptions, "pDialogOptions");
 
-            val buttonMap = new HashMap<ButtonType, ActionControl>();
+            val buttonMap = new HashMap<ButtonType, IAction>();
             val content = (FXView) (mViewable.createView());
             val contentUI = content.getUI();
-            val dialog = new Dialog<ActionControl>();
+            val dialog = new Dialog<IAction>();
             setDialog(dialog);
 
             // the width listener is needed in case the mDialog is showing the UI controls that affect the width of the controls
@@ -135,8 +147,7 @@ public class DialogView implements IDialogView {
             setDialog(null);
 
             new Thread(() -> {
-                mDialogOptions.getCompleteFunction().ifPresent(IAction::performAction);
-                dialogResult.ifPresent(ActionControl::performAction);
+                dialogResult.or(() -> mDialogOptions.getCompleteFunction()).ifPresent(IAction::performAction);
             }).start();
         });
     }

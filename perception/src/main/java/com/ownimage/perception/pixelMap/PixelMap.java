@@ -105,21 +105,25 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
     }
 
-    public void pixelChainsAddAll(Collection<PixelChain> pAll) {
+    public ImmutableSet<PixelChain> getPixelChains() {
+        return mPixelChains;
+    }
+
+    private void pixelChainsAddAll(Collection<PixelChain> pAll) {
         pAll.forEach(this::pixelChainsAdd);
     }
 
-    public void pixelChainsAdd(PixelChain pChain) {
+    private void pixelChainsAdd(PixelChain pChain) {
         val chain = pChain.indexSegments(this, true);
         mPixelChains = mPixelChains.add(chain);
     }
 
-    public void pixelChainsRemove(PixelChain pChain) {
+    private void pixelChainsRemove(PixelChain pChain) {
         mPixelChains = mPixelChains.remove(pChain);
         pChain.indexSegments(this, false);
     }
 
-    public void pixelChainsClear() {
+    private void pixelChainsClear() {
         mPixelChains = mPixelChains.clear();
         mSegmentIndex = mSegmentIndex.clear();
     }
@@ -832,10 +836,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    public Point pixelToPoint(final Pixel pPixel) {
-        return new Point((double) pPixel.getX() / (double) getWidth(), (double) pPixel.getY() / (double) getHeight());
-    }
-
     private void reportProgress(final IProgressObserver pProgressObserver, final String pProgressString, final int pPercent) {
         if (pProgressObserver != null) pProgressObserver.setProgress(pProgressString, pPercent);
     }
@@ -1299,7 +1299,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mNodes.clear();
     }
 
-    private synchronized void indexSegments() {
+    public synchronized void indexSegments() {
         var pixelChains = new ArrayList<PixelChain>();
         mPixelChains.stream().forEach(pc -> pixelChains.add(pc.indexSegments(this, true)));
         pixelChainsClear();
@@ -1342,7 +1342,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mData = mData.forEach(v ->  (byte) (v & (ALL ^ NODE)));
     }
 
-    public void clearSegmentIndex() {
+    private void clearSegmentIndex() {
         mSegmentIndex = new Immutable2DArray<>(mWidth, mHeight, 20);
         mSegmentCount = 0;
     }
@@ -1443,31 +1443,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
             throw new IllegalStateException(message);
         }
-    }
-
-    private void printCount() {
-        class Counter {
-            private final int straight = 0;
-            private final int curve = 0;
-            private final int doubleCurve = 0;
-            private int other = 0;
-
-            private void incOther() {
-                other++;
-            }
-
-            private void print() {
-                mLogger.info(() -> String.format("straight %d, curve %d, doubleCurve %d, other %d\n", straight, curve, doubleCurve, other));
-            }
-        }
-        final Counter counter = new Counter();
-        mPixelChains.forEach(pc -> pc.streamSegments().forEach(s -> {
-                    if (s instanceof StraightSegment) {
-                    } else if (s instanceof CurveSegment) {
-                    } else counter.incOther();
-                })
-        );
-        counter.print();
     }
 
     @Override

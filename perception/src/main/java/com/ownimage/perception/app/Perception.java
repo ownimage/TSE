@@ -605,7 +605,6 @@ public class Perception extends AppControlBase {
 
         new DialogView(getProperties()
                 , DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog Closed")).build()
-                , null
                 , mPropertiesSave.doBefore(success)
                 , mPropertiesSaveAs.doBefore(success)
                 , mPropertiesSaveDefault.doBefore(success)

@@ -290,7 +290,7 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
         buttons.add(ActionControl.create("OK", NullContainer, () -> mLogger.info("FrameworkLogger.showEditDialog() OK pressed")));
         final ActionControl[] buttonsArray = buttons.toArray(new ActionControl[buttons.size()]);
 
-        new DialogView(tabs, DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog closed.")).build(), null, buttonsArray).showModal();
+        new DialogView(tabs, DialogOptions.builder().withCompleteFunction(() -> mLogger.info("Dialog closed.")).build(),  buttonsArray).showModal();
         Framework.logExit(mLogger);
     }
 
