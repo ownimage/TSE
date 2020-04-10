@@ -15,7 +15,6 @@ import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.*;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
-import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
@@ -750,7 +749,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             final Pixel pixel = getPixelAt(i.getX(), i.getY());
             final Point centre = pixel.getUHVWMidPoint(this);
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                val segments = getSegments(i.getX(), i.getY());
+                // Issue 196 the LinkedList should really be an immutable
+                LinkedList<Tuple2<PixelChain, ISegment>> segments = new LinkedList<>(getSegments(i.getX(), i.getY()));
                 if (pAdd) {
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {

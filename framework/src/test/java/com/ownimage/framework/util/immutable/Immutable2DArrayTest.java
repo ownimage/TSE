@@ -12,6 +12,7 @@ import lombok.val;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class Immutable2DArrayTest {
 
@@ -95,6 +96,72 @@ public class Immutable2DArrayTest {
         assertEquals("1", underTest.get(5, 5));
         assertEquals("2", other.get(5, 5));
         assertEquals("1", underTest.get(5, 5));
+    }
+
+    @Test
+    public void testThatVersionsAreDecoupled() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        underTest = underTest.set(5, 5, "1");
+        Immutable2DArray<String> other = underTest;
+        other = other.set(5, 5, "2");
+        assertEquals("1", underTest.get(5, 5));
+        assertEquals("2", other.get(5, 5));
+        assertEquals("1", underTest.get(5, 5));
+    }
+
+    @Test
+    public void testThatVersionsAreDecoupled2() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        underTest = underTest.set(5, 5, "1");
+        Immutable2DArray<String> other = underTest;
+        other = other.set(5, 4, "2");
+
+        assertEquals("1", underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertEquals("2", other.get(5, 4));
+        assertEquals("1", other.get(5, 5));
+        // roll back and forward
+        assertEquals("1", underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertEquals("2", other.get(5, 4));
+        assertEquals("1", other.get(5, 5));
+    }
+
+    @Test
+    public void testClear_1() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        underTest = underTest.set(5, 5, "1");
+        Immutable2DArray<String> other = underTest;
+        other = other.clear();
+
+        assertEquals("1", underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertNull(other.get(5, 4));
+        assertNull(other.get(5, 5));
+        // roll back and forward
+        assertEquals("1", underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertNull(other.get(5, 4));
+        assertNull(other.get(5, 5));
+    }
+
+    @Test
+    public void testClear_2() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        underTest = underTest.set(5, 5, "1");
+        Immutable2DArray<String> other = underTest;
+        other = other.set(5, 4, "2");
+        underTest = underTest.clear();
+
+        assertNull(underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertEquals("2", other.get(5, 4));
+        assertEquals("1", other.get(5, 5));
+        // roll back and forward
+        assertNull(underTest.get(5, 5));
+        assertNull(underTest.get(5, 4));
+        assertEquals("2", other.get(5, 4));
+        assertEquals("1", other.get(5, 5));
     }
 
     @Test
