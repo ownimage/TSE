@@ -7,7 +7,5 @@ package com.ownimage.framework.control.event;
 
 public interface IControlValidator<C> {
 
-
-    public boolean validateControl(C pControl);
-
+    boolean validateControl(C pControl);
 }

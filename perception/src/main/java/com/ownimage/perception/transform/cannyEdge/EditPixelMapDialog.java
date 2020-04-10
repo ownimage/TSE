@@ -77,10 +77,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<PixelChain.Thickness> mThickness;
 
     private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
+
+    // these are to prevent the garbage collection of the validators
+    private final IControlValidator<?> mZoomValidator = this::zoomValidator;
+    private final IControlValidator<?> mViewOriginXValidator = this::viewOriginXValidator;
+    private final IControlValidator<?> mViewOriginYValidator = this::viewOriginYValidator;
+
     private PixelMap mPixelMap;
     private IDialogView mEditPixelMapDialogView;
     private IView mView;
-    private boolean mDialogIsAlive = false;
     private ReentrantLock mViewEnabledLock = new ReentrantLock();
     private UndoRedoBuffer mPixelMapUndoRedoBuffer;
     private boolean mMutating = false;
@@ -90,6 +95,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private Pixel mMouseLastPixelPosition = null;
     private Pixel mMouseDragLastPixel = null;
     private Id mSavepointId;
+
     private boolean mAutoUpdateCurvesDirty = false;
 
     public EditPixelMapDialog(
@@ -129,11 +135,41 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
         mPictureControl.setGrafitti(this);
         mPictureControl.setUIListener(this);
+
         updateControlVisibility();
         updateCurves();
+
         mEdgeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mNodeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mShowGraffiti.addControlChangeListener(this::mGrafitiChangeListener);
+
+        mZoom.addControlValidator(mZoomValidator);
+        mViewOriginX.addControlValidator(mViewOriginXValidator);
+        mViewOriginY.addControlValidator(mViewOriginYValidator);
+    }
+
+    private boolean zoomValidator(Object o) {
+        val h = mPixelMapHeight.getValue();
+        val w = mPixelMapWidth.getValue();
+        val x = mViewOriginX.getValue();
+        val y = mViewOriginY.getValue();
+        val hoz = (double) h / mZoom.getValidateValue();
+        val woz = (double) w / mZoom.getValidateValue();
+        return (y + hoz) <= h && (x + woz) <= w;
+    }
+
+    private boolean viewOriginXValidator(Object o) {
+        val w = mPixelMapWidth.getValue();
+        val x = mViewOriginX.getValidateValue();
+        val woz = (double) w / mZoom.getValidateValue();
+        return (x + woz) <= w;
+    }
+
+    private boolean viewOriginYValidator(Object o) {
+        val h = mPixelMapHeight.getValue();
+        val y = mViewOriginY.getValidateValue();
+        val hoz = (double) h / mZoom.getValidateValue();
+        return (y + hoz) <= h;
     }
 
     public PixelMap getPixelMap() {
@@ -265,7 +301,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                         mViewEnabledLock.lock();
                         mViewEnabledLock.unlock();
                         mCancelAction.performAction();
-                        dialogClose();
                     }).build(),
                     mPixelMapUndoRedoBuffer,
                     mCancelAction,
@@ -276,7 +311,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     public void showDialog() {
-        mDialogIsAlive = true;
         mPixelMapUndoRedoBuffer = new EPMDUndoRedoBuffer();
         PixelMap pixelMap = mCannyEdgeTransform.getPixelMap().get();
         getPixelMap().checkCompatibleSize(pixelMap);
@@ -284,10 +318,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         setViewEnabled(true);
         updateCurves();
         getDialogView().showModal(mPixelMapUndoRedoBuffer);
-    }
-
-    private void dialogClose() {
-        mDialogIsAlive = false;
     }
 
     public UndoRedoBuffer getUndoRedoBuffer() {
@@ -838,7 +868,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void scrollEvent(final ImmutableUIEvent pEvent) {
-        mZoom.setValue(mZoom.getValue() + pEvent.getScroll());
+        mZoom.setValue(mZoom.getValue() - pEvent.getScroll());
     }
 
     @Override
