@@ -16,7 +16,6 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.*;
-import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
@@ -839,6 +838,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public void scrollEvent(final ImmutableUIEvent pEvent) {
+        mZoom.setValue(mZoom.getValue() + pEvent.getScroll());
     }
 
     @Override
