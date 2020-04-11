@@ -585,17 +585,21 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void mouseDragEndEventPixelView(final IUIEvent pEventl) {
         Framework.logValue(mLogger, "mDragPixels.size()", mWorkingPixelsArray.size());
         Framework.logValue(mLogger, "mPixelMap", getPixelMap());
-        if (isPixelActionOn()) {
-            actionPixelOn(mWorkingPixelsArray);
+
+        try {
+            if (isPixelActionOn()) {
+                actionPixelOn(mWorkingPixelsArray);
+            }
+            if (isPixelActionDeletePixelChain()) {
+                actionPixelChainDelete(mWorkingPixelsArray);
+            }
+            mWorkingPixelsArray.clear();
+            autoUpdateCurves();
+            mMouseDragLastPixel = null;
+        } finally {
+            getUndoRedoBuffer().endSavepoint(mSavepointId);
+            mSavepointId = null;
         }
-        if (isPixelActionDeletePixelChain()) {
-            actionPixelChainDelete(mWorkingPixelsArray);
-        }
-        mWorkingPixelsArray.clear();
-        getUndoRedoBuffer().endSavepoint(mSavepointId);
-        mSavepointId = null;
-        autoUpdateCurves();
-        mMouseDragLastPixel = null;
         Framework.logExit(mLogger);
     }
 
