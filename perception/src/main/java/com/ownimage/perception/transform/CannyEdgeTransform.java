@@ -10,6 +10,7 @@ import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.PictureType;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.persist.IPersistDB;
+import com.ownimage.framework.undo.UndoRedoAction;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.SplitTimer;
@@ -200,9 +201,13 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void editPixels() {
-        val pixelMap = getEditPixelMapDialog().showDialog();
-        if (pixelMap != getPixelMap().get()) {
-            setPixelMap(pixelMap);
+        var undoPixelMap = getPixelMap().get();
+        val redoPixelMap = getEditPixelMapDialog().showDialog();
+        if (redoPixelMap != undoPixelMap) {
+            getUndoRedoBuffer().add(new UndoRedoAction("Edit Pixels Dialog"
+                    , () -> setPixelMap(redoPixelMap)
+                    , () -> setPixelMap(undoPixelMap)));
+            setPixelMap(redoPixelMap);
             refreshOutputPreview();
         }
     }
@@ -216,7 +221,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             mPixelMap = undo;
             setGenEditPixelMapButtonState(mPixelMap != null);
         };
-        val cancelControl = ActionControl.create("Cancel", NullContainer,cancelActon);
+        val cancelControl = ActionControl.create("Cancel", NullContainer, cancelActon);
         getGenerateEdgesDialog().showDialog(cancelControl, okControl, cancelActon);
     }
 

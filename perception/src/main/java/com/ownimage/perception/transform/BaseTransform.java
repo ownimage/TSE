@@ -46,10 +46,10 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     private final PictureControl mInputPreviewImage;
 
     private ITransform mPreviousTransform;
+
     private ControlSelector mControlSelector;
 
     private boolean mIsMutating = false;
-    private final boolean mIsInitialized = false;
 
     public BaseTransform(final String pDisplayName, final String pPropertyName) {
         Framework.logEntry(mLogger);

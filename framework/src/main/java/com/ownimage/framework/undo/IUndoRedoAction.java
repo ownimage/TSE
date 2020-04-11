@@ -7,10 +7,9 @@ package com.ownimage.framework.undo;
 
 public interface IUndoRedoAction {
 
+    String getDescription();
 
-    public String getDescription();
+    void redo();
 
-    public void redo();
-
-    public void undo();
+    void undo();
 }
