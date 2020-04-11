@@ -12,6 +12,7 @@ import com.ownimage.framework.control.control.IUIEventListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.event.UIEvent;
@@ -29,6 +30,7 @@ import lombok.val;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class DialogView implements IDialogView {
@@ -36,9 +38,9 @@ public class DialogView implements IDialogView {
     public final static Logger mLogger = Framework.getLogger();
 
     private final IViewable mViewable;
-    final private IAppControlView.DialogOptions mDialogOptions;
-    private UndoRedoBuffer mUndoRedo;
+    private final IAppControlView.DialogOptions mDialogOptions;
     private final ActionControl[] mButtons;
+    private UndoRedoBuffer mUndoRedo;
 
     @Getter
     @Setter
@@ -65,7 +67,11 @@ public class DialogView implements IDialogView {
 
     @Override
     public void showModal() {
-        Platform.runLater(() -> {
+        val isFxApplicationThread = Platform.isFxApplicationThread();
+        val lock = new Object();
+        val dialogResult = new StrongReference<Optional<IAction>>(null);
+
+        Runnable runDialog = () -> {
             Framework.checkStateNotNull(mLogger, mViewable, "pViewable");
             Framework.checkStateNotNull(mLogger, mDialogOptions, "pDialogOptions");
 
@@ -92,7 +98,8 @@ public class DialogView implements IDialogView {
 
             val stage = (Stage) dialog.getDialogPane().getScene().getWindow();
             stage.getIcons().add(AppControlView.getInstance().getApplicationIcon());
-            stage.setOnCloseRequest(x -> {}); // without this the dialog does not close when pressing X
+            stage.setOnCloseRequest(x -> {
+            }); // without this the dialog does not close when pressing X
 
             val enabledListeners = new ArrayList<IEnabledListener>(); // prevent garbage collection of listener
             for (val action : mButtons) {
@@ -143,13 +150,33 @@ public class DialogView implements IDialogView {
                 }
             });
 
-            val dialogResult = dialog.showAndWait();
+            dialogResult.set(dialog.showAndWait());
             setDialog(null);
 
-            new Thread(() -> {
-                dialogResult.or(() -> mDialogOptions.getCompleteFunction()).ifPresent(IAction::performAction);
-            }).start();
-        });
+            if (!isFxApplicationThread) {
+                synchronized (lock) {
+                    lock.notifyAll();
+                }
+            }
+        };
+
+        if (isFxApplicationThread) {
+            runDialog.run(); // yes run on FX Application Thread
+        } else {
+            Platform.runLater(runDialog);
+            synchronized (lock) {
+                convertToRuntimeException(lock::wait);
+            }
+        }
+        dialogResult.get().or(() -> mDialogOptions.getCompleteFunction()).ifPresent(IAction::performAction);
+    }
+
+    private void convertToRuntimeException(Doable<?> pDoable) {
+        try {
+            pDoable.doIt();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -159,5 +186,10 @@ public class DialogView implements IDialogView {
             getDialog().getDialogPane().getButtonTypes()
                     .forEach(bt -> getDialog().getDialogPane().lookupButton(bt).setDisable(!pEnabled));
         }
+    }
+
+
+    interface Doable<E extends Throwable> {
+        void doIt() throws E;
     }
 }

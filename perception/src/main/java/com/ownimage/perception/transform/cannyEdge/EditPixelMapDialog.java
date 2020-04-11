@@ -84,6 +84,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IControlValidator<?> mViewOriginYValidator = this::viewOriginYValidator;
 
     private PixelMap mPixelMap;
+    private PixelMap mUndoPixelMap;
     private IDialogView mEditPixelMapDialogView;
     private IView mView;
     private ReentrantLock mViewEnabledLock = new ReentrantLock();
@@ -98,19 +99,15 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean mAutoUpdateCurvesDirty = false;
 
-    public EditPixelMapDialog(
-            @NonNull final CannyEdgeTransform pTransform,
-            @NonNull final PixelMap pPixelMap,
-            final String pDisplayName,
-            final String pPropertyName,
-            final ActionControl pOkAction,
-            final ActionControl pCancelAction
-    ) {
-        super(pDisplayName, pPropertyName, Services.getServices().getUndoRedoBuffer());
+    public EditPixelMapDialog(@NonNull final CannyEdgeTransform pTransform) {
+        super("Edit PixelMap Dialog", "pixelMapEditor", Services.getServices().getUndoRedoBuffer());
         mCannyEdgeTransform = pTransform;
-        mPixelMap = pPixelMap;
-        mOkAction = pOkAction;
-        mCancelAction = pCancelAction;
+        mPixelMap = pTransform.getPixelMap().orElseThrow();
+        mOkAction = ActionControl.create("OK", NullContainer, () -> {
+        });
+        mCancelAction = ActionControl.create("Cancel", NullContainer, () -> {
+            setPixelMap(getUndoPixelMap());
+        });
 
         mPictureControl = new PictureControl("Preview", "preview", NullContainer, new PictureType(100, 100));
         mGeneralContainer = newContainer("General", "general", true).addBottomPadding();
@@ -178,6 +175,14 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private void setPixelMap(@NonNull PixelMap pPixelMap) {
         mPixelMap = pPixelMap;
+    }
+
+    private PixelMap getUndoPixelMap() {
+        return mUndoPixelMap;
+    }
+
+    private void setUndoPixelMap(@NonNull PixelMap pUndoPixelMap) {
+        mUndoPixelMap = pUndoPixelMap;
     }
 
     private void mGrafitiChangeListener(Object pControl, boolean pIsMutating) {
@@ -310,14 +315,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mEditPixelMapDialogView;
     }
 
-    public void showDialog() {
+    public PixelMap showDialog() {
         mPixelMapUndoRedoBuffer = new EPMDUndoRedoBuffer();
         PixelMap pixelMap = mCannyEdgeTransform.getPixelMap().get();
         getPixelMap().checkCompatibleSize(pixelMap);
         setPixelMap(pixelMap);
+        setUndoPixelMap(pixelMap);
         setViewEnabled(true);
         updateCurves();
         getDialogView().showModal(mPixelMapUndoRedoBuffer);
+        return mPixelMap;
     }
 
     public UndoRedoBuffer getUndoRedoBuffer() {

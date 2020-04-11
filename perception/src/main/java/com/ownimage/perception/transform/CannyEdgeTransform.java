@@ -139,7 +139,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             new DoubleControl("Shadow Opacity", "shadowOpacity", getContainer(), 1.0d);
 
     private PixelMap mPixelMap; // this is the picture from the file processed for edges
-    private PixelMap mUndoPixelMap;
 
     public CannyEdgeTransform(final Perception pPerception) {
         super("Canny Edge", "cannyEdge");
@@ -201,8 +200,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void editPixels() {
-        mUndoPixelMap = mPixelMap;
-        getEditPixelMapDialog().showDialog();
+        val pixelMap = getEditPixelMapDialog().showDialog();
+        if (pixelMap != getPixelMap().get()) {
+            setPixelMap(pixelMap);
+            refreshOutputPreview();
+        }
     }
 
     private void generateEdges() {
@@ -262,14 +264,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private synchronized EditPixelMapDialog getEditPixelMapDialog() {
         if (mEditPixelMapDialog == null) {
-            final ActionControl ok = ActionControl.create("OK", NullContainer, () -> {
-                setPixelMap(mEditPixelMapDialog.getPixelMap());
-                refreshOutputPreview();
-            });
-            final ActionControl cancel = ActionControl.create("Cancel", NullContainer, () -> {
-                setPixelMap(mUndoPixelMap);
-            });
-            mEditPixelMapDialog = new EditPixelMapDialog(this, mPixelMap, "Edit PixelMap Dialog", "pixelMapEditor", ok, cancel);
+            mEditPixelMapDialog = new EditPixelMapDialog(this);
         }
         return mEditPixelMapDialog;
     }
