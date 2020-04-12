@@ -78,11 +78,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
 
-    // these are to prevent the garbage collection of the validators
-    private final IControlValidator<?> mZoomValidator = this::zoomValidator;
-    private final IControlValidator<?> mViewOriginXValidator = this::viewOriginXValidator;
-    private final IControlValidator<?> mViewOriginYValidator = this::viewOriginYValidator;
-
     private PixelMap mPixelMap;
     private PixelMap mUndoPixelMap;
     private IDialogView mEditPixelMapDialogView;
@@ -139,34 +134,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mEdgeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mNodeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mShowGraffiti.addControlChangeListener(this::mGrafitiChangeListener);
-
-        mZoom.addControlValidator(mZoomValidator);
-        mViewOriginX.addControlValidator(mViewOriginXValidator);
-        mViewOriginY.addControlValidator(mViewOriginYValidator);
-    }
-
-    private boolean zoomValidator(Object o) {
-        val h = mPixelMapHeight.getValue();
-        val w = mPixelMapWidth.getValue();
-        val x = mViewOriginX.getValue();
-        val y = mViewOriginY.getValue();
-        val hoz = (double) h / mZoom.getValidateValue();
-        val woz = (double) w / mZoom.getValidateValue();
-        return (y + hoz) <= h && (x + woz) <= w;
-    }
-
-    private boolean viewOriginXValidator(Object o) {
-        val w = mPixelMapWidth.getValue();
-        val x = mViewOriginX.getValidateValue();
-        val woz = (double) w / mZoom.getValidateValue();
-        return (x + woz) <= w;
-    }
-
-    private boolean viewOriginYValidator(Object o) {
-        val h = mPixelMapHeight.getValue();
-        val y = mViewOriginY.getValidateValue();
-        val hoz = (double) h / mZoom.getValidateValue();
-        return (y + hoz) <= h;
     }
 
     public PixelMap getPixelMap() {
@@ -208,22 +175,25 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     @Override
     public boolean validateControl(final Object pControl) {
+        val h = mPixelMapHeight.getValue();
+        val w = mPixelMapWidth.getValue();
+
         if (pControl == mViewOriginX) {
-            final boolean valid = getWidth() > getViewOriginX() + getWidth() / getZoom();
-            return valid;
+            val x = mViewOriginX.getValidateValue();
+            val woz = (double) w / mZoom.getValue();
+            return (x + woz) <= w;
         }
         if (pControl == mViewOriginY) {
-            final boolean valid = getHeight() > getViewOriginY() + getHeight() / getZoom();
-            return valid;
+            val y = mViewOriginY.getValidateValue();
+            val hoz = (double) h / mZoom.getValue();
+            return (y + hoz) <= h;
         }
         if (pControl == mZoom) {
-            if (getViewOriginX() + getWidth() / getZoom() > getWidth()) {
-                mViewOriginX.setValue(getWidth() - Math.floorDiv(getWidth(), getZoom()));
-            }
-            if (getViewOriginY() + getHeight() / getZoom() > getHeight()) {
-                mViewOriginY.setValue(getHeight() - Math.floorDiv(getHeight(), getZoom()));
-            }
-            return true;
+            val x = mViewOriginX.getValue();
+            val y = mViewOriginY.getValue();
+            val hoz = (double) h / mZoom.getValidateValue();
+            val woz = (double) w / mZoom.getValidateValue();
+            return (y + hoz) <= h && (x + woz) <= w;
         }
         return true;
     }
