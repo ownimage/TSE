@@ -64,6 +64,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mZoom;
     private final IntegerControl mViewOriginX;
     private final IntegerControl mViewOriginY;
+    private final BooleanControl mShowGraffiti;
     private final BooleanControl mShowCurves;
     private final BooleanControl mAutoUpdateCurves;
     private final ActionControl mUpdateCurves;
@@ -72,7 +73,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ColorControl mEdgeColor;
     private final ColorControl mNodeColor;
     private final ColorControl mWorkingColor;
-    private final BooleanControl mShowGraffiti;
     private final ObjectControl<PixelAction> mPixelAction;
     private final ObjectControl<PixelChain.Thickness> mThickness;
 
@@ -117,6 +117,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, getProperties().getCETEPMDZoom(), getProperties().CETEPMDZoomModel);
         mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, getWidth(), 50);
         mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, getHeight(), 50);
+        mShowGraffiti = new BooleanControl("Show Graffiti", "showGraffiti", mGeneralContainer, true);
         mShowCurves = new BooleanControl("Show Curves", "showCurves", mGeneralContainer, false);
         mAutoUpdateCurves = new BooleanControl("Auto Update Curves", "autoUpdateCurves", mGeneralContainer, false);
         mUpdateCurves = new ActionControl("Update Curves", "updateCurves", mGeneralContainer, this::updateCurves);
@@ -125,7 +126,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mEdgeColor = new ColorControl("Edge Color", "edgeColor", mGeneralContainer, getProperties().getCETEPMDEdgeColor());
         mNodeColor = new ColorControl("Node Color", "nodeColor", mGeneralContainer, getProperties().getCETEPMDNodeColor());
         mWorkingColor = new ColorControl("Working Color", "workingColor", mGeneralContainer, getProperties().getCETEPMDWorkingColor());
-        mShowGraffiti = new BooleanControl("Show Graffiti", "showGraffiti", mGeneralContainer, true);
         mPixelAction = new ObjectControl("Pixel Action", "pixelAction", mGeneralContainer, PixelAction.On, PixelAction.values());
         mThickness = new ObjectControl("Thickness", "Thickness", mGeneralContainer, IPixelChain.Thickness.None, IPixelChain.Thickness.values());
 
