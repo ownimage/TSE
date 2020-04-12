@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import static com.ownimage.framework.util.Doable.convertToRuntimeException;
+
 public class DialogView implements IDialogView {
 
     public final static Logger mLogger = Framework.getLogger();
@@ -171,14 +173,6 @@ public class DialogView implements IDialogView {
         dialogResult.get().or(() -> mDialogOptions.getCompleteFunction()).ifPresent(IAction::performAction);
     }
 
-    private void convertToRuntimeException(Doable<?> pDoable) {
-        try {
-            pDoable.doIt();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void setEnabled(boolean pEnabled) {
         if (getDialog() != null) {
@@ -188,8 +182,4 @@ public class DialogView implements IDialogView {
         }
     }
 
-
-    interface Doable<E extends Throwable> {
-        void doIt() throws E;
-    }
 }
