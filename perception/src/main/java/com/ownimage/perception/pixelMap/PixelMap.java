@@ -6,7 +6,6 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.KMath;
@@ -53,9 +52,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    private int mWidth;
-    private int mHeight;
-    private int mVersion = 0;
     // TODO should delete the following two values
     private final boolean m360;
     private final IPixelMapTransformSource mTransformSource;
@@ -64,10 +60,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
+    private int mWidth;
+    private int mHeight;
+    private int mVersion = 0;
     private ImmutableMap2D<Byte> mData;
     private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
-    private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
+    private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
     private int mSegmentCount;
     /**
      * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
@@ -180,7 +179,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
 
-
     public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {
         if (getPixelChains(pPixel).isEmpty()) return this;
         double tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
@@ -257,7 +255,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void addPixelChains(final Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
-        pPixelChains.stream().forEach(pc -> addPixelChain(pc));
+        pPixelChains.forEach(pc -> addPixelChain(pc));
         Framework.logExit(mLogger);
     }
 
@@ -374,6 +372,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mHeight;
     }
 
+    private void setHeight(final int pHeight) {
+        mHeight = pHeight;
+    }
+
     private double getLineOpacity() {
         return mTransformSource.getLineOpacity();
     }
@@ -415,45 +417,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return pColorIn;
     }
 
-    // private Color getMaxiLineColor3D(final Point pIn, final Color pColorIn, final Color pLineColor, final double pOpacity) {
-    // final double shortThickness = getMediumLineThickness() / 1000d;
-    // final double normalThickness = getShortLineThickness() / 1000d;
-    // final double longThickness = getLongLineThickness() / 1000d;
-    // final Intersect3D intersect = getMaxIntersect3d(pIn, shortThickness, normalThickness, longThickness);
-    //
-    // if (intersect != null) {
-    // final Point3D light = new Point3D(-10.0d, 0.0d, 10.0d);
-    // final Point3D point = intersect.getPoint();
-    // final Vector3D normal = intersect.getNormal();
-    //
-    // final Vector3D vectorToLight = point.to(light).normalize();
-    // final double lightDotNormal = vectorToLight.dot(normal);
-    //
-    // final Point3D eye = new Point3D(0.5d, 0.5d, 200.0d);
-    // final Vector3D vectorToEye = point.to(eye).normalize();
-    // // final double eyeDotNormal = vectorToEye.dot(normal);
-    //
-    // if (lightDotNormal > 0.0d) { // need to avoid highlights on hidden surfaces
-    //
-    // final Vector3D reflectedDirection = normal.scale(2.0d * lightDotNormal).minus(vectorToLight);
-    // final double cos = reflectedDirection.normalize().dot(vectorToEye);
-    // double highlight = Math.pow(cos, 4.0d);
-    //
-    // final Range range = Range.ZeroToOne;
-    // highlight = range.getBoundedValue(highlight);
-    // if (highlight < 0.0d || highlight > 1.0d) {
-    // final int i = 1;
-    // }
-    // final Color lineColor = KColor.fade(pLineColor, Color.WHITE, highlight);
-    // return KColor.fade(pColorIn, lineColor, pOpacity);
-    // // return Color.RED;
-    // }
-    // return KColor.fade(pColorIn, pLineColor, pOpacity);
-    // }
-    //
-    // return pColorIn;
-    // }
-    //
     private Color getMaxiLineShadowColor(final Point pIn, final Color pColor) {
         if (getShowShadow()) {
             double x = pIn.getX() - getShadowXOffset() / 1000d;
@@ -466,41 +429,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return pColor;
     }
 
-    //
-    // private Intersect3D getMaxIntersect3d(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double
-    // pThickWidth) {
-    // calcSegmentIndex();
-    //
-    // final double maxWidth = KMath.max(pThinWidth, pNormalWidth, pThickWidth);
-    // final Point uhvw = toUHVW(pPoint);
-    // Intersect3D maxIntersect = null;
-    //
-    // for (int x = (int) Math.floor((uhvw.getX() - maxWidth) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() +
-    // maxWidth) * getWidth() / mAspectRatio) + 1; x++) {
-    // for (int y = (int) (Math.floor(uhvw.getY() * getHeight()) - maxWidth) - 1; y <= Math.ceil(uhvw.getY() * getHeight() +
-    // maxWidth) + 1; y++) {
-    // if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-    // for (final ISegment segment : getSegments(x, y)) {
-    // if (segment.getPixelChains().length() < getShortLineLength()) {
-    // break;
-    // }
-    // if (segment.getPixelLength() > getShortLineLength()) {
-    // final Intersect3D intersect = segment.intersect3D(uhvw);
-    // if (maxIntersect == null || intersect != null && intersect.getPoint().getZ() > maxIntersect.getPoint().getZ()) {
-    // maxIntersect = intersect;
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-    // return maxIntersect;
-    // }
-    //
-    // public int getMediumLineLength() {
-    // return mTransformSource.getMediumLineLength();
-    // }
-    //
     private double getMediumLineThickness() {
         return mTransformSource.getMediumLineThickness();
     }
@@ -558,19 +486,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private Optional<Pixel> getOptionalPixelAt(final double pX, final double pY) {
-        Framework.logEntry(mLogger);
-        // Framework.logParams(mLogger, "pX, pY", pX, pY);
-        int x = (int) (pX * getWidth());
-        int y = (int) (pY * getHeight());
-        y = y == getHeight() ? getHeight() - 1 : y;
-        x = modWidth(x);
-        final Pixel pixel = getPixelAt(x, y);
-        Framework.logExit(mLogger);
-        return Optional.ofNullable(pixel);
+        return Optional.ofNullable(getPixelAt(pX, pY));
     }
 
-    @Deprecated
-    public Pixel getPixelAt(final double pX, final double pY) {
+    private Pixel getPixelAt(final double pX, final double pY) {
         Framework.logEntry(mLogger);
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
         int x = (int) (pX * getWidth());
@@ -634,17 +553,17 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return null;
     }
 
-    private Immutable2DArray<LinkedList<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
+    private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
     }
 
-    private LinkedList<Tuple2<PixelChain, ISegment>> getSegments(final int pX, final int pY) {
+    private Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(final int pX, final int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
         Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
         Framework.checkParameterLessThan(mLogger, pY, getHeight(), "pY");
         val segmentIndex = getSegmentIndex().get(pX, pY);
-        return segmentIndex != null ? segmentIndex : new LinkedList<>();
+        return Optional.ofNullable(segmentIndex);
     }
 
     private Color getShadowColor() {
@@ -666,55 +585,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private double getShadowYOffset() {
         return mTransformSource.getShadowYOffset();
     }
-    // private Color getShortLineColor(final Point pIn, final Color pColor) {
-    // // if (mShowShortLines.getBoolean()) {
-    // // Pixel pixelIn = getEdgeData().getPixelAt(pIn);
-    // // Point pictureResolutionPoint = getEdgeData().toUHVW(pIn);
-    // //
-    // // int[][] segments = { //
-    // // //
-    // // { 1, 4 }, { 3, 4 }, { 5, 4 }, { 7, 4 }, // plus
-    // // { 0, 4 }, { 2, 4 }, { 6, 4 }, { 8, 4 },// cross
-    // // { 1, 3 }, { 3, 7 }, { 7, 5 }, { 5, 1 }, // diamond
-    // // { 0, 1 }, { 1, 2 }, { 2, 5 }, { 5, 8 }, { 8, 7 }, { 7, 6 }, { 6, 3 }, { 3, 0 } // big square
-    // // };
-    // //
-    // // boolean[] pixel = new boolean[9];
-    // // for (int i = 0; i < 9; i++) {
-    // // pixel[i] = pixelIn.getNeighbour(i).isEdge();// && !pixelIn.getNeighbour(i).isInChain();
-    // // }
-    // //
-    // // for (int i = 0; i < segments.length; i++) {
-    // // if (pixel[segments[i][0]] && pixel[segments[i][1]]) {
-    // // LineApproximation line = new LineApproximation(pixelIn.getNeighbour(segments[i][0]).getUHVWPoint(), //
-    // // pixelIn.getNeighbour(segments[i][1]).getUHVWPoint());
-    // // if (line.isCloserThan(pictureResolutionPoint, mShortLineThickness.getValue())) {
-    // // return mShortLineColor.getValue();
-    // // }
-    // // }
-    // // }
-    // // }
-    // //
-    // return pColor;
-    // }
 
     private double getShortLineThickness() {
         return mTransformSource.getShortLineThickness();
     }
-    // public boolean getShowPixels() {
-    // return mTransformSource.getShowPixels();
-    // }
 
     private boolean getShowShadow() {
         return mTransformSource.getShowShadow();
-    }
-
-    public double getThickWidth() {
-        return getLongLineThickness() / 1000d;
-    }
-
-    public double getThinWidth() {
-        return getShortLineThickness() / 1000d;
     }
 
     IPixelMapTransformSource getTransformSource() {
@@ -746,6 +623,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mWidth;
     }
 
+    private void setWidth(final int pWidth) {
+        mWidth = pWidth;
+    }
+
     public int getSegmentCount() {
         return mSegmentCount;
     }
@@ -756,49 +637,30 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         // // mSegmentIndex.add(pLineSegment);
         //
         int minX = (int) Math.floor(pSegment.getMinX(this, pPixelChain) * getWidth() / mAspectRatio) - 1;
-        minX = minX < 0 ? 0 : minX;
-        minX = minX > getWidth() - 1 ? getWidth() - 1 : minX;
+        minX = Math.max(minX, 0);
+        minX = Math.min(minX, getWidth() - 1);
         int maxX = (int) Math.ceil(pSegment.getMaxX(this, pPixelChain) * getWidth() / mAspectRatio) + 1;
-        maxX = maxX > getWidth() - 1 ? getWidth() - 1 : maxX;
+        maxX = Math.min(maxX, getWidth() - 1);
         int minY = (int) Math.floor(pSegment.getMinY(this, pPixelChain) * getHeight()) - 1;
-        minY = minY < 0 ? 0 : minY;
-        minY = minY > getHeight() - 1 ? getHeight() - 1 : minY;
+        minY = Math.max(minY, 0);
+        minY = Math.min(minY, getHeight() - 1);
         int maxY = (int) Math.ceil(pSegment.getMaxY(this, pPixelChain) * getHeight()) + 1;
-        maxY = maxY > getHeight() - 1 ? getHeight() - 1 : maxY;
+        maxY = Math.min(maxY, getHeight() - 1);
 
         new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
             final Pixel pixel = getPixelAt(i.getX(), i.getY());
             final Point centre = pixel.getUHVWMidPoint(this);
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                // Issue 196 the LinkedList should really be an immutable
-                LinkedList<Tuple2<PixelChain, ISegment>> segments = new LinkedList<>(getSegments(i.getX(), i.getY()));
+                val segments = new HashSet();
+                getSegments(i.getX(), i.getY()).map(ImmutableSet::toCollection).ifPresent(segments::addAll);
                 if (pAdd) {
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {
                     segments.remove(new Tuple2<>(pPixelChain, pSegment));
                 }
-                mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), segments);
+                mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, ISegment>>().addAll(segments));
             }
         });
-    }
-
-    @VisibleForTesting
-    HashSet<ISegment> getAllSegmentsFromSegmentIndex() {
-        val segments = new HashSet<ISegment>();
-        for (int x = 0; x < getWidth() - 1; x++) {
-            for (int y = 0; y < getHeight() - 1; y++) {
-                val segmentIndex = getSegmentIndex();
-                Stream.of(segmentIndex.get(x, y))
-                        .filter(i -> i != null)
-                        .flatMap((i -> i.stream()))
-                        .forEach(s -> segments.add(s._2));
-            }
-        }
-        return segments;
-    }
-
-    private boolean isSegmentIndexValid() {
-        return mSegmentCount != 0;
     }
 
     boolean isAnyLineCloserThan(final Point pPoint, final double pThinWidth, final double pNormalWidth, final double pThickWidth, final double pMultiplier, final boolean pThickOnly) {
@@ -806,19 +668,16 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         final Point uhvw = toUHVW(pPoint);
         // to prevent the expensive closerThanActual being run against the same segment more than once they
         // are condensed into a set.
-        final HashSet<Tuple2<PixelChain, ISegment>> candidateSegments = new HashSet<>();
+        var candidateSegments = new HashSet<Tuple2<PixelChain, ISegment>>();
         for (int x = (int) Math.floor((uhvw.getX() - maxThickness) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxThickness) * getWidth() / mAspectRatio) + 1; x++) {
             for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * getHeight())) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * getHeight()) + 1; y++) {
                 if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-                    for (final Tuple2<PixelChain, ISegment> tuple : getSegments(x, y)) {
-                        if (tuple._1().getThickness() == IPixelChain.Thickness.None) {
-                            break;
-                        }
-                        if (pThickOnly && tuple._1().getThickness() != IPixelChain.Thickness.Thick) {
-                            break;
-                        }
-                        candidateSegments.add(tuple);
-                    }
+                    getSegments(x, y).ifPresent(set -> {
+                        set.stream()
+                                .filter(tuple -> tuple._1().getThickness() != IPixelChain.Thickness.None)
+                                .filter(tuple -> !pThickOnly || tuple._1().getThickness() == IPixelChain.Thickness.Thick)
+                                .forEach(candidateSegments::add);
+                    });
                 }
             }
         }
@@ -1007,29 +866,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 trackPixelOff(pPixel);
             } else { // turning pixel on
                 trackPixelOn(pPixel);
-            }
-        }
-    }
-
-    void setEdge(@NonNull final List<Pixel> pPixels, final boolean pValue) {
-        pPixels.forEach(pixel -> {
-            if (pixel.isEdge(this) == pValue) return; // ignore no change
-            if (pixel.isNode(this) && !pValue) {
-                setNode(pixel, false);
-            }
-            setData(pixel, pValue, EDGE);
-            calcIsNode(pixel);
-            pixel.getNeighbours().forEach(p -> {
-                thin(p);
-                calcIsNode(p);
-            });
-            thin(pixel);
-        });
-        if (mAutoTrackChanges) {
-            if (!pValue) { // turning pixel off
-                trackPixelOff(pPixels);
-            } else { // turning pixel on
-                trackPixelOn(pPixels);
             }
         }
     }
@@ -1356,7 +1192,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void resetNode() {
-        mData = mData.forEach(v ->  (byte) (v & (ALL ^ NODE)));
+        mData = mData.forEach(v -> (byte) (v & (ALL ^ NODE)));
     }
 
     private void clearSegmentIndex() {
@@ -1384,10 +1220,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    private void setHeight(final int pHeight) {
-        mHeight = pHeight;
-    }
-
     public void actionSetPixelChainDefaultThickness(final CannyEdgeTransform pTransform) {
         Framework.logEntry(mLogger);
         final int shortLength = pTransform.getShortLineLength();
@@ -1402,10 +1234,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     void setValue(final int pX, final int pY, final byte pValue) {
         mData = mData.set(pX, pY, pValue);
-    }
-
-    private void setWidth(final int pWidth) {
-        mWidth = pWidth;
     }
 
     /**
@@ -1450,7 +1278,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         Set segments = new HashSet<ISegment>();
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {
-                LinkedList<Tuple2<PixelChain, ISegment>> list = mSegmentIndex.get(x, y);
+                var list = mSegmentIndex.get(x, y);
                 if (list != null) {
                     list.stream().forEach(t -> segments.add(t._2));
                 }
@@ -1500,8 +1328,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mLogger.info("mSegmentCount = " + mSegmentCount);
         Framework.logExit(mLogger);
     }
-
-
 
     // move to a stream
     @Deprecated
