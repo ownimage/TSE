@@ -62,6 +62,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final IntegerControl mPixelMapHeight;
     private final IntegerControl mPreviewSize;
     private final IntegerControl mZoom;
+    private final ActionControl mZoomIn;
+    private final ActionControl mZoomOut;
     private final IntegerControl mViewOriginX;
     private final IntegerControl mViewOriginY;
     private final BooleanControl mShowGraffiti;
@@ -110,6 +112,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPixelMapHeight = new IntegerControl("PixelMap Height", "pixelMapHeight", mGeneralContainer, getHeight(), 0, 10000, 50).setEnabled(false);
         mPreviewSize = new IntegerControl("Preview Size", "previewSize", mGeneralContainer, getProperties().getCETEPMDPreviewSize(), getProperties().CETEPMDPreviewSizeModel);
         mZoom = new IntegerControl("Zoom", "zoom", mGeneralContainer, getProperties().getCETEPMDZoom(), getProperties().CETEPMDZoomModel);
+        mZoomIn = new ActionControl("Zoom In", "zoomIn", mGeneralContainer, this::zoomIn);
+        mZoomOut = new ActionControl("Zoom Out", "zoomOut", mGeneralContainer, this::zoomOut);
         mViewOriginX = new IntegerControl("View X", "x", mGeneralContainer, 0, 0, getWidth(), 50);
         mViewOriginY = new IntegerControl("View Y", "y", mGeneralContainer, 0, 0, getHeight(), 50);
         mShowGraffiti = new BooleanControl("Show Graffiti", "showGraffiti", mGeneralContainer, true);
@@ -134,6 +138,14 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mEdgeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mNodeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mShowGraffiti.addControlChangeListener(this::mGrafitiChangeListener);
+    }
+
+    private void zoomIn() {
+        mZoom.setValue(mZoom.getValue() + 1);
+    }
+
+    private void zoomOut() {
+        mZoom.setValue(mZoom.getValue() - 1);
     }
 
     public PixelMap getPixelMap() {
