@@ -319,14 +319,20 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
             throw new IllegalArgumentException("pId must not be null");
         }
 
+        String value = null;
         if (isPersistent()) {
-            final String value = pDB.read(getPrefix(pId) + mPropertyName);
-            if (value != null) {
-                mValue.setString(value);
-            }
-            resetValidateValue();
+            try {
+                value = pDB.read(getPrefix(pId) + mPropertyName);
+                if (value != null) {
+                    mValue.setString(value);
+                }
+                resetValidateValue();
 
-            fireControlChangeEvent(null, false);
+                fireControlChangeEvent(null, false);
+            } catch (RuntimeException e) {
+                String msg = String.format("Unable to process value [%s] for property [%s]", value, pId);
+                throw new RuntimeException(msg, e);
+            }
         }
     }
 

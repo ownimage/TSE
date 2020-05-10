@@ -14,6 +14,7 @@ import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.IViewable;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.layout.VFlowLayout;
+import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.control.type.IntegerMetaType;
 import com.ownimage.framework.logging.FrameworkException;
 import com.ownimage.framework.persist.IPersist;
@@ -52,9 +53,9 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
 
     // cannyEdgeTransform
     public final IntegerMetaType CETEPMDPreviewSizeModel = new IntegerMetaType(100, 1000, 50);
-    public final IntegerMetaType CETEPMDZoomModel = new IntegerMetaType(1, 20, 2);
+    public final DoubleMetaType CETEPMDZoomModel = new DoubleMetaType(1, 20, 2, DoubleMetaType.DisplayType.BOTH);
     private final IntegerControl mCETEPMDPreviewSize = new IntegerControl("Preview size", "previewSize", mContainer, 800, CETEPMDPreviewSizeModel);
-    private final IntegerControl mCETEPMDZoom = new IntegerControl("Save size", "savePreviewSize", mContainer, 2, CETEPMDZoomModel);
+    private final DoubleControl mCETEPMDZoom = new DoubleControl("Save size", "savePreviewSize", mContainer, 2, CETEPMDZoomModel);
     private final ColorControl mCETEPMDEdgeColor = new ColorControl("Edge Color", "edgeColor", mContainer, Color.GREEN);
     private final ColorControl mCETEPMDNodeColor = new ColorControl("Node Color", "nodeColor", mContainer, Color.RED);
     private final ColorControl mCETEPMDWorkingColor = new ColorControl("Working Color", "workingColor", mContainer, Color.LIGHT_GRAY);
@@ -303,7 +304,7 @@ public class Properties implements IViewable, IUndoRedoBufferProvider, IPersist,
         return mCETEPMDPreviewSize.getValue();
     }
 
-    public int getCETEPMDZoom() {
+    public double getCETEPMDZoom() {
         return mCETEPMDZoom.getValue();
     }
 

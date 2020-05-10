@@ -62,7 +62,11 @@ public class IntegerType extends TypeBase<IntegerMetaType, Integer> {
     public void setString(final String pValue) {
         // mValue = KMath.inBounds(Integer.valueOf(pValue), getMetaModel().getMin(), getMetaModel().getMin());
         // TODO why does above not work
-        setValue(Integer.valueOf(pValue));
+        try {
+            setValue(Integer.valueOf(pValue));
+        } catch (NumberFormatException e) {
+            setValue(Double.valueOf(pValue).intValue());
+        }
     }
 
     @Override
