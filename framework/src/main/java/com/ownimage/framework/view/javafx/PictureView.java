@@ -49,6 +49,9 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
 
     private final StackPane mUI;
 
+    private Integer mLastXClick;
+    private Integer mLastYClick;
+
     public PictureView(final PictureControl pPictureControl) {
         super(pPictureControl);
 
@@ -97,7 +100,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
         final int height = mControl.getValue().getHeight();
         final int x = (int) pME.getX();
         final int y = (int) (height - pME.getY());
-        final ImmutableUIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
+        final ImmutableUIEvent event = UIEvent.createMouseEvent(pEventType, mControl, width, height, x, y, mLastXClick, mLastYClick, pME.isControlDown(), pME.isAltDown(), pME.isShiftDown());
         return event;
     }
 
@@ -124,6 +127,8 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
                 mLogger.finest("createMouseEvent Click");
                 final ImmutableUIEvent event = createMouseEvent(EventType.Click, pME);
                 queueApplicationEvent(() -> mControl.uiEvent(event));
+                mLastXClick = event.getX();
+                mLastYClick = event.getY();
             }
             if (pME.getClickCount() == 2) {
                 mLogger.finest("createMouseEvent DoubleClick");

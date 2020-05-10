@@ -45,6 +45,8 @@ public abstract class UIEvent implements IUIEvent {
             final int pHeight,
             final int pX,
             final int pY,
+            final Integer pLastXClick,
+            final Integer pLastYClick,
             final boolean pCtrl,
             final boolean pAlt,
             final boolean pShift
@@ -61,6 +63,8 @@ public abstract class UIEvent implements IUIEvent {
                 .height(pHeight)
                 .x(pX)
                 .y(pY)
+                .lastXClick(Optional.ofNullable(pLastXClick))
+                .lastYClick(Optional.ofNullable(pLastYClick))
                 .isCtrl(pCtrl)
                 .isAlt(pAlt)
                 .isShift(pShift)

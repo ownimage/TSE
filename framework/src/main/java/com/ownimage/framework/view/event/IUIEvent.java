@@ -21,6 +21,10 @@ public interface IUIEvent {
 
     Integer getY();
 
+    Optional<Integer> getLastXClick();
+
+    Optional<Integer> getLastYClick();
+
     Integer getWidth();
 
     Integer getHeight();

@@ -42,6 +42,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -398,6 +399,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return eventXYToPixel(pEvent.getX(), pEvent.getY());
     }
 
+    private Optional<Pixel> eventLastClickedToPixel(final IUIEvent pEvent) {
+        if (pEvent.getLastXClick().isPresent() && pEvent.getLastYClick().isPresent()) {
+            return eventXYToPixel(pEvent.getLastXClick().get(), pEvent.getLastYClick().get());
+        }
+        return Optional.empty();
+    }
+
     private Optional<Pixel> eventXYToPixel(final int pX, final int pY) {
         final int x = getViewOriginX() + (pX * getWidth() / (getZoomInt() * getPreviewSize()));
         final int y = getViewOriginY() + (pY * getHeight() / (getZoomInt() * getPreviewSize()));
@@ -437,7 +445,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         disableDialogWhile(() -> {
             boolean change = false;
             if (pPixel != null) {
-                if (isPixelActionOn()) change |= actionPixelOn(pPixel);
+                if (isPixelActionOn()) change |= mouseClickPixelOn(pEvent, pPixel);
                 if (isPixelActionOff()) change |= actionPixelOff(pPixel);
                 if (isPixelActionToggle()) change |= actionPixelToggle(pPixel);
                 if (isPixelActionDeletePixelChain()) change |= mouseClickEventPixelViewPixelChainDelete(pPixel);
@@ -451,6 +459,17 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             }
             graffitiCursor(pEvent, pPixel);
         });
+    }
+
+    private boolean mouseClickPixelOn(@NonNull final IUIEvent pEvent, @NonNull final Pixel pPixel) {
+        if (!pEvent.isShift()) return actionPixelOn(pPixel);
+        return eventLastClickedToPixel(pEvent)
+                .map(lastClickedPixel -> {
+                    Collection<Pixel> pixels = new HashSet<>();
+                    fillIn(pEvent, pPixel, lastClickedPixel, (iui, p) -> pixels.add(p));
+                    return actionPixelOn(pixels);
+                })
+                .orElseGet(() -> actionPixelOn(pPixel));
     }
 
     private boolean mouseClickEventPixelViewPixelChainDelete(@NonNull final Pixel pPixel) {
@@ -538,7 +557,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     public boolean actionPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) return false;
         final PixelMap undo = getPixelMap();
-        setPixelMap(getPixelMap().actionPixelOn(mWorkingPixelsArray));
+        setPixelMap(getPixelMap().actionPixelOn(pPixels));
         if (getPixelMap() != undo) {
             addUndoRedoEntry("Action Pixel On", undo, getPixelMap());
             return true;
@@ -615,39 +634,49 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
+
+    private void mouseDragEventPixelViewFillIn(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
+        fillIn(pEvent, pPixel, mMouseDragLastPixel, this::mouseDragEventPixelView);
+        mMouseDragLastPixel = pPixel;
+    }
+
     /**
      * Fills in the gaps in the drag event so that all the pixels are connected.
      **/
-    private void mouseDragEventPixelViewFillIn(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
-        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn %s, %s", pPixel, mMouseDragLastPixel));
+    private void fillIn(
+            @NonNull final IUIEvent pEvent,
+            @NonNull final Pixel pPixel,
+            @NonNull final Pixel pLastPixel,
+            @NonNull final BiConsumer<IUIEvent, Pixel> pFn
+    ) {
+        mLogger.fine(() -> String.format("pFn.accept %s, %s", pPixel, pLastPixel));
         if (pPixel != null && (isPixelActionOn() || isPixelActionOff() || isPixelActionDeletePixelChain() || isPixelActionChainThickness())) {
-            if (mMouseDragLastPixel != null && !mMouseDragLastPixel.equals(pPixel)) {
-                mLogger.fine("mouseDragEventPixelViewFillIn ...");
-                final int dX = pPixel.getX() - mMouseDragLastPixel.getX();
-                final int dY = pPixel.getY() - mMouseDragLastPixel.getY();
+            if (pLastPixel != null && !pLastPixel.equals(pPixel)) {
+                mLogger.fine("pFn.accept ...");
+                final int dX = pPixel.getX() - pLastPixel.getX();
+                final int dY = pPixel.getY() - pLastPixel.getY();
                 if (Math.abs(dX) >= Math.abs(dY)) { // fill in missing x
-                    final int from = Math.min(mMouseDragLastPixel.getX(), pPixel.getX());
-                    final int to = Math.max(mMouseDragLastPixel.getX(), pPixel.getX());
+                    final int from = Math.min(pLastPixel.getX(), pPixel.getX());
+                    final int to = Math.max(pLastPixel.getX(), pPixel.getX());
                     IntStream.range(from, to).forEach(x -> {
-                        final int y = (int) Math.round(mMouseDragLastPixel.getY() + (((double) x - mMouseDragLastPixel.getX()) / dX) * dY);
+                        final int y = (int) Math.round(pLastPixel.getY() + (((double) x - pLastPixel.getX()) / dX) * dY);
                         final Optional<Pixel> pixel = getPixelMap().getOptionalPixelAt(x, y);
-                        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn X  %s, %s", x, y));
-                        pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), p));
+                        mLogger.fine(() -> String.format("pFn.accept X  %s, %s", x, y));
+                        pixel.ifPresent(p -> pFn.accept(UIEvent.createMouseEvent(pEvent, x, y), p));
                     });
                 } else { // fill in missing y
-                    final int from = Math.min(mMouseDragLastPixel.getY(), pPixel.getY());
-                    final int to = Math.max(mMouseDragLastPixel.getY(), pPixel.getY());
+                    final int from = Math.min(pLastPixel.getY(), pPixel.getY());
+                    final int to = Math.max(pLastPixel.getY(), pPixel.getY());
                     IntStream.range(from, to).forEach(y -> {
-                        final int x = (int) Math.round(mMouseDragLastPixel.getX() + (((double) y - mMouseDragLastPixel.getY()) / dY) * dX);
+                        final int x = (int) Math.round(pLastPixel.getX() + (((double) y - pLastPixel.getY()) / dY) * dX);
                         final Optional<Pixel> pixel = getPixelMap().getOptionalPixelAt(x, y);
-                        mLogger.fine(() -> String.format("mouseDragEventPixelViewFillIn Y  %s, %s", x, y));
-                        pixel.ifPresent(p -> mouseDragEventPixelView(UIEvent.createMouseEvent(pEvent, x, y), p));
+                        mLogger.fine(() -> String.format("pFn.accept Y  %s, %s", x, y));
+                        pixel.ifPresent(p -> pFn.accept(UIEvent.createMouseEvent(pEvent, x, y), p));
                     });
                 }
             }
         }
-        mouseDragEventPixelView(pEvent, pPixel);
-        mMouseDragLastPixel = pPixel;
+        pFn.accept(pEvent, pPixel);
     }
 
     private void mouseDragEventMoveView(final IUIEvent pEvent, @NonNull final Pixel pPixel) {
