@@ -2,9 +2,15 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import lombok.NonNull;
 import lombok.val;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -13,8 +19,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static com.ownimage.perception.pixelMap.PixelConstants.*;
-import static org.junit.Assert.*;
+import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
+import static com.ownimage.perception.pixelMap.PixelConstants.IN_CHAIN;
+import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
+import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PixelMapTest {
     private static List<Pixel> chainS1 = Arrays.asList(
@@ -44,7 +55,7 @@ public class PixelMapTest {
     public void process01_reset_01() {
         // GIVEN
         val underTest = Utility.createMap(2000, 1500);
-        underTest.setValue(1, 1, (byte)(VISITED | IN_CHAIN | NODE ));
+        underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE));
         val start = Instant.now();
         // WHEN
         underTest.process01_reset(null);
@@ -60,7 +71,7 @@ public class PixelMapTest {
     public void process01_reset_02() {
         // GIVEN
         val underTest = Utility.createMap(2000, 1500);
-        underTest.setValue(1, 1, (byte)(VISITED | IN_CHAIN | NODE | EDGE));
+        underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE));
         val start = Instant.now();
         // WHEN
         underTest.process01_reset(null);
@@ -602,6 +613,7 @@ public class PixelMapTest {
         pixelMap = pixelMap.actionPixelOn(pixels);
         assertEquals(1, pixelMap.getPixelChainCount());
     }
+
     @Test
     public void testBuildChain_01() {
         // GIVEN WHEN
@@ -626,16 +638,16 @@ public class PixelMapTest {
             assertEquals(2, pPixelMap.getPixelChainCount());
             List<PixelChain> chains1 = pPixelMap.getPixelChains(start1);
             assertEquals(1, chains1.size());
-            assertEquals(IPixelChain.Thickness.Normal, chains1.get(0).getThickness());
+            assertEquals(Thickness.Normal, chains1.get(0).getThickness());
             List<PixelChain> chains2 = pPixelMap.getPixelChains(start2);
             assertEquals(1, chains2.size());
             assertEquals(pThickness, chains2.get(0).getThickness());
         };
-        test.accept(pixelMap, IPixelChain.Thickness.Normal);
+        test.accept(pixelMap, Thickness.Normal);
         // WHEN
-        pixelMap = pixelMap.actionSetPixelChainThickness(start2, IPixelChain.Thickness.Thick);
+        pixelMap = pixelMap.actionSetPixelChainThickness(start2, t -> Thickness.Thick);
         // THEN
-        test.accept(pixelMap, IPixelChain.Thickness.Thick);
+        test.accept(pixelMap, Thickness.Thick);
     }
 
     @Before

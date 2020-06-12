@@ -12,11 +12,19 @@ import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
-import com.ownimage.framework.util.*;
+import com.ownimage.framework.util.Counter;
+import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.KColor;
+import com.ownimage.framework.util.MyBase64;
+import com.ownimage.framework.util.PegCounter;
+import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.SplitTimer;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.render.ITransformResult;
@@ -26,11 +34,26 @@ import lombok.NonNull;
 import lombok.val;
 
 import java.awt.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -165,6 +188,29 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return changesMade.get() ? clone : this;
     }
 
+    public PixelMap actionSetPixelChainThicknessReset(
+            @NonNull Collection<Pixel> pPixels,
+            int shortLength,
+            int mediumLength,
+            int longLength
+    ) {
+        PixelMap clone = new PixelMap(this);
+        val changesMade = new StrongReference<>(false);
+        pPixels.stream()
+                .filter(p -> p.isEdge(clone))
+                .flatMap(p -> this.getPixelChains(p).stream())
+                .distinct()
+                .forEach(pc -> {
+                    var update = pc.setThickness(shortLength, mediumLength, longLength);
+                    if (update != pc) {
+                        clone.pixelChainsRemove(pc);
+                        clone.pixelChainsAdd(update);
+                        changesMade.set(true);
+                    }
+                });
+        return changesMade.get() ? clone : this;
+    }
+
     public PixelMap actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
         val pixelChains = getPixelChains(pPixel);
         if (getPixelChains(pPixel).isEmpty() || pixelChains.size() != 1) {
@@ -240,11 +286,27 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return clone;
     }
 
-    public PixelMap actionSetPixelChainThickness(Pixel pPixel, PixelChain.Thickness pThickness) {
+    public PixelMap actionSetPixelChainThickness(Pixel pPixel, Function<Thickness, Thickness> pMap) {
         PixelMap clone = new PixelMap(this);
         clone.getPixelChains(pPixel).forEach(pc -> {
-            clone.pixelChainsRemove(pc);
-            clone.pixelChainsAdd(pc.setThickness(pThickness));
+            var currentThickness = pc.getThickness();
+            var newThickness = pMap.apply(currentThickness);
+            if (newThickness != currentThickness) {
+                clone.pixelChainsRemove(pc);
+                clone.pixelChainsAdd(pc.setThickness(newThickness));
+            }
+        });
+        return clone;
+    }
+
+    public PixelMap actionSetPixelChainThicknessReset(Pixel pPixel, int shortLength, int mediumLength, int longLength) {
+        PixelMap clone = new PixelMap(this);
+        clone.getPixelChains(pPixel).forEach(pc -> {
+            var update = pc.setThickness(shortLength, mediumLength, longLength);
+            if (update != pc) {
+                clone.pixelChainsRemove(pc);
+                clone.pixelChainsAdd(update);
+            }
         });
         return clone;
     }
@@ -1374,4 +1436,5 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public int getDataSize() {
         return mData.getSize();
     }
+
 }
