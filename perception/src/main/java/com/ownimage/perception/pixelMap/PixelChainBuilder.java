@@ -75,7 +75,6 @@ public class PixelChainBuilder implements IPixelChain {
 
     public PixelChain build(final PixelMap pPixelMap) {
         return new PixelChain(
-                pPixelMap,
                 new ImmutableVectorClone<Pixel>().addAll(mPixels.toVector()),
                 new ImmutableVectorClone<ISegment>().addAll(mSegments.toVector()),
                 new ImmutableVectorClone<IVertex>().addAll(mVertexes.toVector()),

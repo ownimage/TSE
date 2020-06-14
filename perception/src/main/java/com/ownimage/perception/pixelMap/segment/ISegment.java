@@ -22,19 +22,19 @@ public interface ISegment extends Serializable, Cloneable {
      *
      * @return the sum of the distances.
      */
-    double calcError(final PixelMap pPixelMap, final IPixelChain pPixelChain);
+    double calcError(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    boolean closerThanActual(final PixelMap pPixelMap, final IPixelChain pPixelChain, final IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
+    boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
     double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel);
 
     int getSegmentIndex();
 
-    boolean closerThan(final PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
+    boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
 
-    double closestLambda(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pPoint);
+    double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint);
 
-    double distance(final PixelMap pPixelMap, IPixelChain pPixelChain, final Point pUVHWPoint);
+    double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
 
     /**
      * Gets the end index (into the mPixels) of this segment.
@@ -44,7 +44,7 @@ public interface ISegment extends Serializable, Cloneable {
      */
     int getEndIndex(IPixelChain pPixelChain);
 
-    Line getEndTangent(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end tangent.
@@ -53,7 +53,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
-    Vector getEndTangentVector(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end uhvw point.
@@ -62,7 +62,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
-    Point getEndUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the end Vertex of this segment.
@@ -72,11 +72,11 @@ public interface ISegment extends Serializable, Cloneable {
      */
     IVertex getEndVertex(IPixelChain pPixelChain);
 
-    double getLength(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getLength(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    int getPixelLength(final IPixelChain pPixelChain);
+    int getPixelLength(IPixelChain pPixelChain);
 
-    Point getPointFromLambda(final PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
+    Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
 
     /**
      * Gets the start index (into the mPixels) of this segment.
@@ -86,17 +86,17 @@ public interface ISegment extends Serializable, Cloneable {
      */
     int getStartIndex(IPixelChain pPixelChain);
 
-    Line getStartTangent(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
      *
      *
      * @param pPixelMap the PixelMap performing the this operation
-     * @param pPixelChain
+     * @param pPixelChain the owning PixelChain
      * @return the start tangent
      */
-    Vector getStartTangentVector(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start uhvw point.
@@ -106,7 +106,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
-    Point getStartUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start Vertex of this segment.
@@ -116,21 +116,21 @@ public interface ISegment extends Serializable, Cloneable {
      */
     IVertex getStartVertex(IPixelChain pPixelChain);
 
-    void graffiti(final PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
+    void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
-    double getMaxX(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMaxY(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMinX(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    double getMinY(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     ISegment withStartPosition(double pStartPosition);
 
-    ISegment getNextSegment(final IPixelChain pPixelChain);
+    ISegment getNextSegment(IPixelChain pPixelChain);
 
-    ISegment getPreviousSegment(final IPixelChain pPixelChain);
+    ISegment getPreviousSegment(IPixelChain pPixelChain);
 
-    boolean containsPixelIndex(final IPixelChain pPixelChain, int pIndex);
+    boolean containsPixelIndex(IPixelChain pPixelChain, int pIndex);
 }

@@ -53,7 +53,7 @@ public class PixelChainTest {
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().get();
-        chain = chain.approximate(pixelMap, tolerance, lineCurvePreference);
+        chain = chain.approximate(pixelMap, tolerance);
         assertEquals(3, chain.getSegmentCount());
     }
 
@@ -79,7 +79,7 @@ public class PixelChainTest {
 
         // WHEN
         var underTest = createPixelChain();
-        var approx = underTest.approximate(pixelMap, tolerance, lineCurvePreference);
+        var approx = underTest.approximate(pixelMap, tolerance);
 
         // AND WHEN
         var reverse = approx.reverse(pixelMap);

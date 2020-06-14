@@ -12,21 +12,6 @@ import java.util.stream.Stream;
 
 public interface IPixelChain {
 
-    enum Thickness {
-        None, Thin, Normal, Thick
-    }
-
-    enum PegCounters {
-        StartSegmentStraightToCurveAttempted,
-        StartSegmentStraightToCurveSuccessful,
-        RefineCornersAttempted,
-        RefineCornersSuccessful,
-        MidSegmentEatForwardAttempted,
-        MidSegmentEatForwardSuccessful,
-        refine01FirstSegmentAttempted,
-        refine01FirstSegmentSuccessful
-    }
-
     default PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
     }
@@ -36,7 +21,6 @@ public interface IPixelChain {
     IImmutableVector<ISegment> getSegments();
 
     IImmutableVector<IVertex> getVertexes();
-
 
     default Stream<Pixel> streamPixels() {
         return getPixels().stream();
@@ -51,7 +35,7 @@ public interface IPixelChain {
     }
 
     default int getMaxPixelIndex() {
-        return getPixelCount() -1;
+        return getPixelCount() - 1;
     }
 
     default ISegment getSegment(final int i) {
@@ -194,5 +178,24 @@ public interface IPixelChain {
 
     default IVertex getLastVertex() {
         return getVertexes().lastElement().orElse(null);
+    }
+
+    enum Thickness {
+        Thick, Normal() {
+            public String toString() {
+                return "Medium";
+            }
+        }, Thin, None
+    }
+
+    enum PegCounters {
+        StartSegmentStraightToCurveAttempted,
+        StartSegmentStraightToCurveSuccessful,
+        RefineCornersAttempted,
+        RefineCornersSuccessful,
+        MidSegmentEatForwardAttempted,
+        MidSegmentEatForwardSuccessful,
+        refine01FirstSegmentAttempted,
+        refine01FirstSegmentSuccessful
     }
 }

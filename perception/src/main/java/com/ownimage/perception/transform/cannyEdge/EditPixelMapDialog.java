@@ -53,6 +53,7 @@ import lombok.val;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
@@ -93,7 +94,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ColorControl mNodeColor;
     private final ColorControl mWorkingColor;
     private final ObjectControl<PixelAction> mPixelAction;
-    private final ObjectControl<ThicknessOptions> mThickness;
+    private final ObjectControl<ThicknessOptions> mThicknessOption;
+    private final ObjectControl<Thickness> mThickMapsTo;
+    private final ObjectControl<Thickness> mMediumMapsTo;
+    private final ObjectControl<Thickness> mThinMapsTo;
+    private final ObjectControl<Thickness> mNoneMapsTo;
 
     private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
 
@@ -141,7 +146,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mNodeColor = new ColorControl("Node Color", "nodeColor", mGeneralContainer, getProperties().getCETEPMDNodeColor());
         mWorkingColor = new ColorControl("Working Color", "workingColor", mGeneralContainer, getProperties().getCETEPMDWorkingColor());
         mPixelAction = new ObjectControl("Pixel Action", "pixelAction", mGeneralContainer, PixelAction.On, PixelAction.values());
-        mThickness = new ObjectControl("Thickness", "Thickness", mGeneralContainer, ThicknessOptions.None, ThicknessOptions.values());
+        mThicknessOption = new ObjectControl("Thickness", "thickness", mGeneralContainer, ThicknessOptions.None, ThicknessOptions.values());
+        mThickMapsTo = new ObjectControl("Thick maps to", "thickMapsTo", mGeneralContainer, Thickness.Thick, Thickness.values());
+        mMediumMapsTo = new ObjectControl("Medium maps to", "mediumMapsTo", mGeneralContainer, Thickness.Normal, Thickness.values());
+        mThinMapsTo = new ObjectControl("Thin maps to", "thinMapsTo", mGeneralContainer, Thickness.Thin, Thickness.values());
+        mNoneMapsTo = new ObjectControl("None maps to", "noneMapsTo", mGeneralContainer, Thickness.None, Thickness.values());
 
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
         mPictureControl.setGrafitti(this);
@@ -154,8 +163,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mNodeColor.addControlChangeListener(this::mGrafitiChangeListener);
         mShowGraffiti.addControlChangeListener(this::mGrafitiChangeListener);
     }
-
-    ;
 
     private void zoomIn() {
         mZoom.setValue(mZoom.getValue() + 1);
@@ -273,7 +280,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
                 updateCurves();
             }
-            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction, mShowEdges)) {
+            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction, mShowEdges, mThicknessOption)) {
                 updateControlVisibility();
             }
             if (pControl.isOneOf(mAutoUpdateCurves)) {
@@ -290,10 +297,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void updateControlVisibility() {
         mAutoUpdateCurves.setVisible(mShowCurves.getValue());
         mUpdateCurves.setVisible(mShowCurves.getValue() && !mAutoUpdateCurves.getValue());
-        mThickness.setEnabled(isPixelActionChainThickness());
+        mThicknessOption.setEnabled(isPixelActionChainThickness());
         mEdgeColor.setVisible(mShowEdges.getValue());
         mNodeColor.setVisible(mShowEdges.getValue());
         mEdgesOpacity.setVisible(mShowEdges.getValue());
+
+        boolean showThicknessMapper = isPixelActionChainThickness() && mThicknessOption.getValue() == ThicknessOptions.Map;
+        mNoneMapsTo.setVisible(showThicknessMapper);
+        mThinMapsTo.setVisible(showThicknessMapper);
+        mMediumMapsTo.setVisible(showThicknessMapper);
+        mThickMapsTo.setVisible(showThicknessMapper);
     }
 
     @Override
@@ -481,11 +494,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 if (isPixelActionDeletePixelChain()) {
                     change |= mouseClickEventPixelViewPixelChainDelete(pPixel);
                 }
-                if (isPixelActionChainThickness() && mThickness.getValue().isNormal()) {
+                if (isPixelActionChainThickness()) {
                     change |= mouseClickEventPixelViewPixelChainThickness(pPixel);
-                }
-                if (isPixelActionChainThickness() && mThickness.getValue() == ThicknessOptions.Reset) {
-                    change |= mouseClickEventPixelViewPixelChainThicknessReset(pPixel);
                 }
                 if (isPixelActionCopyToClipboard()) {
                     actionCopyToClipboard(pPixel);
@@ -527,12 +537,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mWorkingPixelsArray.clear();
         addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
         return actionPixelChainThickness(mWorkingPixelsArray);
-    }
-
-    private boolean mouseClickEventPixelViewPixelChainThicknessReset(@NonNull Pixel pPixel) {
-        mWorkingPixelsArray.clear();
-        addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
-        return actionPixelChainThicknessReset(mWorkingPixelsArray);
     }
 
     private void actionCopyToClipboard(Pixel pPixel) {
@@ -666,11 +670,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (isPixelActionDeletePixelChain()) {
                 actionPixelChainDelete(mWorkingPixelsArray);
             }
-            if (isPixelActionChainThickness() && mThickness.getValue().isNormal()) {
+            if (isPixelActionChainThickness() ) {
                 actionPixelChainThickness(mWorkingPixelsArray);
-            }
-            if (isPixelActionChainThickness() && mThickness.getValue() == ThicknessOptions.Reset) {
-                actionPixelChainThicknessReset(mWorkingPixelsArray);
             }
             mWorkingPixelsArray.clear();
             autoUpdateCurves();
@@ -893,24 +894,32 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (pPixels.isEmpty()) {
             return false;
         }
-        PixelMap undo = getPixelMap();
-        setPixelMap(getPixelMap().actionSetPixelChainThickness(pPixels, mThickness.getValue().getPixelChainThickness()));
-        if (undo != getPixelMap()) {
-            addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
-            return true;
+        Function<PixelChain, Thickness> mapper = pc -> pc.getThickness();
+        switch (mThicknessOption.getValue()) {
+            case None:
+            case Thin:
+            case Medium:
+            case Thick:
+                mapper = pc -> mThicknessOption.getValue().getPixelChainThickness();
+                break;
+            case Reset:
+                var shortLength = mCannyEdgeTransform.getShortLineLength();
+                var mediumLength = mCannyEdgeTransform.getMediumLineLength();
+                var longLength = mCannyEdgeTransform.getLongLineLength();
+                mapper =pc -> pc.getThickness(shortLength, mediumLength, longLength);
+                break;
+            case Map:
+                var map  = new EnumMap<Thickness, Thickness>(Thickness.class);
+                map.put(Thickness.Thick, mThickMapsTo.getValue());
+                map.put(Thickness.Normal, mMediumMapsTo.getValue());
+                map.put(Thickness.Thin, mThinMapsTo.getValue());
+                map.put(Thickness.None, mNoneMapsTo.getValue());
+                mapper = pc -> map.get(pc.getThickness());
+                break;
         }
-        return false;
-    }
 
-    private boolean actionPixelChainThicknessReset(@NonNull Collection<Pixel> pPixels) {
-        if (pPixels.isEmpty()) {
-            return false;
-        }
-        int shortLength = mCannyEdgeTransform.getShortLineLength();
-        int mediumLength = mCannyEdgeTransform.getMediumLineLength();
-        int longLength = mCannyEdgeTransform.getLongLineLength();
         PixelMap undo = getPixelMap();
-        setPixelMap(getPixelMap().actionSetPixelChainThicknessReset(pPixels, shortLength, mediumLength, longLength));
+        setPixelMap(getPixelMap().actionSetPixelChainThickness(pPixels, mapper));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
             return true;
@@ -942,36 +951,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Approximate Curves Only PixelChain", undo, getPixelMap());
             return true;
-        }
-        return false;
-    }
-
-    private boolean actionPixelChainThickness(@NonNull Pixel pPixel) {
-        PixelMap undo = getPixelMap();
-        if (!getPixelMap().getPixelChains(pPixel).isEmpty()) {
-            graffitiPixelWorkingColor(pPixel);
-        }
-        Function<Thickness, Thickness> map = t -> mThickness.getValue().getPixelChainThickness();
-        setPixelMap(getPixelMap().actionSetPixelChainThickness(pPixel, map));
-        if (undo != getPixelMap()) {
-            addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
-            return true;
-        }
-        return false;
-    }
-
-    private boolean actionPixelChainThicknessReset(Pixel pPixel) {
-        int shortLength = mCannyEdgeTransform.getShortLineLength();
-        int mediumLength = mCannyEdgeTransform.getMediumLineLength();
-        int longLength = mCannyEdgeTransform.getLongLineLength();
-        PixelMap undo = getPixelMap();
-        if (!getPixelMap().getPixelChains(pPixel).isEmpty()) {
-            graffitiPixelWorkingColor(pPixel);
-            setPixelMap(getPixelMap().actionSetPixelChainThicknessReset(pPixel, shortLength, mediumLength, longLength));
-            if (undo != getPixelMap()) {
-                addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
-                return true;
-            }
         }
         return false;
     }
@@ -1066,10 +1045,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private enum ThicknessOptions {
-        None(Thickness.None),
-        Thin(Thickness.Thin),
-        Normal(Thickness.Normal),
         Thick(Thickness.Thick),
+        Medium(Thickness.Normal),
+        Thin(Thickness.Thin),
+        None(Thickness.None),
         Reset(null),
         Map(null);
 

@@ -47,7 +47,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
@@ -172,7 +171,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     public PixelMap actionSetPixelChainThickness(
             @NonNull Collection<Pixel> pPixels,
-            @NonNull PixelChain.Thickness pThickness
+            @NonNull Function<PixelChain, Thickness> pMap
     ) {
         PixelMap clone = new PixelMap(this);
         val changesMade = new StrongReference<>(false);
@@ -181,9 +180,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .flatMap(p -> this.getPixelChains(p).stream())
                 .distinct()
                 .forEach(pc -> {
-                    clone.pixelChainsRemove(pc);
-                    clone.pixelChainsAdd(pc.setThickness(pThickness));
-                    changesMade.set(true);
+                    var currentThickness = pc.getThickness();
+                    var newThickness = pMap.apply(pc);
+                    if (newThickness != currentThickness) {
+                        clone.pixelChainsRemove(pc);
+                        clone.pixelChainsAdd(pc.setThickness(newThickness));
+                        changesMade.set(true);
+                    }
                 });
         return changesMade.get() ? clone : this;
     }
@@ -283,31 +286,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public PixelMap actionPixelToggle(Pixel pPixel) {
         PixelMap clone = new PixelMap(this);
         pPixel.setEdge(clone, !pPixel.isEdge(this));
-        return clone;
-    }
-
-    public PixelMap actionSetPixelChainThickness(Pixel pPixel, Function<Thickness, Thickness> pMap) {
-        PixelMap clone = new PixelMap(this);
-        clone.getPixelChains(pPixel).forEach(pc -> {
-            var currentThickness = pc.getThickness();
-            var newThickness = pMap.apply(currentThickness);
-            if (newThickness != currentThickness) {
-                clone.pixelChainsRemove(pc);
-                clone.pixelChainsAdd(pc.setThickness(newThickness));
-            }
-        });
-        return clone;
-    }
-
-    public PixelMap actionSetPixelChainThicknessReset(Pixel pPixel, int shortLength, int mediumLength, int longLength) {
-        PixelMap clone = new PixelMap(this);
-        clone.getPixelChains(pPixel).forEach(pc -> {
-            var update = pc.setThickness(shortLength, mediumLength, longLength);
-            if (update != pc) {
-                clone.pixelChainsRemove(pc);
-                clone.pixelChainsAdd(update);
-            }
-        });
         return clone;
     }
 
@@ -758,7 +736,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         StrongReference<Boolean> result = new StrongReference<>(false);
         candidateSegments.stream()
                 .filter(tuple -> tuple._2().closerThanActual(this, tuple._1(), mTransformSource, uhvw, pMultiplier))
-                .findFirst()
+                .findAny()
                 .ifPresent(tuple -> result.set(true));
         return result.get();
     }
@@ -800,7 +778,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         val lineCurvePreference = getTransformSource().getLineCurvePreference();
         clone.mPixelChains.stream()
                 .parallel()
-                .map(pc -> pc.approximate(this, tolerance, lineCurvePreference))
+                .map(pc -> pc.approximate(this, tolerance))
                 .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
@@ -992,7 +970,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         double lineCurvePreference = getLineCurvePreference();
         return generateChains(this, pNode)
                 .parallelStream()
-                .map(pc -> pc.approximate(this, tolerance, lineCurvePreference))
+                .map(pc -> pc.approximate(this, tolerance))
                 .map(pc -> pc.approximateCurvesOnly(this, tolerance, lineCurvePreference));
     }
 
@@ -1019,7 +997,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                             .ifPresent(node -> {
                                 List<PixelChain> chains = generateChains(this, node)
                                         .parallelStream()
-                                        .map(pc2 -> pc2.approximate(this, tolerance, lineCurvePreference))
+                                        .map(pc2 -> pc2.approximate(this, tolerance))
                                         .collect(Collectors.toList());
                                 addPixelChains(chains);
                             })
@@ -1120,7 +1098,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
-        mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, tolerance, lineCurvePreference)));
+        mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, tolerance)));
         pixelChainsClear();
         pixelChainsAddAll(refined);
         mLogger.info("approximate - done");
@@ -1352,7 +1330,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-        mPixelChains.stream().parallel().forEach(pc -> pc.validate(this, true, "PixelMap::validate"));
+        mPixelChains.stream().parallel().forEach(pc -> pc.validate(true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {
