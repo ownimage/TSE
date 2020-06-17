@@ -11,14 +11,8 @@ import java.awt.*;
 
 public interface ISegmentGrafittiHelper {
 
-    void graffitiLine(Point p1, Point p2);
-
     void graffitiLine(Point p1, Point p2, Color pColor);
 
-    void graffitiControlLine(Point p1, Point p2);
-
     void graffitiControlPoint(Point p1);
-
-    void graffitiSelectedControlPoint(Point p1);
 
 }

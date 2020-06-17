@@ -27,7 +27,7 @@ public class EqualizeValues {
 
     private int mLongLineLength;
 
-    public EqualizeValues(final double pIgnoreFraction, final double pShortFraction, final double pMediumFraction) {
+    private EqualizeValues(double pIgnoreFraction, double pShortFraction, double pMediumFraction) {
         if (pIgnoreFraction + pShortFraction
                 + pMediumFraction >= 1.0d) {
             throw new IllegalArgumentException("pIgnoreFraction + pShortFraction + pMediumFraction must be less than 1.0d. pIgnoreFraction=" + pIgnoreFraction
@@ -80,7 +80,7 @@ public class EqualizeValues {
         return mShortLineLength;
     }
 
-    public void setReturnValues(final int pShortLineLength, final int pMediumLineLength, final int pLongLineLength) {
+    public void setReturnValues(int pShortLineLength, int pMediumLineLength, int pLongLineLength) {
         if (pShortLineLength > pMediumLineLength || pShortLineLength > pLongLineLength
                 || pMediumLineLength > pLongLineLength) {
             throw new IllegalArgumentException("Arguments not consistent, pShortLineLength <= pMediumLineLength <= pLongLineLength.  pShortLineLength="
@@ -92,12 +92,13 @@ public class EqualizeValues {
         mLongLineLength = pLongLineLength;
     }
 
+    @SuppressWarnings("FloatingPointEquality")
     @Override
     public String toString() {
-        if (mLongFraction != 1.0d) {
-            return String.format("%d/%d/%d/%d", (int) (100 * mIgnoreFraction), (int) (100 * mShortFraction), (int) (100 * mMediumFraction), (int) (100 * mLongFraction));
-        } else {
+        if (mLongFraction == 1.0d) {
             return "-- Custom --";
+        } else {
+            return String.format("%d/%d/%d/%d", (int) (100 * mIgnoreFraction), (int) (100 * mShortFraction), (int) (100 * mMediumFraction), (int) (100 * mLongFraction));
         }
     }
 }

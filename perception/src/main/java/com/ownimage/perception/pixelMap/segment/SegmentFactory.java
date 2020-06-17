@@ -9,6 +9,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class SegmentFactory {
     }
 
 
-    public final static Logger mLogger = Framework.getLogger();
+    private final static Logger mLogger = Framework.getLogger();
 
     /**
      * Creates the curve segment starting at pStart, ending at pEnd and the gradient of the curve at the start and end is towards pP1.
@@ -34,9 +35,9 @@ public class SegmentFactory {
      * @param pP1         the point that the start and end gradient goes through
      * @return the curve approximation
      */
-    static public CurveSegment createTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    static public CurveSegment createTempCurveSegmentTowards(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex, Point pP1) {
         try {
-            final CurveSegment segment = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1);
+            CurveSegment segment = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1);
             if (
                     segment.getA().length2() != 0
                     && segment.getMinX(pPixelMap, pPixelChain) > 0.0d
@@ -48,18 +49,18 @@ public class SegmentFactory {
             } else {
                 return null;
             }
-        } catch (final Throwable pT) {
+        } catch (Exception pT) {
             mLogger.severe(FrameworkLogger.throwableToString(pT));
         }
         return null;
     }
 
-    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex, final Point pP1) {
+    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex, Point pP1) {
         return Optional.ofNullable(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 
 
-    static public StraightSegment createTempStraightSegment(final PixelMap pPixelMap, final IPixelChain pPixelChain, final int pSegmentIndex) {
+    static public StraightSegment createTempStraightSegment(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
         return new StraightSegment(pPixelMap, pPixelChain, pSegmentIndex);
     }
 

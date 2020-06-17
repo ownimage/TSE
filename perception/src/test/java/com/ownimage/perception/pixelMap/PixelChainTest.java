@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import lombok.val;
 import org.junit.*;
+import org.mockito.Mock;
 
 import java.util.Optional;
 
@@ -11,14 +12,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PixelChainTest {
+
+    @Mock
+    PixelMap pixelMap;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory(false);
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    @Before
+    public void before() {
+        when(pixelMap.getHeight()).thenReturn(100);
+        when(pixelMap.getWidth()).thenReturn(100);
     }
 
     @Test
@@ -39,10 +46,7 @@ public class PixelChainTest {
         when(ipmts.getHeight()).thenReturn(input.length);
         when(ipmts.getLineTolerance()).thenReturn(1.2d);
         when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
-        final double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
-        final double lineCurvePreference = ipmts.getLineCurvePreference();
-
-
+        double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
 
         PixelMap pixelMap = Utility.createMap(input, ipmts);
         pixelMap.process03_generateNodes(null);
@@ -52,17 +56,9 @@ public class PixelChainTest {
         assertEquals(1, pixelMap.getPixelChainCount());
 
         // THEN
-        PixelChain chain = pixelMap.streamPixelChains().findFirst().get();
+        PixelChain chain = pixelMap.streamPixelChains().findFirst().orElseThrow();
         chain = chain.approximate(pixelMap, tolerance);
         assertEquals(3, chain.getSegmentCount());
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
@@ -74,8 +70,7 @@ public class PixelChainTest {
         when(ipmts.getHeight()).thenReturn(2000);
         when(ipmts.getLineTolerance()).thenReturn(lineTolerance);
         when(ipmts.getLineCurvePreference()).thenReturn(3.0d);
-        final double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
-        final double lineCurvePreference = ipmts.getLineCurvePreference();
+        double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
 
         // WHEN
         var underTest = createPixelChain();
@@ -196,7 +191,7 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getOptionalPixel(2).get();
+        val actual = underTest.getOptionalPixel(2).orElseThrow();
         // THEN
         Assert.assertEquals(new Pixel(3, 5), actual);
     }
@@ -206,7 +201,7 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getPixel(-1);
+        underTest.getPixel(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -214,7 +209,7 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getPixel(25);
+        underTest.getPixel(25);
     }
 
     @Test
@@ -238,7 +233,7 @@ public class PixelChainTest {
         Assert.assertEquals(expected, actual);
     }
 
-    public PixelChain createPixelChain() {
+    private PixelChain createPixelChain() {
         Pixel[] pixels = new Pixel[]{
                 new Pixel(4, 6),
                 new Pixel(3, 5),
@@ -259,7 +254,7 @@ public class PixelChainTest {
         };
         var pixelMap = Utility.createMap(10, 2000);
 
-        var pixelChain = new PixelChain(new Node(3, 7));
+        var pixelChain = new PixelChain(pixelMap, new Node(3, 7));
         for (Pixel pixel : pixels) {
             pixelChain = pixelChain.add(pixelMap, pixel);
         }
@@ -267,7 +262,7 @@ public class PixelChainTest {
         return pixelChain;
     }
 
-    public String dumpPixelChain(final PixelChain pPixelChain) {
+    private String dumpPixelChain(PixelChain pPixelChain) {
         var sb = new StringBuilder();
         pPixelChain.streamSegments().forEach(s -> {
             sb.append(s);

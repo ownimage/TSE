@@ -19,8 +19,6 @@ import java.io.Serializable;
  */
 public interface IVertex extends Serializable, Comparable<IVertex> {
 
-    Line calcLocalTangent(PixelMap pPixelMap, IPixelChain pPixelChain, int pLength);
-
     ISegment getEndSegment(IPixelChain pPixelChain);
 
     int getPixelIndex();
@@ -29,13 +27,10 @@ public interface IVertex extends Serializable, Comparable<IVertex> {
 
     int getVertexIndex();
 
-    boolean isPositionSpecified();
+    Line calcTangent(IPixelChain pPixelChain, PixelMap pPixelMap);
 
-    Line calcTangent(IPixelChain pPixelChain, final PixelMap pPixelMap);
-
-    Point getUHVWPoint(final PixelMap pPixelMap, IPixelChain pPixelChain);
+    Point getUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     Pixel getPixel(IPixelChain pPixelChain);
 
-    IVertex withPosition(IPixelChain pPixelChain, Point pPosition);
 }

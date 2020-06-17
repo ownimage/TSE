@@ -30,7 +30,7 @@ public abstract class SegmentBase implements ISegment {
         this(pSegmentIndex, 0.0d);
     }
 
-    public SegmentBase(int pSegmentIndex, double pStartPosition) {
+    SegmentBase(int pSegmentIndex, double pStartPosition) {
         mSegmentIndex = pSegmentIndex;
         mStartPosition = pStartPosition;
     }

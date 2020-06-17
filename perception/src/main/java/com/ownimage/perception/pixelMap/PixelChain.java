@@ -67,15 +67,16 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     /**
      * Instantiates a new pixel chain.
      *
+     * @param pPixelMap
      * @param pStartNode the start node
      */
-    public PixelChain(Node pStartNode) {
+    public PixelChain(PixelMap pPixelMap, Node pStartNode) {
         if (pStartNode == null) {
             throw new IllegalArgumentException("pStartNode must not be null");
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(this, 0, 0));
+        mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(pPixelMap, this, 0, 0));
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -111,7 +112,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public PixelChain add(PixelMap pPixelMap, Pixel pPixel) {
         val builder = builder();
         builder.changePixels(p -> p.add(pPixel));
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     /**
@@ -137,7 +138,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartIndex(pOtherChain), s.getEndIndex(pOtherChain))));
         }
 
-        builder.build(pPixelMap).validate(false, "merge");
+        builder.build().validate(false, "merge");
         pOtherChain.validate(false, "merge");
 
         if (!builder.getPixels().lastElement().orElseThrow().equals(pOtherChain.firstPixel())) {
@@ -150,17 +151,17 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = Vertex.createVertex(builder.build(pPixelMap), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
+            IVertex end = Vertex.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
             builder.changeVertexes(v -> v.add(end));
-            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(pPixelMap), builder.getSegments().size());
+            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
             builder.changeSegments(s -> s.add(newSegment));
         });
 
-        mLogger.fine(() -> String.format("clone.mPixels.size() = %s", builder.getPixels().size()));
-        mLogger.fine(() -> String.format("clone.mSegments.size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.getPixels().size()));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
         mSegments.forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     PixelChain approximate(
@@ -169,7 +170,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     ) {
         val builder = builder();
         builder.approximate(pPixelMap, pTolerance);
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     PixelChain approximateCurvesOnly(
@@ -179,7 +180,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     ) {
         val builder = builder();
         builder.approximateCurvesOnly(pPixelMap, pTolerance, pLineCurvePreference);
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     private void checkAllVertexesAttached() {
@@ -268,7 +269,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 startPosition[0] += segment.getLength(pPixelMap, builder);
             });
             builder.setLength(startPosition[0]);
-            val newPixelChain = builder.build(pPixelMap);
+            val newPixelChain = builder.build();
             newPixelChain.streamSegments().forEach(segment -> pPixelMap.index(newPixelChain, segment, true));
             return newPixelChain;
         } else {
@@ -328,7 +329,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         var builder = builder();
         // builder.refine(pPixelMap, pSource);
         builder.approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     @Override
@@ -364,7 +365,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         Vector<IVertex> vertexes = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = Vertex.createVertex(builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            IVertex v = Vertex.createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
         builder.changeVertexes(v -> v.clear().addAll(vertexes));
@@ -373,12 +374,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         Vector<ISegment> segments = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             if (i != mVertexes.size() - 1) {
-                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(pPixelMap), segments.size());
+                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), segments.size());
                 segments.add(newSegment);
             }
         }
         builder.changeSegments(s -> s.clear().addAll(segments));
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     PixelChain setEndNode(PixelMap pPixelMap, @NonNull Node pNode) {
@@ -393,7 +394,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             builder.getPixel(index).setVisited(pPixelMap, false);
             builder.changePixels(p -> p.remove(index));
         }
-        return builder.build(pPixelMap);
+        return builder.build();
     }
 
     private void setLength(double pLength) {
@@ -442,6 +443,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return clone;
     }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

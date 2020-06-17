@@ -10,6 +10,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
 public class StraightSegment extends SegmentBase {
@@ -23,7 +24,7 @@ public class StraightSegment extends SegmentBase {
         this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
     }
 
-    StraightSegment(
+    private StraightSegment(
             PixelMap pPixelMap,
             IPixelChain pPixelChain,
             int pSegmentIndex,

@@ -11,19 +11,19 @@ package com.ownimage.perception.pixelMap;
 public interface PixelConstants {
 
 
-    public final static int SW = 0;
-    public final static int S = 1;
-    public final static int SE = 2;
-    public final static int W = 3;
-    public final static int E = 5;
-    public final static int NW = 6;
-    public final static int N = 7;
-    public final static int NE = 8;
+    int SW = 0;
+    int S = 1;
+    int SE = 2;
+    int W = 3;
+    int E = 5;
+    int NW = 6;
+    int N = 7;
+    int NE = 8;
 
-    public final static byte ALL = (byte) 127;
-    public final static byte EDGE = (byte) 64;
-    public final static byte VISITED = (byte) 32;
-    public final static byte IN_CHAIN = (byte) 16;
-    public final static byte NODE = (byte) 8;
+    byte ALL = (byte) 127;
+    byte EDGE = (byte) 64;
+    byte VISITED = (byte) 32;
+    byte IN_CHAIN = (byte) 16;
+    byte NODE = (byte) 8;
 
 }

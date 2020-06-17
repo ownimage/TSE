@@ -38,18 +38,22 @@ public interface IPixelChain {
         return getPixelCount() - 1;
     }
 
-    default ISegment getSegment(final int i) {
-        if (getSegments().size() <= i || i < 0) return null;
+    default ISegment getSegment(int i) {
+        if (getSegments().size() <= i || i < 0) {
+            return null;
+        }
         return getSegments().get(i);
     }
 
-    default IVertex getVertex(final int i) {
-        if (getVertexes().size() <= i || i < 0) return null;
+    default IVertex getVertex(int i) {
+        if (getVertexes().size() <= i || i < 0) {
+            return null;
+        }
         return getVertexes().get(i);
     }
 
     @Deprecated
-    default Pixel getPixel(final int pIndex) {
+    default Pixel getPixel(int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
@@ -58,7 +62,7 @@ public interface IPixelChain {
         return getPixels().get(pIndex);
     }
 
-    default Optional<Pixel> getOptionalPixel(final int pIndex) {
+    default Optional<Pixel> getOptionalPixel(int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
             return Optional.empty();
         }
@@ -80,7 +84,7 @@ public interface IPixelChain {
      * @param pIndex    the index
      * @return the UHVW Point
      */
-    default Point getUHVWPoint(final PixelMap pPixelMap, final int pIndex) {
+    default Point getUHVWPoint(PixelMap pPixelMap, int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
@@ -92,18 +96,18 @@ public interface IPixelChain {
         return getSegments().lastElement();
     }
 
-    private double getActualCurvedThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+    private double getActualCurvedThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
         var c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
         var a = c - getWidth(pTransformSource);
         var b = -2.0 * a;
         return a * pFraction * pFraction + b * pFraction + c;
     }
 
-    private double getActualSquareThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+    private double getActualSquareThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
         return getWidth(pTransformSource);
     }
 
-    private double getActualStraightThickness(final IPixelMapTransformSource pTransformSource, final double pFraction) {
+    private double getActualStraightThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
         var min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
         var max = getWidth(pTransformSource);
         return min + pFraction * (max - min);
@@ -115,10 +119,10 @@ public interface IPixelChain {
      * @param pPosition the position
      * @return the actual thickness
      */
-    default double getActualThickness(final IPixelMapTransformSource pTransformSource, final double pPosition) {
+    default double getActualThickness(IPixelMapTransformSource pTransformSource, double pPosition) {
         // TODO needs refinement should not really pass the pTolerance in as this can be determined from the PixelChain.
         // TODO this could be improved for performance
-        final double fraction = getActualThicknessEndFraction(pTransformSource, pPosition);
+        double fraction = getActualThicknessEndFraction(pTransformSource, pPosition);
 
         switch (pTransformSource.getLineEndShape()) {
             case Curved:
@@ -136,7 +140,7 @@ public interface IPixelChain {
      * @param pPosition the position
      * @return the actual thickness end fraction
      */
-    private double getActualThicknessEndFraction(final IPixelMapTransformSource pTransformSource, final double pPosition) {
+    private double getActualThicknessEndFraction(IPixelMapTransformSource pTransformSource, double pPosition) {
 
         var end2 = getLength() - pPosition;
         var closestEnd = Math.min(pPosition, end2);
@@ -152,7 +156,7 @@ public interface IPixelChain {
 
     }
 
-    default double getWidth(final IPixelMapTransformSource pIPMTS) {
+    default double getWidth(IPixelMapTransformSource pIPMTS) {
         switch (getThickness()) {
             case Thin:
                 return pIPMTS.getShortLineThickness() / pIPMTS.getHeight();

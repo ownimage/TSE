@@ -215,9 +215,7 @@ public class CurveSegment extends SegmentBase {
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {
-        var c = (getStartVertex(pPixelChain).isPositionSpecified() || getEndVertex(pPixelChain).isPositionSpecified())
-                ? Color.RED : Color.BLACK;
-        c = Color.WHITE;
+        var c = Color.WHITE;
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP1(), c);
         pGraphics.graffitiLine(getP1(), getP2(pPixelMap, pPixelChain), c);
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), c);

@@ -41,8 +41,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,7 +71,7 @@ import java.util.stream.Stream;
  * </code>
  */
 public class PixelMap implements Serializable, IPersist, PixelConstants {
-    public final static Logger mLogger = Framework.getLogger();
+    private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     // TODO should delete the following two values
@@ -109,7 +109,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
     }
 
-    public PixelMap(PixelMap pFrom) {
+    private PixelMap(PixelMap pFrom) {
         mVersion = pFrom.mVersion + 1;
         setWidth(pFrom.getWidth());
         setHeight(pFrom.getHeight());
@@ -223,7 +223,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         PixelMap clone = new PixelMap(this);
         clone.pixelChainsClear();
         clone.pixelChainsAddAll(pixelChains);
-        //clone.indexSegments();
+        //copy.indexSegments();
         return clone;
     }
 
@@ -240,7 +240,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             val pc2 = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
             clone.addPixelChain(pc2);
         });
-        //clone.indexSegments();
+        //copy.indexSegments();
         return clone;
     }
 
@@ -393,7 +393,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pStartNode.setInChain(this, true);
         pStartNode.getNeighbours().forEach(neighbour -> {
             if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
-                PixelChain chain = new PixelChain(pStartNode);
+                PixelChain chain = new PixelChain(pPixelMap, pStartNode);
                 chain = generateChain(pPixelMap, pStartNode, neighbour, chain);
                 if (chain.length() > 2) {
                     chains.add(chain);
@@ -648,7 +648,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mTransformSource.getShowShadow();
     }
 
-    IPixelMapTransformSource getTransformSource() {
+    private IPixelMapTransformSource getTransformSource() {
         return mTransformSource;
     }
 
@@ -717,7 +717,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         });
     }
 
-    boolean isAnyLineCloserThan(Point pPoint, double pThinWidth, double pNormalWidth, double pThickWidth, double pMultiplier, boolean pThickOnly) {
+    private boolean isAnyLineCloserThan(Point pPoint, double pThinWidth, double pNormalWidth, double pThickWidth, double pMultiplier, boolean pThickOnly) {
         double maxThickness = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
         Point uhvw = toUHVW(pPoint);
         // to prevent the expensive closerThanActual being run against the same segment more than once they
@@ -821,7 +821,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             };
             getPegCounter().clear(pegs);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-            System.out.println(getPegCounter().getString(pegs));
+            mLogger.info(getPegCounter().getString(pegs));
             //validate();
             mLogger.info(() -> "validate done");
             process07_mergeChains(pProgressObserver);
@@ -838,7 +838,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             };
             getPegCounter().clear(pegs);
             process08_refine(pProgressObserver);
-            System.out.println(getPegCounter().getString(pegs));
+            mLogger.info(getPegCounter().getString(pegs));
             mLogger.info(() -> "process08_refine done");
             //validate();
             mLogger.info(() -> "validate done");
@@ -975,12 +975,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void trackPixelOn(@NonNull Pixel pPixel) {
-        List<Pixel> pixels = Arrays.asList(pPixel);
+        List<Pixel> pixels = Collections.singletonList(pPixel);
         trackPixelOn(pixels);
     }
 
     private void trackPixelOff(@NonNull Pixel pPixel) {
-        List<Pixel> pixels = Arrays.asList(pPixel);
+        List<Pixel> pixels = Collections.singletonList(pPixel);
         trackPixelOff(pixels);
     }
 
@@ -1218,7 +1218,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .flatMap(PixelChain::streamSegments)
                 .filter(s -> s instanceof StraightSegment)
                 .forEach(s -> count.incrementAndGet());
-        System.out.println("Number of straight segments = " + count.get());
+        mLogger.info(() -> "Number of straight segments = " + count.get());
     }
 
     /**

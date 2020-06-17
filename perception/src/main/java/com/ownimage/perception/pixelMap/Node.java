@@ -20,7 +20,7 @@ public class Node extends Pixel {
     /**
      * The Constant serialVersionUID.
      */
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The m pixel chains.
@@ -32,11 +32,11 @@ public class Node extends Pixel {
      *
      * @param pIntegerPoint the pixel
      */
-    Node(final IntegerPoint pIntegerPoint) {
+    Node(IntegerPoint pIntegerPoint) {
         super(pIntegerPoint);
     }
 
-    Node(final int pX, final int pY) {
+    Node(int pX, int pY) {
         super(pX, pY);
     }
 
@@ -45,8 +45,8 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    Node addPixelChain(final PixelChain pPixelChain) {
-        Node clone = clone();
+    Node addPixelChain(PixelChain pPixelChain) {
+        Node clone = copy();
         clone.mPixelChains.add(pPixelChain);
         return clone;
     }
@@ -66,7 +66,7 @@ public class Node extends Pixel {
      * @param pN the p n
      * @return the pixel chain
      */
-    private PixelChain getPixelChain(final int pN) {
+    private PixelChain getPixelChain(int pN) {
         if (pN > countPixelChains()) {
             throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
                                                        countPixelChains() + " chains.");
@@ -84,25 +84,25 @@ public class Node extends Pixel {
      *
      * @param pPixelChain the pixel chain
      */
-    Node removePixelChain(final PixelChain pPixelChain) {
-        Node clone = clone();
+    Node removePixelChain(PixelChain pPixelChain) {
+        Node clone = copy();
         clone.mPixelChains.remove(pPixelChain);
         return clone;
     }
 
-    public Node clone() {
+    private Node copy() {
         Node clone = new Node(this);
         clone.mPixelChains.addAll(mPixelChains);
         return clone;
     }
 
-    void mergePixelChains(final PixelMap pPixelMap) {
+    void mergePixelChains(PixelMap pPixelMap) {
         int count = countPixelChains();
         mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
         switch (count) {
             case 2:
-                final PixelChain chain0 = getPixelChain(0);
-                final PixelChain chain1 = getPixelChain(1);
+                PixelChain chain0 = getPixelChain(0);
+                PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
                     PixelChain merged = chain0.merge(pPixelMap, chain1, this);
                     pPixelMap.removePixelChain(chain0);
