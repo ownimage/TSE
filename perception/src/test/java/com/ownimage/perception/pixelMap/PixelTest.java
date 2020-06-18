@@ -5,26 +5,27 @@ import com.ownimage.framework.view.javafx.FXViewFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 import static org.junit.Assert.*;
 
 public class PixelTest {
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory(false);
-    }
+//    @BeforeClass
+//    public static void setUpBeforeClass() throws Exception {
+//        FXViewFactory.clearViewFactory();
+//        FXViewFactory.setAsViewFactory(false);
+//    }
 
     @Test
     public void isEdge_00() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
 
@@ -35,13 +36,13 @@ public class PixelTest {
     @Test
     public void isEdge_01() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 " E ",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
 
@@ -52,13 +53,13 @@ public class PixelTest {
     @Test
     public void isEdge_02() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "E  ",
                 "   ",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(0, 0);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(0, 0);
 
         // WHEN
 
@@ -69,13 +70,13 @@ public class PixelTest {
     @Test
     public void isEdge_03() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 " E "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
 
@@ -86,13 +87,13 @@ public class PixelTest {
     @Test
     public void isEdge_04() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 " E "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(-1, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(-1, 2);
 
         // WHEN
 
@@ -103,13 +104,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighbours_00() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 " E ",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
 
@@ -120,13 +121,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighbours_01() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "EEE",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
 
@@ -137,13 +138,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighbours_02() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "EEE"
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
 
@@ -154,16 +155,16 @@ public class PixelTest {
     @Test
     public void countEdgeNeighbours_03() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 " N  ",
                 "    ",
                 "N N "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(0, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
-        final int actual = underTest.countEdgeNeighbours(pixelMap);
+        int actual = underTest.countEdgeNeighbours(pixelMap);
 
         // THEN
         assertEquals(0, actual);
@@ -172,13 +173,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighboursTransitions_01() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "EEE",
                 "   "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
 
         // WHEN
 
@@ -189,13 +190,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighboursTransitions_02() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "EEE"
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 2);
 
         // WHEN
 
@@ -206,13 +207,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighboursTransitions_03() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "E  "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(0, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
 
@@ -223,13 +224,13 @@ public class PixelTest {
     @Test
     public void countEdgeNeighboursTransitions_04() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "E  ",
                 "EE "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(0, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
 
@@ -240,16 +241,16 @@ public class PixelTest {
     @Test
     public void calcIsNode_01() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "E  "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(0, 2);
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
-        final boolean n = underTest.calcIsNode(pixelMap);
+        boolean n = underTest.calcIsNode(pixelMap);
 
         // THEN
         assertTrue(n);
@@ -259,14 +260,14 @@ public class PixelTest {
     @Test
     public void getNeighbours_01() {
         // GIVEN
-        final String[] input = {
+        String[] input = {
                 "   ",
                 "   ",
                 "E  "
         };
-        final PixelMap pixelMap = Utility.createMap(input);
-        final Pixel underTest = pixelMap.getPixelAt(1, 1);
-        StrongReference<Integer> count = new StrongReference<>(new Integer(0));
+        PixelMap pixelMap = Utility.createMap(input);
+        Pixel underTest = pixelMap.getPixelAt(1, 1);
+        StrongReference<Integer> count = new StrongReference<>(0);
 
         // WHEN
         underTest.getNeighbours().forEach(p -> count.set(count.get() + 1));

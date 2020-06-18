@@ -39,6 +39,8 @@ public class PixelChainBuilder implements IPixelChain {
     @Getter
     private Thickness mThickness;
 
+    private Services services = Services.getDefaultServices();
+
     public PixelChainBuilder(
             Collection<Pixel> pPixels,
             Collection<IVertex> pVertexes,
@@ -150,7 +152,7 @@ public class PixelChainBuilder implements IPixelChain {
                 changeVertexes(v -> v.set(originalEndVertex.getVertexIndex(), originalEndVertex));
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
-                var candidateVertex = Vertex.createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
+                var candidateVertex = services.getVertexService().createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
                 changeVertexes(v -> v.set(candidateVertex.getVertexIndex(), candidateVertex));
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 for (var controlPoint : controlPoints) {
@@ -212,7 +214,7 @@ public class PixelChainBuilder implements IPixelChain {
                 setVertex(originalStartVertex);
                 var lambda = 1.0d - (double) i / prevSegmentPixelLength; // TODO
                 var controlPointStart = originalPrevSegment.getPointFromLambda(pPixelMap, this, lambda);
-                var candidateVertex = Vertex.createVertex(this, originalStartVertex.getVertexIndex(), originalStartVertex.getPixelIndex() - i, controlPointStart);
+                var candidateVertex = services.getVertexService().createVertex(this, originalStartVertex.getVertexIndex(), originalStartVertex.getPixelIndex() - i, controlPointStart);
                 setVertex(candidateVertex);
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 // TODO below should refactor this
@@ -281,7 +283,7 @@ public class PixelChainBuilder implements IPixelChain {
 
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
-                var candidateVertex = Vertex.createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
+                var candidateVertex = services.getVertexService().createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
                 setVertex(candidateVertex);
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 for (var controlPoint : controlPoints) {
@@ -414,7 +416,7 @@ public class PixelChainBuilder implements IPixelChain {
 
         for (int i = startPixelIndex; i < getPixelCount(); i++) {
             try {
-                var candidateVertex = Vertex.createVertex(pPixelMap, this, vertexIndex, i);
+                var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 var lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
                 var startTangent = startVertex.getStartSegment(this).getEndTangent(pPixelMap, this);
                 var p = lt3.intersect(startTangent);
@@ -440,7 +442,7 @@ public class PixelChainBuilder implements IPixelChain {
                 setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
             }
         } else {
-            setVertex(Vertex.createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
+            setVertex(services.getVertexService().createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
             setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
         }
     }
@@ -455,7 +457,7 @@ public class PixelChainBuilder implements IPixelChain {
             double pTolerance,
             double pLineCurvePreference
     ) {
-        changeVertexes(v -> v.add(Vertex.createVertex(pPixelMap, this, 0, 0)));
+        changeVertexes(v -> v.add(services.getVertexService().createVertex(pPixelMap, this, 0, 0)));
         val vertexIndex = getVertexCount();
         val segmentIndex = getSegmentCount();
         val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
@@ -465,7 +467,7 @@ public class PixelChainBuilder implements IPixelChain {
 
         for (int i = 4; i < getPixelCount(); i++) {
             try {
-                val candidateVertex = Vertex.createVertex(pPixelMap, this, vertexIndex, i);
+                val candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
                 var lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
                 val pointL = lineAB.getPoint(0.25d);
@@ -499,7 +501,7 @@ public class PixelChainBuilder implements IPixelChain {
                 setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, 0));
             }
         } else {
-            setVertex(Vertex.createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
+            setVertex(services.getVertexService().createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
             setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
         }
     }
@@ -514,7 +516,7 @@ public class PixelChainBuilder implements IPixelChain {
         changeSegments(ImmutableVectorClone::clear);
         changeVertexes(ImmutableVectorClone::clear);
 
-        var startVertex = Vertex.createVertex(pPixelMap, this, 0, 0);
+        var startVertex = services.getVertexService().createVertex(pPixelMap, this, 0, 0);
         changeVertexes(v -> v.add(startVertex));
 
         int maxIndex = 0;
@@ -530,7 +532,7 @@ public class PixelChainBuilder implements IPixelChain {
             changeSegments(s -> s.add(null));
 
             for (int index = endIndex; index < getPixelCount(); index++) {
-                var candidateVertex = Vertex.createVertex(pPixelMap, this, vertexIndex, index);
+                var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, index);
                 changeVertexes(v -> v.set(vertexIndex, candidateVertex));
                 var candidateSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex);
                 changeSegments(s -> s.set(segmentIndex, candidateSegment));
@@ -580,7 +582,7 @@ public class PixelChainBuilder implements IPixelChain {
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;
                 for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
-                    joinVertex[0] = Vertex.createVertex(pPixelMap, this, secondSegmentIndex, candidateIndex);
+                    joinVertex[0] = services.getVertexService().createVertex(pPixelMap, this, secondSegmentIndex, candidateIndex);
                     setVertex(joinVertex[0]);
                     firstSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, this, firstSegmentIndex);
                     setSegment(firstSegment[0]);
@@ -641,6 +643,7 @@ public class PixelChainBuilder implements IPixelChain {
             PixelChain pPixelChain, IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
+        var context = ImmutablePixelChainContext.of(pPixelMap, pPixelChain);
         // get tangent at start and end
         // calculate intersection
         // what if they are parallel ? -- ignore as the initial estimate is not good enough
@@ -650,8 +653,8 @@ public class PixelChainBuilder implements IPixelChain {
         try {
             double lowestError = pCurrentSegment.calcError(pPixelMap, this);
             lowestError *= pSource.getLineCurvePreference();
-            Line startTangent = pCurrentSegment.getStartVertex(this).calcTangent(this, pPixelMap);
-            Line endTangent = pCurrentSegment.getEndVertex(this).calcTangent(this, pPixelMap);
+            Line startTangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getStartVertex(this));
+            Line endTangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getEndVertex(this));
 
             if (startTangent != null && endTangent != null) {
                 Point p1 = startTangent.intersect(endTangent);
@@ -682,13 +685,15 @@ public class PixelChainBuilder implements IPixelChain {
             IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
+        var context = ImmutablePixelChainContext.of(pPixelMap, this);
+
         ISegment bestSegment = pCurrentSegment;
 
         try {
             double lowestError = pCurrentSegment.calcError(pPixelMap, this);
             lowestError *= pSource.getLineCurvePreference();
             // calculate start tangent
-            Line tangent = pCurrentSegment.getStartVertex(this).calcTangent(this, pPixelMap);
+            Line tangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getStartVertex(this));
             Point closest = tangent.closestPoint(pCurrentSegment.getEndUHVWPoint(pPixelMap, this));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
@@ -722,6 +727,8 @@ public class PixelChainBuilder implements IPixelChain {
             double pLineCurvePreference,
             ISegment pSegment
     ) {
+        var context = ImmutablePixelChainContext.of(pPixelMap, this);
+
         getPegCounter().increase(PegCounters.refine01FirstSegmentAttempted);
         var bestSegment = pSegment;
         try {
@@ -729,7 +736,8 @@ public class PixelChainBuilder implements IPixelChain {
             double lowestError = pSegment.calcError(pPixelMap, this);
             lowestError *= pLineCurvePreference;
             // calculate end tangent
-            Line tangent = pSegment.getEndVertex(this).calcTangent(this, pPixelMap);
+            Line tangent = services.getVertexService().calcTangent(services, context, pSegment.getEndVertex(this));
+
 
             // find closest point between start point and tangent line
             Point closest = tangent.closestPoint(pSegment.getStartUHVWPoint(pPixelMap, this));

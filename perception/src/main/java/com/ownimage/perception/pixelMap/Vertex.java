@@ -26,34 +26,10 @@ public class Vertex implements IVertex {
     private final int mPixelIndex;
     private final @NotNull Point mPosition;
 
-    private Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
+    public Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
         mVertexIndex = pVertexIndex;
         mPixelIndex = pPixelIndex;
         mPosition = pPosition;
-    }
-
-    public static Vertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
-        }
-        val position = pPixelChain.getUHVWPoint(pPixelMap, pPixelIndex);
-        return new Vertex(pVertexIndex, pPixelIndex, position);
-    }
-
-    public static Vertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
-        }
-
-        return new Vertex(pVertexIndex, pPixelIndex, pPosition);
-    }
-
-    private static Line calcTangent(Point pPoint, Line pStartTangent, Line pEndTangent) {
-        Point startTangentPoint = pEndTangent.getPoint(1.0d);
-        Point endTangentPoint = pStartTangent.getPoint(1.0d);
-        Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
-
-        return new Line(pPoint, pPoint.add(tangentVector));
     }
 
     @Override
@@ -61,37 +37,7 @@ public class Vertex implements IVertex {
         return mVertexIndex;
     }
 
-    /**
-     * Calc tangent always generates a tangent line that goes in the direction of start to finish.
-     *
-     * @param pPixelChain the Pixel Chain performing this operation
-     * @param pPixelMap   the PixelMap performing this operation
-     */
-    @Override
-    public Line calcTangent(IPixelChain pPixelChain, PixelMap pPixelMap) {
-        Line tangent;
-        ISegment startSegment = getStartSegment(pPixelChain);
-        ISegment endSegment = getEndSegment(pPixelChain);
 
-        if (startSegment == null && endSegment == null) {
-            tangent = null;
-
-        } else if (startSegment == null) {
-            tangent = endSegment.getStartTangent(pPixelMap, pPixelChain);
-            tangent = tangent.getReverse();
-
-        } else if (endSegment == null) {
-            tangent = startSegment.getEndTangent(pPixelMap, pPixelChain);
-
-        } else {
-            return calcTangent(
-                    getUHVWPoint(pPixelMap, pPixelChain),
-                    startSegment.getEndTangent(pPixelMap, pPixelChain),
-                    endSegment.getStartTangent(pPixelMap, pPixelChain)
-            );
-        }
-        return tangent;
-    }
 
     /**
      * Calculates an approximate tangent line to the PixelChain at this point.  This is done by counting forward and
@@ -135,18 +81,20 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Pixel getPixel(final IPixelChain pPixelChain) {
+    public Pixel getPixel(IPixelChain pPixelChain) {
         return pPixelChain.getPixel(mPixelIndex);
     }
 
     @Override
-    public ISegment getStartSegment(final IPixelChain pPixelChain) {
+    public ISegment getStartSegment(IPixelChain pPixelChain) {
         return pPixelChain.getSegment(mVertexIndex - 1);
     }
 
     @Override
     public Point getUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
         // Can not remove this lightly as it means that the existing transforms are no longer readable
+        // also this might be null when it is read from a serialisation
+        //noinspection ConstantConditions
         return mPosition != null ? mPosition : getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
     }
 

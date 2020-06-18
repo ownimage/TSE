@@ -64,6 +64,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     transient private double mLength;
     private Thickness mThickness;
 
+    private Services services = Services.getDefaultServices();
+
     /**
      * Instantiates a new pixel chain.
      *
@@ -76,7 +78,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(Vertex.createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<IVertex>().add(services.getVertexService().createVertex(pPixelMap, this, 0, 0));
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -151,7 +153,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = Vertex.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
+            IVertex end = services.getVertexService().createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
             builder.changeVertexes(v -> v.add(end));
             StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
             builder.changeSegments(s -> s.add(newSegment));
@@ -365,7 +367,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         Vector<IVertex> vertexes = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = Vertex.createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            IVertex v = services.getVertexService().createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
         builder.changeVertexes(v -> v.clear().addAll(vertexes));
