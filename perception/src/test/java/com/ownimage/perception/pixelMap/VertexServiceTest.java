@@ -293,10 +293,10 @@ public class VertexServiceTest {
         // WHEN THEN
         var actual = underTest.calcTangent(services, context, vertex);
         assertEquals(expected, actual);
-//        verify(mockPixelChain, times(1)).getPixelCount();
-//        verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
-//        verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
-//        verify(mockEndSegment, times(1)).getStartTangent(mockPixelMap, mockPixelChain);
+        verify(mockPixelChain, times(1)).getPixelCount();
+        verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
+        verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
+        verify(mockEndSegment, times(1)).getStartTangent(mockPixelMap, mockPixelChain);
 //        verifyNoMoreInteractions(mockPixelChain, mockPixelMap, mockEndSegment);
     }
 

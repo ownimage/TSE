@@ -24,7 +24,7 @@ public class Vertex implements IVertex {
 
     private final int mVertexIndex;
     private final int mPixelIndex;
-    private final @NotNull Point mPosition;
+    private  @NotNull Point mPosition;
 
     public Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
         mVertexIndex = pVertexIndex;
@@ -75,7 +75,10 @@ public class Vertex implements IVertex {
         // Can not remove this lightly as it means that the existing transforms are no longer readable
         // also this might be null when it is read from a serialisation
         //noinspection ConstantConditions
-        return mPosition != null ? mPosition : getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
+        if (mPosition == null) {
+            mPosition = getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
+        }
+        return mPosition;
     }
 
     @Override

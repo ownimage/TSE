@@ -11,8 +11,10 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.ImmutablePixelChainContext;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.Services;
 import lombok.val;
 
 import java.awt.*;
@@ -179,12 +181,16 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public ISegment getNextSegment(IPixelChain pPixelChain) {
-        return getEndVertex(pPixelChain).getEndSegment(pPixelChain);
+        var services = Services.getDefaultServices();
+        var context = ImmutablePixelChainContext.of(null, pPixelChain);
+        return services.getVertexService().getEndSegment(services, context, getEndVertex(pPixelChain));
     }
 
     @Override
     public ISegment getPreviousSegment(IPixelChain pPixelChain) {
-        return getStartVertex(pPixelChain).getStartSegment(pPixelChain);
+        var services = Services.getDefaultServices();
+        var context = ImmutablePixelChainContext.of(null, pPixelChain);
+        return services.getVertexService().getStartSegment(services, context, getEndVertex(pPixelChain));
     }
 
     @Override

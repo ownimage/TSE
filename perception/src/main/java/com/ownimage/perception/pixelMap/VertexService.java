@@ -40,9 +40,10 @@ public class VertexService {
      * @param context.getPixelMap()   the PixelMap performing this operation
      */
     public Line calcTangent(Services services, PixelChainContext context, IVertex vertex) {
+        var vertexServices = services.getVertexService();
         Line tangent;
-        ISegment startSegment = vertex.getStartSegment(context.getPixelChain());
-        ISegment endSegment = vertex.getEndSegment(context.getPixelChain());
+        ISegment startSegment = vertexServices.getStartSegment(services,context,vertex);
+        ISegment endSegment = vertexServices.getEndSegment(services,context,vertex);
 
         if (startSegment == null && endSegment == null) {
             tangent = null;
@@ -74,7 +75,7 @@ public class VertexService {
      * @param pLength        the length in Pixels to count each way
      * @return the calculated tangent
      */
-    public Line calcLocalTangent(Services services, PixelChainContext context, Vertex vertex, int pLength) {
+    public Line calcLocalTangent(Services services, PixelChainContext context, IVertex vertex, int pLength) {
         var pixelChain = context.getPixelChain();
         var pixelMap = context.getPixelMap();
 
@@ -86,4 +87,17 @@ public class VertexService {
         var thisPosition = vertex.getUHVWPoint(pixelMap, pixelChain);
         return new Line(thisPosition, thisPosition.add(tangentDirection));
     }
+
+    public Pixel getPixel(Services services, PixelChainContext context, IVertex vertex) {
+        return context.getPixelChain().getPixel(vertex.getPixelIndex());
+    }
+
+    public ISegment getStartSegment(Services services, PixelChainContext context, IVertex vertex) {
+        return context.getPixelChain().getSegment(vertex.getVertexIndex() - 1);
+    }
+
+    public ISegment getEndSegment(Services services, PixelChainContext context, IVertex vertex) {
+        return context.getPixelChain().getSegment(vertex.getVertexIndex());
+    }
+
 }

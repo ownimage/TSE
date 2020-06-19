@@ -445,7 +445,7 @@ public class PixelChainBuilder implements IPixelChain {
                 setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
             }
         } else {
-            setVertex(services.getVertexService().createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
+            setVertex(vertexService.createVertex(pPixelMap, this, vertexIndex, getMaxPixelIndex()));
             setSegment(SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex));
         }
     }
@@ -460,7 +460,9 @@ public class PixelChainBuilder implements IPixelChain {
             double pTolerance,
             double pLineCurvePreference
     ) {
+        var vertexService = services.getVertexService();
         var context = ImmutablePixelChainContext.of(pPixelMap, this);
+
         changeVertexes(v -> v.add(services.getVertexService().createVertex(pPixelMap, this, 0, 0)));
         val vertexIndex = getVertexCount();
         val segmentIndex = getSegmentCount();
@@ -473,7 +475,7 @@ public class PixelChainBuilder implements IPixelChain {
             try {
                 val candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
-                var lt3 = services.getVertexService().calcLocalTangent(services, context, candidateVertex, 3);
+                var lt3 = vertexService.calcLocalTangent(services, context, candidateVertex, 3);
                 val pointL = lineAB.getPoint(0.25d);
                 val pointN = lineAB.getPoint(0.75d);
                 val normal = lineAB.getANormal();

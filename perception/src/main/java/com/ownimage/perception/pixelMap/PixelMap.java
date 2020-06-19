@@ -1330,7 +1330,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-        mPixelChains.stream().parallel().forEach(pc -> pc.validate(true, "PixelMap::validate"));
+//        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
         for (int x = 0; x < mWidth; x++) {
             for (int y = 0; y < mHeight; y++) {

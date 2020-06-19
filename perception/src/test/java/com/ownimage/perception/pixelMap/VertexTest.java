@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import org.junit.Before;
@@ -150,8 +149,11 @@ public class VertexTest {
         var pixel = new MockPixelBuilder().build();
         var pixelChain = new MockPixelChainBuilder(11).with_getPixel_returns(pixelIndex, pixel).build();
         IVertex underTest1 = services.getVertexService().createVertex(pixelMap, pixelChain, 1, pixelIndex);
+        var services = Services.getDefaultServices();
+        var pixelMap = new PixelMap(100, 100, false, null);
+        var context = ImmutablePixelChainContext.of(pixelMap, pixelChain);
         // WHEN THEN
-        assertEquals(pixel, underTest1.getPixel(pixelChain));
+        assertEquals(pixel, services.getVertexService().getPixel(services, context, underTest1));
         verify(pixelChain, times(1)).getPixelCount();
         verify(pixelChain, times(1)).getPixel(eq(pixelIndex));
 //        verifyNoMoreInteractions(pixelChain);
@@ -164,12 +166,17 @@ public class VertexTest {
         int vertexIndex = 2;
         int segmentIndex = vertexIndex - 1;
         ISegment expected = mock(ISegment.class);
+        var pixel = new Pixel(5, 3);
         var mockPixelChain = new MockPixelChainBuilder(11)
                 .with_getSegment_returns(segmentIndex, expected)
+                .with_getPixel_returns(pixelIndex, pixel)
                 .build();
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        var services = Services.getDefaultServices();
+        var pixelMap = new PixelMap(100, 100, false, null);
+        var context = ImmutablePixelChainContext.of(pixelMap, mockPixelChain);
         // WHEN THEN
-        assertEquals(expected, underTest.getStartSegment(mockPixelChain));
+        assertEquals(expected, services.getVertexService().getStartSegment(services, context, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
 //        verifyNoMoreInteractions(mockPixelChain, expected);
@@ -182,10 +189,13 @@ public class VertexTest {
         int vertexIndex = 2;
         int segmentIndex = vertexIndex;
         ISegment expected = mock(ISegment.class);
+        var mockPixelMap = mock(PixelMap.class);
         var mockPixelChain = new MockPixelChainBuilder(11)
                 .with_getSegment_returns(segmentIndex, expected)
                 .build();
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        var services = Services.getDefaultServices();
+        var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
         assertEquals(expected, underTest.getEndSegment(mockPixelChain));
         verify(mockPixelChain, times(1)).getPixelCount();
