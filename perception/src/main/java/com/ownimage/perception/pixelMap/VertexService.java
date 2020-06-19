@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
@@ -61,5 +62,28 @@ public class VertexService {
             );
         }
         return tangent;
+    }
+
+    /**
+     * Calculates an approximate tangent line to the PixelChain at this point.  This is done by counting forward and
+     * backwards pLength pixels and calculating a vector between these, this vector is added to the UHVW point that
+     * represents this Vertex to generate a tangent.
+     *
+     * @param pPixelMap      the PixelMap performing this operation
+     * @param pPixelChainthe PixelChain performing this operation
+     * @param pLength        the length in Pixels to count each way
+     * @return the calculated tangent
+     */
+    public Line calcLocalTangent(Services services, PixelChainContext context, Vertex vertex, int pLength) {
+        var pixelChain = context.getPixelChain();
+        var pixelMap = context.getPixelMap();
+
+        val ltStartIndex = KMath.max(vertex.getPixelIndex() - pLength, 0);
+        val ltEndIndex = KMath.min(vertex.getPixelIndex() + pLength, pixelChain.getMaxPixelIndex());
+        val ltStartPoint = pixelChain.getUHVWPoint(pixelMap, ltStartIndex);
+        val ltEndPoint = pixelChain.getUHVWPoint(pixelMap, ltEndIndex);
+        val tangentDirection = ltEndPoint.minus(ltStartPoint).normalize();
+        var thisPosition = vertex.getUHVWPoint(pixelMap, pixelChain);
+        return new Line(thisPosition, thisPosition.add(tangentDirection));
     }
 }

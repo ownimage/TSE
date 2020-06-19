@@ -39,26 +39,6 @@ public class Vertex implements IVertex {
 
 
 
-    /**
-     * Calculates an approximate tangent line to the PixelChain at this point.  This is done by counting forward and
-     * backwards pLength pixels and calculating a vector between these, this vector is added to the UHVW point that
-     * represents this Vertex to generate a tangent.
-     *
-     * @param pPixelMap      the PixelMap performing this operation
-     * @param pPixelChainthe PixelChain performing this operation
-     * @param pLength        the length in Pixels to count each way
-     * @return the calculated tangent
-     */
-    public Line calcLocalTangent(PixelMap pPixelMap, IPixelChain pPixelChain, int pLength) {
-        val ltStartIndex = KMath.max(getPixelIndex() - pLength, 0);
-        val ltEndIndex = KMath.min(getPixelIndex() + pLength, pPixelChain.getMaxPixelIndex());
-        val ltStartPoint = pPixelChain.getUHVWPoint(pPixelMap, ltStartIndex);
-        val ltEndPoint = pPixelChain.getUHVWPoint(pPixelMap, ltEndIndex);
-        val tangentDirection = ltEndPoint.minus(ltStartPoint).normalize();
-        var thisPosition = getUHVWPoint(pPixelMap, pPixelChain);
-        return new Line(thisPosition, thisPosition.add(tangentDirection));
-    }
-
     /*
      * (non-Javadoc)
      *

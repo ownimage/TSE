@@ -405,6 +405,9 @@ public class PixelChainBuilder implements IPixelChain {
             double pTolerance,
             double pLineCurvePreference
     ) {
+        var context = ImmutablePixelChainContext.of(pPixelMap, this);
+        var vertexService = services.getVertexService();
+
         val startVertex = getLastVertex();
         val startPixelIndex = getLastVertex().getPixelIndex() + 1;
         val vertexIndex = getVertexCount();
@@ -417,7 +420,7 @@ public class PixelChainBuilder implements IPixelChain {
         for (int i = startPixelIndex; i < getPixelCount(); i++) {
             try {
                 var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
-                var lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
+                var lt3 = vertexService.calcLocalTangent(services,context, candidateVertex, 3);
                 var startTangent = startVertex.getStartSegment(this).getEndTangent(pPixelMap, this);
                 var p = lt3.intersect(startTangent);
                 if (p != null) {
@@ -457,6 +460,7 @@ public class PixelChainBuilder implements IPixelChain {
             double pTolerance,
             double pLineCurvePreference
     ) {
+        var context = ImmutablePixelChainContext.of(pPixelMap, this);
         changeVertexes(v -> v.add(services.getVertexService().createVertex(pPixelMap, this, 0, 0)));
         val vertexIndex = getVertexCount();
         val segmentIndex = getSegmentCount();
@@ -469,7 +473,7 @@ public class PixelChainBuilder implements IPixelChain {
             try {
                 val candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
-                var lt3 = candidateVertex.calcLocalTangent(pPixelMap, this, 3);
+                var lt3 = services.getVertexService().calcLocalTangent(services, context, candidateVertex, 3);
                 val pointL = lineAB.getPoint(0.25d);
                 val pointN = lineAB.getPoint(0.75d);
                 val normal = lineAB.getANormal();

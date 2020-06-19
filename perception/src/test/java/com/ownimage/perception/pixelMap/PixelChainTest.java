@@ -24,6 +24,7 @@ public class PixelChainTest {
 
     @Before
     public void before() {
+        pixelMap = mock(PixelMap.class);
         when(pixelMap.getHeight()).thenReturn(100);
         when(pixelMap.getWidth()).thenReturn(100);
     }
