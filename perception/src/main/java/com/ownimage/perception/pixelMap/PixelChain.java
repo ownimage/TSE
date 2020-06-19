@@ -102,6 +102,22 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
     }
 
+    public PixelChain fixNullPositionVertexes(Services services, PixelMap pixelMap) {
+        var vertexService = services.getVertexService();
+        var mappedVertexes = mVertexes.stream()
+                .map(v -> {
+                    var p = v.getUHVWPoint(pixelMap, this);
+                    if (p == null) {
+                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
+                        return vertexService.createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
+                    }
+                    return v;
+                })
+                .collect(Collectors.toList());
+        var vertexes = new ImmutableVectorClone<IVertex>().addAll(mappedVertexes);
+        return new PixelChain(mPixels, mSegments, vertexes, mLength, mThickness);
+    }
+
     @Override
     public PixelChain clone() {
         try {
@@ -527,10 +543,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                     throw new IllegalStateException("Wrong pixel index order");
                 }
                 currentMax = v.getPixelIndex();
-                    if (i != 0 && vertexServices.getStartSegment(services, context, v) != mSegments.get(i - 1)) {
+                if (i != 0 && vertexServices.getStartSegment(services, context, v) != mSegments.get(i - 1)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
-                    if (i != mVertexes.size() - 1 && vertexServices.getEndSegment(services, context, v) != mSegments.get(i)) {
+                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment(services, context, v) != mSegments.get(i)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
             }

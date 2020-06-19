@@ -9,7 +9,7 @@ import lombok.val;
 
 public class VertexService {
 
-    public static Vertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
+    public Vertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
@@ -17,7 +17,7 @@ public class VertexService {
         return new Vertex(pVertexIndex, pPixelIndex, position);
     }
 
-    public static Vertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
+    public Vertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }

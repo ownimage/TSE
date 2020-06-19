@@ -1144,6 +1144,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void read(IPersistDB pDB, String pId) {
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
         // note that write/read does not preserve the mAllNodes values
+        com.ownimage.perception.pixelMap.Services services = com.ownimage.perception.pixelMap.Services.getDefaultServices();
         Framework.logEntry(mLogger);
         mAutoTrackChanges = true;
         try {
@@ -1183,6 +1184,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 Collection<PixelChain> pixelChains = (Collection<PixelChain>) ois.readObject();
+                // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
+                // to be replaced with a constant value
+                pixelChains = pixelChains.stream().map(pc -> pc.fixNullPositionVertexes(services, this)).collect(Collectors.toList());
                 pixelChainsClear();
                 pixelChainsAddAll(pixelChains);
                 //TODO this will need to change

@@ -75,9 +75,9 @@ public class Vertex implements IVertex {
         // Can not remove this lightly as it means that the existing transforms are no longer readable
         // also this might be null when it is read from a serialisation
         //noinspection ConstantConditions
-        if (mPosition == null) {
-            mPosition = getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
-        }
+//        if (mPosition == null) {
+//            mPosition = getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
+//        }
         return mPosition;
     }
 
