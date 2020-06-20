@@ -11,6 +11,7 @@ import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import com.ownimage.perception.pixelMap.services.Services;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.Tuple4;

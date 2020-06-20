@@ -1144,7 +1144,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public void read(IPersistDB pDB, String pId) {
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
         // note that write/read does not preserve the mAllNodes values
-        com.ownimage.perception.pixelMap.Services services = com.ownimage.perception.pixelMap.Services.getDefaultServices();
+        com.ownimage.perception.pixelMap.services.Services services = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
         Framework.logEntry(mLogger);
         mAutoTrackChanges = true;
         try {

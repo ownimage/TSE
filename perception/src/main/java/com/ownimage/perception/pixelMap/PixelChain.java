@@ -11,6 +11,7 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import com.ownimage.perception.pixelMap.services.Services;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;

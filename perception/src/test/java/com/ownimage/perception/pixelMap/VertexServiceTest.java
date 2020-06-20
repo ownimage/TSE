@@ -3,9 +3,10 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,7 +16,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class VertexServiceTest {

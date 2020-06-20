@@ -1,9 +1,15 @@
-package com.ownimage.perception.pixelMap;
+package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
+import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelChainContext;
+import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import lombok.val;
 

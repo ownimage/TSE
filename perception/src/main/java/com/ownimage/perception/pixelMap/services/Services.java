@@ -1,4 +1,4 @@
-package com.ownimage.perception.pixelMap;
+package com.ownimage.perception.pixelMap.services;
 
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;

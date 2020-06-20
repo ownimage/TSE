@@ -14,7 +14,7 @@ import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.ImmutablePixelChainContext;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelMap;
-import com.ownimage.perception.pixelMap.Services;
+import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
 
 import java.awt.*;

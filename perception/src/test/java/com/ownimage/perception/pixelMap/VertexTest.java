@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
