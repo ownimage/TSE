@@ -8,7 +8,11 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
-import com.ownimage.perception.pixelMap.*;
+import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.IVertex;
 
 import java.io.Serializable;
 
@@ -49,7 +53,7 @@ public interface ISegment extends Serializable, Cloneable {
     /**
      * Gets the end tangent.
      *
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end tangent. This is a vector that points along the tangent to a point beyond the end, i.e. towards a point that it would join with.
      */
@@ -58,7 +62,7 @@ public interface ISegment extends Serializable, Cloneable {
     /**
      * Gets the end uhvw point.
      *
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end uhvw point
      */
@@ -91,8 +95,7 @@ public interface ISegment extends Serializable, Cloneable {
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.
      *
-     *
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the owning PixelChain
      * @return the start tangent
      */
@@ -101,8 +104,7 @@ public interface ISegment extends Serializable, Cloneable {
     /**
      * Gets the start uhvw point.
      *
-     *
-     * @param pPixelMap the PixelMap performing the this operation
+     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start uhvw point
      */
