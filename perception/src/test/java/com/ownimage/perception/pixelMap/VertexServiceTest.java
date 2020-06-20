@@ -47,7 +47,7 @@ public class VertexServiceTest {
 //        // THEN
 //        assertEquals(index, underTest.getPixelIndex());
 //        assertEquals(1, underTest.getVertexIndex());
-//        assertEquals(point, underTest.getUHVWPoint(mockPixelMap, mockPixelChain));
+//        assertEquals(point, underTest.getPosition(mockPixelMap, mockPixelChain));
 //        verify(mockPixelChain, times(1)).getPixelCount();
 //        verify(mockPixelChain, times(1)).getPixel(index);
 //        verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap);
@@ -66,7 +66,7 @@ public class VertexServiceTest {
 //        // THEN
 //        assertEquals(index, underTest.getPixelIndex());
 //        assertEquals(1, underTest.getVertexIndex());
-//        assertEquals(pointCtor, underTest.getUHVWPoint(mockPixelMap, mockPixelChain));
+//        assertEquals(pointCtor, underTest.getPosition(mockPixelMap, mockPixelChain));
 //        verify(mockPixelChain, times(1)).getPixelCount();
 //        verifyNoMoreInteractions(mockPixelMap, mockPixelChain);
 //    }
@@ -206,7 +206,7 @@ public class VertexServiceTest {
 ////            final Point endTangentPoint = getEndSegment(mockPixelChain).getStartTangent(pixelMap, mockPixelChain).getPoint(1.0d);
 ////            final Vector tangentVector = startTangentPoint.minus(endTangentPoint).normalize();
 ////
-////            tangent = new Line(getUHVWPoint(pixelMap, mockPixelChain), getUHVWPoint(pixelMap, mockPixelChain).add(tangentVector));
+////            tangent = new Line(getPosition(pixelMap, mockPixelChain), getPosition(pixelMap, mockPixelChain).add(tangentVector));
 ////        }
 ////        return tangent;
 ////    }

@@ -138,7 +138,7 @@ public class PixelChainBuilder implements IPixelChain {
             getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
-            var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, pPixelChain)
+            var controlPointEnd = originalEndVertex.getPosition()
                     .add(
                             originalNextSegment.getStartTangent(pPixelMap, this)
                                     .getAB()
@@ -200,7 +200,7 @@ public class PixelChainBuilder implements IPixelChain {
             getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
             var prevSegmentPixelLength = originalPrevSegment.getPixelLength(this);
-            var controlPointEnd = originalStartVertex.getUHVWPoint(pPixelMap, pPixelChain)
+            var controlPointEnd = originalStartVertex.getPosition()
                     .add(
                             originalPrevSegment.getEndTangent(pPixelMap, this)
                                     .getAB()
@@ -259,7 +259,7 @@ public class PixelChainBuilder implements IPixelChain {
         try {
             getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardAttempted);
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
-            var controlPointEnd = originalEndVertex.getUHVWPoint(pPixelMap, pPixelChain)
+            var controlPointEnd = originalEndVertex.getPosition()
                     .add(
                             originalNextSegment.getStartTangent(pPixelMap, this)
                                     .getAB()
@@ -665,8 +665,8 @@ public class PixelChainBuilder implements IPixelChain {
             if (startTangent != null && endTangent != null) {
                 Point p1 = startTangent.intersect(endTangent);
                 if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
-                    Line newStartTangent = new Line(p1, pCurrentSegment.getStartVertex(this).getUHVWPoint(pPixelMap, pPixelChain));
-                    Line newEndTangent = new Line(p1, pCurrentSegment.getEndVertex(this).getUHVWPoint(pPixelMap, pPixelChain));
+                    Line newStartTangent = new Line(p1, pCurrentSegment.getStartVertex(this).getPosition());
+                    Line newEndTangent = new Line(p1, pCurrentSegment.getEndVertex(this).getPosition());
                     p1 = newStartTangent.intersect(newEndTangent);
                     // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
                     ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), p1);

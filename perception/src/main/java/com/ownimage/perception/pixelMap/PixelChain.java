@@ -106,7 +106,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         var vertexService = services.getVertexService();
         var mappedVertexes = mVertexes.stream()
                 .map(v -> {
-                    var p = v.getUHVWPoint(pixelMap, this);
+                    var p = v.getPosition();
                     if (p == null) {
                         p = v.getPixel(this).getUHVWMidPoint(pixelMap);
                         return vertexService.createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);

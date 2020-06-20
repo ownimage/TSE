@@ -91,7 +91,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getEndVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
+        return getEndVertex(pPixelChain).getPosition();
     }
 
     @Override
@@ -151,7 +151,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getStartVertex(pPixelChain).getUHVWPoint(pPixelMap, pPixelChain);
+        return getStartVertex(pPixelChain).getPosition();
     }
 
     @Override

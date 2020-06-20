@@ -57,7 +57,7 @@ public class VertexService {
 
         } else {
             return calcTangent(
-                    vertex.getUHVWPoint(context.getPixelMap(), context.getPixelChain()),
+                    vertex.getPosition(),
                     startSegment.getEndTangent(context.getPixelMap(), context.getPixelChain()),
                     endSegment.getStartTangent(context.getPixelMap(), context.getPixelChain())
             );
@@ -84,7 +84,7 @@ public class VertexService {
         val ltStartPoint = pixelChain.getUHVWPoint(pixelMap, ltStartIndex);
         val ltEndPoint = pixelChain.getUHVWPoint(pixelMap, ltEndIndex);
         val tangentDirection = ltEndPoint.minus(ltStartPoint).normalize();
-        var thisPosition = vertex.getUHVWPoint(pixelMap, pixelChain);
+        var thisPosition = vertex.getPosition();
         return new Line(thisPosition, thisPosition.add(tangentDirection));
     }
 

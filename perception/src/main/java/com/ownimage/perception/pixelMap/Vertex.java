@@ -5,12 +5,8 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.math.KMath;
-import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -71,13 +67,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public Point getUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        // Can not remove this lightly as it means that the existing transforms are no longer readable
-        // also this might be null when it is read from a serialisation
-        //noinspection ConstantConditions
-//        if (mPosition == null) {
-//            mPosition = getPixel(pPixelChain).getUHVWMidPoint(pPixelMap);
-//        }
+    public Point getPosition() {
         return mPosition;
     }
 
