@@ -16,18 +16,12 @@ import java.io.Serializable;
  * position on the map. However the Pixel that it maps to might be moved slightly in terms of its UHVW double (x, y)
  * position to improve the closeness of the overall approximatio.
  */
-public interface IVertex extends Serializable, Comparable<IVertex> {
-
-    ISegment getEndSegment(IPixelChain pPixelChain);
+public interface IVertex extends Serializable {
 
     int getPixelIndex();
-
-    ISegment getStartSegment(IPixelChain pPixelChain);
 
     int getVertexIndex();
 
     Point getPosition();
-
-    Pixel getPixel(IPixelChain pPixelChain);
 
 }

@@ -6,7 +6,6 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.segment.ISegment;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -20,7 +19,7 @@ public class Vertex implements IVertex {
 
     private final int mVertexIndex;
     private final int mPixelIndex;
-    private  @NotNull Point mPosition;
+    private @NotNull Point mPosition;
 
     public Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
         mVertexIndex = pVertexIndex;
@@ -34,37 +33,11 @@ public class Vertex implements IVertex {
     }
 
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(IVertex pOther) {
-        return mPixelIndex - pOther.getPixelIndex();
-    }
-
-
-    @Override
-    public ISegment getEndSegment(IPixelChain pPixelChain) {
-        return pPixelChain.getSegment(mVertexIndex);
-    }
-
     @Override
     public int getPixelIndex() {
         return mPixelIndex;
     }
 
-    @Override
-    public Pixel getPixel(IPixelChain pPixelChain) {
-        return pPixelChain.getPixel(mPixelIndex);
-    }
-
-    @Override
-    public ISegment getStartSegment(IPixelChain pPixelChain) {
-        return pPixelChain.getSegment(mVertexIndex - 1);
-    }
 
     @Override
     public Point getPosition() {

@@ -421,7 +421,7 @@ public class PixelChainBuilder implements IPixelChain {
             try {
                 var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 var lt3 = vertexService.calcLocalTangent(services,context, candidateVertex, 3);
-                var startTangent = startVertex.getStartSegment(this).getEndTangent(pPixelMap, this);
+                var startTangent = vertexService.getStartSegment(services, context, startVertex).getEndTangent(pPixelMap, this);
                 var p = lt3.intersect(startTangent);
                 if (p != null) {
                     setVertex(candidateVertex);

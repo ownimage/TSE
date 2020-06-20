@@ -103,12 +103,14 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     public PixelChain fixNullPositionVertexes(Services services, PixelMap pixelMap) {
+        var context = ImmutablePixelChainContext.of(pixelMap, this);
         var vertexService = services.getVertexService();
         var mappedVertexes = mVertexes.stream()
                 .map(v -> {
                     var p = v.getPosition();
                     if (p == null) {
-                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
+//                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
+                        p = vertexService.getPixel(services, context, v).getUHVWMidPoint(pixelMap);
                         return vertexService.createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
                     }
                     return v;
