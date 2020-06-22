@@ -3,7 +3,10 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import lombok.val;
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
 
 import java.util.Optional;
 
@@ -11,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class PixelChainTest {
 
     @Mock

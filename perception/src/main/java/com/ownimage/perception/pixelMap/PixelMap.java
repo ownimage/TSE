@@ -344,6 +344,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private PixelChain generateChain(PixelMap pPixelMap, Node pStartNode, Pixel pCurrentPixel, PixelChain pPixelChain) {
+        try {
         Framework.logEntry(mLogger);
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("pStartNode: " + pStartNode);
@@ -356,6 +357,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             Framework.logExit(mLogger);
             return copy;
         }
+
+        if (pPixelChain.getPixels().lastElement().orElseThrow() == pCurrentPixel) {
+            mLogger.severe("SHOULD NOT BE ADDING THE SAME PIXEL LASTPIXEL");
+        }
+
+        if (pPixelChain.getPixels().contains(pCurrentPixel)) {
+            mLogger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
+        }
+
         PixelChain copy = pPixelChain.add(pPixelMap, pCurrentPixel);
         pCurrentPixel.setInChain(this, true);
         pCurrentPixel.setVisited(this, true);
@@ -385,6 +395,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             }
         }
         return copy;
+        } catch (StackOverflowError soe) {
+            mLogger.severe("Stack Overflow Error");
+            throw new RuntimeException("oops");
+        }
     }
 
     private Collection<PixelChain> generateChains(PixelMap pPixelMap, Node pStartNode) {
