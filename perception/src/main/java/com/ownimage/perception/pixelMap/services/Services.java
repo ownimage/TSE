@@ -9,6 +9,8 @@ public interface Services {
     @NotNull VertexService getVertexService();
 
     static Services getDefaultServices() {
-        return ImmutableServices.builder().vertexService(new VertexService()).build();
+        var vertexService = new VertexService();
+        vertexService.setVertexService(vertexService);
+        return ImmutableServices.builder().vertexService(vertexService).build();
     }
 }

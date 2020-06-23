@@ -12,9 +12,12 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -65,7 +68,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     transient private double mLength;
     private Thickness mThickness;
 
-    private Services services = Services.getDefaultServices();
+    @Setter
+    private @NotNull VertexService vertexService = Services.getDefaultServices().getVertexService();
 
     /**
      * Instantiates a new pixel chain.
@@ -79,7 +83,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(services.getVertexService().createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<IVertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -105,13 +109,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public PixelChain fixNullPositionVertexes(Services services, PixelMap pixelMap) {
         var context = ImmutablePixelChainContext.of(pixelMap, this);
-        var vertexService = services.getVertexService();
         var mappedVertexes = mVertexes.stream()
                 .map(v -> {
                     var p = v.getPosition();
                     if (p == null) {
 //                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
-                        p = vertexService.getPixel(services, context, v).getUHVWMidPoint(pixelMap);
+                        p = vertexService.getPixel(context, v).getUHVWMidPoint(pixelMap);
                         return vertexService.createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
                     }
                     return v;
@@ -172,7 +175,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = services.getVertexService().createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
+            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
             builder.changeVertexes(v -> v.add(end));
             StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
             builder.changeSegments(s -> s.add(newSegment));
@@ -408,7 +411,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         Vector<IVertex> vertexes = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = services.getVertexService().createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            IVertex v = vertexService.createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
         builder.changeVertexes(v -> v.clear().addAll(vertexes));
@@ -478,7 +481,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     @SuppressWarnings("OverlyComplexMethod")
     void validate(PixelMap pPixelMap, boolean pFull, String pMethodName) {
         var context = ImmutablePixelChainContext.of(pPixelMap, this);
-        var vertexServices = services.getVertexService();
+        var vertexServices = vertexService;
         try {
             if (getStartVertex().getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
@@ -519,16 +522,16 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 }
 
                 index++;
-                vertex = vertexServices.getEndSegment(services, context, vertex) != null
-                        ? vertexServices.getEndSegment(services, context, vertex).getEndVertex(this)
+                vertex = vertexServices.getEndSegment(context, vertex) != null
+                        ? vertexServices.getEndSegment(context, vertex).getEndVertex(this)
                         : null;
             }
 
             if (mVertexes.size() != 0) {
-                if (vertexServices.getStartSegment(services, context, mVertexes.firstElement().orElseThrow()) != null) {
+                if (vertexServices.getStartSegment(context, mVertexes.firstElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong start vertex");
                 }
-                if (vertexServices.getEndSegment(services, context, mVertexes.lastElement().orElseThrow()) != null) {
+                if (vertexServices.getEndSegment(context, mVertexes.lastElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong end vertex");
                 }
             }
@@ -546,10 +549,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                     throw new IllegalStateException("Wrong pixel index order");
                 }
                 currentMax = v.getPixelIndex();
-                if (i != 0 && vertexServices.getStartSegment(services, context, v) != mSegments.get(i - 1)) {
+                if (i != 0 && vertexServices.getStartSegment(context, v) != mSegments.get(i - 1)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
-                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment(services, context, v) != mSegments.get(i)) {
+                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment(context, v) != mSegments.get(i)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
             }

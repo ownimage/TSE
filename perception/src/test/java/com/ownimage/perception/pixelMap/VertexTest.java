@@ -6,7 +6,9 @@ import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class VertexTest {
 
     private Services services = Services.getDefaultServices();
@@ -28,7 +31,6 @@ public class VertexTest {
     
     @Before
     public void before() {
-        pixelMap = mock(PixelMap.class);
         when(pixelMap.getHeight()).thenReturn(100);
         when(pixelMap.getWidth()).thenReturn(100);
     }
@@ -158,7 +160,7 @@ public class VertexTest {
         var pixelMap = new PixelMap(100, 100, false, null);
         var context = ImmutablePixelChainContext.of(pixelMap, pixelChain);
         // WHEN THEN
-        assertEquals(pixel, services.getVertexService().getPixel(services, context, underTest1));
+        assertEquals(pixel, services.getVertexService().getPixel(context, underTest1));
         verify(pixelChain, times(1)).getPixelCount();
         verify(pixelChain, times(1)).getPixel(eq(pixelIndex));
 //        verifyNoMoreInteractions(pixelChain);
@@ -182,7 +184,7 @@ public class VertexTest {
         var pixelMap = new PixelMap(100, 100, false, null);
         var context = ImmutablePixelChainContext.of(pixelMap, mockPixelChain);
         // WHEN THEN
-        assertEquals(expected, services.getVertexService().getStartSegment(services, context, underTest));
+        assertEquals(expected, services.getVertexService().getStartSegment(context, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
 //        verifyNoMoreInteractions(mockPixelChain, expected);
@@ -206,7 +208,7 @@ public class VertexTest {
         var pixelMap = new PixelMap(100, 100, false, null);
         var context = ImmutablePixelChainContext.of(pixelMap, mockPixelChain);
         // WHEN THEN
-        assertEquals(expected, services.getVertexService().getEndSegment(services, context, underTest));
+        assertEquals(expected, services.getVertexService().getEndSegment(context, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
 //        verifyNoMoreInteractions(mockPixelChain, expected);

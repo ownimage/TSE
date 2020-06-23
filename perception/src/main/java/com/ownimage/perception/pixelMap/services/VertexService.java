@@ -12,8 +12,15 @@ import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertexData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 public class VertexService {
+
+    private VertexService vertexService;
+
+    public void setVertexService(@NotNull VertexService vertexService) {
+        this.vertexService = vertexService;
+    }
 
     public IVertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
@@ -45,11 +52,10 @@ public class VertexService {
      * @param context.getPixelChain() the Pixel Chain performing this operation
      * @param context.getPixelMap()   the PixelMap performing this operation
      */
-    public Line calcTangent(Services services, PixelChainContext context, IVertex vertex) {
-        var vertexServices = services.getVertexService();
+    public Line calcTangent(PixelChainContext context, IVertex vertex) {
         Line tangent;
-        ISegment startSegment = vertexServices.getStartSegment(services,context,vertex);
-        ISegment endSegment = vertexServices.getEndSegment(services,context,vertex);
+        ISegment startSegment = vertexService.getStartSegment(context, vertex);
+        ISegment endSegment = vertexService.getEndSegment(context, vertex);
 
         if (startSegment == null && endSegment == null) {
             tangent = null;
@@ -81,7 +87,7 @@ public class VertexService {
      * @param pLength        the length in Pixels to count each way
      * @return the calculated tangent
      */
-    public Line calcLocalTangent(Services services, PixelChainContext context, IVertex vertex, int pLength) {
+    public Line calcLocalTangent(PixelChainContext context, IVertex vertex, int pLength) {
         var pixelChain = context.getPixelChain();
         var pixelMap = context.getPixelMap();
 
@@ -94,15 +100,15 @@ public class VertexService {
         return new Line(thisPosition, thisPosition.add(tangentDirection));
     }
 
-    public Pixel getPixel(Services services, PixelChainContext context, IVertex vertex) {
+    public Pixel getPixel(PixelChainContext context, IVertex vertex) {
         return context.getPixelChain().getPixel(vertex.getPixelIndex());
     }
 
-    public ISegment getStartSegment(Services services, PixelChainContext context, IVertex vertex) {
+    public ISegment getStartSegment(PixelChainContext context, IVertex vertex) {
         return context.getPixelChain().getSegment(vertex.getVertexIndex() - 1);
     }
 
-    public ISegment getEndSegment(Services services, PixelChainContext context, IVertex vertex) {
+    public ISegment getEndSegment(PixelChainContext context, IVertex vertex) {
         return context.getPixelChain().getSegment(vertex.getVertexIndex());
     }
 

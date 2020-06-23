@@ -421,8 +421,8 @@ public class PixelChainBuilder implements IPixelChain {
         for (int i = startPixelIndex; i < getPixelCount(); i++) {
             try {
                 var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
-                var lt3 = vertexService.calcLocalTangent(services,context, candidateVertex, 3);
-                var startTangent = vertexService.getStartSegment(services, context, startVertex).getEndTangent(pPixelMap, this);
+                var lt3 = vertexService.calcLocalTangent(context, candidateVertex, 3);
+                var startTangent = vertexService.getStartSegment(context, startVertex).getEndTangent(pPixelMap, this);
                 var p = lt3.intersect(startTangent);
                 if (p != null) {
                     setVertex(candidateVertex);
@@ -476,7 +476,7 @@ public class PixelChainBuilder implements IPixelChain {
             try {
                 val candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, i);
                 val lineAB = new Line(getUHVWPoint(pPixelMap, 0), getUHVWPoint(pPixelMap, i));
-                var lt3 = vertexService.calcLocalTangent(services, context, candidateVertex, 3);
+                var lt3 = vertexService.calcLocalTangent(context, candidateVertex, 3);
                 val pointL = lineAB.getPoint(0.25d);
                 val pointN = lineAB.getPoint(0.75d);
                 val normal = lineAB.getANormal();
@@ -660,8 +660,8 @@ public class PixelChainBuilder implements IPixelChain {
         try {
             double lowestError = pCurrentSegment.calcError(pPixelMap, this);
             lowestError *= pSource.getLineCurvePreference();
-            Line startTangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getStartVertex(this));
-            Line endTangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getEndVertex(this));
+            Line startTangent = services.getVertexService().calcTangent(context, pCurrentSegment.getStartVertex(this));
+            Line endTangent = services.getVertexService().calcTangent(context, pCurrentSegment.getEndVertex(this));
 
             if (startTangent != null && endTangent != null) {
                 Point p1 = startTangent.intersect(endTangent);
@@ -700,7 +700,7 @@ public class PixelChainBuilder implements IPixelChain {
             double lowestError = pCurrentSegment.calcError(pPixelMap, this);
             lowestError *= pSource.getLineCurvePreference();
             // calculate start tangent
-            Line tangent = services.getVertexService().calcTangent(services, context, pCurrentSegment.getStartVertex(this));
+            Line tangent = services.getVertexService().calcTangent(context, pCurrentSegment.getStartVertex(this));
             Point closest = tangent.closestPoint(pCurrentSegment.getEndUHVWPoint(pPixelMap, this));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
@@ -743,7 +743,7 @@ public class PixelChainBuilder implements IPixelChain {
             double lowestError = pSegment.calcError(pPixelMap, this);
             lowestError *= pLineCurvePreference;
             // calculate end tangent
-            Line tangent = services.getVertexService().calcTangent(services, context, pSegment.getEndVertex(this));
+            Line tangent = services.getVertexService().calcTangent(context, pSegment.getEndVertex(this));
 
 
             // find closest point between start point and tangent line

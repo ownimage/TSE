@@ -228,7 +228,7 @@ public class VertexServiceTest {
         var services = Services.getDefaultServices();
         var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(services, context, vertex);
+        var actual = underTest.calcTangent(context, vertex);
         assertEquals(null, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
@@ -258,7 +258,7 @@ public class VertexServiceTest {
         var services = Services.getDefaultServices();
         var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(services, context, vertex);
+        var actual = underTest.calcTangent(context, vertex);
         assertEquals(expected, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
@@ -291,7 +291,7 @@ public class VertexServiceTest {
         var services = Services.getDefaultServices();
         var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(services, context, vertex);
+        var actual = underTest.calcTangent(context, vertex);
         assertEquals(expected, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);

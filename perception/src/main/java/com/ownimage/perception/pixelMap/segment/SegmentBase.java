@@ -183,14 +183,14 @@ public abstract class SegmentBase implements ISegment {
     public ISegment getNextSegment(IPixelChain pPixelChain) {
         var services = Services.getDefaultServices();
         var context = ImmutablePixelChainContext.of(null, pPixelChain);
-        return services.getVertexService().getEndSegment(services, context, getEndVertex(pPixelChain));
+        return services.getVertexService().getEndSegment(context, getEndVertex(pPixelChain));
     }
 
     @Override
     public ISegment getPreviousSegment(IPixelChain pPixelChain) {
         var services = Services.getDefaultServices();
         var context = ImmutablePixelChainContext.of(null, pPixelChain);
-        return services.getVertexService().getStartSegment(services, context, getEndVertex(pPixelChain));
+        return services.getVertexService().getStartSegment(context, getEndVertex(pPixelChain));
     }
 
     @Override
