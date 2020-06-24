@@ -68,8 +68,9 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     transient private double mLength;
     private Thickness mThickness;
 
+
     @Setter
-    private @NotNull VertexService vertexService = Services.getDefaultServices().getVertexService();
+    transient private @NotNull VertexService vertexService = Services.getDefaultServices().getVertexService();
 
     /**
      * Instantiates a new pixel chain.
@@ -83,7 +84,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<IVertex>().add(getVertexService().createVertex(pPixelMap, this, 0, 0));
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -114,8 +115,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                     var p = v.getPosition();
                     if (p == null) {
 //                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
-                        p = vertexService.getPixel(context, v).getUHVWMidPoint(pixelMap);
-                        return vertexService.createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
+                        p = getVertexService().getPixel(context, v).getUHVWMidPoint(pixelMap);
+                        return getVertexService().createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
                     }
                     return v;
                 })
@@ -131,6 +132,17 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         } catch (CloneNotSupportedException pE) {
             throw new RuntimeException("CloneNotSupportedException", pE);
         }
+    }
+
+    public VertexService getVertexService() {
+        if (vertexService == null) {
+            synchronized (this) {
+                if (vertexService == null) {
+                  vertexService = Services.getDefaultServices().getVertexService();
+                }
+            }
+        }
+        return vertexService;
     }
 
     public PixelChain add(PixelMap pPixelMap, Pixel pPixel) {
@@ -175,7 +187,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
+            IVertex end = getVertexService().createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
             builder.changeVertexes(v -> v.add(end));
             StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
             builder.changeSegments(s -> s.add(newSegment));
@@ -411,7 +423,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         Vector<IVertex> vertexes = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = vertexService.createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            IVertex v = getVertexService().createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
         builder.changeVertexes(v -> v.clear().addAll(vertexes));

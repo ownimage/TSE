@@ -9,25 +9,18 @@ import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChainContext;
 import com.ownimage.perception.pixelMap.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.ImmutableVertexData;
+import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import lombok.val;
-import org.jetbrains.annotations.NotNull;
 
 public class VertexService {
-
-    private VertexService vertexService;
-
-    public void setVertexService(@NotNull VertexService vertexService) {
-        this.vertexService = vertexService;
-    }
 
     public IVertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
         val position = pPixelChain.getUHVWPoint(pPixelMap, pPixelIndex);
-        return ImmutableVertexData.of(pPixelIndex, pVertexIndex, position);
+        return new Vertex(pPixelIndex, pVertexIndex, position);
     }
 
     public IVertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
@@ -35,7 +28,7 @@ public class VertexService {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
 
-        return ImmutableVertexData.of(pPixelIndex, pVertexIndex, pPosition);
+        return new Vertex(pPixelIndex, pVertexIndex, pPosition);
     }
 
     private Line calcTangent(Point pPoint, Line pStartTangent, Line pEndTangent) {
@@ -54,8 +47,8 @@ public class VertexService {
      */
     public Line calcTangent(PixelChainContext context, IVertex vertex) {
         Line tangent;
-        ISegment startSegment = vertexService.getStartSegment(context, vertex);
-        ISegment endSegment = vertexService.getEndSegment(context, vertex);
+        ISegment startSegment = getStartSegment(context, vertex);
+        ISegment endSegment = getEndSegment(context, vertex);
 
         if (startSegment == null && endSegment == null) {
             tangent = null;

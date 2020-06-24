@@ -6,6 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -18,8 +20,10 @@ public class Vertex implements IVertex {
     private static final long serialVersionUID = 1L;
 
     private final int mVertexIndex;
+
     private final int mPixelIndex;
-    private @NotNull Point mPosition;
+
+    private final Point mPosition;
 
     public Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
         mVertexIndex = pVertexIndex;
