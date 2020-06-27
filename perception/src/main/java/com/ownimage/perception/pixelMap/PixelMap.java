@@ -75,7 +75,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    // TODO should delete the following two values
+    // TODO should clearInChainAndVisited the following two values
     private final boolean m360;
     private final IPixelMapTransformSource mTransformSource;
     /**
@@ -162,7 +162,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pPixels.stream()
                 .filter(p -> p.isEdge(clone))
                 .forEach(p -> clone.getPixelChains(p).forEach(pc -> {
-                    pc.delete(clone);
+                    pc.clearInChainAndVisited(clone);
                     pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
                     pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
                     clone.pixelChainsRemove(pc);
@@ -240,7 +240,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         PixelMap clone = new PixelMap(this);
         clone.getPixelChains(pPixel).forEach(pc -> {
             clone.removePixelChain(pc);
-            val pc2 = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
+            val pc2 = pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference);
             clone.addPixelChain(pc2);
         });
         //copy.indexSegments();
@@ -369,8 +369,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
         }
 
-//        PixelChain copy = pixelChainService.add(pPixelChain, pCurrentPixel);
-            PixelChain copy = pPixelChain.add(pCurrentPixel);
+        PixelChain copy = pixelChainService.add(pPixelChain, pCurrentPixel);
         pCurrentPixel.setInChain(this, true);
         pCurrentPixel.setVisited(this, true);
         // try to end quickly at a node to prevent bypassing
@@ -796,7 +795,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         val lineCurvePreference = getTransformSource().getLineCurvePreference();
         clone.mPixelChains.stream()
                 .parallel()
-                .map(pc -> pc.approximate(this, tolerance))
+                .map(pc -> pixelChainService.approximate(this, pc, tolerance))
                 .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
@@ -988,8 +987,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         double lineCurvePreference = getLineCurvePreference();
         return generateChains(this, pNode)
                 .parallelStream()
-                .map(pc -> pc.approximate(this, tolerance))
-                .map(pc -> pc.approximateCurvesOnly(this, tolerance, lineCurvePreference));
+                .map(pc -> pixelChainService.approximate(this, pc, tolerance))
+                .map(pc -> pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference));
     }
 
     private void trackPixelOn(@NonNull Pixel pPixel) {
@@ -1015,7 +1014,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                             .ifPresent(node -> {
                                 List<PixelChain> chains = generateChains(this, node)
                                         .parallelStream()
-                                        .map(pc2 -> pc2.approximate(this, tolerance))
+                                        .map(pc2 -> pixelChainService.approximate(this, pc2, tolerance))
                                         .collect(Collectors.toList());
                                 addPixelChains(chains);
                             })
@@ -1116,7 +1115,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
-        mPixelChains.forEach(pixelChain -> refined.add(pixelChain.approximate(this, tolerance)));
+        mPixelChains.forEach(pixelChain -> refined.add(pixelChainService.approximate(this, pixelChain, tolerance)));
         pixelChainsClear();
         pixelChainsAddAll(refined);
         mLogger.info("approximate - done");
@@ -1138,7 +1137,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 //PixelChain refinedPC = pc.refine(this, getTransformSource());
                 val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
                 val lineCurvePreference = getTransformSource().getLineCurvePreference();
-                PixelChain refinedPC = pc.approximateCurvesOnly(this, tolerance, lineCurvePreference);
+                PixelChain refinedPC = pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference);
                 refined.add(refinedPC);
                 counter.increase();
                 reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());

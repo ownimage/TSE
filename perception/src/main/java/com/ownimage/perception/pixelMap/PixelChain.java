@@ -108,12 +108,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
     }
 
-    public PixelChain add(Pixel pPixel) {
-        val builder = builder();
-        builder.changePixels(p -> p.add(pPixel));
-        return builder.build();
-    }
-
     @Override
     public PixelChain clone() {
         try {
@@ -185,24 +179,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return builder.build();
     }
 
-    PixelChain approximate(
-            PixelMap pPixelMap,
-            double pTolerance
-    ) {
-        val builder = builder();
-        builder.approximate(pPixelMap, pTolerance);
-        return builder.build();
-    }
-
-    PixelChain approximateCurvesOnly(
-            PixelMap pPixelMap,
-            double pTolerance,
-            double pLineCurvePreference
-    ) {
-        val builder = builder();
-        builder.approximateCurvesOnly(pPixelMap, pTolerance, pLineCurvePreference);
-        return builder.build();
-    }
 
     private void checkAllVertexesAttached() {
 //        mSegments.forEach(segment -> {
@@ -601,8 +577,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mPixels.forEach(p -> p.setVisited(pPixelMap, pValue));
     }
 
-    public void delete(PixelMap pPixelMap) {
-        mLogger.fine("delete");
+    public void clearInChainAndVisited(PixelMap pPixelMap) {
+        mLogger.fine("clearInChainAndVisited");
         setInChain(pPixelMap, false);
         setVisited(pPixelMap, false);
         setEdge(pPixelMap);

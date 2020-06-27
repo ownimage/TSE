@@ -250,7 +250,7 @@ public class VertexServiceTest {
         var mockPixelMap = new MockPixelMapBuilder().build();
 
         Line expected = mock(Line.class);
-        when(mockStartSegment.getEndTangent(mockPixelMap, mockPixelChain)).thenReturn(expected);
+        when(mockStartSegment.getEndTangent(pixelMap, mockPixelChain)).thenReturn(expected);
 
         IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
@@ -261,7 +261,7 @@ public class VertexServiceTest {
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
         verify(mockPixelChain, times(1)).getSegment(endSegmentIndex);
-        verify(mockStartSegment, times(1)).getEndTangent(mockPixelMap, mockPixelChain);
+        verify(mockStartSegment, times(1)).getEndTangent(pixelMap, mockPixelChain);
 //        verifyNoMoreInteractions(mockPixelChain, mockPixelMap, mockStartSegment);
     }
 
@@ -287,7 +287,7 @@ public class VertexServiceTest {
         IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
-        var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
+        var actual = underTest.calcTangent(mockPixelMap, mockPixelChain, vertex);
         assertEquals(expected, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);

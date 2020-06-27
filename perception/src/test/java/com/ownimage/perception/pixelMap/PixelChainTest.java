@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PixelChainTest {
 
+    private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+
     @Mock
     PixelMap pixelMap;
 
@@ -64,7 +66,7 @@ public class PixelChainTest {
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().orElseThrow();
-        chain = chain.approximate(pixelMap, tolerance);
+        chain = pixelChainService.approximate(pixelMap, chain, tolerance);
         assertEquals(3, chain.getSegmentCount());
     }
 
@@ -81,7 +83,7 @@ public class PixelChainTest {
 
         // WHEN
         var underTest = createPixelChain();
-        var approx = underTest.approximate(pixelMap, tolerance);
+        var approx = pixelChainService.approximate(pixelMap, underTest, tolerance);
 
         // AND WHEN
         var reverse = approx.reverse(pixelMap);
@@ -241,7 +243,6 @@ public class PixelChainTest {
     }
 
     private PixelChain createPixelChain() {
-        PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
         Pixel[] pixels = new Pixel[]{
                 new Pixel(4, 6),
                 new Pixel(3, 5),
@@ -264,8 +265,7 @@ public class PixelChainTest {
 
         var pixelChain = new PixelChain(pixelMap, new Node(3, 7));
         for (Pixel pixel : pixels) {
-//            pixelChain = pixelChainService.add(pixelChain, pixel);
-            pixelChain = pixelChain.add( pixel);
+            pixelChain = pixelChainService.add(pixelChain, pixel);
         }
         pixelChain = pixelChain.setEndNode(null, new Node(6, 7));
         return pixelChain;

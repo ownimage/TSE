@@ -28,7 +28,7 @@ public class VertexService {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
 
-        return new Vertex(pPixelIndex, pVertexIndex, pPosition);
+        return new Vertex(pVertexIndex, pPixelIndex, pPosition);
     }
 
     private Line calcTangent(Point pPoint, Line pStartTangent, Line pEndTangent) {

@@ -380,12 +380,12 @@ public class PixelChainBuilder implements IPixelChain {
         return error;
     }
 
-    void approximate(PixelMap pPixelMap, double pTolerance) {
+    public void approximate(PixelMap pPixelMap, double pTolerance) {
         approximate01_straightLines(pPixelMap, pTolerance);
         approximate02_refineCorners(pPixelMap);
     }
 
-    void approximateCurvesOnly(
+    public void approximateCurvesOnly(
             PixelMap pPixelMap,
             double pTolerance,
             double pLineCurvePreference
