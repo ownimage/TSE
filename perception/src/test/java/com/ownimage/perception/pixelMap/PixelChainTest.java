@@ -100,7 +100,7 @@ public class PixelChainTest {
         var height = 1000;
         var underTest = createPixelChain();
         var length = underTest.getPixelCount();
-        underTest = underTest.setThickness(1, length - 2, length - 1);
+        underTest = pixelChainService.withThickness(underTest, 1, length - 2, length - 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
         when(ipmts.getLongLineThickness()).thenReturn(longThickness);
@@ -119,7 +119,7 @@ public class PixelChainTest {
         var height = 1000;
         var underTest = createPixelChain();
         var length = underTest.getPixelCount();
-        underTest = underTest.setThickness(1, length - 2, length + 1);
+        underTest = pixelChainService.withThickness(underTest, 1, length - 2, length + 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
         when(ipmts.getLongLineThickness()).thenReturn(longThickness);
@@ -140,7 +140,7 @@ public class PixelChainTest {
         var height = 1000;
         var underTest = createPixelChain();
         var length = underTest.getPixelCount();
-        underTest = underTest.setThickness(1, length + 2, length + 4);
+        underTest = pixelChainService.withThickness(underTest, 1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
         when(ipmts.getLongLineThickness()).thenReturn(longThickness);
@@ -162,7 +162,7 @@ public class PixelChainTest {
         var height = 1000;
         var underTest = createPixelChain();
         var length = underTest.getPixelCount();
-        underTest = underTest.setThickness(length + 1, length + 2, length + 4);
+        underTest = pixelChainService.withThickness(underTest, length + 1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
         when(ipmts.getLongLineThickness()).thenReturn(longThickness);
@@ -267,7 +267,7 @@ public class PixelChainTest {
         for (Pixel pixel : pixels) {
             pixelChain = pixelChainService.add(pixelChain, pixel);
         }
-        pixelChain = pixelChain.setEndNode(null, new Node(6, 7));
+        pixelChain = pixelChainService.setEndNode(null, pixelChain, new Node(6, 7));
         return pixelChain;
     }
 

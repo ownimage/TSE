@@ -45,6 +45,7 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
@@ -69,6 +70,9 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
     public final static long serialVersionUID = 1L;
     private final static Logger mLogger = Framework.getLogger();
+    private final static PixelChainService pixelChainService =
+            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
+
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
     private final CannyEdgeTransform mCannyEdgeTransform;
@@ -906,7 +910,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 var shortLength = mCannyEdgeTransform.getShortLineLength();
                 var mediumLength = mCannyEdgeTransform.getMediumLineLength();
                 var longLength = mCannyEdgeTransform.getLongLineLength();
-                mapper =pc -> pc.getThickness(shortLength, mediumLength, longLength);
+                mapper = pc -> pixelChainService.getThickness(pc, shortLength, mediumLength, longLength);
                 break;
             case Map:
                 var map  = new EnumMap<Thickness, Thickness>(Thickness.class);

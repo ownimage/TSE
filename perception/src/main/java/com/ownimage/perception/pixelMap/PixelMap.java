@@ -187,7 +187,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     var newThickness = pMap.apply(pc);
                     if (newThickness != currentThickness) {
                         clone.pixelChainsRemove(pc);
-                        clone.pixelChainsAdd(pc.setThickness(newThickness));
+                        clone.pixelChainsAdd(pixelChainService.withThickness(pc, newThickness));
                         changesMade.set(true);
                     }
                 });
@@ -207,7 +207,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .flatMap(p -> this.getPixelChains(p).stream())
                 .distinct()
                 .forEach(pc -> {
-                    var update = pc.setThickness(shortLength, mediumLength, longLength);
+                    var update = pixelChainService.withThickness(pc, shortLength, mediumLength, longLength);
                     if (update != pc) {
                         clone.pixelChainsRemove(pc);
                         clone.pixelChainsAdd(update);
@@ -356,7 +356,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
         Optional<Node> node = getNode(pCurrentPixel);
         if (node.isPresent()) {
-            PixelChain copy = pPixelChain.setEndNode(this, node.get());
+            PixelChain copy = pixelChainService.setEndNode(this, pPixelChain, node.get());
             Framework.logExit(mLogger);
             return copy;
         }
@@ -414,7 +414,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
                 PixelChain chain = new PixelChain(pPixelMap, pStartNode);
                 chain = generateChain(pPixelMap, pStartNode, neighbour, chain);
-                if (chain.length() > 2) {
+                if (chain.pixelLength() > 2) {
                     chains.add(chain);
                 }
             }
@@ -1309,7 +1309,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         int mediumLength = pTransform.getMediumLineLength();
         int longLength = pTransform.getLongLineLength();
         Vector<PixelChain> updates = new Vector<>();
-        mPixelChains.forEach(chain -> updates.add(chain.setThickness(shortLength, mediumLength, longLength)));
+        mPixelChains.forEach(chain -> updates.add(pixelChainService.withThickness(chain, shortLength, mediumLength, longLength)));
         pixelChainsClear();
         pixelChainsAddAll(updates);
         Framework.logExit(mLogger);

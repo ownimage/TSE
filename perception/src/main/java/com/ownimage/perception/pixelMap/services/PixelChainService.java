@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
@@ -10,6 +11,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +36,7 @@ public class PixelChainService {
                 })
                 .collect(Collectors.toList());
         var vertexes = new ImmutableVectorClone<IVertex>().addAll(mappedVertexes);
-        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.length(), pixelChain.getThickness());
+        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.pixelLength(), pixelChain.getThickness());
     }
 
     private PixelChainBuilder builder(PixelChain pixelChain) {
@@ -42,7 +44,7 @@ public class PixelChainService {
                 pixelChain.getPixels().toVector(),
                 pixelChain.getVertexes().toVector(),
                 pixelChain.getSegments().toVector(),
-                pixelChain.length(),
+                pixelChain.pixelLength(),
                 pixelChain.getThickness()
         );
     }
@@ -156,5 +158,55 @@ public class PixelChainService {
                 .filter(pPixel -> pPixel.isNode(pPixelMap))
                 .filter(p -> p.countEdgeNeighbours(pPixelMap) < 2 || p.countNodeNeighbours(pPixelMap) == 2)
                 .forEach(p -> p.setEdge(pPixelMap, false));
+    }
+
+    /**
+     * Sets thickness.  If pThickness is null then it sets the thickness to None.  If there is no change to the thickness
+     * then this method returns this object, otherwise it will return a new PixelChain with the new thickness.
+     *
+     * @param thickness the p thickness
+     * @return the PixeclChain
+     */
+    public PixelChain withThickness(@NotNull PixelChain pixelChain, @NotNull IPixelChain.Thickness thickness) {
+        if (thickness == pixelChain.getThickness()) {
+            return pixelChain;
+        }
+        // TODO what is the best way to do this
+        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), pixelChain.getVertexes(), pixelChain.pixelLength(), thickness);
+    }
+
+
+    public PixelChain setEndNode(@NotNull PixelMap pPixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
+
+        val builder = builder(pixelChain);
+        builder.changePixels(p -> p.add(pNode));
+
+        // need to do a check here to see if we are clobbering over another chain
+        // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
+        if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
+            var index = builder.getPixelCount() - 2;
+            builder.getPixel(index).setVisited(pPixelMap, false);
+            builder.changePixels(p -> p.remove(index));
+        }
+        return builder.build();
+    }
+
+    public IPixelChain.Thickness getThickness(
+            @NotNull PixelChain pixelChain,  int thinLength, int normalLength, int longLength) {
+        int length = pixelChain.pixelLength();
+        if (length < thinLength) {
+            return IPixelChain.Thickness.None;
+        } else if (length < normalLength) {
+            return IPixelChain.Thickness.Thin;
+        } else if (length < longLength) {
+            return IPixelChain.Thickness.Normal;
+        }
+        return IPixelChain.Thickness.Thick;
+    }
+
+    public PixelChain withThickness(
+            @NotNull PixelChain pixelChain,  int thinLength, int normalLength, int longLength) {
+        IPixelChain.Thickness thickness = getThickness(pixelChain, thinLength, normalLength, longLength);
+        return withThickness(pixelChain, thickness);
     }
 }

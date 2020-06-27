@@ -190,22 +190,22 @@ public class ImageLoadTransform extends BaseTransform {
     // Color c1 = KColor.fade(c0, cE, delta);
     // Color c2 = KColor.fade(cNE, cE, delta);
     // double maxLength = KMath.SQRT2 * (1.0d - delta);
-    // double length = KMath.SQRT2 * yOff;
-    // if (length == 0) {
+    // double pixelLength = KMath.SQRT2 * yOff;
+    // if (pixelLength == 0) {
     // return c1;
     // }
-    // return KColor.fade(c1, c2, length / maxLength);
+    // return KColor.fade(c1, c2, pixelLength / maxLength);
     // }
     //
     // double delta = yOff - xOff;
     // Color c1 = KColor.fade(c0, cN, delta);
     // Color c2 = KColor.fade(cNE, cN, delta);
     // double maxLength = KMath.SQRT2 * (1.0d - delta);
-    // double length = KMath.SQRT2 * xOff;
-    // if (length == 0) {
+    // double pixelLength = KMath.SQRT2 * xOff;
+    // if (pixelLength == 0) {
     // return c1;
     // }
-    // return KColor.fade(c1, c2, length / maxLength);
+    // return KColor.fade(c1, c2, pixelLength / maxLength);
     // }
     //
     // private Color getColorReshapeSE(final IPictureReadOnly pSourcePicture, final Point pIn) {
@@ -225,22 +225,22 @@ public class ImageLoadTransform extends BaseTransform {
     // Color c1 = KColor.fade(c0, cE, sum);
     // Color c2 = KColor.fade(c0, cN, sum);
     // double maxLength = KMath.SQRT2 * sum;
-    // double length = Math.sqrt(yOff * yOff + (sum - xOff) * (sum - xOff));
-    // if (length == 0) {
+    // double pixelLength = Math.sqrt(yOff * yOff + (sum - xOff) * (sum - xOff));
+    // if (pixelLength == 0) {
     // return c1;
     // }
-    // return KColor.fade(c1, c2, length / maxLength);
+    // return KColor.fade(c1, c2, pixelLength / maxLength);
     // }
     //
     // double sum = xOff + yOff - 1.0d;
     // Color c1 = KColor.fade(cN, cNE, sum);
     // Color c2 = KColor.fade(cE, cNE, sum);
     // double maxLength = KMath.SQRT2 * (1.0 - sum);
-    // double length = Math.sqrt((1.0d - yOff) * (1.0d - yOff) + (sum - xOff) * (sum - xOff));
-    // if (length == 0) {
+    // double pixelLength = Math.sqrt((1.0d - yOff) * (1.0d - yOff) + (sum - xOff) * (sum - xOff));
+    // if (pixelLength == 0) {
     // return c1;
     // }
-    // return KColor.fade(c1, c2, length / maxLength);
+    // return KColor.fade(c1, c2, pixelLength / maxLength);
     // }
     //
     // private Color getColorSmooth(final IPictureReadOnly pSourcePicture, final Point pIn) {

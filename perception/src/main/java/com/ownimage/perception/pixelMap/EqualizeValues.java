@@ -41,8 +41,8 @@ public class EqualizeValues {
     }
 
 //	public static String[] getAllValues() {
-//		String[] values = new String[mOptions.length];
-//		for (int i = 0; i < mOptions.length; i++) {
+//		String[] values = new String[mOptions.pixelLength];
+//		for (int i = 0; i < mOptions.pixelLength; i++) {
 //			values[i] = mOptions.toString();
 //		}
 //		return values;

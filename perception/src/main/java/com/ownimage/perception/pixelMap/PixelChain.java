@@ -262,7 +262,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
      *
      * @return the number of Pixels in the PixelChain.
      */
-    public int length() {
+    public int pixelLength() {
         return mPixels.size();
     }
 
@@ -305,64 +305,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mThickness;
     }
 
-    /**
-     * Sets thickness.  If pThickness is null then it sets the thickness to None.  If there is no change to the thickness
-     * then this method returns this object, otherwise it will return a new PixelChain with the new thickness.
-     *
-     * @param pThickness the p thickness
-     * @return the PixeclChain
-     */
-    public PixelChain setThickness(Thickness pThickness) {
-        Framework.logEntry(mLogger);
-        var thickness = pThickness != null ? pThickness : Thickness.None;
-        if (thickness == mThickness) {
-            return this;
-        }
-        PixelChain clone = clone();
-        clone.mThickness = thickness;
-        return clone;
-    }
 
-
-
-    PixelChain setEndNode(PixelMap pPixelMap, @NonNull Node pNode) {
-
-        val builder = builder();
-        builder.changePixels(p -> p.add(pNode));
-
-        // need to do a check here to see if we are clobbering over another chain
-        // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
-            var index = builder.getPixelCount() - 2;
-            builder.getPixel(index).setVisited(pPixelMap, false);
-            builder.changePixels(p -> p.remove(index));
-        }
-        return builder.build();
-    }
-
-    public Thickness getThickness(int pThinLength, int pNormalLength, int pLongLength) {
-        if (length() < pThinLength) {
-            return Thickness.None;
-        } else if (length() < pNormalLength) {
-            return Thickness.Thin;
-        } else if (length() < pLongLength) {
-            return Thickness.Normal;
-        }
-        return Thickness.Thick;
-    }
-
-    PixelChain setThickness(int pThinLength, int pNormalLength, int pLongLength) {
-        Thickness newThickness = getThickness(pThinLength, pNormalLength, pLongLength);
-
-        PixelChain result;
-        if (newThickness == mThickness) {
-            result = this;
-        } else {
-            result = clone();
-            result.mThickness = newThickness;
-        }
-        return result;
-    }
 
     @SuppressWarnings("StringBufferReplaceableByString")
     @Override

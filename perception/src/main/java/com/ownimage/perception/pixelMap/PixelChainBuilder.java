@@ -513,7 +513,7 @@ public class PixelChainBuilder implements IPixelChain {
 
     private void approximate01_straightLines(PixelMap pPixelMap, double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
-        // there are cases where a line of length n will be close enough, a line of length n+1 will not be, but there exists an m such that a line of length m is close enough.
+        // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
         if (getPixelCount() <= 1) {
             return;
         }
@@ -583,7 +583,7 @@ public class PixelChainBuilder implements IPixelChain {
             var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
 
             getPegCounter().increase(IPixelChain.PegCounters.RefineCornersAttempted);
-            // the check below is needed as some segments may only be one index length so generating a midpoint might generate an invalid segment
+            // the check below is needed as some segments may only be one index pixelLength so generating a midpoint might generate an invalid segment
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;
                 for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {

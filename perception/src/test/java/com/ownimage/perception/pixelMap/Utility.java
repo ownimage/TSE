@@ -156,11 +156,11 @@ class Utility {
 
     private static void setMap(final PixelMap pixelMap, final String[] map) {
         if (map.length != pixelMap.getHeight())
-            throw new IllegalArgumentException("map.length != pixelMap.getHeight()");
+            throw new IllegalArgumentException("map.pixelLength != pixelMap.getHeight()");
         int y = 0;
         for (final String string : map) {
             if (string.length() != pixelMap.getWidth())
-                throw new IllegalArgumentException("string.length() != pixelMap.getWidth() with:" + string + ", y=" + y);
+                throw new IllegalArgumentException("string.pixelLength() != pixelMap.getWidth() with:" + string + ", y=" + y);
             for (int x = 0; x < string.length(); x++) {
                 final char c = string.charAt(x);
                 switch (c) {

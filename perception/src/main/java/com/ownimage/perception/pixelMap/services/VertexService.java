@@ -77,7 +77,7 @@ public class VertexService {
      *
      * @param pPixelMap      the PixelMap performing this operation
      * @param pPixelChainthe PixelChain performing this operation
-     * @param pLength        the length in Pixels to count each way
+     * @param pLength        the pixelLength in Pixels to count each way
      * @return the calculated tangent
      */
     public Line calcLocalTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex, int pLength) {

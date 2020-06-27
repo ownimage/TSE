@@ -56,7 +56,7 @@ public interface IPixelChain {
     @Deprecated
     default Pixel getPixel(int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
-            String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
+            String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
         }
 
@@ -87,7 +87,7 @@ public interface IPixelChain {
      */
     default Point getUHVWPoint(PixelMap pPixelMap, int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
-            String msg = "pIndex, currently: %s, must be between 0 and the length of mPixels, currently: %s";
+            String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
         }
         return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap);
