@@ -27,6 +27,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
@@ -90,6 +91,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
     private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
     private int mSegmentCount;
+
+    private PixelChainService pixelChainService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
     /**
      * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
      * This is turned off whilst the bulk processing is running. // TODO should this extend to the conversion of Pixels to Nodes etc.
@@ -366,7 +369,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             mLogger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
         }
 
-        PixelChain copy = pPixelChain.add(pPixelMap, pCurrentPixel);
+//        PixelChain copy = pixelChainService.add(pPixelChain, pCurrentPixel);
+            PixelChain copy = pPixelChain.add(pCurrentPixel);
         pCurrentPixel.setInChain(this, true);
         pCurrentPixel.setVisited(this, true);
         // try to end quickly at a node to prevent bypassing
@@ -1200,7 +1204,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 Collection<PixelChain> pixelChains = (Collection<PixelChain>) ois.readObject();
                 // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
                 // to be replaced with a constant value
-                pixelChains = pixelChains.stream().map(pc -> pc.fixNullPositionVertexes(services, this)).collect(Collectors.toList());
+                Function<PixelChain, PixelChain> fixNullPositionVertexes =
+                        pc -> services.getPixelChainService().fixNullPositionVertexes(this, pc);
+                pixelChains = pixelChains.stream().map(fixNullPositionVertexes).collect(Collectors.toList());
                 pixelChainsClear();
                 pixelChainsAddAll(pixelChains);
                 //TODO this will need to change

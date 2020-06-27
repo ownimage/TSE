@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -158,9 +159,8 @@ public class VertexTest {
         IVertex underTest1 = services.getVertexService().createVertex(pixelMap, pixelChain, 1, pixelIndex);
         var services = Services.getDefaultServices();
         var pixelMap = new PixelMap(100, 100, false, null);
-        var context = ImmutablePixelChainContext.of(pixelMap, pixelChain);
         // WHEN THEN
-        assertEquals(pixel, services.getVertexService().getPixel(context, underTest1));
+        assertEquals(pixel, services.getVertexService().getPixel(pixelChain, underTest1));
         verify(pixelChain, times(1)).getPixelCount();
         verify(pixelChain, times(1)).getPixel(eq(pixelIndex));
 //        verifyNoMoreInteractions(pixelChain);
@@ -182,9 +182,8 @@ public class VertexTest {
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var services = Services.getDefaultServices();
         var pixelMap = new PixelMap(100, 100, false, null);
-        var context = ImmutablePixelChainContext.of(pixelMap, mockPixelChain);
         // WHEN THEN
-        assertEquals(expected, services.getVertexService().getStartSegment(context, underTest));
+        assertEquals(expected, services.getVertexService().getStartSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
 //        verifyNoMoreInteractions(mockPixelChain, expected);
@@ -206,9 +205,8 @@ public class VertexTest {
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var services = Services.getDefaultServices();
         var pixelMap = new PixelMap(100, 100, false, null);
-        var context = ImmutablePixelChainContext.of(pixelMap, mockPixelChain);
         // WHEN THEN
-        assertEquals(expected, services.getVertexService().getEndSegment(context, underTest));
+        assertEquals(expected, services.getVertexService().getEndSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(segmentIndex);
 //        verifyNoMoreInteractions(mockPixelChain, expected);

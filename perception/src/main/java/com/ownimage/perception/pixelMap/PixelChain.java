@@ -108,21 +108,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
     }
 
-    public PixelChain fixNullPositionVertexes(Services services, PixelMap pixelMap) {
-        var context = ImmutablePixelChainContext.of(pixelMap, this);
-        var mappedVertexes = mVertexes.stream()
-                .map(v -> {
-                    var p = v.getPosition();
-                    if (p == null) {
-//                        p = v.getPixel(this).getUHVWMidPoint(pixelMap);
-                        p = getVertexService().getPixel(context, v).getUHVWMidPoint(pixelMap);
-                        return getVertexService().createVertex(this, v.getVertexIndex(), v.getPixelIndex(), p);
-                    }
-                    return v;
-                })
-                .collect(Collectors.toList());
-        var vertexes = new ImmutableVectorClone<IVertex>().addAll(mappedVertexes);
-        return new PixelChain(mPixels, mSegments, vertexes, mLength, mThickness);
+    public PixelChain add(Pixel pPixel) {
+        val builder = builder();
+        builder.changePixels(p -> p.add(pPixel));
+        return builder.build();
     }
 
     @Override
@@ -145,11 +134,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return vertexService;
     }
 
-    public PixelChain add(PixelMap pPixelMap, Pixel pPixel) {
-        val builder = builder();
-        builder.changePixels(p -> p.add(pPixel));
-        return builder.build();
-    }
+
 
     /**
      * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
@@ -491,8 +476,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     @SuppressWarnings("OverlyComplexMethod")
-    void validate(PixelMap pPixelMap, boolean pFull, String pMethodName) {
-        var context = ImmutablePixelChainContext.of(pPixelMap, this);
+    void validate(PixelMap pixelMap, boolean pFull, String pMethodName) {
         var vertexServices = vertexService;
         try {
             if (getStartVertex().getPixelIndex() != 0) {
@@ -534,16 +518,16 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 }
 
                 index++;
-                vertex = vertexServices.getEndSegment(context, vertex) != null
-                        ? vertexServices.getEndSegment(context, vertex).getEndVertex(this)
+                vertex = vertexServices.getEndSegment( this, vertex) != null
+                        ? vertexServices.getEndSegment( this, vertex).getEndVertex(this)
                         : null;
             }
 
             if (mVertexes.size() != 0) {
-                if (vertexServices.getStartSegment(context, mVertexes.firstElement().orElseThrow()) != null) {
+                if (vertexServices.getStartSegment( this, mVertexes.firstElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong start vertex");
                 }
-                if (vertexServices.getEndSegment(context, mVertexes.lastElement().orElseThrow()) != null) {
+                if (vertexServices.getEndSegment( this, mVertexes.lastElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong end vertex");
                 }
             }
@@ -561,10 +545,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                     throw new IllegalStateException("Wrong pixel index order");
                 }
                 currentMax = v.getPixelIndex();
-                if (i != 0 && vertexServices.getStartSegment(context, v) != mSegments.get(i - 1)) {
+                if (i != 0 && vertexServices.getStartSegment( this, v) != mSegments.get(i - 1)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
-                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment(context, v) != mSegments.get(i)) {
+                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment( this, v) != mSegments.get(i)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
             }

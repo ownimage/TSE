@@ -10,26 +10,15 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
-public class StraightSegment implements ISegment {
+public class StraightSegment extends SegmentBase {
 
 
     private final static long serialVersionUID = 1L;
 
-    private final int segmentIndex;
-
-    @Override
-    public int getSegmentIndex() {
-        return segmentIndex;
-    }
-
-    public double getStartPosition() {
-        return startPosition;
-    }
-
-    private final double startPosition;
-    private final LineSegment lineSegment;
+    private final LineSegment mLineSegment;
 
     StraightSegment(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
         this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
@@ -38,24 +27,18 @@ public class StraightSegment implements ISegment {
     private StraightSegment(
             PixelMap pPixelMap,
             IPixelChain pPixelChain,
-            int segmentIndex,
-            double startPosition
+            int pSegmentIndex,
+            double pStartPosition
     ) {
-        this.segmentIndex = segmentIndex;
-        this.startPosition = startPosition;
+        super(pSegmentIndex, pStartPosition);
         Point a = getStartUHVWPoint(pPixelMap, pPixelChain);
         Point b = getEndUHVWPoint(pPixelMap, pPixelChain);
-        this.lineSegment = new LineSegment(a, b);
+        mLineSegment = new LineSegment(a, b);
     }
 
-    private StraightSegment(int segmentIndex, double startPosition, LineSegment lineSegment) {
-        this.segmentIndex = segmentIndex;
-        this.startPosition = startPosition;
-        this.lineSegment = lineSegment;
-    }
-
-    public LineSegment getLineSegment() {
-        return lineSegment;
+    private StraightSegment(int pSegmentIndex, double pStartPosition, LineSegment pLineSegment) {
+        super(pSegmentIndex, pStartPosition);
+        mLineSegment = pLineSegment;
     }
 
     @Override
@@ -75,7 +58,7 @@ public class StraightSegment implements ISegment {
             Point pPoint,
             double pMultiplier
     ) {
-        double lambda = lineSegment.closestLambda(pPoint);
+        double lambda = mLineSegment.closestLambda(pPoint);
         double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
         double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
         return closerThan(pPixelMap, pPixelChain, pPoint, actualThickness);
@@ -88,21 +71,21 @@ public class StraightSegment implements ISegment {
             Point pPoint,
             double pTolerance
     ) {
-        return lineSegment.isCloserThan(pPoint, pTolerance);
+        return mLineSegment.isCloserThan(pPoint, pTolerance);
     }
 
     @Override
     public double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint) {
-        return lineSegment.closestLambda(pPoint);
+        return mLineSegment.closestLambda(pPoint);
     }
 
     @Override
     public double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
-        return lineSegment.distance(pUVHWPoint);
+        return mLineSegment.distance(pUVHWPoint);
     }
 
     private Vector getAB() {
-        return lineSegment.getAB();
+        return mLineSegment.getAB();
     }
 
     @Override
@@ -117,27 +100,27 @@ public class StraightSegment implements ISegment {
 
     @Override
     public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return lineSegment.getMaxX();
+        return mLineSegment.getMaxX();
     }
 
     @Override
     public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return lineSegment.getMaxY();
+        return mLineSegment.getMaxY();
     }
 
     @Override
     public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return lineSegment.getMinX();
+        return mLineSegment.getMinX();
     }
 
     @Override
     public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return lineSegment.getMinY();
+        return mLineSegment.getMinY();
     }
 
     @Override
     public Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pLambda) {
-        return lineSegment.getPoint(pLambda);
+        return mLineSegment.getPoint(pLambda);
     }
 
     @Override
@@ -156,7 +139,7 @@ public class StraightSegment implements ISegment {
         if (getStartPosition() == pStartPosition) {
             return this;
         }
-        return new StraightSegment(getSegmentIndex(), pStartPosition, lineSegment);
+        return new StraightSegment(getSegmentIndex(), pStartPosition, mLineSegment);
     }
 
 }

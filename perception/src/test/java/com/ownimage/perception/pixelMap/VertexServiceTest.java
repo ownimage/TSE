@@ -226,9 +226,8 @@ public class VertexServiceTest {
         IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         var services = Services.getDefaultServices();
-        var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(context, vertex);
+        var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
         assertEquals(null, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
@@ -256,9 +255,8 @@ public class VertexServiceTest {
         IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         var services = Services.getDefaultServices();
-        var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(context, vertex);
+        var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
         assertEquals(expected, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);
@@ -288,10 +286,8 @@ public class VertexServiceTest {
 
         IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
-        var services = Services.getDefaultServices();
-        var context = ImmutablePixelChainContext.of(mockPixelMap, mockPixelChain);
         // WHEN THEN
-        var actual = underTest.calcTangent(context, vertex);
+        var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
         assertEquals(expected, actual);
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getSegment(startSegmentIndex);

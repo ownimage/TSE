@@ -1,6 +1,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -239,6 +241,7 @@ public class PixelChainTest {
     }
 
     private PixelChain createPixelChain() {
+        PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
         Pixel[] pixels = new Pixel[]{
                 new Pixel(4, 6),
                 new Pixel(3, 5),
@@ -261,7 +264,8 @@ public class PixelChainTest {
 
         var pixelChain = new PixelChain(pixelMap, new Node(3, 7));
         for (Pixel pixel : pixels) {
-            pixelChain = pixelChain.add(pixelMap, pixel);
+//            pixelChain = pixelChainService.add(pixelChain, pixel);
+            pixelChain = pixelChain.add( pixel);
         }
         pixelChain = pixelChain.setEndNode(null, new Node(6, 7));
         return pixelChain;

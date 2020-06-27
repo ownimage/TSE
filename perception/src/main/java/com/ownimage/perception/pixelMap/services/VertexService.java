@@ -7,6 +7,7 @@ import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -19,7 +20,7 @@ public class VertexService {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
         val position = pPixelChain.getUHVWPoint(pPixelMap, pPixelIndex);
-        return new Vertex(pPixelIndex, pVertexIndex, position);
+        return new Vertex(pVertexIndex, pPixelIndex, position);
     }
 
     public IVertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
@@ -41,29 +42,29 @@ public class VertexService {
     /**
      * Calc tangent always generates a tangent line that goes in the direction of start to finish.
      *
-     * @param context.getPixelChain() the Pixel Chain performing this operation
-     * @param context.getPixelMap()   the PixelMap performing this operation
+     * @param pixelChain the Pixel Chain performing this operation
+     * @param pixelMap   the PixelMap performing this operation
      */
-    public Line calcTangent(PixelChainContext context, IVertex vertex) {
+    public Line calcTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex) {
         Line tangent;
-        ISegment startSegment = getStartSegment(context, vertex);
-        ISegment endSegment = getEndSegment(context, vertex);
+        ISegment startSegment = getStartSegment( pixelChain, vertex);
+        ISegment endSegment = getEndSegment( pixelChain, vertex);
 
         if (startSegment == null && endSegment == null) {
             tangent = null;
 
         } else if (startSegment == null) {
-            tangent = endSegment.getStartTangent(context.getPixelMap(), context.getPixelChain());
+            tangent = endSegment.getStartTangent(pixelMap, pixelChain);
             tangent = tangent.getReverse();
 
         } else if (endSegment == null) {
-            tangent = startSegment.getEndTangent(context.getPixelMap(), context.getPixelChain());
+            tangent = startSegment.getEndTangent(pixelMap, pixelChain);
 
         } else {
             return calcTangent(
                     vertex.getPosition(),
-                    startSegment.getEndTangent(context.getPixelMap(), context.getPixelChain()),
-                    endSegment.getStartTangent(context.getPixelMap(), context.getPixelChain())
+                    startSegment.getEndTangent(pixelMap, pixelChain),
+                    endSegment.getStartTangent(pixelMap, pixelChain)
             );
         }
         return tangent;
@@ -79,10 +80,7 @@ public class VertexService {
      * @param pLength        the length in Pixels to count each way
      * @return the calculated tangent
      */
-    public Line calcLocalTangent(PixelChainContext context, IVertex vertex, int pLength) {
-        var pixelChain = context.getPixelChain();
-        var pixelMap = context.getPixelMap();
-
+    public Line calcLocalTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex, int pLength) {
         val ltStartIndex = KMath.max(vertex.getPixelIndex() - pLength, 0);
         val ltEndIndex = KMath.min(vertex.getPixelIndex() + pLength, pixelChain.getMaxPixelIndex());
         val ltStartPoint = pixelChain.getUHVWPoint(pixelMap, ltStartIndex);
@@ -92,16 +90,16 @@ public class VertexService {
         return new Line(thisPosition, thisPosition.add(tangentDirection));
     }
 
-    public Pixel getPixel(PixelChainContext context, IVertex vertex) {
-        return context.getPixelChain().getPixel(vertex.getPixelIndex());
+    public Pixel getPixel(IPixelChain pixelChain, IVertex vertex) {
+        return pixelChain.getPixel(vertex.getPixelIndex());
     }
 
-    public ISegment getStartSegment(PixelChainContext context, IVertex vertex) {
-        return context.getPixelChain().getSegment(vertex.getVertexIndex() - 1);
+    public ISegment getStartSegment(IPixelChain pixelChain, IVertex vertex) {
+        return pixelChain.getSegment(vertex.getVertexIndex() - 1);
     }
 
-    public ISegment getEndSegment(PixelChainContext context, IVertex vertex) {
-        return context.getPixelChain().getSegment(vertex.getVertexIndex());
+    public ISegment getEndSegment(IPixelChain pixelChain, IVertex vertex) {
+        return pixelChain.getSegment(vertex.getVertexIndex());
     }
 
 }

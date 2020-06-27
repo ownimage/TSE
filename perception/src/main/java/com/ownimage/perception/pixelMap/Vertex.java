@@ -48,4 +48,35 @@ public class Vertex implements IVertex {
         return mPosition;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Vertex vertex = (Vertex) o;
+        return mVertexIndex == vertex.mVertexIndex &&
+                mPixelIndex == vertex.mPixelIndex &&
+                Objects.equals(mPosition, vertex.mPosition); // legacy serialisations might have null position
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mVertexIndex, mPixelIndex, mPosition);
+    }
+
+    @SuppressWarnings("StringBufferReplaceableByString")
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("Vertex { ")
+                .append("vertexIndex: ").append(mVertexIndex)
+                .append(", pixelIndex: ").append(mPixelIndex)
+                .append(", position: ").append(mPosition)
+                .append(" }")
+                .toString();
+    }
+
 }
