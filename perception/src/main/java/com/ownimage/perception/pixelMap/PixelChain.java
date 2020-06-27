@@ -87,7 +87,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         }
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(getVertexService().createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<IVertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -119,19 +119,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
             throw new RuntimeException("CloneNotSupportedException", pE);
         }
     }
-
-    public VertexService getVertexService() {
-        if (vertexService == null) {
-            synchronized (this) {
-                if (vertexService == null) {
-                  vertexService = Services.getDefaultServices().getVertexService();
-                }
-            }
-        }
-        return vertexService;
-    }
-
-
 
     /**
      * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
@@ -169,7 +156,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = getVertexService().createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
+            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
             builder.changeVertexes(v -> v.add(end));
             StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
             builder.changeSegments(s -> s.add(newSegment));
@@ -326,18 +313,13 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return merge(pPixelMap, otherChain);
     }
 
-    public PixelChain refine(PixelMap pPixelMap, double tolerance, double lineCurvePreference) {
-        var builder = builder();
-        // builder.refine(pPixelMap, pSource);
-        builder.approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
-        return builder.build();
-    }
+
 
     @Override
     public Thickness getThickness() {
         if (mThickness == null) {
             mThickness = IPixelChain.Thickness.Normal;
-        }
+        } // old serialisations might have mThickness null
         return mThickness;
     }
 

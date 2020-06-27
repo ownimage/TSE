@@ -796,7 +796,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         clone.mPixelChains.stream()
                 .parallel()
                 .map(pc -> pixelChainService.approximate(this, pc, tolerance))
-                .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
+                .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
         clone.pixelChainsClear();
@@ -812,7 +812,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         val lineCurvePreference = getTransformSource().getLineCurvePreference();
         mPixelChains.stream()
                 .parallel()
-                .map(pc -> pc.refine(this, tolerance, lineCurvePreference))
+                .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
         clone.pixelChainsClear();

@@ -115,4 +115,11 @@ public class PixelChainService {
         builder.changeSegments(s -> s.clear().addAll(segments));
         return builder.build();
     }
+
+    public PixelChain refine(PixelMap pixelMap, PixelChain pixelChain, double tolerance, double lineCurvePreference) {
+        var builder = builder(pixelChain);
+        // builder.refine(pixelMap, pSource);
+        builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
+        return builder.build();
+    }
 }
