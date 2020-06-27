@@ -75,7 +75,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    // TODO should clearInChainAndVisited the following two values
+    // TODO should clearInChainAndVisitedThenSetEdge the following two values
     private final boolean m360;
     private final IPixelMapTransformSource mTransformSource;
     /**
@@ -162,7 +162,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pPixels.stream()
                 .filter(p -> p.isEdge(clone))
                 .forEach(p -> clone.getPixelChains(p).forEach(pc -> {
-                    pc.clearInChainAndVisited(clone);
+                    pixelChainService.clearInChainAndVisitedThenSetEdge(clone, pc);
                     pixelChainService.getStartNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
                     pixelChainService.getEndNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
                     clone.pixelChainsRemove(pc);
@@ -1008,8 +1008,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         double lineCurvePreference = getLineCurvePreference();
         pPixels.forEach(pixel -> getPixelChains(pixel).forEach(pc -> {
             pixelChainsRemove(pc);
-            pc.setInChain(this, false);
-            pc.setVisited(this, false);
+            pc.getPixels().stream().forEach(p -> {
+                this.setInChain(p, false);
+                this.setVisited(p, false);
+            });
             pc.streamPixels()
                     .filter(pPixel1 -> pPixel1.isNode(this))
                     .forEach(chainPixel -> chainPixel.getNode(this)

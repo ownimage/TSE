@@ -482,31 +482,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
 
-    void setInChain(PixelMap pPixelMap, boolean pValue) {
-        mPixels.forEach(p -> p.setInChain(pPixelMap, pValue));
-    }
-
-    private void setEdge(PixelMap pPixelMap) {
-        mPixels.stream()
-                .filter(p -> p != mPixels.firstElement().orElseThrow())
-                .filter(p -> p != mPixels.lastElement().orElseThrow())
-                .forEach(p -> p.setEdge(pPixelMap, false));
-        mPixels.stream()
-                .filter(pPixel -> pPixel.isNode(pPixelMap))
-                .filter(p -> p.countEdgeNeighbours(pPixelMap) < 2 || p.countNodeNeighbours(pPixelMap) == 2)
-                .forEach(p -> p.setEdge(pPixelMap, false));
-    }
-
-    void setVisited(PixelMap pPixelMap, boolean pValue) {
-        mPixels.forEach(p -> p.setVisited(pPixelMap, pValue));
-    }
-
-    public void clearInChainAndVisited(PixelMap pPixelMap) {
-        mLogger.fine("clearInChainAndVisited");
-        setInChain(pPixelMap, false);
-        setVisited(pPixelMap, false);
-        setEdge(pPixelMap);
-    }
 
 }
 

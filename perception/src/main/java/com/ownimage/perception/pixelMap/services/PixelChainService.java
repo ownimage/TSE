@@ -144,4 +144,17 @@ public class PixelChainService {
     public IVertex getStartVertex(PixelChain pixelChain) {
         return pixelChain.getVertexes().firstElement().orElse(null);
     }
+
+    public void clearInChainAndVisitedThenSetEdge(PixelMap pPixelMap, PixelChain pixelChain) {
+        pixelChain.getPixels().forEach(p -> p.setInChain(pPixelMap, false));
+        pixelChain.getPixels().forEach(p -> p.setVisited(pPixelMap, false));
+        pixelChain.getPixels().stream()
+                .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
+                .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
+                .forEach(p -> p.setEdge(pPixelMap, false));
+        pixelChain.getPixels().stream()
+                .filter(pPixel -> pPixel.isNode(pPixelMap))
+                .filter(p -> p.countEdgeNeighbours(pPixelMap) < 2 || p.countNodeNeighbours(pPixelMap) == 2)
+                .forEach(p -> p.setEdge(pPixelMap, false));
+    }
 }
