@@ -146,7 +146,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         builder.build().validate(pPixelMap, false, "merge");
         pOtherChain.validate(pPixelMap, false, "merge");
 
-        if (!builder.getPixels().lastElement().orElseThrow().equals(pOtherChain.firstPixel())) {
+        // TODO this should be a pixelChainService mergable
+        if (!builder.getPixels().lastElement().orElseThrow().equals(pixelChainService.firstPixel(pOtherChain))) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + pOtherChain);
         }
 
@@ -221,31 +222,12 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return Objects.hash(mPixels, mSegments, mVertexes, mLength, mThickness);
     }
 
-    /**
-     * @deprecated TODO: explain
-     */
-    @Deprecated
-    Pixel firstPixel() {
-        return mPixels.firstElement().orElseThrow();
-    }
-
-    Optional<Node> getEndNode(PixelMap pPixelMap) {
-        return mPixels.lastElement().flatMap(pPixelMap::getNode);
-    }
-
     @Override
     public double getLength() {
         return mLength;
     }
 
 
-    Optional<Node> getStartNode(PixelMap pPixelMap) {
-        return pPixelMap.getNode(mPixels.firstElement().orElseThrow());
-    }
-
-    private IVertex getStartVertex() {
-        return mVertexes.firstElement().orElse(null);
-    }
 
     PixelChain indexSegments(PixelMap pPixelMap, boolean pAdd) {
         if (pAdd) {
@@ -299,10 +281,10 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 //        }
 
         StrongReference<PixelChain> one = new StrongReference<>(this);
-        getEndNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> one.set(pixelChainService.reverse(pPixelMap, this)));
+        pixelChainService.getEndNode(pPixelMap, this).filter(n -> n == pNode).ifPresent(n -> one.set(pixelChainService.reverse(pPixelMap, this)));
 
         StrongReference<PixelChain> other = new StrongReference<>(otherChain);
-        otherChain.getStartNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> other.set(pixelChainService.reverse(pPixelMap, otherChain)));
+        pixelChainService.getStartNode(pPixelMap, otherChain).filter(n -> n == pNode).ifPresent(n -> other.set(pixelChainService.reverse(pPixelMap, otherChain)));
 
 //        if (one.get().getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
 //            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + otherChain + " starts with.");
@@ -397,7 +379,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     void validate(PixelMap pixelMap, boolean pFull, String pMethodName) {
         var vertexServices = vertexService;
         try {
-            if (getStartVertex().getPixelIndex() != 0) {
+            if (pixelChainService.getStartVertex(this).getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
             }
 
@@ -424,7 +406,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
             checkAllVertexesAttached();
 
-            IVertex vertex = getStartVertex();
+            IVertex vertex = pixelChainService.getStartVertex(this);
             int index = 0;
             while (vertex != null) {
                 if (mVertexes.get(vertex.getVertexIndex()) != vertex) {

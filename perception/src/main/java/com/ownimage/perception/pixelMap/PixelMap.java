@@ -163,8 +163,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .filter(p -> p.isEdge(clone))
                 .forEach(p -> clone.getPixelChains(p).forEach(pc -> {
                     pc.clearInChainAndVisited(clone);
-                    pc.getStartNode(clone).ifPresent(n -> clone.mNodes.remove(n));
-                    pc.getEndNode(clone).ifPresent(n -> clone.mNodes.remove(n));
+                    pixelChainService.getStartNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
+                    pixelChainService.getEndNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
                     clone.pixelChainsRemove(pc);
                     changesMade.set(true);
                 }));
@@ -379,7 +379,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
             // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
             if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelCount() == 2 &&
-                    nodalNeighbour.samePosition(copy.firstPixel()))) {
+                    nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 copy = generateChain(pPixelMap, pStartNode, nodalNeighbour, copy);
                 Framework.logExit(mLogger);
                 return copy;
@@ -391,7 +391,9 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             // going back to the staring node.
             // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
             // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this)) && !(copy.getPixelCount() == 2 && copy.getStartNode(pPixelMap).isPresent() && neighbour.samePosition(copy.getStartNode(pPixelMap).get()))) {
+            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this))
+                    && !(copy.getPixelCount() == 2 && pixelChainService.getStartNode(pPixelMap, copy).isPresent()
+                    && neighbour.samePosition(pixelChainService.getStartNode(pPixelMap, copy).get()))) {
                 copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
                 Framework.logExit(mLogger);
                 return copy;
@@ -958,8 +960,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                     .forEach(neighbour -> {
                         getPixelChains(neighbour)
                                 .forEach(pc -> {
-                                    pc.getStartNode(this).ifPresent(nodes::add);
-                                    pc.getEndNode(this).ifPresent(nodes::add);
+                                    pixelChainService.getStartNode(this, pc).ifPresent(nodes::add);
+                                    pixelChainService.getEndNode(this, pc).ifPresent(nodes::add);
                                     removePixelChain(pc);
                                 });
                         neighbour.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
@@ -1252,14 +1254,14 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
      */
     synchronized void removePixelChain(PixelChain pPixelChain) {
         pixelChainsRemove(pPixelChain);
-        pPixelChain.getStartNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
-        pPixelChain.getEndNode(this).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
+        pixelChainService.getStartNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
+        pixelChainService.getEndNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
     }
 
     synchronized void addPixelChain(PixelChain pPixelChain) {
         pixelChainsAdd(pPixelChain);
-        replaceNode(pPixelChain.getStartNode(this).get().addPixelChain(pPixelChain));
-        replaceNode(pPixelChain.getEndNode(this).get().addPixelChain(pPixelChain));
+        replaceNode(pixelChainService.getStartNode(this, pPixelChain).get().addPixelChain(pPixelChain));
+        replaceNode(pixelChainService.getEndNode(this, pPixelChain).get().addPixelChain(pPixelChain));
     }
 
     private void replaceNode(Node pNode) {

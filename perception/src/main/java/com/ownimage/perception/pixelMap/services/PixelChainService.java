@@ -1,8 +1,8 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
+import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelChainBuilder;
@@ -14,6 +14,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -121,5 +122,26 @@ public class PixelChainService {
         // builder.refine(pixelMap, pSource);
         builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
         return builder.build();
+    }
+
+    /**
+     * @deprecated TODO: explain
+     */
+    @Deprecated
+    public Pixel firstPixel(PixelChain pixelChain) {
+        return pixelChain.getPixels().firstElement().orElseThrow();
+    }
+
+    public Optional<Node> getEndNode(PixelMap pPixelMap, PixelChain pixelChain) {
+        return pixelChain.getPixels().lastElement().flatMap(pPixelMap::getNode);
+    }
+
+
+    public Optional<Node> getStartNode(PixelMap pPixelMap, PixelChain pixelChain) {
+        return pPixelMap.getNode(pixelChain.getPixels().firstElement().orElseThrow());
+    }
+
+    public IVertex getStartVertex(PixelChain pixelChain) {
+        return pixelChain.getVertexes().firstElement().orElse(null);
     }
 }
