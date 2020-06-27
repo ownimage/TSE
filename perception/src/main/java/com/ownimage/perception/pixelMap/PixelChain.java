@@ -11,6 +11,7 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
@@ -67,6 +68,8 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     private final ImmutableVectorClone<IVertex> mVertexes;
     transient private double mLength;
     private Thickness mThickness;
+
+    static private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
 
     @Setter
@@ -248,9 +251,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return mLength;
     }
 
-    private void setLength(double pLength) {
-        mLength = pLength;
-    }
 
     Optional<Node> getStartNode(PixelMap pPixelMap) {
         return pPixelMap.getNode(mPixels.firstElement().orElseThrow());
@@ -302,28 +302,28 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
      * end. This needs to be done before after the segments are generated so that the vertex for the node can be created.
      *
      * @param pPixelMap   the PixelMap
-     * @param pOtherChain the other chain
+     * @param otherChain the other chain
      * @param pNode       the node
      */
-    PixelChain merge(PixelMap pPixelMap, PixelChain pOtherChain, Node pNode) {
+    PixelChain merge(PixelMap pPixelMap, PixelChain otherChain, Node pNode) {
         mLogger.fine("merge");
-//        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(pOtherChain.getStartNode(pPixelMap) == pNode || pOtherChain.getEndNode(pPixelMap) == pNode)) {
-//            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and pOtherChain: " + pOtherChain + ", must share the following node:" + pNode);
+//        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
+//            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
 //        }
 
         StrongReference<PixelChain> one = new StrongReference<>(this);
-        getEndNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> one.set(reverse(pPixelMap)));
+        getEndNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> one.set(pixelChainService.reverse(pPixelMap, this)));
 
-        StrongReference<PixelChain> other = new StrongReference<>(pOtherChain);
-        pOtherChain.getStartNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> other.set(pOtherChain.reverse(pPixelMap)));
+        StrongReference<PixelChain> other = new StrongReference<>(otherChain);
+        otherChain.getStartNode(pPixelMap).filter(n -> n == pNode).ifPresent(n -> other.set(pixelChainService.reverse(pPixelMap, otherChain)));
 
 //        if (one.get().getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
-//            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + pOtherChain + " starts with.");
+//            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + otherChain + " starts with.");
 //        }
 
         // TODO should recalculate thickness from source values
-        mThickness = getPixelCount() > pOtherChain.getPixelCount() ? mThickness : pOtherChain.mThickness;
-        return merge(pPixelMap, pOtherChain);
+        mThickness = getPixelCount() > otherChain.getPixelCount() ? mThickness : otherChain.mThickness;
+        return merge(pPixelMap, otherChain);
     }
 
     public PixelChain refine(PixelMap pPixelMap, double tolerance, double lineCurvePreference) {
@@ -359,47 +359,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return clone;
     }
 
-    /**
-     * Creates a copy of this PixelChain with the order of the pixels in the pixel chain.
-     * The original PixelChain is not altered.
-     * This means reversing the start and end nodes.
-     * All of the segments in the line are also reversed and replaced with new straight line
-     * segments.
-     *
-     * @param pPixelMap the PixelMap this chain belongs to
-     * @return a new PixelChain with the elements reversed
-     */
-    public PixelChain reverse(PixelMap pPixelMap) {
-        // note that this uses direct access to the data members as the public setters have other side effects
-        //validate("reverse");
-        val builder = builder();
 
-        // reverse pixels
-        Vector<Pixel> pixels = builder.getPixels().toVector();
-        Collections.reverse(pixels);
-        builder.changePixels(p -> p.clear().addAll(pixels));
-
-        // reverse vertexes
-        int maxPixelIndex = builder.getPixels().size() - 1;
-        Vector<IVertex> vertexes = new Vector<>();
-        for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
-            IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = getVertexService().createVertex(pPixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
-            vertexes.add(v);
-        }
-        builder.changeVertexes(v -> v.clear().addAll(vertexes));
-
-        // reverse segments
-        Vector<ISegment> segments = new Vector<>();
-        for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
-            if (i != mVertexes.size() - 1) {
-                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), segments.size());
-                segments.add(newSegment);
-            }
-        }
-        builder.changeSegments(s -> s.clear().addAll(segments));
-        return builder.build();
-    }
 
     PixelChain setEndNode(PixelMap pPixelMap, @NonNull Node pNode) {
 

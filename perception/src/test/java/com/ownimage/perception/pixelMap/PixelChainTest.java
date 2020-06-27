@@ -86,8 +86,8 @@ public class PixelChainTest {
         var approx = pixelChainService.approximate(pixelMap, underTest, tolerance);
 
         // AND WHEN
-        var reverse = approx.reverse(pixelMap);
-        var compare = reverse.reverse(pixelMap);
+        var reverse = pixelChainService.reverse(pixelMap, approx);
+        var compare = pixelChainService.reverse(pixelMap, reverse);
         assertEquals(underTest.toString(), compare.toString());
         assertEquals(dumpPixelChain(approx), dumpPixelChain(compare));
 
