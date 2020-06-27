@@ -1,5 +1,7 @@
-package com.ownimage.perception.pixelMap;
+package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.PixelMap;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 
