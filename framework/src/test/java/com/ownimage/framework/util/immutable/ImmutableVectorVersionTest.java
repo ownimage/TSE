@@ -4,6 +4,7 @@ import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -293,7 +294,7 @@ public class ImmutableVectorVersionTest {
     public void removeAll_05() {
         // GIVEN
         val all = List.of(s1, s2, s3, s4);
-        val remove = List.of();
+        val remove = Collections.<String> emptyList();
         val underTest1 = new ImmutableVectorVersion<String>().addAll(all);
         // WHEN
         val underTest2 = underTest1.removeAll(remove);

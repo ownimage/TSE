@@ -8,6 +8,7 @@ package com.ownimage.framework.util;
 import com.ownimage.framework.math.IntegerPoint;
 import lombok.val;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -342,6 +343,7 @@ public class Range2DTest {
         Assert.assertArrayEquals(expected.toArray(), actual.toArray());
     }
 
+    @Ignore
     @Test
     public void performance_01() {
         // GIVEN

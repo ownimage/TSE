@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
@@ -18,11 +19,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PixelChainService {
 
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
+    private final static Logger mLogger = Framework.getLogger();
 
     public PixelChain fixNullPositionVertexes(PixelMap pixelMap, PixelChain pixelChain) {
         var mappedVertexes = pixelChain.getVertexes().stream()
@@ -208,5 +212,55 @@ public class PixelChainService {
             @NotNull PixelChain pixelChain,  int thinLength, int normalLength, int longLength) {
         IPixelChain.Thickness thickness = getThickness(pixelChain, thinLength, normalLength, longLength);
         return withThickness(pixelChain, thickness);
+    }
+
+    /**
+     * Adds the two pixel chains together. It allocates all of the pixels from the otherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
+     * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the otherChain are all
+     * LineApproximations.
+     *
+     * @param pPixelMap   the pixelMap
+     * @param otherChain the other chain
+     */
+    public PixelChain merge(@NotNull PixelMap pPixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
+        val builder = builder(thisChain);
+
+        otherChain.validate(pPixelMap, false, "add otherChain");
+        mLogger.fine(() -> String.format("this.mPixels.size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("otherChain.pixelLength() = %s", otherChain.pixelLength()));
+        mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.getSegments().size()));
+        mLogger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
+        if (mLogger.isLoggable(Level.FINE)) {
+            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+            otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
+            otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
+        }
+
+        builder.build().validate(pPixelMap, false, "merge");
+        otherChain.validate(pPixelMap, false, "merge");
+
+        // TODO this should be a pixelChainService mergable
+        if (!builder.getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
+            throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + otherChain);
+        }
+
+        int offset = builder.getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
+        builder.changePixels(p -> p.remove(builder.getPixels().size() - 1)); // need to remove the last pixel as it will be duplicated on the other chain;
+        builder.changePixels(p -> p.addAll(otherChain.getPixels()));
+        mLogger.fine(() -> String.format("offset = %s", offset));
+
+        otherChain.getSegments().forEach(segment -> {
+            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(otherChain) + offset);
+            builder.changeVertexes(v -> v.add(end));
+            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
+            builder.changeSegments(s -> s.add(newSegment));
+        });
+
+        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.getPixels().size()));
+        thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+        thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+        return builder.build();
     }
 }

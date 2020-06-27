@@ -12,9 +12,11 @@ public interface IImmutableVector<E> {
 
     IImmutableVector<E> add(int pIndex, E pElement);
 
-    IImmutableVector addAll(Collection<E> pAll);
+    IImmutableVector<E> addAll(Collection<E> pAll);
 
-    IImmutableVector clear();
+    IImmutableVector<E> addAll(IImmutableVector<E> pAll);
+
+    IImmutableVector<E> clear();
 
     boolean contains(E pElement);
 

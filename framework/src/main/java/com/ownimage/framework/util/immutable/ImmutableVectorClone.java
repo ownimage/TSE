@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializable {
+
+    private final static long serialVersionUID = -1945581369389290425L;
     
     private Vector<E> mVector = new Vector(); 
 
@@ -18,23 +20,30 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
     }
     
     @Override
-    public ImmutableVectorClone<E> add(final E pElement) {
+    public ImmutableVectorClone<E> add(E pElement) {
         var clone = clone();
         clone.mVector.add(pElement);
         return clone;
     }
 
     @Override
-    public ImmutableVectorClone<E> add(final int pIndex, final E pElement) {
+    public ImmutableVectorClone<E> add(int pIndex, E pElement) {
         var clone = clone();
         clone.mVector.add(pIndex, pElement);
         return clone;
     }
 
     @Override
-    public ImmutableVectorClone addAll(Collection<E> pAll) {
+    public ImmutableVectorClone<E> addAll(Collection<E> pAll) {
         var clone = clone();
         clone.mVector.addAll(pAll);
+        return clone;
+    }
+
+    @Override
+    public ImmutableVectorClone<E> addAll(IImmutableVector<E> pAll) {
+        var clone = clone();
+        clone.mVector.addAll(pAll.toVector());
         return clone;
     }
 
@@ -44,29 +53,29 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
     }
 
     @Override
-    public boolean contains(final E pElement) {
+    public boolean contains(E pElement) {
         return mVector.contains(pElement);
     }
 
     @Override
-    public boolean containsAll(final Collection<E> pElements) {
+    public boolean containsAll(Collection<E> pElements) {
         return  mVector.containsAll(pElements);
     }
 
     @Override
-    public E get(final int pIndex) {
+    public E get(int pIndex) {
         return mVector.get(pIndex);
     }
 
     @Override
-    public ImmutableVectorClone remove(final E pElement) {
+    public ImmutableVectorClone remove(E pElement) {
         var clone = clone();
         clone.mVector.remove(pElement);
         return clone;
     }
 
     @Override
-    public ImmutableVectorClone remove(final int pIndex) {
+    public ImmutableVectorClone remove(int pIndex) {
         if (pIndex < 0 || pIndex >= mVector.size()) {
             throw new IllegalArgumentException();
         }
@@ -77,7 +86,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
 
     @Override
     public Optional<E> firstElement() {
-        if (mVector.size() == 0) {
+        if (mVector.isEmpty()) {
             return Optional.empty();
         }
         return Optional.ofNullable(mVector.firstElement());
@@ -85,7 +94,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
 
     @Override
     public Optional<E> lastElement() {
-        if (mVector.size() == 0) {
+        if (mVector.isEmpty()) {
             return Optional.empty();
         }
         return Optional.ofNullable(mVector.lastElement());
@@ -115,7 +124,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
     }
 
     @Override
-    public ImmutableVectorClone set(final int pIndex, final E pValue) {
+    public ImmutableVectorClone set(int pIndex, E pValue) {
         if (mVector.get(pIndex) == null && pValue == null
                 || ( pValue != null && pValue.equals(mVector.get(pIndex)))) {
             return this;
@@ -132,7 +141,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
 
     @Override
     public Vector<E> toVector() {
-        return new Vector<E>(mVector);
+        return new Vector<>(mVector);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion<E> add(final E pElement) {
+    public ImmutableVectorVersion<E> add(E pElement) {
         synchronized (getSynchronisationObject()) {
             Consumer<Vector<E>> redo = m -> m.add(pElement);
             Consumer<Vector<E>> undo = m -> m.remove(pElement);
@@ -35,7 +35,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion<E> add(final int pIndex, final E pElement) {
+    public ImmutableVectorVersion<E> add(int pIndex, E pElement) {
         synchronized (getSynchronisationObject()) {
             Consumer<Vector<E>> redo = m -> m.add(pIndex, pElement);
             Consumer<Vector<E>> undo = m -> m.remove(pIndex);
@@ -44,7 +44,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion addAll(Collection<E> pAll) {
+    public ImmutableVectorVersion<E> addAll(Collection<E> pAll) {
         synchronized (getSynchronisationObject()) {
             val all = new Vector<>(pAll);
             val size = getMaster().size();
@@ -55,33 +55,38 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
+    public ImmutableVectorVersion<E> addAll(IImmutableVector<E> pAll) {
+        return addAll(pAll.toVector());
+    }
+
+    @Override
     public ImmutableVectorVersion clear() {
         return new ImmutableVectorVersion();
     }
 
     @Override
-    public boolean contains(final E pElement) {
+    public boolean contains(E pElement) {
         synchronized (getSynchronisationObject()) {
             return getMaster().contains(pElement);
         }
     }
 
     @Override
-    public boolean containsAll(final Collection<E> pElements) {
+    public boolean containsAll(Collection<E> pElements) {
         synchronized (getSynchronisationObject()) {
             return getMaster().containsAll(pElements);
         }
     }
 
     @Override
-    public E get(final int pIndex) {
+    public E get(int pIndex) {
         synchronized (getSynchronisationObject()) {
             return getMaster().get(pIndex);
         }
     }
 
     @Override
-    public ImmutableVectorVersion remove(final E pElement) {
+    public ImmutableVectorVersion remove(E pElement) {
         synchronized (getSynchronisationObject()) {
             val index = getMaster().indexOf(pElement);
             if (index == -1) {
@@ -94,7 +99,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion remove(final int pIndex) {
+    public ImmutableVectorVersion remove(int pIndex) {
         synchronized (getSynchronisationObject()) {
             if (0 > pIndex || pIndex >= getMaster().size()) {
                 throw new IllegalArgumentException();
@@ -109,7 +114,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     @Override
     public Optional<E> firstElement() {
         synchronized (getSynchronisationObject()) {
-            if (getMaster().size() == 0) {
+            if (getMaster().isEmpty()) {
                 return Optional.empty();
             }
             return Optional.ofNullable(getMaster().firstElement());
@@ -119,7 +124,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     @Override
     public Optional<E> lastElement() {
         synchronized (getSynchronisationObject()) {
-            if (getMaster().size() == 0) {
+            if (getMaster().isEmpty()) {
                 return Optional.empty();
             }
             return Optional.ofNullable(getMaster().lastElement());
@@ -139,7 +144,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
      */
     @Override
     public ImmutableVectorVersion removeAll(Collection<E> pAll) {
-        if (pAll.size() == 0) {
+        if (pAll.isEmpty()) {
             return this;
         }
         synchronized (getSynchronisationObject()) {
@@ -167,7 +172,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion set(final int pIndex, final E pValue) {
+    public ImmutableVectorVersion set(int pIndex, E pValue) {
         synchronized (getSynchronisationObject()) {
             val originalValue = getMaster().get(pIndex);
             Consumer<Vector<E>> redo = m -> m.set(pIndex, pValue);

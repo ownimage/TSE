@@ -111,64 +111,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
     }
 
-    @Override
-    public PixelChain clone() {
-        try {
-            return (PixelChain) super.clone();
-        } catch (CloneNotSupportedException pE) {
-            throw new RuntimeException("CloneNotSupportedException", pE);
-        }
-    }
 
-    /**
-     * Adds the two pixel chains together. It allocates all of the pixels from the pOtherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
-     * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the pOtherChain are all
-     * LineApproximations.
-     *
-     * @param pPixelMap   the pixelMap
-     * @param pOtherChain the other chain
-     */
-    private PixelChain merge(PixelMap pPixelMap, PixelChain pOtherChain) {
-        val builder = builder();
-
-        pOtherChain.validate(pPixelMap, false, "add pOtherChain");
-        mLogger.fine(() -> String.format("this.mPixels.size() = %s", builder.getPixels().size()));
-        mLogger.fine(() -> String.format("pOtherChain.mPixels.size() = %s", pOtherChain.mPixels.size()));
-        mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.getSegments().size()));
-        mLogger.fine(() -> String.format("pOtherChain.mSegments.size() = %s", pOtherChain.mSegments.size()));
-        if (mLogger.isLoggable(Level.FINE)) {
-            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
-            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
-            pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartVertex(pOtherChain).getPixelIndex(), s.getEndVertex(pOtherChain).getPixelIndex())));
-            pOtherChain.mSegments.forEach(s -> mLogger.fine(() -> String.format("pOtherChain.mSegment[%s, %s]", s.getStartIndex(pOtherChain), s.getEndIndex(pOtherChain))));
-        }
-
-        builder.build().validate(pPixelMap, false, "merge");
-        pOtherChain.validate(pPixelMap, false, "merge");
-
-        // TODO this should be a pixelChainService mergable
-        if (!builder.getPixels().lastElement().orElseThrow().equals(pixelChainService.firstPixel(pOtherChain))) {
-            throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + pOtherChain);
-        }
-
-        int offset = builder.getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
-        builder.changePixels(p -> p.remove(builder.getPixels().size() - 1)); // need to remove the last pixel as it will be duplicated on the other chain;
-        builder.changePixels(p -> p.addAll(pOtherChain.mPixels.toVector()));
-        mLogger.fine(() -> String.format("offset = %s", offset));
-
-        pOtherChain.mSegments.forEach(segment -> {
-            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(pOtherChain) + offset);
-            builder.changeVertexes(v -> v.add(end));
-            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
-            builder.changeSegments(s -> s.add(newSegment));
-        });
-
-        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.getPixels().size()));
-        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.getPixels().size()));
-        mSegments.forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(this).getPixelIndex(), s.getEndVertex(this).getPixelIndex())));
-        mSegments.forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(this), s.getEndIndex(this))));
-        return builder.build();
-    }
 
 
     private void checkAllVertexesAttached() {
@@ -292,7 +235,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
         // TODO should recalculate thickness from source values
         mThickness = getPixelCount() > otherChain.getPixelCount() ? mThickness : otherChain.mThickness;
-        return merge(pPixelMap, otherChain);
+        return pixelChainService.merge(pPixelMap, this, otherChain);
     }
 
 
@@ -319,7 +262,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
     @SuppressWarnings("OverlyComplexMethod")
-    void validate(PixelMap pixelMap, boolean pFull, String pMethodName) {
+    public void validate(PixelMap pixelMap, boolean pFull, String pMethodName) {
         var vertexServices = vertexService;
         try {
             if (pixelChainService.getStartVertex(this).getPixelIndex() != 0) {
