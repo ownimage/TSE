@@ -137,13 +137,13 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     }
 
     private void pixelChainsAdd(PixelChain pChain) {
-        val chain = pChain.indexSegments(this, true);
+        val chain = pixelChainService.indexSegments(this, pChain, true);
         mPixelChains = mPixelChains.add(chain);
     }
 
     private void pixelChainsRemove(PixelChain pChain) {
         mPixelChains = mPixelChains.remove(pChain);
-        pChain.indexSegments(this, false);
+        pixelChainService.indexSegments(this, pChain, false);
     }
 
     private void pixelChainsClear() {
@@ -309,7 +309,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
     public List<PixelChain> getPixelChains(@NonNull Pixel pPixel) {
         Framework.logEntry(mLogger);
         List<PixelChain> pixelChains = mPixelChains.stream()
-                .filter(pc -> pc.contains(pPixel)).collect(Collectors.toList());
+                .filter(pc -> pixelChainService.contains(pc, pPixel))
+                .collect(Collectors.toList());
         Framework.logExit(mLogger);
         return pixelChains;
     }
@@ -414,7 +415,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
             if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
                 PixelChain chain = new PixelChain(pPixelMap, pStartNode);
                 chain = generateChain(pPixelMap, pStartNode, neighbour, chain);
-                if (chain.pixelLength() > 2) {
+                if (pixelChainService.pixelLength(chain) > 2) {
                     chains.add(chain);
                 }
             }
@@ -704,7 +705,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mSegmentCount;
     }
 
-    void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
+    public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
@@ -1237,7 +1238,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
     public synchronized void indexSegments() {
         var pixelChains = new ArrayList<PixelChain>();
-        mPixelChains.stream().forEach(pc -> pixelChains.add(pc.indexSegments(this, true)));
+        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
         pixelChainsClear();
         pixelChainsAddAll(pixelChains);
         val count = new AtomicInteger();

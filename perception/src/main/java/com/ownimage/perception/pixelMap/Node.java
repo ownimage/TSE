@@ -6,6 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.Services;
 
 import java.util.Vector;
 
@@ -21,6 +23,8 @@ public class Node extends Pixel {
      * The Constant serialVersionUID.
      */
     private static final long serialVersionUID = 1L;
+
+    private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     /**
      * The m pixel chains.
@@ -104,7 +108,7 @@ public class Node extends Pixel {
                 PixelChain chain0 = getPixelChain(0);
                 PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    PixelChain merged = chain0.merge(pPixelMap, chain1, this);
+                    PixelChain merged = pixelChainService.merge(pPixelMap, chain0, chain1, this);
                     pPixelMap.removePixelChain(chain0);
                     pPixelMap.removePixelChain(chain1);
                     pPixelMap.addPixelChain(merged);

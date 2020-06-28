@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
@@ -40,7 +41,7 @@ public class PixelChainService {
                 })
                 .collect(Collectors.toList());
         var vertexes = new ImmutableVectorClone<IVertex>().addAll(mappedVertexes);
-        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.pixelLength(), pixelChain.getThickness());
+        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.getLength(), pixelChain.getThickness());
     }
 
     private PixelChainBuilder builder(PixelChain pixelChain) {
@@ -48,7 +49,7 @@ public class PixelChainService {
                 pixelChain.getPixels().toVector(),
                 pixelChain.getVertexes().toVector(),
                 pixelChain.getSegments().toVector(),
-                pixelChain.pixelLength(),
+                pixelChain.getLength(),
                 pixelChain.getThickness()
         );
     }
@@ -176,7 +177,7 @@ public class PixelChainService {
             return pixelChain;
         }
         // TODO what is the best way to do this
-        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), pixelChain.getVertexes(), pixelChain.pixelLength(), thickness);
+        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), pixelChain.getVertexes(), pixelChain.getLength(), thickness);
     }
 
 
@@ -197,15 +198,19 @@ public class PixelChainService {
 
     public IPixelChain.Thickness getThickness(
             @NotNull PixelChain pixelChain,  int thinLength, int normalLength, int longLength) {
-        int length = pixelChain.pixelLength();
-        if (length < thinLength) {
+        var pixelLength = getPixelLength(pixelChain);
+        if (pixelLength < thinLength) {
             return IPixelChain.Thickness.None;
-        } else if (length < normalLength) {
+        } else if (pixelLength < normalLength) {
             return IPixelChain.Thickness.Thin;
-        } else if (length < longLength) {
+        } else if (pixelLength < longLength) {
             return IPixelChain.Thickness.Normal;
         }
         return IPixelChain.Thickness.Thick;
+    }
+
+    public int getPixelLength(@NotNull PixelChain pixelChain) {
+        return pixelChain.getPixels().size();
     }
 
     public PixelChain withThickness(
@@ -226,8 +231,8 @@ public class PixelChainService {
         val builder = builder(thisChain);
 
         validate(thisChain, false, "add otherChain");
-        mLogger.fine(() -> String.format("this.mPixels.size() = %s", builder.getPixels().size()));
-        mLogger.fine(() -> String.format("otherChain.pixelLength() = %s", otherChain.pixelLength()));
+        mLogger.fine(() -> String.format("builder.getPixels().size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("pixelLength(otherChain) = %s", pixelLength(otherChain)));
         mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.getSegments().size()));
         mLogger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
         if (mLogger.isLoggable(Level.FINE)) {
@@ -261,10 +266,12 @@ public class PixelChainService {
         mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.getPixels().size()));
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+        // TODO should recalculate thickness from source values
+        var thickness = thisChain.getPixelCount() > otherChain.getPixelCount() ? thisChain.getThickness() : otherChain.getThickness();
+        builder.setThickness(thickness);
         return builder.build();
     }
 
-    @SuppressWarnings("OverlyComplexMethod")
     public void validate(@NotNull  PixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
         try {
             if (getStartVertex(pixelChain).getPixelIndex() != 0) {
@@ -392,5 +399,85 @@ public class PixelChainService {
 //                mLogger.log(Level.SEVERE, "Unxepected error", pT);
 //            }
 //        });
+    }
+
+//    private PixelChainBuilder builder() {
+//        return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
+//    }
+//
+//
+//
+//
+//
+//
+    public boolean contains(PixelChain pixelChain, Pixel pPixel) {
+        return pixelChain.getPixels()
+                .stream()
+                .anyMatch(p -> p.samePosition(pPixel));
+    }
+
+    public PixelChain indexSegments(PixelMap pixelMap, PixelChain pixelChain, boolean add) {
+        if (add) {
+            val builder = builder(pixelChain);
+            double[] startPosition = {0.0d};
+            pixelChain.getSegments().forEach(segment -> {
+                ISegment segmentClone = segment.withStartPosition(startPosition[0]);
+                builder.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone));
+                startPosition[0] += segment.getLength(pixelMap, builder);
+            });
+            builder.setLength(startPosition[0]);
+            val newPixelChain = builder.build();
+            newPixelChain.streamSegments().forEach(segment -> pixelMap.index(newPixelChain, segment, true));
+            return newPixelChain;
+        } else {
+            pixelChain.getSegments().forEach(segment -> pixelMap.index(pixelChain, segment, false));
+            return pixelChain;
+        }
+    }
+//
+//    /**
+//     * @deprecated TODO: explain
+//     */
+//    @Deprecated
+//    private Pixel lastPixel() {
+//        // happy for this to throw exception
+//        return mPixels.lastElement().orElseThrow();
+//    }
+//
+    /**
+     * Length of the PixelChain. This is the number of Pixels that it contains.
+     *
+     * @return the number of Pixels in the PixelChain.
+     */
+    public int pixelLength(@NotNull PixelChain pixelChain) {
+        return pixelChain.getPixels().size();
+    }
+
+
+    /**
+     * Merges two pixel chains together that share a common Node. The result is one PixelChain with a vertex where the Node was. The chain will have correctly attached itself to the node at either
+     * end. This needs to be done before after the segments are generated so that the vertex for the node can be created.
+     *
+     * @param pPixelMap   the PixelMap
+     * @param otherChain the other chain
+     * @param pNode       the node
+     */
+    public PixelChain merge(PixelMap pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
+        mLogger.fine("merge");
+//        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
+//            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
+//        }
+
+        StrongReference<PixelChain> one = new StrongReference<>(otherChain);
+        getEndNode(pPixelMap, otherChain).filter(n -> n == pNode).ifPresent(n -> one.set(reverse(pPixelMap, otherChain)));
+
+        StrongReference<PixelChain> other = new StrongReference<>(otherChain);
+        getStartNode(pPixelMap, otherChain).filter(n -> n == pNode).ifPresent(n -> other.set(reverse(pPixelMap, otherChain)));
+
+//        if (one.get().getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
+//            throw new RuntimeException("This PixelChain: " + this + " should end on the same node as the other PixelChain: " + otherChain + " starts with.");
+//        }
+
+        return merge(pPixelMap, thisChain, otherChain);
     }
 }
