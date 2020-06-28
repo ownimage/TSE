@@ -225,7 +225,7 @@ public class PixelChainService {
     public PixelChain merge(@NotNull PixelMap pPixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
         val builder = builder(thisChain);
 
-        otherChain.validate(pPixelMap, false, "add otherChain");
+        validate(thisChain, false, "add otherChain");
         mLogger.fine(() -> String.format("this.mPixels.size() = %s", builder.getPixels().size()));
         mLogger.fine(() -> String.format("otherChain.pixelLength() = %s", otherChain.pixelLength()));
         mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.getSegments().size()));
@@ -237,8 +237,8 @@ public class PixelChainService {
             otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
         }
 
-        builder.build().validate(pPixelMap, false, "merge");
-        otherChain.validate(pPixelMap, false, "merge");
+        validate(builder.build(), false, "merge");
+        validate(otherChain, false, "merge");
 
         // TODO this should be a pixelChainService mergable
         if (!builder.getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
@@ -262,5 +262,135 @@ public class PixelChainService {
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
         return builder.build();
+    }
+
+    @SuppressWarnings("OverlyComplexMethod")
+    public void validate(@NotNull  PixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
+        try {
+            if (getStartVertex(pixelChain).getPixelIndex() != 0) {
+                throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
+            }
+            var vertexSize = pixelChain.getVertexes().size();
+            var segmentSize = pixelChain.getSegments().size();
+            var pixelSize = pixelChain.getPixels().size();
+
+            if (vertexSize == 0 && segmentSize != 0) {
+                throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
+            }
+
+            if (vertexSize != 0 && segmentSize + 1 != vertexSize) {
+                throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
+            }
+
+            int nextStartIndex[] = {0};
+
+            pixelChain.getSegments().forEach(segment -> {
+                if (segment.getStartIndex(pixelChain) != nextStartIndex[0]) { //
+                    throw new IllegalStateException("segments not linked properly");
+                }
+                nextStartIndex[0] = segment.getEndIndex(pixelChain);
+            });
+
+            if (segmentSize != 0 && pixelChain.getSegments().lastElement().orElseThrow().getEndIndex(pixelChain) != pixelSize - 1) { //
+                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", segmentSize, pixelChain.getSegments().lastElement().orElseThrow().getEndIndex(pixelChain), pixelSize - 1));
+            }
+
+            checkAllVertexesAttached();
+
+            IVertex vertex = getStartVertex(pixelChain);
+            int index = 0;
+            while (vertex != null) {
+                if (pixelChain.getVertexes().get(vertex.getVertexIndex()) != vertex) {
+                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
+                }
+
+                if (vertex.getVertexIndex() != index) {
+                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
+                }
+
+                index++;
+                vertex = vertexService.getEndSegment( pixelChain, vertex) != null
+                        ? vertexService.getEndSegment( pixelChain, vertex).getEndVertex(pixelChain)
+                        : null;
+            }
+
+            if (vertexSize != 0) {
+                if (vertexService.getStartSegment( pixelChain, pixelChain.getVertexes().firstElement().orElseThrow()) != null) {
+                    throw new RuntimeException("wrong start vertex");
+                }
+                if (vertexService.getEndSegment( pixelChain, pixelChain.getVertexes().lastElement().orElseThrow()) != null) {
+                    throw new RuntimeException("wrong end vertex");
+                }
+            }
+
+            int currentMax = -1;
+            for (int i = 0; i < vertexSize; i++) {
+                IVertex v = pixelChain.getVertexes().get(i);
+                if (i == 0 && v.getPixelIndex() != 0) {
+                    throw new IllegalStateException("First vertex wrong)");
+                }
+                if (i == vertexSize - 1 && v.getPixelIndex() != pixelSize - 1 && pFull) {
+                    throw new IllegalStateException("Last vertex wrong)");
+                }
+                if (v.getPixelIndex() <= currentMax) {
+                    throw new IllegalStateException("Wrong pixel index order");
+                }
+                currentMax = v.getPixelIndex();
+                if (i != 0 && vertexService.getStartSegment( pixelChain, v) != pixelChain.getSegments().get(i - 1)) {
+                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
+                }
+                if (i != vertexSize - 1 && vertexService.getEndSegment( pixelChain, v) != pixelChain.getSegments().get(i)) {
+                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
+                }
+            }
+        } catch (Exception pT) {
+            printVertexs();
+            throw pT;
+        }
+    }
+
+
+    private void printVertexs() {
+//        StringBuilder sb = new StringBuilder()
+//                .append(String.format("mVertexes.size() = %s, mSegments.size() = %s", mVertexes.size(), mSegments.size()))
+//                .append("\nArrray\n");
+//
+//        for (int i = 0; i < mVertexes.size(); i++) {
+//            sb.append(String.format("i = %s, mVertexes.get(i).getVertexIndex() = %s\n", i, mVertexes.get(i).getVertexIndex()));
+//        }
+//
+//        sb.append("\n\nWalking\n");
+//        IVertex vertex = getStartVertex();
+//        int index = 0;
+//        while (vertex != null) {
+//            sb.append(String.format("index = %s, vertex.getVertexIndex() = %s\n", index, vertex.getVertexIndex()));
+//            index++;
+//            vertex = vertex.getEndSegment(this) != null
+//                    ? vertex.getEndSegment(this).getEndVertex(this)
+//                    : null;
+//        }
+//
+//        mLogger.severe(sb::toString);
+    }
+
+    private void checkAllVertexesAttached() {
+//        mSegments.forEach(segment -> {
+//            try {
+//                if (mLogger.isLoggable(Level.SEVERE)) {
+//                    if (segment.getStartVertex(this).getEndSegment(this) != segment) {
+//                        mLogger.severe("start Vertex not attached");
+//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
+//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
+//                    }
+//                    if (segment.getEndVertex(this).getStartSegment(this) != segment) {
+//                        mLogger.severe("end Vertex not attached");
+//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
+//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
+//                    }
+//                }
+//            } catch (Exception pT) {
+//                mLogger.log(Level.SEVERE, "Unxepected error", pT);
+//            }
+//        });
     }
 }

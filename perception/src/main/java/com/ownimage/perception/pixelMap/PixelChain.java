@@ -114,26 +114,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
 
 
-    private void checkAllVertexesAttached() {
-//        mSegments.forEach(segment -> {
-//            try {
-//                if (mLogger.isLoggable(Level.SEVERE)) {
-//                    if (segment.getStartVertex(this).getEndSegment(this) != segment) {
-//                        mLogger.severe("start Vertex not attached");
-//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
-//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
-//                    }
-//                    if (segment.getEndVertex(this).getStartSegment(this) != segment) {
-//                        mLogger.severe("end Vertex not attached");
-//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
-//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
-//                    }
-//                }
-//            } catch (Exception pT) {
-//                mLogger.log(Level.SEVERE, "Unxepected error", pT);
-//            }
-//        });
-    }
+
 
     boolean contains(Pixel pPixel) {
 //        if (mMinX > pPixel.getX() || pPixel.getX() > mMaxX || mMinY > pPixel.getY() || pPixel.getY() > mMaxY)
@@ -261,111 +242,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         return sb.toString();
     }
 
-    @SuppressWarnings("OverlyComplexMethod")
-    public void validate(PixelMap pixelMap, boolean pFull, String pMethodName) {
-        var vertexServices = vertexService;
-        try {
-            if (pixelChainService.getStartVertex(this).getPixelIndex() != 0) {
-                throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
-            }
 
-            if ((mVertexes.size() == 0 && mSegments.size() != 0)) {
-                throw new IllegalStateException(String.format("mVertexes.size() = %s && mSegments.size() = %s", mVertexes.size(), mSegments.size()));
-            }
-
-            if (mVertexes.size() != 0 && mSegments.size() + 1 != mVertexes.size()) {
-                throw new IllegalStateException(String.format("mVertexes.size() = %s && mSegments.size() = %s", mVertexes.size(), mSegments.size()));
-            }
-
-            int nextStartIndex[] = {0};
-
-            mSegments.forEach(segment -> {
-                if (segment.getStartIndex(this) != nextStartIndex[0]) { //
-                    throw new IllegalStateException("segments not linked properly");
-                }
-                nextStartIndex[0] = segment.getEndIndex(this);
-            });
-
-            if (mSegments.size() != 0 && mSegments.lastElement().orElseThrow().getEndIndex(this) != mPixels.size() - 1) { //
-                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", mSegments.size(), mSegments.lastElement().orElseThrow().getEndIndex(this), mPixels.size() - 1));
-            }
-
-            checkAllVertexesAttached();
-
-            IVertex vertex = pixelChainService.getStartVertex(this);
-            int index = 0;
-            while (vertex != null) {
-                if (mVertexes.get(vertex.getVertexIndex()) != vertex) {
-                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
-                }
-
-                if (vertex.getVertexIndex() != index) {
-                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
-                }
-
-                index++;
-                vertex = vertexServices.getEndSegment( this, vertex) != null
-                        ? vertexServices.getEndSegment( this, vertex).getEndVertex(this)
-                        : null;
-            }
-
-            if (mVertexes.size() != 0) {
-                if (vertexServices.getStartSegment( this, mVertexes.firstElement().orElseThrow()) != null) {
-                    throw new RuntimeException("wrong start vertex");
-                }
-                if (vertexServices.getEndSegment( this, mVertexes.lastElement().orElseThrow()) != null) {
-                    throw new RuntimeException("wrong end vertex");
-                }
-            }
-
-            int currentMax = -1;
-            for (int i = 0; i < mVertexes.size(); i++) {
-                IVertex v = mVertexes.get(i);
-                if (i == 0 && v.getPixelIndex() != 0) {
-                    throw new IllegalStateException("First vertex wrong)");
-                }
-                if (i == mVertexes.size() - 1 && v.getPixelIndex() != mPixels.size() - 1 && pFull) {
-                    throw new IllegalStateException("Last vertex wrong)");
-                }
-                if (v.getPixelIndex() <= currentMax) {
-                    throw new IllegalStateException("Wrong pixel index order");
-                }
-                currentMax = v.getPixelIndex();
-                if (i != 0 && vertexServices.getStartSegment( this, v) != mSegments.get(i - 1)) {
-                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
-                }
-                if (i != mVertexes.size() - 1 && vertexServices.getEndSegment( this, v) != mSegments.get(i)) {
-                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
-                }
-            }
-        } catch (Exception pT) {
-            printVertexs();
-            throw pT;
-        }
-    }
-
-    private void printVertexs() {
-//        StringBuilder sb = new StringBuilder()
-//                .append(String.format("mVertexes.size() = %s, mSegments.size() = %s", mVertexes.size(), mSegments.size()))
-//                .append("\nArrray\n");
-//
-//        for (int i = 0; i < mVertexes.size(); i++) {
-//            sb.append(String.format("i = %s, mVertexes.get(i).getVertexIndex() = %s\n", i, mVertexes.get(i).getVertexIndex()));
-//        }
-//
-//        sb.append("\n\nWalking\n");
-//        IVertex vertex = getStartVertex();
-//        int index = 0;
-//        while (vertex != null) {
-//            sb.append(String.format("index = %s, vertex.getVertexIndex() = %s\n", index, vertex.getVertexIndex()));
-//            index++;
-//            vertex = vertex.getEndSegment(this) != null
-//                    ? vertex.getEndSegment(this).getEndVertex(this)
-//                    : null;
-//        }
-//
-//        mLogger.severe(sb::toString);
-    }
 
 
 

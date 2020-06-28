@@ -3,6 +3,8 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.Services;
 import lombok.NonNull;
 import lombok.val;
 import org.junit.After;
@@ -41,6 +43,8 @@ public class PixelMapTest {
             new Pixel(2, 2),
             new Pixel(3, 3)
     );
+
+    private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -370,7 +374,7 @@ public class PixelMapTest {
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
+        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -392,7 +396,7 @@ public class PixelMapTest {
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
+        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -414,7 +418,7 @@ public class PixelMapTest {
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Node(7, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
+        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -436,7 +440,7 @@ public class PixelMapTest {
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(5, 1), Pixel(4, 2), Pixel(3, 3), Node(3, 4) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
+        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -458,7 +462,7 @@ public class PixelMapTest {
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pc.validate(pixelMap, false, "test"));
+        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     public PixelMap addChain(@NonNull PixelMap pixelMap, @NonNull Pixel pStart, @NonNull List<Pixel> pChain) {
