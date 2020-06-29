@@ -19,7 +19,6 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
@@ -38,7 +37,7 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
-    private PixelMapService pixelMapService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
+    //private PixelMapService pixelMapService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
 
     public enum LineEndLengthType {
         Percent, Pixels
@@ -411,8 +410,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
         // TODO need to change the 360 value to one that is generated from something
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
-        if (pixelMapService.canRead(pDB, pId + "." + getPropertyName())) {
-            PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
+        PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
+        if (pixelMap.canRead(pDB, pId + "." + getPropertyName())) {
             pixelMap.read(pDB, pId + "." + getPropertyName());
             //var pixelMap = pixelMapService.read(pDB, pId + "." + getPropertyName(), this);
             setPixelMap(pixelMap);
@@ -477,7 +476,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         super.write(pDB, pId);
 
         if (mPixelMap != null) {
-            pixelMapService.write(mPixelMap, pDB, pId + "." + getPropertyName());
+            //pixelMapService.write(mPixelMap, pDB, pId + "." + getPropertyName());
+            mPixelMap.write(pDB, pId + "." + getPropertyName());
         }
 
         if (mGenerateEdgesDialog != null) {

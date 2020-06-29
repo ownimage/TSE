@@ -259,7 +259,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .forEach((x, y) ->
                         clone.getOptionalPixelAt(x, y)
                                 .filter(pPixel1 -> pPixel1.isEdge(clone))
-                                .filter(p -> pPixel.getUHVWMidPoint(clone).distance(p.getUHVWMidPoint(clone)) < radius)
+                                .filter(p -> pPixel.getUHVWMidPoint(clone.getHeight()).distance(p.getUHVWMidPoint(clone.getHeight())) < radius)
                                 .ifPresent(p -> {
                                     p.setEdge(clone, false);
                                     changesMade.set(true);
@@ -723,7 +723,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
 
         new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
             Pixel pixel = getPixelAt(i.getX(), i.getY());
-            Point centre = pixel.getUHVWMidPoint(this);
+            Point centre = pixel.getUHVWMidPoint(this.getHeight());
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
                 val segments = new HashSet();
                 getSegments(i.getX(), i.getY()).map(ImmutableSet::toCollection).ifPresent(segments::addAll);
@@ -1209,7 +1209,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
                 // to be replaced with a constant value
                 Function<PixelChain, PixelChain> fixNullPositionVertexes =
-                        pc -> services.getPixelChainService().fixNullPositionVertexes(this, pc);
+                        pc -> services.getPixelChainService().fixNullPositionVertexes(this.getHeight(), pc);
                 pixelChains = pixelChains.stream().map(fixNullPositionVertexes).collect(Collectors.toList());
                 pixelChainsClear();
                 pixelChainsAddAll(pixelChains);

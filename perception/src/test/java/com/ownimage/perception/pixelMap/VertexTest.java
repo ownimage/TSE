@@ -55,7 +55,7 @@ public class VertexTest {
         assertEquals(point, underTest.getPosition());
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getPixel(index);
-        verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap);
+        verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap.getHeight());
 //        verifyNoMoreInteractions(mockPixelMap, mockPixelChain, mockPixel);
     }
 
