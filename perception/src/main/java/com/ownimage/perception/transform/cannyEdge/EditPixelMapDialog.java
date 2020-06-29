@@ -796,8 +796,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), ip ->
                         getPixelMap().getOptionalPixelAt(ip)
                                 .filter(Predicate.not(mWorkingPixelsArray::contains))
-                                .filter(p -> pPixel.getUHVWMidPoint(getPixelMap())
-                                        .distance(p.getUHVWMidPoint(getPixelMap())) < radius)
+                                .filter(p -> pPixel.getUHVWMidPoint(mPixelMap.getHeight())
+                                        .distance(p.getUHVWMidPoint(mPixelMap.getHeight())) < radius)
                                 .filter(pPixel1 -> pPixel1.isEdge(getPixelMap()))
                                 .map(this::graffitiPixelWorkingColor)
                                 .ifPresent(mWorkingPixelsArray::add)

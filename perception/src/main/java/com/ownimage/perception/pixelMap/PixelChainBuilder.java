@@ -347,11 +347,11 @@ public class PixelChainBuilder implements IPixelChain {
         }
 
         int startIndexPlus = pSegment.getStartIndex(this) + 1;
-        Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap);
+        Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap.getHeight());
         double startPlusLambda = pSegment.closestLambda(pPixelMap, this, startPointPlus);
 
         int endIndexMinus = pSegment.getEndIndex(this) - 1;
-        Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap);
+        Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap.getHeight());
         double endMinusLambda = pSegment.closestLambda(pPixelMap, this, endPointMinus);
 
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
@@ -452,7 +452,7 @@ public class PixelChainBuilder implements IPixelChain {
 
     private boolean segmentMidpointValid(PixelMap pPixelMap, CurveSegment pSegment, double pDistance) {
         Point curveMidPoint = pSegment.getPointFromLambda(pPixelMap, this, 0.5d);
-        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap).distance(curveMidPoint) < pDistance);
+        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap.getHeight()).distance(curveMidPoint) < pDistance);
     }
 
     private void approximateCurvesOnly_firstSegment(

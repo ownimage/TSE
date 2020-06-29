@@ -29,12 +29,12 @@ public class PixelChainService {
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
     private final static Logger mLogger = Framework.getLogger();
 
-    public PixelChain fixNullPositionVertexes(PixelMap pixelMap, PixelChain pixelChain) {
+    public PixelChain fixNullPositionVertexes(int height, PixelChain pixelChain) {
         var mappedVertexes = pixelChain.getVertexes().stream()
                 .map(v -> {
                     var p = v.getPosition();
                     if (p == null) {
-                        p = vertexService.getPixel(pixelChain, v).getUHVWMidPoint(pixelMap);
+                        p = vertexService.getPixel(pixelChain, v).getUHVWMidPoint(height);
                         return vertexService.createVertex(pixelChain, v.getVertexIndex(), v.getPixelIndex(), p);
                     }
                     return v;

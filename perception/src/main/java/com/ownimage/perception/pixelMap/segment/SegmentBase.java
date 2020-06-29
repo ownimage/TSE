@@ -55,7 +55,7 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel) {
-        val uhvw = pPixel.getUHVWMidPoint(pPixelMap);
+        val uhvw = pPixel.getUHVWMidPoint(pPixelMap.getHeight());
         val distance = distance(pPixelMap, pPixelChain, uhvw);
         return distance * distance;
     }

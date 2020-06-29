@@ -72,9 +72,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pPixelMap.calcIsNode(this);
     }
 
-    private synchronized void calcUHVWMidPoint(PixelMap pPixelMap) {
-        double y = (getY() + 0.5d) / pPixelMap.getHeight();
-        double x = (getX() + 0.5d) / pPixelMap.getHeight();
+    private synchronized void calcUHVWMidPoint(int height) {
+        double y = (getY() + 0.5d) / height;
+        double x = (getX() + 0.5d) / height;
         mUHVW = new Point(x, y);
     }
 
@@ -150,9 +150,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     // UHVW = unit height variable width
-    public synchronized Point getUHVWMidPoint(PixelMap pPixelMap) {
+    public synchronized Point getUHVWMidPoint(int height) {
         if (mUHVW == null) {
-            calcUHVWMidPoint(pPixelMap);
+            calcUHVWMidPoint(height);
         }
         return mUHVW;
     }

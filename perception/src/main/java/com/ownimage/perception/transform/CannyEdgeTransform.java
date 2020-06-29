@@ -19,6 +19,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
@@ -36,6 +37,8 @@ import java.util.logging.Logger;
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
+
+    private PixelMapService pixelMapService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
 
     public enum LineEndLengthType {
         Percent, Pixels
@@ -141,15 +144,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private PixelMap mPixelMap; // this is the picture from the file processed for edges
 
-    public CannyEdgeTransform(final Perception pPerception) {
+    public CannyEdgeTransform(Perception pPerception) {
         super("Canny Edge", "cannyEdge");
     }
 
     @Override
-    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(IControl pControl, boolean pIsMutating) {
         Framework.log(mLogger, Level.FINE, () -> "CannyEdgeTransform:controlChangeEvent " + pControl == null ? "null" : pControl + " " + pIsMutating);
-        if (pControl instanceof IControl) {
-            Framework.log(mLogger, Level.FINE, () -> "pControl.getDisplayName() = " + ((IControl) pControl).getDisplayName());
+        if (pControl != null) {
+            Framework.log(mLogger, Level.FINE, () -> "pControl.getDisplayName() = " + pControl.getDisplayName());
         }
 
         if (isInitialized() && isNotMutating()) {
@@ -186,7 +189,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
             mLogger.info("Equalize");
             getPixelMap().ifPresent(pm -> {
-                final EqualizeValues values = mEqualize.getValue();
+                EqualizeValues values = mEqualize.getValue();
                 pm.actionEqualizeValues(values);
                 mShortLineLength.setValue(values.getShortLineLength());
                 mMediumLineLength.setValue(values.getMediumLineLength());
@@ -217,7 +220,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mPixelMap = null;
         setGenEditPixelMapButtonState(false);
         val okControl = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
-        final IAction cancelActon = () -> {
+        IAction cancelActon = () -> {
             mPixelMap = undo;
             setGenEditPixelMapButtonState(mPixelMap != null);
         };
@@ -225,7 +228,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         getGenerateEdgesDialog().showDialog(cancelControl, okControl, cancelActon);
     }
 
-    private void setGenEditPixelMapButtonState(final boolean pState) {
+    private void setGenEditPixelMapButtonState(boolean pState) {
         mEditPixelMapButton.setEnabled(pState);
         mGeneratePixelMapButton.setEnabled(pState);
     }
@@ -235,8 +238,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ OK");
         SplitTimer.split("generateEdgesOK() start");
         mPixelMap = null;
-        final PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
-        final PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
+        PictureType inputPicture = new PictureType(mWidth.getValue(), mHeight.getValue());
+        PictureControl inputPictureControl = new PictureControl("Input", "input", NullContainer, inputPicture);
         Services.getServices().getRenderService()
                 .getRenderJobBuilder("CannyEdgeTransform::generateEdgesOK", inputPictureControl, getPreviousTransform())
                 .withCompleteAction(() -> {
@@ -249,7 +252,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void setPreviousTransform(final ITransform pPreviousTransform) {
+    public void setPreviousTransform(ITransform pPreviousTransform) {
         try {
             setMutating(true);
             super.setPreviousTransform(pPreviousTransform);
@@ -402,14 +405,16 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void read(final IPersistDB pDB, final String pId) {
+    public void read(IPersistDB pDB, String pId) {
         super.read(pDB, pId);
+        // TODO need to move width, height and 360 out of the transform and into the pixelmap
 
         // TODO need to change the 360 value to one that is generated from something
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
-        final PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
-        if (pixelMap.canRead(pDB, pId + "." + getPropertyName())) {
+        if (pixelMapService.canRead(pDB, pId + "." + getPropertyName())) {
+            PixelMap pixelMap = new PixelMap(getWidth(), getHeight(), false, this);
             pixelMap.read(pDB, pId + "." + getPropertyName());
+            //var pixelMap = pixelMapService.read(pDB, pId + "." + getPropertyName(), this);
             setPixelMap(pixelMap);
         }
 
@@ -420,10 +425,10 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     @Override
     public void setValues() {
         super.setValues();
-        final boolean showPixels = mShowPixels.getValue();
+        boolean showPixels = mShowPixels.getValue();
         mPixelColor.setVisible(showPixels);
 
-        final boolean showLines = mShowLines.getValue();
+        boolean showLines = mShowLines.getValue();
         mLineEndShape.setVisible(showLines);
         mLineEndLengthType.setVisible(showLines);
         mLineEndLengthPixels.setVisible(showLines);
@@ -440,19 +445,19 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         mShowShadow.setVisible(showLines);
         mEqualize.setVisible(showLines);
 
-        final boolean showShadow = mShowShadow.getValue() && mShowLines.getValue();
+        boolean showShadow = mShowShadow.getValue() && mShowLines.getValue();
         mShadowColor.setVisible(showShadow);
         mShadowOpacity.setVisible(showShadow);
         mShadowThickness.setVisible(showShadow);
         mShadowXOffset.setVisible(showShadow);
         mShadowYOffset.setVisible(showShadow);
 
-        final boolean isSquare = mLineEndShape.getValue() == LineEndShape.Square;
+        boolean isSquare = mLineEndShape.getValue() == LineEndShape.Square;
         mLineEndLengthType.setEnabled(!isSquare);
         mLineEndLengthPercent.setEnabled(!isSquare);
         mLineEndLengthPixels.setEnabled(!isSquare);
 
-        final boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
+        boolean isPercent = mLineEndLengthType.getValue() == LineEndLengthType.Percent;
         mLineEndLengthPercent.setVisible(isPercent && showLines);
         mLineEndLengthPixels.setVisible(!isPercent && showLines);
     }
@@ -468,11 +473,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     // }
     //
     @Override
-    public void write(final IPersistDB pDB, final String pId) throws IOException {
+    public void write(IPersistDB pDB, String pId) throws IOException {
         super.write(pDB, pId);
 
         if (mPixelMap != null) {
-            mPixelMap.write(pDB, pId + "." + getPropertyName());
+            pixelMapService.write(mPixelMap, pDB, pId + "." + getPropertyName());
         }
 
         if (mGenerateEdgesDialog != null) {
@@ -485,12 +490,12 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void graffiti(final GrafittiHelper pGrafittiHelper) {
-        final Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
+    public void graffiti(GrafittiHelper pGrafittiHelper) {
+        Rectangle r = getGenerateEdgesDialog().getPreviewRectangle();
         pGrafittiHelper.drawRectangle(r, Services.getServices().getPerception().getProperties().getColor1());
     }
 
-    private void regeneratePixelMap(final PictureControl inputPicture) {
+    private void regeneratePixelMap(PictureControl inputPicture) {
         try {
             getProgressControl().reset();
             getProgressControl().setVisible(true);
@@ -498,7 +503,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
             PixelMap pixelMap = null;
             SplitTimer.split("regeneratePixelMap() start");
-            final ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
+            ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
             try {
                 detector.setSourceImage(inputPicture.getValue());
                 detector.process(getProgressControl().reset());
@@ -529,7 +534,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         return Optional.ofNullable(mPixelMap);
     }
 
-    public void setPixelMap(@NonNull final PixelMap pPixelMap) {
+    public void setPixelMap(@NonNull PixelMap pPixelMap) {
         if (mPixelMap != null && (pPixelMap.getWidth() != getWidth() || pPixelMap.getHeight() != getHeight())) {
             throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
         }
@@ -542,13 +547,13 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     @Override
-    public void transform(@NonNull final ITransformResult pRenderResult) {
+    public void transform(@NonNull ITransformResult pRenderResult) {
         getPixelMap().ifPresent(pixelMap -> pixelMap.transform(pRenderResult));
 
-        final float whiteFade = mWhiteFade.getValue().floatValue();
+        float whiteFade = mWhiteFade.getValue().floatValue();
         if (whiteFade != 0.0f) {
-            final Color color = pRenderResult.getColor();
-            final Color actual = KColor.fade(color, Color.WHITE, whiteFade);
+            Color color = pRenderResult.getColor();
+            Color actual = KColor.fade(color, Color.WHITE, whiteFade);
             pRenderResult.setColor(actual);
         }
     }

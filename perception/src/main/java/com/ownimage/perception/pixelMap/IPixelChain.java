@@ -3,7 +3,6 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.IImmutableVector;
-import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -90,7 +89,7 @@ public interface IPixelChain {
             String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
         }
-        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap);
+        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap.getHeight());
     }
 
     default Optional<ISegment> getOptionalLastSegment() {
