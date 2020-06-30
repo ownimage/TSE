@@ -10,7 +10,6 @@ import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.persist.IPersist;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
@@ -33,13 +32,11 @@ import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +68,7 @@ import java.util.stream.Stream;
  * <br/>     +-- Vertex
  * </code>
  */
-public class PixelMap implements Serializable, IPersist, PixelConstants {
+public class PixelMap implements Serializable, PixelConstants {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
@@ -110,9 +107,10 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         mData = new ImmutableMap2D<>(pWidth, pHeight, (byte) 0);
         // resetSegmentIndex();
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
+        //mAutoTrackChanges = true;
     }
 
-    private PixelMap(PixelMap pFrom) {
+    public PixelMap(PixelMap pFrom) {
         mVersion = pFrom.mVersion + 1;
         setWidth(pFrom.getWidth());
         setHeight(pFrom.getHeight());
@@ -132,9 +130,11 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mPixelChains;
     }
 
-    private void pixelChainsAddAll(Collection<PixelChain> pAll) {
+    // TODO MUTATOR CHANGED ACCESS
+    public void pixelChainsAddAll(Collection<PixelChain> pAll) {
         pAll.forEach(this::pixelChainsAdd);
     }
+
 
     private void pixelChainsAdd(PixelChain pChain) {
         val chain = pixelChainService.indexSegments(this, pChain, true);
@@ -146,7 +146,8 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         pixelChainService.indexSegments(this, pChain, false);
     }
 
-    private void pixelChainsClear() {
+    // TODO MUTATOR CHANGED ACCESS
+    public void pixelChainsClear() {
         mPixelChains = mPixelChains.clear();
         mSegmentIndex = mSegmentIndex.clear();
     }
@@ -621,12 +622,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return result;
     }
 
-    @Override
-    public String getPropertyName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
     }
@@ -676,7 +671,7 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mUHVWHalfPixel;
     }
 
-    byte getValue(int pX, int pY) {
+    public byte getValue(int pX, int pY) {
         // TODO change these to Framework checks
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
@@ -759,12 +754,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
                 .findAny()
                 .ifPresent(tuple -> result.set(true));
         return result.get();
-    }
-
-    @Override
-    public boolean isPersistent() {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     private int modWidth(int pX) {
@@ -1152,83 +1141,12 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    @Override
-    public boolean canRead(IPersistDB pDB, String pId) {
-        String pixelString = pDB.read(pId + ".data");
-        return pixelString != null && !pixelString.isEmpty();
-    }
-
     private PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
     }
 
-    @Override
-    public void read(IPersistDB pDB, String pId) {
-        // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
-        // note that write/read does not preserve the mAllNodes values
-        com.ownimage.perception.pixelMap.services.Services services = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
-        Framework.logEntry(mLogger);
-        mAutoTrackChanges = true;
-        try {
-            // pixel data
-            {
-                String pixelString = pDB.read(pId + ".data");
-                byte[] pixelBytes = MyBase64.decodeAndDecompress(pixelString);
-                ByteArrayInputStream bais = new ByteArrayInputStream(pixelBytes);
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                for (int x = 0; x < getWidth(); x++) {
-                    byte[] buff = new byte[getHeight()];
-                    int cnt = 0;
-                    while ((cnt += ois.read(buff, cnt, getHeight() - cnt)) < getHeight()) {
-                    }
-                    for (int y = 0; y < mHeight; y++) {
-                        mData = mData.set(x, y, buff[y]);
-                    }
-                }
-                bais = null;
-                ois = null;
-                pixelString = null;
-                pixelBytes = null;
-                int cnt = 0;
-                for (int x = 0; x < getWidth(); x++) {
-                    for (int y = 0; y < getHeight(); y++) {
-                        if (getValue(x, y) != 0) {
-                            cnt++;
-                        }
-                    }
-                }
-                mLogger.info("mData cnt = " + cnt);
-            }
-            // mPixelChains
-            {
-                String objectString = pDB.read(pId + ".objects");
-                byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
-                ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                Collection<PixelChain> pixelChains = (Collection<PixelChain>) ois.readObject();
-                // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
-                // to be replaced with a constant value
-                Function<PixelChain, PixelChain> fixNullPositionVertexes =
-                        pc -> services.getPixelChainService().fixNullPositionVertexes(this.getHeight(), pc);
-                pixelChains = pixelChains.stream().map(fixNullPositionVertexes).collect(Collectors.toList());
-                pixelChainsClear();
-                pixelChainsAddAll(pixelChains);
-                //TODO this will need to change
-                bais = null;
-                ois = null;
-                objectString = null;
-                objectBytes = null;
-                mLogger.info("mAllNodes size() = " + nodeCount());
-                mLogger.info("mPixelChains size() = " + mPixelChains.size());
-                mLogger.info("mSegmentCount = " + mSegmentCount);
-            }
-        } catch (Exception pEx) {
-            mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
-        }
-        Framework.logExit(mLogger);
-    }
 
-    private int nodeCount() {
+    public int nodeCount() {
         return mNodes.size();
     }
 
@@ -1374,44 +1292,6 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         }
     }
 
-    @Override
-    public void write(IPersistDB pDB, String pId) throws IOException {
-        // note that write/read does not preserve the mAllNodes values
-        Framework.logEntry(mLogger);
-        // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
-        ByteArrayOutputStream baos;
-        ObjectOutputStream oos;
-        // mData
-        {
-            mLogger.finest("About to write mData");
-            baos = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(baos);
-            for (int x = 0; x < getWidth(); x++) {
-                byte[] buff = new byte[getHeight()];
-                for (int y = 0; y < mHeight; y++) {
-                    buff[y] = mData.get(x, y);
-                }
-                oos.write(buff);
-            }
-            oos.close();
-            String pixelString = MyBase64.compressAndEncode(baos.toByteArray());
-            pDB.write(pId + ".data", pixelString);
-            pixelString = null;
-        }
-        // mAllNodes & mPixelChains
-        mLogger.info("nodeCount() = " + nodeCount());
-        mLogger.info("mPixelChains size() = " + mPixelChains.size());
-        baos = new ByteArrayOutputStream();
-        oos = new ObjectOutputStream(baos);
-        Collection<PixelChain> pixelChains = mPixelChains.toCollection();
-        oos.writeObject(pixelChains);
-        oos.close();
-        String objectString = MyBase64.compressAndEncode(baos.toByteArray());
-        pDB.write(pId + ".objects", objectString);
-        objectString = null;
-        mLogger.info("mSegmentCount = " + mSegmentCount);
-        Framework.logExit(mLogger);
-    }
 
     /**
      * @deprecated TODO: explain
@@ -1443,4 +1323,15 @@ public class PixelMap implements Serializable, IPersist, PixelConstants {
         return mData.getSize();
     }
 
+    public PixelMap withData(@NotNull ImmutableMap2D<Byte> data) {
+        var clone = new PixelMap(this);
+        clone.mData = data;
+        return clone;
+    }
+
+    public PixelMap withPixelChains(Collection<PixelChain> pixelChains) {
+        var clone = new PixelMap(this);
+        clone.mPixelChains = new ImmutableSet<PixelChain>().addAll(pixelChains);
+        return clone;
+    }
 }
