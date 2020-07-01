@@ -1,6 +1,5 @@
 package com.ownimage.framework.ditest.subpackage;
 
-import com.ownimage.framework.ditest.App;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +17,7 @@ public class Config {
     }
 
     @Bean
-    App app() {
-        return new App();
+    GreetApp greetApp() {
+        return new GreetApp();
     }
 }
