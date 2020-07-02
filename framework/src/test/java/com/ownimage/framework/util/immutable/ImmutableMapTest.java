@@ -3,6 +3,8 @@ package com.ownimage.framework.util.immutable;
 import lombok.val;
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 
 public class ImmutableMapTest {
@@ -158,5 +160,56 @@ public class ImmutableMapTest {
         val actual = underTest.size();
         // THEN
         assertEquals(actual, 0);
+    }
+
+    @Test
+    public void mapConstructor() {
+        // GIVEN an existing map
+        var existingMap = new HashMap<Integer, String>();
+        existingMap.put(1, "one");
+        existingMap.put(2, "two");
+        existingMap.put(3, "three");
+        // WHEN a new ImmutableMap is constructed
+        var underTest = new ImmutableMap(existingMap);
+        // THEN the mappings should exist
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals(3, underTest.size());
+        // AND WHEN the original map is modified
+        existingMap.put(1, "other");
+        existingMap.remove(2);
+        // THEN the ImmutableMap should be unchanged
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals(3, underTest.size());
+    }
+
+    @Test
+    public void toHashMap() {
+        // GIVEN an ImmutableMap
+        var originalMap = new HashMap<Integer, String>();
+        originalMap.put(1, "one");
+        originalMap.put(2, "two");
+        originalMap.put(3, "three");
+        var underTest = new ImmutableMap(originalMap);
+        // WHEN converted to HashMap
+        var actual = underTest.toHashMap();
+        // THEN the mappings should exist
+        assertEquals("one", actual.get(1));
+        assertEquals("two", actual.get(2));
+        assertEquals("three", actual.get(3));
+        assertEquals(3, actual.size());
+        // AND WHEN the originalMap and the ImmutableMap are modified
+        originalMap.put(1, "other");
+        originalMap.remove(2);
+        underTest = underTest.put(1, "other");
+        underTest = underTest.remove(2);
+        // THEN the returned HashMap should be unchanged
+        assertEquals("one", actual.get(1));
+        assertEquals("two", actual.get(2));
+        assertEquals("three", actual.get(3));
+        assertEquals(3, actual.size());
     }
 }

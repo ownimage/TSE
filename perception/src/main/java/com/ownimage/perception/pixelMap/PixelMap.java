@@ -10,33 +10,32 @@ import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.KColor;
-import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
+import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,32 +67,37 @@ import java.util.stream.Stream;
  * <br/>     +-- Vertex
  * </code>
  */
-public class PixelMap implements Serializable, PixelConstants {
+public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    // TODO should clearInChainAndVisitedThenSetEdge the following two values
+    @Getter
     private final boolean m360;
-    private final IPixelMapTransformSource mTransformSource;
+    private IPixelMapTransformSource mTransformSource;
     /**
      * The Aspect ratio of the image. An aspect ration of 2 means that the image is twice a wide as it is high.
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
+    private PixelChainService pixelChainService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
     private int mWidth;
     private int mHeight;
     private int mVersion = 0;
+    @Getter
     private ImmutableMap2D<Byte> mData;
     private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
+    @Getter
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
+    @Getter
     private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
+
     private int mSegmentCount;
 
-    private PixelChainService pixelChainService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
     /**
      * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
      * This is turned off whilst the bulk processing is running. // TODO should this extend to the conversion of Pixels to Nodes etc.
      */
+    @Getter
     private boolean mAutoTrackChanges = false;
 
     public PixelMap(int pWidth, int pHeight, boolean p360, IPixelMapTransformSource pTransformSource) {
@@ -109,6 +113,14 @@ public class PixelMap implements Serializable, PixelConstants {
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
         //mAutoTrackChanges = true;
     }
+
+    @Deprecated
+    public ImmutableMap<IntegerPoint, Node> getImmutableNodeMap() {
+        return new ImmutableMap(mNodes);
+    }
+
+    @Override
+    public int segmentCount() { return mSegmentCount;}
 
     public PixelMap(PixelMap pFrom) {
         mVersion = pFrom.mVersion + 1;
@@ -307,6 +319,7 @@ public class PixelMap implements Serializable, PixelConstants {
         Framework.logExit(mLogger);
     }
 
+    @Deprecated // already migrated to PixelMapService
     public List<PixelChain> getPixelChains(@NonNull Pixel pPixel) {
         Framework.logEntry(mLogger);
         List<PixelChain> pixelChains = mPixelChains.stream()
@@ -316,9 +329,9 @@ public class PixelMap implements Serializable, PixelConstants {
         return pixelChains;
     }
 
-    public void actionEqualizeValues(EqualizeValues pValues) {
+    public PixelMap actionEqualizeValues(EqualizeValues pValues) {
         if (mPixelChains.size() == 0) {
-            return;
+            return this;
         }
         // TODO do not like this mutable parameter
         StrongReference<Integer> totalLength = new StrongReference<>(0);
@@ -346,62 +359,63 @@ public class PixelMap implements Serializable, PixelConstants {
             }
         }
         pValues.setReturnValues(shortLength, mediumLength, longLength);
+        return this;
     }
 
     private PixelChain generateChain(PixelMap pPixelMap, Node pStartNode, Pixel pCurrentPixel, PixelChain pPixelChain) {
         try {
-        Framework.logEntry(mLogger);
-        if (mLogger.isLoggable(Level.FINEST)) {
-            mLogger.finest("pStartNode: " + pStartNode);
-            mLogger.finest("pCurrentPixel: " + pCurrentPixel);
-            mLogger.finest("pPixelChain: " + pPixelChain);
-        }
-        Optional<Node> node = getNode(pCurrentPixel);
-        if (node.isPresent()) {
-            PixelChain copy = pixelChainService.setEndNode(this, pPixelChain, node.get());
-            Framework.logExit(mLogger);
+            Framework.logEntry(mLogger);
+            if (mLogger.isLoggable(Level.FINEST)) {
+                mLogger.finest("pStartNode: " + pStartNode);
+                mLogger.finest("pCurrentPixel: " + pCurrentPixel);
+                mLogger.finest("pPixelChain: " + pPixelChain);
+            }
+            Optional<Node> node = getNode(pCurrentPixel);
+            if (node.isPresent()) {
+                PixelChain copy = pixelChainService.setEndNode(this, pPixelChain, node.get());
+                Framework.logExit(mLogger);
+                return copy;
+            }
+
+            if (pPixelChain.getPixels().lastElement().orElseThrow() == pCurrentPixel) {
+                mLogger.severe("SHOULD NOT BE ADDING THE SAME PIXEL LASTPIXEL");
+            }
+
+            if (pPixelChain.getPixels().contains(pCurrentPixel)) {
+                mLogger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
+            }
+
+            PixelChain copy = pixelChainService.add(pPixelChain, pCurrentPixel);
+            pCurrentPixel.setInChain(this, true);
+            pCurrentPixel.setVisited(this, true);
+            // try to end quickly at a node to prevent bypassing
+            for (Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours(this)) {
+                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+                // going back to the staring node.
+                // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
+                // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
+                if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelCount() == 2 &&
+                        nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
+                    copy = generateChain(pPixelMap, pStartNode, nodalNeighbour, copy);
+                    Framework.logExit(mLogger);
+                    return copy;
+                }
+            }
+            // otherwise go to the next pixel normally
+            for (Pixel neighbour : pCurrentPixel.getNeighbours()) {
+                // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
+                // going back to the staring node.
+                // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
+                // !neighbour.isNeighbour(pChain.firstPixel()))) {
+                if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this))
+                        && !(copy.getPixelCount() == 2 && pixelChainService.getStartNode(pPixelMap, copy).isPresent()
+                        && neighbour.samePosition(pixelChainService.getStartNode(pPixelMap, copy).get()))) {
+                    copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
+                    Framework.logExit(mLogger);
+                    return copy;
+                }
+            }
             return copy;
-        }
-
-        if (pPixelChain.getPixels().lastElement().orElseThrow() == pCurrentPixel) {
-            mLogger.severe("SHOULD NOT BE ADDING THE SAME PIXEL LASTPIXEL");
-        }
-
-        if (pPixelChain.getPixels().contains(pCurrentPixel)) {
-            mLogger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
-        }
-
-        PixelChain copy = pixelChainService.add(pPixelChain, pCurrentPixel);
-        pCurrentPixel.setInChain(this, true);
-        pCurrentPixel.setVisited(this, true);
-        // try to end quickly at a node to prevent bypassing
-        for (Pixel nodalNeighbour : pCurrentPixel.getNodeNeighbours(this)) {
-            // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-            // going back to the staring node.
-            // if ((nodalNeighbour.isUnVisitedEdge() || nodalNeighbour.isNode()) && (pChain.count() != 2 ||
-            // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((nodalNeighbour.isUnVisitedEdge(this) || nodalNeighbour.isNode(this)) && !(copy.getPixelCount() == 2 &&
-                    nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
-                copy = generateChain(pPixelMap, pStartNode, nodalNeighbour, copy);
-                Framework.logExit(mLogger);
-                return copy;
-            }
-        }
-        // otherwise go to the next pixel normally
-        for (Pixel neighbour : pCurrentPixel.getNeighbours()) {
-            // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-            // going back to the staring node.
-            // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
-            // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if ((neighbour.isUnVisitedEdge(this) || neighbour.isNode(this))
-                    && !(copy.getPixelCount() == 2 && pixelChainService.getStartNode(pPixelMap, copy).isPresent()
-                    && neighbour.samePosition(pixelChainService.getStartNode(pPixelMap, copy).get()))) {
-                copy = generateChain(pPixelMap, pStartNode, neighbour, copy);
-                Framework.logExit(mLogger);
-                return copy;
-            }
-        }
-        return copy;
         } catch (StackOverflowError soe) {
             mLogger.severe("Stack Overflow Error");
             throw new RuntimeException("oops");
@@ -574,6 +588,7 @@ public class PixelMap implements Serializable, PixelConstants {
         return new Pixel(pX, pY);
     }
 
+    @Deprecated // already moved to PixelMapService
     public Optional<Pixel> getOptionalPixelAt(int pX, int pY) {
         if (0 > pY || pY >= getHeight()) {
             return Optional.empty();
@@ -622,7 +637,7 @@ public class PixelMap implements Serializable, PixelConstants {
         return result;
     }
 
-    private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
+    public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
     }
 
@@ -756,6 +771,7 @@ public class PixelMap implements Serializable, PixelConstants {
         return result.get();
     }
 
+    @Deprecated // already moved to PixelMapService
     private int modWidth(int pX) {
         if (0 <= pX && pX < mWidth) {
             return pX;
@@ -812,31 +828,45 @@ public class PixelMap implements Serializable, PixelConstants {
         return clone;
     }
 
-    public void actionProcess(IProgressObserver pProgressObserver) {
+    public PixelMap actionProcess(IProgressObserver pProgressObserver) {
         try {
             SplitTimer.split("PixelMap actionProcess() start");
             mAutoTrackChanges = false;
             // // pProgress.showProgressBar();
             process01_reset(pProgressObserver);
+            mLogger.info("############## reset done");
             process02_thin(pProgressObserver);
+            mLogger.info("############## thin done");
             process03_generateNodes(pProgressObserver);
+            mLogger.info("############## generateNodes done");
+
             process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
+            mLogger.info("############## removeBristles done");
+
             process04a_removeLoneNodes(pProgressObserver);
+            mLogger.info("############## removeLoneNodes done");
+
             process05_generateChains(pProgressObserver);
+            mLogger.info("############## generateChains done");
+
             process05a_findLoops(pProgressObserver);
+            mLogger.info("############## findLoops done");
+
             var pegs = new Object[]{
                     IPixelChain.PegCounters.RefineCornersAttempted,
                     IPixelChain.PegCounters.RefineCornersSuccessful
             };
             getPegCounter().clear(pegs);
             process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
+            mLogger.info("############## straightLinesRefineCorners done");
+
             mLogger.info(getPegCounter().getString(pegs));
             //validate();
-            mLogger.info(() -> "validate done");
+            mLogger.info("############## validate done");
             process07_mergeChains(pProgressObserver);
-            mLogger.info(() -> "process07_mergeChains done");
+            mLogger.info("############## process07_mergeChains done");
             //validate();
-            mLogger.info(() -> "validate done");
+            mLogger.info("############## validate done");
             pegs = new Object[]{
                     IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
                     IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
@@ -848,13 +878,15 @@ public class PixelMap implements Serializable, PixelConstants {
             getPegCounter().clear(pegs);
             process08_refine(pProgressObserver);
             mLogger.info(getPegCounter().getString(pegs));
-            mLogger.info(() -> "process08_refine done");
+            mLogger.info("############## process08_refine done");
             //validate();
-            mLogger.info(() -> "validate done");
+            mLogger.info("############## validate done");
             // // reapproximate(null, mTransformSource.getLineTolerance());
             //validate();
-            mLogger.info(() -> "validate done");
+            mLogger.info("############## validate done");
             //process04a_removeLoneNodes();
+            indexSegments();
+            mLogger.info("############## indesSegments done");
             validate();
             //
         } catch (Exception pEx) {
@@ -865,6 +897,7 @@ public class PixelMap implements Serializable, PixelConstants {
             SplitTimer.split("PixelMap actionProcess() end");
             mAutoTrackChanges = true;
         }
+        return this;
     }
 
     private void process05a_findLoops(IProgressObserver pProgressObserver) {
@@ -1155,16 +1188,17 @@ public class PixelMap implements Serializable, PixelConstants {
     }
 
     public synchronized void indexSegments() {
-        var pixelChains = new ArrayList<PixelChain>();
-        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
-        pixelChainsClear();
-        pixelChainsAddAll(pixelChains);
-        val count = new AtomicInteger();
-        pixelChains.stream().parallel()
-                .flatMap(PixelChain::streamSegments)
-                .filter(s -> s instanceof StraightSegment)
-                .forEach(s -> count.incrementAndGet());
-        mLogger.info(() -> "Number of straight segments = " + count.get());
+//        var pixelChains = new ArrayList<PixelChain>();
+//        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
+//        pixelChainsClear();
+//        pixelChainsAddAll(pixelChains);
+//        val count = new AtomicInteger();
+//        pixelChains.stream().parallel()
+//                .flatMap(PixelChain::streamSegments)
+//                .filter(s -> s instanceof StraightSegment)
+//                .forEach(s -> count.incrementAndGet());
+//        mLogger.info(() -> "Number of straight segments = " + count.get());
+        mPixelChains.forEach(pc -> pc.getSegments().forEach(seg -> index(pc, seg, true)));
     }
 
     /**
@@ -1222,7 +1256,7 @@ public class PixelMap implements Serializable, PixelConstants {
         }
     }
 
-    public void actionSetPixelChainDefaultThickness(CannyEdgeTransform pTransform) {
+    public PixelMap actionSetPixelChainDefaultThickness(CannyEdgeTransform pTransform) {
         Framework.logEntry(mLogger);
         int shortLength = pTransform.getShortLineLength();
         int mediumLength = pTransform.getMediumLineLength();
@@ -1232,6 +1266,7 @@ public class PixelMap implements Serializable, PixelConstants {
         pixelChainsClear();
         pixelChainsAddAll(updates);
         Framework.logExit(mLogger);
+        return this;
     }
 
     void setValue(int pX, int pY, byte pValue) {
@@ -1274,6 +1309,7 @@ public class PixelMap implements Serializable, PixelConstants {
         pRenderResult.setColor(color);
     }
 
+
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
@@ -1313,11 +1349,6 @@ public class PixelMap implements Serializable, PixelConstants {
         return mPixelChains.stream();
     }
 
-    public void checkCompatibleSize(@NonNull PixelMap pPixelMap) {
-        if (getWidth() != pPixelMap.getWidth() || getHeight() != pPixelMap.getHeight()) {
-            throw new IllegalArgumentException("pPixelMap is different size to this.");
-        }
-    }
 
     public int getDataSize() {
         return mData.getSize();
@@ -1329,9 +1360,45 @@ public class PixelMap implements Serializable, PixelConstants {
         return clone;
     }
 
+    public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
+        var clone = new PixelMap(this);
+        clone.mNodes = nodes;
+        return clone;
+    }
+
+    public PixelMap withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
+        var clone = new PixelMap(this);
+        clone.mNodes = nodes.toHashMap();
+        return clone;
+    }
+
     public PixelMap withPixelChains(Collection<PixelChain> pixelChains) {
         var clone = new PixelMap(this);
         clone.mPixelChains = new ImmutableSet<PixelChain>().addAll(pixelChains);
+        return clone;
+    }
+
+    public PixelMap withSegmentIndex(Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex) {
+        var clone = new PixelMap(this);
+        clone.mSegmentIndex = segmentIndex;
+        return clone;
+    }
+
+    public PixelMap withSegmentCount(int segmentCount) {
+        var clone = new PixelMap(this);
+        clone.mSegmentCount = segmentCount;
+        return clone;
+    }
+
+    public PixelMap withAutoTrackChanges(boolean autoTrackChanges) {
+        var clone = new PixelMap(this);
+        clone.mAutoTrackChanges = autoTrackChanges;
+        return clone;
+    }
+
+    public PixelMap withTransformSource(IPixelMapTransformSource source) {
+        var clone = new PixelMap(this);
+        clone.mTransformSource = source;
         return clone;
     }
 }

@@ -10,8 +10,8 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 
 public class StraightSegment extends SegmentBase {
 
@@ -43,7 +43,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public void graffiti(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {
@@ -89,7 +89,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Vector getEndTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getAB().normalize();
     }
 

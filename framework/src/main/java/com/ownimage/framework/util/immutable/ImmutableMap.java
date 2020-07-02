@@ -3,9 +3,14 @@ package com.ownimage.framework.util.immutable;
 import lombok.val;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
+
+    public ImmutableMap(Map<K, V> map) {
+        super(new HashMap<>(map));
+    }
 
     public ImmutableMap() {
         super(new HashMap<>());
@@ -54,6 +59,12 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
     public int size() {
         synchronized (getSynchronisationObject()) {
             return getMaster().size();
+        }
+    }
+
+    public HashMap<K, V> toHashMap() {
+        synchronized (getSynchronisationObject()) {
+            return new HashMap<K, V>(getMaster());
         }
     }
 

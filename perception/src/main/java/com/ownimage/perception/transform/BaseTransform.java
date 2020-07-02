@@ -211,6 +211,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return mPreviousTransform;
     }
 
+    @Override
     public ITransform getFirstTransform() {
         if (mPreviousTransform == null) {
             return this;

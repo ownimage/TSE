@@ -14,6 +14,7 @@ import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import io.vavr.Tuple2;
 
 import java.awt.*;
@@ -133,14 +134,14 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getP2P1(pPixelChain, pPixelMap).normalize();
+    public Vector getEndTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+        return getP2P1(pPixelMap, pPixelChain).normalize();
     }
 
     @Override
     public double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
         // TODO needs improvement
-        return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelChain, pPixelMap).length();
+        return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelMap, pPixelChain).length();
     }
 
     @Override
@@ -163,7 +164,7 @@ public class CurveSegment extends SegmentBase {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 
-    private Point getP0(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    private Point getP0(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getStartUHVWPoint(pPixelMap, pPixelChain);
     }
 
@@ -182,18 +183,18 @@ public class CurveSegment extends SegmentBase {
         return mP1;
     }
 
-    private Point getP2(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    private Point getP2(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getEndUHVWPoint(pPixelMap, pPixelChain);
     }
 
     /**
      * Gets the Vector from P2 to P1
      *
-     * @param pPixelChain the Pixel Chain performing this operation
      * @param pPixelMap   the PixelMap performing the this operation
+     * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    private Vector getP2P1(IPixelChain pPixelChain, PixelMap pPixelMap) {
+    private Vector getP2P1(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getP2(pPixelMap, pPixelChain).minus(getP1());
     }
 
@@ -211,7 +212,7 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {

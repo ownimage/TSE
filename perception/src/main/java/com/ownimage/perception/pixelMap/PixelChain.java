@@ -5,28 +5,19 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import com.aparapi.opencl.OpenCL;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.pixelMap.segment.SegmentFactory;
-import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -135,18 +126,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String toString() {
@@ -157,9 +136,6 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
         return sb.toString();
     }
-
-
-
 
 
 }

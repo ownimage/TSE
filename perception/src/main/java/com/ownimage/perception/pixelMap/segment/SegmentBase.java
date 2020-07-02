@@ -13,6 +13,7 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
 
@@ -84,12 +85,12 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Line getEndTangent(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
     @Override
-    public Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Point getEndUHVWPoint(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getPosition();
     }
 
@@ -149,7 +150,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Point getStartUHVWPoint(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPosition();
     }
 
@@ -159,7 +160,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(PixelMapData pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
     }
 

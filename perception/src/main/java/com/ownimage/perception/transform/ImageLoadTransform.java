@@ -87,7 +87,7 @@ public class ImageLoadTransform extends BaseTransform {
         return mSourcePicture.getValue().getHeight();
     }
 
-    // @Override
+    @Override
     public int getOversample() {
         return 1;
     }

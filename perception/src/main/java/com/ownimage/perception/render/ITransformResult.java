@@ -9,34 +9,34 @@ import java.awt.*;
 
 import com.ownimage.framework.math.Point;
 
-public interface ITransformResult {
+ public interface ITransformResult {
 
-    public float getA();
+     float getA();
 
-    public float getB();
+     float getB();
 
-    public Color getColor();
+     Color getColor();
 
-    public float getG();
+     float getG();
 
-    public Point getPoint();
+     Point getPoint();
 
-    public float getR();
+     float getR();
 
-    public double getX();
+     double getX();
 
-    public double getY();
+     double getY();
 
-    public void setColor(Color pColor);
+     void setColor(Color pColor);
 
-    public void setPoint(Point pPoint);
+     void setPoint(Point pPoint);
 
-    public void setRGBA(float pR, float pG, float pB, float pA);
+     void setRGBA(float pR, float pG, float pB, float pA);
 
-    public void setX(double pX);
+     void setX(double pX);
 
-    public void setXY(double pX, double pY);
+     void setXY(double pX, double pY);
 
-    public void setY(double pY);
+     void setY(double pY);
 
 }
