@@ -63,7 +63,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
+    public boolean closerThanActual(PixelMapData pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
         double lambda = closestLambda(pPixelMap, pPixelChain, pPoint);
         double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
         double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
@@ -71,17 +71,17 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
-        double distance = distance(pPixelMap, pPixelChain, pPoint);
+    public boolean closerThan(PixelMapData pPixelMapData, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
+        double distance = distance(pPixelMapData, pPixelChain, pPoint);
         return distance < pTolerance;
     }
 
     @Override
-    public double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    public double closestLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         return closestLambdaAndDistance(pPixelMap, pPixelChain, pUVHWPoint)._1;
     }
 
-    private Tuple2<Double, Double> closestLambdaAndDistance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    private Tuple2<Double, Double> closestLambdaAndDistance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         // Note this is closely related to distance
         Point C = getP0(pPixelMap, pPixelChain).minus(pUVHWPoint);
 
@@ -125,7 +125,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    public double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         return closestLambdaAndDistance(pPixelMap, pPixelChain, pUVHWPoint)._2;
     }
 
@@ -139,7 +139,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getLength(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         // TODO needs improvement
         return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelMap, pPixelChain).length();
     }
@@ -175,7 +175,7 @@ public class CurveSegment extends SegmentBase {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    private Vector getP0P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    private Vector getP0P1(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getP1().minus(getP0(pPixelMap, pPixelChain));
     }
 
@@ -199,7 +199,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT) {
+    public Point getPointFromLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, double pT) {
         return getP0(pPixelMap, pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
                 .add(getP2(pPixelMap, pPixelChain).multiply(pT * pT));
@@ -212,7 +212,7 @@ public class CurveSegment extends SegmentBase {
 
     @Override
     public void graffiti(
-            PixelMapData pPixelMap,
+            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {

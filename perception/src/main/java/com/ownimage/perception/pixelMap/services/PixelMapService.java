@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
@@ -14,7 +15,6 @@ import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
-import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -36,11 +36,9 @@ import java.util.stream.Collectors;
 public class PixelMapService {
 
     private final static Logger mLogger = Framework.getLogger();
-    private final static long serialVersionUID = 1L;
 
+    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
-    private PixelMap lastPixelMap;
-    private PixelMapData lastPixelMapData;
 
     public boolean canRead(IPersistDB pDB, String pId) {
         String pixelString = pDB.read(pId + ".data");
@@ -84,6 +82,7 @@ public class PixelMapService {
                         }
                     }
                 }
+                pixelMap = pixelMap.withData(data);
                 mLogger.info("mData cnt = " + cnt);
             }
             // mPixelChains
@@ -118,49 +117,20 @@ public class PixelMapService {
         mLogger.info("segment count = " + pixelMap.getSegmentCount());
 
         Framework.logExit(mLogger);
-        return toImmutablePixelMapData(pixelMap);
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
     }
 
-    public void checkCompatibleSize(@NonNull PixelMapData one, @NotNull PixelMapData other) {
+    public void checkCompatibleSize(@NonNull com.ownimage.perception.pixelMap.immutable.PixelMapData one, @NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData other) {
         if (one.width() != other.width() || one.height() != other.height()) {
             throw new IllegalArgumentException("PixelMaps are of different sized.");
         }
     }
 
-    public ImmutablePixelMapData toImmutablePixelMapData(@NotNull PixelMap pixelMap) {
-        return ImmutablePixelMapData.builder()
-                .width(pixelMap.getWidth())
-                .height(pixelMap.getHeight())
-                .is360(pixelMap.is360())
-                .data(pixelMap.getData())
-                .nodes(pixelMap.getImmutableNodeMap())
-                .pixelChains(pixelMap.getPixelChains())
-                .segmentIndex(pixelMap.getSegmentIndex())
-                .segmentCount(pixelMap.getSegmentCount())
-                .autoTrackChanges(pixelMap.isAutoTrackChanges())
-                .build();
-    }
-
-    public PixelMap toPixelMap(@NotNull PixelMapData pixelMapData, @Nullable IPixelMapTransformSource transformSource) {
-        if (pixelMapData == lastPixelMapData) {
-            return lastPixelMap;
-        }
-        lastPixelMapData = pixelMapData;
-        lastPixelMap = new PixelMap(pixelMapData.width(), pixelMapData.height(), pixelMapData.is360(), transformSource)
-                .withData(pixelMapData.data())
-                .withNodes(pixelMapData.nodes())
-                .withPixelChains(pixelMapData.pixelChains().toCollection())
-                .withSegmentIndex(pixelMapData.segmentIndex())
-                .withSegmentCount(pixelMapData.segmentCount())
-                .withAutoTrackChanges(pixelMapData.autoTrackChanges());
-        return lastPixelMap;
-    }
-
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, IntegerPoint integerPoint) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, IntegerPoint integerPoint) {
         return getOptionalPixelAt(pixelMapData, integerPoint.getX(), integerPoint.getY());
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, int x, int y) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, int x, int y) {
         if (0 > y || y >= pixelMapData.height()) {
             return Optional.empty();
         }
@@ -171,7 +141,7 @@ public class PixelMapService {
         return Optional.of(new Pixel(newX, y));
     }
 
-    private int modWidth(@NotNull PixelMapData pixelMapData, int pX) {
+    private int modWidth(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, int pX) {
         int width = pixelMapData.width();
         if (0 <= pX && pX < width) {
             return pX;
@@ -189,7 +159,7 @@ public class PixelMapService {
         }
     }
 
-    public List<PixelChain> getPixelChains(@NotNull PixelMapData pixelMapData, @NonNull Pixel pPixel) {
+    public List<PixelChain> getPixelChains(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, @NonNull Pixel pPixel) {
         Framework.logEntry(mLogger);
         List<PixelChain> pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
@@ -244,95 +214,118 @@ public class PixelMapService {
     public ImmutablePixelMapData actionPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<Pixel> pixels) {
-        var mutable = toPixelMap(pixelMap, null).actionPixelOn(pixels);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelOn(pixels);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionPixelOff(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
             int cursorSize) {
-        var mutable = toPixelMap(pixelMap, null).actionPixelOff(pixel, cursorSize);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelOff(pixel, cursorSize);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionDeletePixelChain(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<Pixel> pixels) {
-        var mutable = toPixelMap(pixelMap, null).actionDeletePixelChain(pixels);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionDeletePixelChain(pixels);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionSetPixelChainThickness(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<Pixel> pixels,
             @NotNull Function<PixelChain, IPixelChain.Thickness> mapper) {
-        var mutable = toPixelMap(pixelMap, null).actionSetPixelChainThickness(pixels, mapper);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionSetPixelChainThickness(pixels, mapper);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionPixelToggle(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel) {
-        var mutable = toPixelMap(pixelMap, null).actionPixelToggle(pixel);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelToggle(pixel);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionPixelChainDeleteAllButThis(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel) {
-        var mutable = toPixelMap(pixelMap, null).actionPixelChainDeleteAllButThis(pixel);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelChainDeleteAllButThis(pixel);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
             @NotNull IPixelMapTransformSource source) {
-        var mutable = toPixelMap(pixelMap, source).actionPixelChainApproximateCurvesOnly(pixel);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionPixelChainApproximateCurvesOnly(pixel);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionReapproximate(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource source) {
-        var mutable = toPixelMap(pixelMap, source).actionReapproximate();
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionReapproximate();
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionRerefine(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource source) {
-        var mutable = toPixelMap(pixelMap, source).actionRerefine();
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionRerefine();
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionSetPixelChainDefaultThickness(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull CannyEdgeTransform transform) {
-        var mutable = toPixelMap(pixelMap, transform).actionSetPixelChainDefaultThickness(transform);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transform).actionSetPixelChainDefaultThickness(transform);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionEqualizeValues(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull EqualizeValues values) {
-        var mutable = toPixelMap(pixelMap, null).actionEqualizeValues(values);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionEqualizeValues(values);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
     public ImmutablePixelMapData actionProcess(
             @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NotNull ProgressControl reset) {
-        var mutable = toPixelMap(pixelMap, transformSource).actionProcess(reset);
-        return toImmutablePixelMapData(mutable);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionProcess(reset);
+        return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
-    public void transform(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NotNull ITransformResult renderResult) {
-        toPixelMap(pixelMap, transformSource).transform(renderResult);
+    public Optional<Pixel> getOptionalPixelAt(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, @NotNull Point point) {
+        return getOptionalPixelAt(pixelMapData, point.getX(), point.getY());
+    }
+
+    private Optional<Pixel> getOptionalPixelAt(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, double x, double y) {
+        return Optional.ofNullable(getPixelAt(pixelMapData, x, y));
+    }
+
+    private Pixel getPixelAt(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData, double xIn, double yIn) {
+        int h = pixelMapData.height();
+        int x = (int) (xIn * pixelMapData.width());
+        int y = (int) (yIn * h);
+        y = y == h ? h - 1 : y;
+        x = modWidth(pixelMapData, x);
+        return new Pixel(x, y);
+    }
+
+    public Point toUHVW(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMap, @NotNull Point point) {
+                return point.scaleX(aspectRatio(pixelMap));
+    }
+    /**
+     * The Aspect ratio of the image. An aspect ration of 2 means that the image is twice a wide as it is high.
+     *
+     * @param pixelMap
+     * @return
+     */
+    public double aspectRatio(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMap) {
+        return (double) pixelMap.width() / pixelMap.height();
     }
 }

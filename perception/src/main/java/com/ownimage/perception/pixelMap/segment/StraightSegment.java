@@ -43,7 +43,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public void graffiti(
-            PixelMapData pPixelMap,
+            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {
@@ -52,7 +52,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public boolean closerThanActual(
-            PixelMap pPixelMap,
+            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             IPixelMapTransformSource pTransformSource,
             Point pPoint,
@@ -66,7 +66,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public boolean closerThan(
-            PixelMap pPixelMap,
+            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             Point pPoint,
             double pTolerance
@@ -75,12 +75,12 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint) {
+    public double closestLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint) {
         return mLineSegment.closestLambda(pPoint);
     }
 
     @Override
-    public double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    public double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         return mLineSegment.distance(pUVHWPoint);
     }
 
@@ -94,7 +94,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getLength(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getAB().length();
     }
 
@@ -119,7 +119,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pLambda) {
+    public Point getPointFromLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, double pLambda) {
         return mLineSegment.getPoint(pLambda);
     }
 

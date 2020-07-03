@@ -1,8 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.view.javafx.FXViewFactory;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 

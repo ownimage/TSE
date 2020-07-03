@@ -5,6 +5,8 @@
  */
 package com.ownimage.framework.util;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * This is a strong reference to a object so that the value can be set from a lambda where you might get a `variable must be final or effectively final` message.
  * <p>
@@ -16,21 +18,25 @@ package com.ownimage.framework.util;
  */
 public class StrongReference<T> {
 
-    private T mValue;
+    private T value;
 
     public StrongReference() {
     }
 
-    public StrongReference(final T pValue) {
-        mValue = pValue;
+    public StrongReference(T value) {
+        this.value = value;
+    }
+
+    public static <T> StrongReference<T> of(@NotNull T value) {
+        return new StrongReference(value);
     }
 
     public T get() {
-        return mValue;
+        return value;
     }
 
-    public void set(final T pValue) {
-        mValue = pValue;
+    public void set(T value) {
+        this.value = value;
     }
 
 }

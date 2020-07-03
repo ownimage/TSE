@@ -9,7 +9,6 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 
 import java.util.Optional;

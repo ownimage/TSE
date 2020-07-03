@@ -8,11 +8,9 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.math.IntegerPoint;
-import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
@@ -23,11 +21,8 @@ import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.Getter;
@@ -37,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -67,7 +60,7 @@ import java.util.stream.Stream;
  * <br/>     +-- Vertex
  * </code>
  */
-public class PixelMap implements Serializable, PixelConstants, PixelMapData {
+public class PixelMap implements Serializable, PixelConstants, com.ownimage.perception.pixelMap.immutable.PixelMapData {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
@@ -207,28 +200,6 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return changesMade.get() ? clone : this;
     }
 
-    public PixelMap actionSetPixelChainThicknessReset(
-            @NonNull Collection<Pixel> pPixels,
-            int shortLength,
-            int mediumLength,
-            int longLength
-    ) {
-        PixelMap clone = new PixelMap(this);
-        val changesMade = new StrongReference<>(false);
-        pPixels.stream()
-                .filter(p -> p.isEdge(clone))
-                .flatMap(p -> this.getPixelChains(p).stream())
-                .distinct()
-                .forEach(pc -> {
-                    var update = pixelChainService.withThickness(pc, shortLength, mediumLength, longLength);
-                    if (update != pc) {
-                        clone.pixelChainsRemove(pc);
-                        clone.pixelChainsAdd(update);
-                        changesMade.set(true);
-                    }
-                });
-        return changesMade.get() ? clone : this;
-    }
 
     public PixelMap actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
         val pixelChains = getPixelChains(pPixel);
@@ -479,34 +450,11 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return mTransformSource.getShowLines();
     }
 
-    private Color transformGetLineColor(Point pIn, Color pColor, boolean pThickOnly) {
-        return getShowLines() ?
-                transformGetLineColor(pIn, pColor, getMaxiLineColor(), getLineOpacity(), 1.0d, pThickOnly) :
-                pColor;
-    }
 
-    private Color transformGetLineColor(Point pIn, Color pColorIn, Color pLineColor, double pOpacity,
-                                        double pThicknessMultiplier, boolean pThickOnly) {
-        double shortThickness = getMediumLineThickness() * pThicknessMultiplier / 1000d;
-        double normalThickness = getShortLineThickness() * pThicknessMultiplier / 1000d;
-        double longThickness = getLongLineThickness() * pThicknessMultiplier / 1000d;
-        if (isAnyLineCloserThan(pIn, shortThickness, normalThickness, longThickness, pThicknessMultiplier, pThickOnly)) {
-            return KColor.fade(pColorIn, pLineColor, pOpacity);
-        }
-        return pColorIn;
-    }
 
-    private Color getMaxiLineShadowColor(Point pIn, Color pColor) {
-        if (getShowShadow()) {
-            double x = pIn.getX() - getShadowXOffset() / 1000d;
-            x = x < 0 ? 0 : x > getWidth() - 1 ? x - getWidth() : x;
-            double y = pIn.getY() - getShadowYOffset() / 1000d;
-            y = y < 0 ? 0 : y > getHeight() - 1 ? y - (getHeight() - 1) : y;
-            Point uhvw = new Point(x, y);
-            return transformGetLineColor(uhvw, pColor, getShadowColor(), getShadowOpacity(), getShadowThickness(), true);
-        }
-        return pColor;
-    }
+
+
+
 
     private double getMediumLineThickness() {
         return mTransformSource.getMediumLineThickness();
@@ -564,10 +512,12 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return getMediumLineThickness() / 1000d;
     }
 
+    @Deprecated // already moved to PixelMapService
     private Optional<Pixel> getOptionalPixelAt(double pX, double pY) {
         return Optional.ofNullable(getPixelAt(pX, pY));
     }
 
+    @Deprecated // already moved to PixelMapService
     private Pixel getPixelAt(double pX, double pY) {
         Framework.logEntry(mLogger);
         // Framework.logParams(mLogger, "pX, pY", pX, pY);
@@ -600,6 +550,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return Optional.of(new Pixel(x, pY));
     }
 
+    @Deprecated // already moved to PixelMapService
     private Optional<Pixel> getOptionalPixelAt(Point pPoint) {
         return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
     }
@@ -626,16 +577,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return chains;
     }
 
-    private Color transformGetPixelColor(Point pIn, Color pColor) {
-        Color result = pColor;
-        if (getShowPixels()) {
-            Optional<Pixel> pixel = getOptionalPixelAt(pIn);
-            if (pixel.isPresent() && pixel.get().isEdge(this)) {
-                result = getPixelColor();
-            }
-        }
-        return result;
-    }
+
 
     public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
@@ -747,29 +689,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         });
     }
 
-    private boolean isAnyLineCloserThan(Point pPoint, double pThinWidth, double pNormalWidth, double pThickWidth, double pMultiplier, boolean pThickOnly) {
-        double maxThickness = KMath.max(pThinWidth, pNormalWidth, pThickWidth) * pMultiplier;
-        Point uhvw = toUHVW(pPoint);
-        // to prevent the expensive closerThanActual being run against the same segment more than once they
-        // are condensed into a set.
-        var candidateSegments = new HashSet<Tuple2<PixelChain, ISegment>>();
-        for (int x = (int) Math.floor((uhvw.getX() - maxThickness) * getWidth() / mAspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxThickness) * getWidth() / mAspectRatio) + 1; x++) {
-            for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * getHeight())) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * getHeight()) + 1; y++) {
-                if (0 <= x && x < getWidth() && 0 <= y && y < getHeight()) {
-                    getSegments(x, y).ifPresent(set -> set.stream()
-                            .filter(tuple -> tuple._1().getThickness() != IPixelChain.Thickness.None)
-                            .filter(tuple -> !pThickOnly || tuple._1().getThickness() == IPixelChain.Thickness.Thick)
-                            .forEach(candidateSegments::add));
-                }
-            }
-        }
-        StrongReference<Boolean> result = new StrongReference<>(false);
-        candidateSegments.stream()
-                .filter(tuple -> tuple._2().closerThanActual(this, tuple._1(), mTransformSource, uhvw, pMultiplier))
-                .findAny()
-                .ifPresent(tuple -> result.set(true));
-        return result.get();
-    }
+
 
     @Deprecated // already moved to PixelMapService
     private int modWidth(int pX) {
@@ -1301,13 +1221,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return pIn.scaleX(mAspectRatio);
     }
 
-    public void transform(ITransformResult pRenderResult) {
-        Point pIn = pRenderResult.getPoint();
-        Color color = transformGetPixelColor(pIn, pRenderResult.getColor());
-        color = transformGetLineColor(pIn, color, false);
-        color = getMaxiLineShadowColor(pIn, color);
-        pRenderResult.setColor(color);
-    }
+
 
 
     private void validate() {
@@ -1355,9 +1269,25 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     }
 
     public PixelMap withData(@NotNull ImmutableMap2D<Byte> data) {
+        if (data.width() != width() || data.height() != height()){
+            var msg = String.format("PixelMap wxh = %sx%s, data wxh = %sx%s",
+                    width(), height(), data.width(), data.height());
+            throw new IllegalArgumentException(msg);
+        }
+
         var clone = new PixelMap(this);
         clone.mData = data;
         return clone;
+    }
+
+    @Override
+    public int width() {
+        return mWidth;
+    }
+
+    @Override
+    public int height() {
+        return mHeight;
     }
 
     public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
@@ -1390,6 +1320,29 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return clone;
     }
 
+    @Override
+    public ImmutableMap<IntegerPoint, Node> nodes() {
+        mLogger.severe("############################################################");
+        mLogger.severe("PixelMap.nodes() ... this is a very poorly performing method");
+        mLogger.severe("############################################################");
+        return new ImmutableMap(mNodes);
+    }
+
+    @Override
+    public ImmutableSet<PixelChain> pixelChains() {
+        return mPixelChains;
+    }
+
+    @Override
+    public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex() {
+        return mSegmentIndex;
+    }
+
+    @Override
+    public boolean autoTrackChanges() {
+        return mAutoTrackChanges;
+    }
+
     public PixelMap withAutoTrackChanges(boolean autoTrackChanges) {
         var clone = new PixelMap(this);
         clone.mAutoTrackChanges = autoTrackChanges;
@@ -1400,5 +1353,10 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         var clone = new PixelMap(this);
         clone.mTransformSource = source;
         return clone;
+    }
+
+    @Override
+    public ImmutableMap2D<Byte> data() {
+        return mData;
     }
 }

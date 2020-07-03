@@ -67,13 +67,13 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
+    public boolean closerThan(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public abstract double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
+    public abstract double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
 
     double getActualThickness(IPixelMapTransformSource pSource, IPixelChain pPixelChain, double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);

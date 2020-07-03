@@ -7,7 +7,6 @@ import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.segment.ISegment;

@@ -28,7 +28,9 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
@@ -47,7 +49,10 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
-    private PixelMapService pixelMapService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
+    private static com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
+    private PixelMapService pixelMapService = defaultServices.getPixelMapService();
+    private PixelMapTransformService pixelMapTransformService = defaultServices.getPixelMapTransformService();
+    private PixelMapMappingService pixelMapMappingService = defaultServices.getPixelMapMappingService();
 
     public enum LineEndLengthType {
         Percent, Pixels
@@ -521,7 +526,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
                 if (detector.getKeepRunning()) {
                     // only set the mData if the detector was allowed to finish
-                    pixelMap = pixelMapService.toImmutablePixelMapData(detector.getEdgeData());
+                    pixelMap = pixelMapMappingService.toImmutablePixelMapData(detector.getEdgeData());
                     // mPreviewControl.getValue().setValue(mPreviewPicture);
                     mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
                 }
@@ -559,8 +564,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     @Override
     public void transform(@NonNull ITransformResult pRenderResult) {
-        try {
-            getPixelMap().ifPresent(pixelMap -> pixelMapService.transform(pixelMap, this, pRenderResult));
+            getPixelMap().ifPresent(pixelMap -> pixelMapTransformService.transform(pixelMap, this, pRenderResult));
 
             float whiteFade = mWhiteFade.getValue().floatValue();
             if (whiteFade != 0.0f) {
@@ -568,9 +572,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
                 Color actual = KColor.fade(color, Color.WHITE, whiteFade);
                 pRenderResult.setColor(actual);
             }
-        } catch (Exception ex) {
-//            pRenderResult.setColor(Color.MAGENTA);
-        }
     }
 
 }

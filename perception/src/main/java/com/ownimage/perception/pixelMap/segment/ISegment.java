@@ -29,17 +29,17 @@ public interface ISegment extends Serializable, Cloneable {
      */
     double calcError(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
+    boolean closerThanActual(PixelMapData pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
     double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel);
 
     int getSegmentIndex();
 
-    boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
+    boolean closerThan(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance);
 
-    double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint);
+    double closestLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint);
 
-    double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
+    double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
 
     /**
      * Gets the end index (into the mPixels) of this segment.
@@ -77,11 +77,11 @@ public interface ISegment extends Serializable, Cloneable {
      */
     IVertex getEndVertex(IPixelChain pPixelChain);
 
-    double getLength(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getLength(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
     int getPixelLength(IPixelChain pPixelChain);
 
-    Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
+    Point getPointFromLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, double pT);
 
     /**
      * Gets the start index (into the mPixels) of this segment.
