@@ -32,8 +32,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -251,7 +253,8 @@ public class PixelMapService {
                                     .ifPresent(n -> clone.update(c -> c.withNodes(clone.get().nodes().remove(n))));
                             clone.update(c -> c.withPixelChains(c.pixelChains().remove(pc)));
                             clone.update(c -> indexSegments(c, pc, false));
-                            pixelChainService.indexSegments(pm, pc, false);
+//                            pixelChainService.indexSegments(pm, pc, false);
+                            clone.update(c -> indexSegments(c, pc, false));
                             int x = 0;
                         }));
         return clone.get().withAutoTrackChanges(true);
@@ -304,11 +307,11 @@ public class PixelMapService {
             }
         });
 
-        var result =  pixelMap
+        var result = pixelMap
                 .withSegmentCount(segmentCount)
                 .withSegmentIndex(segmentIndex.get());
 
-        return  result;
+        return result;
     }
 
     public Point getUHVWHalfPixel(PixelMapData pixelMap) {
@@ -362,16 +365,77 @@ public class PixelMapService {
     public ImmutablePixelMapData actionSetPixelChainDefaultThickness(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull CannyEdgeTransform transform) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transform).actionSetPixelChainDefaultThickness(transform);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        int shortLength = transform.getShortLineLength();
+        int mediumLength = transform.getMediumLineLength();
+        int longLength = transform.getLongLineLength();
+        Vector<PixelChain> updates = new Vector<>();
+        pixelMap.pixelChains().forEach(chain -> updates.add(pixelChainService.withThickness(chain, shortLength, mediumLength, longLength)));
+        var result = clearAllPixelChains(pixelMap);
+        result = pixelChainsAddAll(result, updates);
+        return result;
+    }
+
+    public ImmutablePixelMapData clearAllPixelChains(@NotNull ImmutablePixelMapData pixelMap) {
+        return pixelMap
+                .withPixelChains(pixelMap.pixelChains().clear())
+                .withSegmentIndex(pixelMap.segmentIndex().clear());
+    }
+
+    public ImmutablePixelMapData pixelChainsAddAll(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Collection<PixelChain> pixelChains) {
+        var result = StrongReference.of(pixelMap);
+        pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
+        return result.get();
+    }
+
+
+    public ImmutablePixelMapData pixelChainAdd(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
+        return indexSegments(pixelMap, chain, true)
+                .withPixelChains(pixelMap.pixelChains().add(chain));
     }
 
     public ImmutablePixelMapData actionEqualizeValues(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull EqualizeValues values) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionEqualizeValues(values);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        if (pixelMap.pixelChains().size() == 0) {
+            return pixelMap;
+        }
+        // TODO do not like this mutable parameter
+        var totalLength = new StrongReference<>(0);
+        pixelMap.pixelChains().forEach(chain -> totalLength.update(len -> len + chain.getPixelCount()));
+        Vector<PixelChain> sortedChains = getPixelChainsSortedByLength(pixelMap);
+        int shortThreshold = (int) (totalLength.get() * values.getIgnoreFraction());
+        int mediumThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction()));
+        int longThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction() +
+                values.getMediumFraction()));
+        Integer shortLength = null;
+        Integer mediumLength = null;
+        Integer longLength = null;
+        int currentLength = 0;
+        for (PixelChain chain : sortedChains) {
+            currentLength += chain.getPixelCount();
+            if (shortLength == null && currentLength > shortThreshold) {
+                shortLength = chain.getPixelCount();
+            }
+            if (mediumLength == null && currentLength > mediumThreshold) {
+                mediumLength = chain.getPixelCount();
+            }
+            if (longLength == null && currentLength > longThreshold) {
+                longLength = chain.getPixelCount();
+                break;
+            }
+        }
+        values.setReturnValues(shortLength, mediumLength, longLength);
+        return pixelMap;
     }
+
+    public Vector<PixelChain> getPixelChainsSortedByLength(ImmutablePixelMapData pixelMap) {
+        var chains = new Vector<>(pixelMap.pixelChains().toCollection());
+        chains.sort(Comparator.comparingInt(IPixelChain::getPixelCount));
+        return chains;
+    }
+
 
     public ImmutablePixelMapData actionProcess(
             @NotNull ImmutablePixelMapData pixelMap,
@@ -425,7 +489,7 @@ public class PixelMapService {
         if (0 > x || x >= pixelMapData.width() || 0 > y || y >= pixelMapData.height()) {
             return Optional.empty();
         }
-            return Optional.of(new Pixel(x, y));
+        return Optional.of(new Pixel(x, y));
     }
 
     public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, @NotNull Point point) {

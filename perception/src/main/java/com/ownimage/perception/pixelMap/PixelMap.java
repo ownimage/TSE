@@ -25,7 +25,6 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
-import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.Getter;
 import lombok.NonNull;
@@ -36,7 +35,6 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -150,11 +148,12 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
     // TODO MUTATOR CHANGED ACCESS
+    // Moved tp service
     public void pixelChainsAddAll(Collection<PixelChain> pAll) {
         pAll.forEach(this::pixelChainsAdd);
     }
 
-
+    // moved to Service
     private void pixelChainsAdd(PixelChain pChain) {
         val chain = pixelChainService.indexSegments(this, pChain, true);
         mPixelChains = mPixelChains.add(chain);
@@ -299,38 +298,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return pixelChains;
     }
 
-    public PixelMap actionEqualizeValues(EqualizeValues pValues) {
-        if (mPixelChains.size() == 0) {
-            return this;
-        }
-        // TODO do not like this mutable parameter
-        StrongReference<Integer> totalLength = new StrongReference<>(0);
-        mPixelChains.forEach(chain -> totalLength.set(totalLength.get() + chain.getPixelCount()));
-        Vector<PixelChain> sortedChains = getPixelChainsSortedByLength();
-        int shortThreshold = (int) (totalLength.get() * pValues.getIgnoreFraction());
-        int mediumThreshold = (int) (totalLength.get() * (pValues.getIgnoreFraction() + pValues.getShortFraction()));
-        int longThreshold = (int) (totalLength.get() * (pValues.getIgnoreFraction() + pValues.getShortFraction() +
-                pValues.getMediumFraction()));
-        Integer shortLength = null;
-        Integer mediumLength = null;
-        Integer longLength = null;
-        int currentLength = 0;
-        for (PixelChain chain : sortedChains) {
-            currentLength += chain.getPixelCount();
-            if (shortLength == null && currentLength > shortThreshold) {
-                shortLength = chain.getPixelCount();
-            }
-            if (mediumLength == null && currentLength > mediumThreshold) {
-                mediumLength = chain.getPixelCount();
-            }
-            if (longLength == null && currentLength > longThreshold) {
-                longLength = chain.getPixelCount();
-                break;
-            }
-        }
-        pValues.setReturnValues(shortLength, mediumLength, longLength);
-        return this;
-    }
+
 
     private PixelChain generateChain(PixelMap pPixelMap, Node pStartNode, Pixel pCurrentPixel, PixelChain pPixelChain) {
         try {
@@ -565,11 +533,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return pixel;
     }
 
-    private Vector<PixelChain> getPixelChainsSortedByLength() {
-        Vector<PixelChain> chains = new Vector<>(mPixelChains.toCollection()); // this will be the sorted collection
-        chains.sort(Comparator.comparingInt(IPixelChain::getPixelCount));
-        return chains;
-    }
+
 
 
     public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
@@ -1169,18 +1133,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
     }
 
-    public PixelMap actionSetPixelChainDefaultThickness(CannyEdgeTransform pTransform) {
-        Framework.logEntry(mLogger);
-        int shortLength = pTransform.getShortLineLength();
-        int mediumLength = pTransform.getMediumLineLength();
-        int longLength = pTransform.getLongLineLength();
-        Vector<PixelChain> updates = new Vector<>();
-        mPixelChains.forEach(chain -> updates.add(pixelChainService.withThickness(chain, shortLength, mediumLength, longLength)));
-        pixelChainsClear();
-        pixelChainsAddAll(updates);
-        Framework.logExit(mLogger);
-        return this;
-    }
 
     void setValue(int pX, int pY, byte pValue) {
         mData = mData.set(pX, pY, pValue);

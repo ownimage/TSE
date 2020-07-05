@@ -405,6 +405,7 @@ public class PixelChainService {
                 .anyMatch(p -> p.samePosition(pPixel));
     }
 
+    @Deprecated // this modifies the pixelmap there is a better version in
     public PixelChain indexSegments(PixelMap pixelMap, PixelChain pixelChain, boolean add) {
         if (add) {
             val builder = builder(pixelChain);
