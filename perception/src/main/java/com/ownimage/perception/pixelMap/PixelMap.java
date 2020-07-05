@@ -23,6 +23,8 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.Getter;
@@ -64,15 +66,25 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+    private static PixelMapService pixelMapService;
+    private static PixelChainService pixelChainService;
+    private static PixelService pixelService;
+
+    static {
+        com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
+        pixelMapService = defaultServices.getPixelMapService();
+        pixelChainService = defaultServices.getPixelChainService();
+        pixelService = defaultServices.getPixelService();
+    }
+
     @Getter
     private final boolean m360;
-    private IPixelMapTransformSource mTransformSource;
     /**
      * The Aspect ratio of the image. An aspect ration of 2 means that the image is twice a wide as it is high.
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
-    private PixelChainService pixelChainService = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
+    private IPixelMapTransformSource mTransformSource;
     private int mWidth;
     private int mHeight;
     private int mVersion = 0;
@@ -107,14 +119,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         //mAutoTrackChanges = true;
     }
 
-    @Deprecated
-    public ImmutableMap<IntegerPoint, Node> getImmutableNodeMap() {
-        return new ImmutableMap(mNodes);
-    }
-
-    @Override
-    public int segmentCount() { return mSegmentCount;}
-
     public PixelMap(PixelMap pFrom) {
         mVersion = pFrom.mVersion + 1;
         setWidth(pFrom.getWidth());
@@ -129,6 +133,16 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mPixelChains = pFrom.mPixelChains;
         mSegmentIndex = pFrom.mSegmentIndex;
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
+    }
+
+    @Deprecated
+    public ImmutableMap<IntegerPoint, Node> getImmutableNodeMap() {
+        return new ImmutableMap(mNodes);
+    }
+
+    @Override
+    public int segmentCount() {
+        return mSegmentCount;
     }
 
     public ImmutableSet<PixelChain> getPixelChains() {
@@ -161,22 +175,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mPixelChains.size();
     }
 
-    public PixelMap actionDeletePixelChain(Collection<Pixel> pPixels) {
-        PixelMap clone = new PixelMap(this);
-        clone.mAutoTrackChanges = false;
-        val changesMade = new StrongReference<>(false);
-        pPixels.stream()
-                .filter(p -> p.isEdge(clone))
-                .forEach(p -> clone.getPixelChains(p).forEach(pc -> {
-                    pixelChainService.clearInChainAndVisitedThenSetEdge(clone, pc);
-                    pixelChainService.getStartNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
-                    pixelChainService.getEndNode(clone, pc).ifPresent(n -> clone.mNodes.remove(n));
-                    clone.pixelChainsRemove(pc);
-                    changesMade.set(true);
-                }));
-        clone.mAutoTrackChanges = true;
-        return changesMade.get() ? clone : this;
-    }
+
 
     public PixelMap actionSetPixelChainThickness(
             @NonNull Collection<Pixel> pPixels,
@@ -451,11 +450,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
 
-
-
-
-
-
     private double getMediumLineThickness() {
         return mTransformSource.getMediumLineThickness();
     }
@@ -578,7 +572,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
 
-
     public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
     }
@@ -683,12 +676,12 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {
                     segments.remove(new Tuple2<>(pPixelChain, pSegment));
+                    System.out.println("########################### PixelMap  remove " + i);
                 }
                 mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, ISegment>>().addAll(segments));
             }
         });
     }
-
 
 
     @Deprecated // already moved to PixelMapService
@@ -1222,8 +1215,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
 
-
-
     private void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
@@ -1269,7 +1260,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
     public PixelMap withData(@NotNull ImmutableMap2D<Byte> data) {
-        if (data.width() != width() || data.height() != height()){
+        if (data.width() != width() || data.height() != height()) {
             var msg = String.format("PixelMap wxh = %sx%s, data wxh = %sx%s",
                     width(), height(), data.width(), data.height());
             throw new IllegalArgumentException(msg);

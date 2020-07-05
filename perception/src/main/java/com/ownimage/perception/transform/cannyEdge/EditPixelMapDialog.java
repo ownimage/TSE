@@ -633,7 +633,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
         ImmutablePixelMapData undo = getPixelMap();
         // TODO shouldnt really set when not needed
-        setPixelMap(pixelMapService.actionPixelOn(getPixelMap(), pPixels));
+        setPixelMap(pixelMapService.actionPixelOn(getPixelMap(), mCannyEdgeTransform, pPixels));
         if (getPixelMap() != undo) {
             addUndoRedoEntry("Action Pixel On", undo, getPixelMap());
             return true;
@@ -644,7 +644,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     synchronized private boolean actionPixelOn(@NotNull Pixel pPixel) {
         ImmutablePixelMapData undo = getPixelMap();
         // TODO shouldnt really set when not needed
-        setPixelMap(pixelMapService.actionPixelOn(getPixelMap(), Lists.newArrayList(pPixel)));
+        setPixelMap(pixelMapService.actionPixelOn(getPixelMap(), mCannyEdgeTransform, Lists.newArrayList(pPixel)));
         if (getPixelMap() != undo) {
             addUndoRedoEntry("Action Pixel On", undo, getPixelMap());
             return true;

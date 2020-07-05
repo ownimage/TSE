@@ -7,6 +7,8 @@ package com.ownimage.framework.util;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
+
 /**
  * This is a strong reference to a object so that the value can be set from a lambda where you might get a `variable must be final or effectively final` message.
  * <p>
@@ -37,6 +39,10 @@ public class StrongReference<T> {
 
     public void set(T value) {
         this.value = value;
+    }
+
+    public void update(Function<T, T> update) {
+        value = update.apply(value);
     }
 
 }

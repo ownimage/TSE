@@ -36,7 +36,7 @@ public class Node extends Pixel {
      *
      * @param pIntegerPoint the pixel
      */
-    Node(IntegerPoint pIntegerPoint) {
+    public Node(IntegerPoint pIntegerPoint) {
         super(pIntegerPoint);
     }
 

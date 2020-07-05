@@ -13,23 +13,24 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class Immutable2DArrayTest {
 
     @Test
     public void constructor() {
-        final Immutable2DArray<Integer> underTest = new Immutable2DArray<>(10, 20);
+        Immutable2DArray<Integer> underTest = new Immutable2DArray<>(10, 20);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void xNegative() {
-        final Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
         underTest.get(-1, 5);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void yNegative() {
-        final Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
         underTest.get(5, -1);
     }
 
@@ -47,7 +48,7 @@ public class Immutable2DArrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void xTooLarge() {
-        final Immutable2DArray<String> underTest = new Immutable2DArray<>(20, 10);
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(20, 10);
         underTest.get(20, 5);
     }
 
@@ -83,7 +84,7 @@ public class Immutable2DArrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void yTooLarge() {
-        final Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
         underTest.get(5, 20);
     }
 
@@ -224,7 +225,7 @@ public class Immutable2DArrayTest {
     }
 
 
-    private int hash(final int x, final int y) {
+    private int hash(int x, int y) {
         return 2000 * x + y;
     }
 
@@ -241,10 +242,60 @@ public class Immutable2DArrayTest {
         range.forEach((x, y) -> {
             int acutal = underTest.get().get(x, y);
             int expected = hash(x, y);
-            if (acutal != expected) System.out.println(x + " " + y);
+            if (acutal != expected) {
+                System.out.println(x + " " + y);
+            }
             assertEquals(expected, acutal);
         });
 
+    }
+
+    @Test
+    public void xNegative_2() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        assertTrue(underTest.getOptional(-1, 5).isEmpty());
+    }
+
+    @Test
+    public void yNegative_2() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(10, 20);
+        assertTrue(underTest.getOptional(-1, 5).isEmpty());
+    }
+
+    @Test
+    public void xMax_01_2() {
+        val underTest = new Immutable2DArray<String>(20, 10).set(19, 5, "0");
+        assertEquals("0", underTest.getOptional(19, 5).orElseThrow());
+    }
+
+    @Test
+    public void xMax_02_2() {
+        val underTest = new Immutable2DArray<String>(200, 100).set(190, 50, "0");
+        assertEquals("0", underTest.getOptional(190, 50).orElseThrow());
+    }
+
+    @Test
+    public void xTooLarge_2() {
+        Immutable2DArray<String> underTest = new Immutable2DArray<>(20, 10);
+        assertTrue(underTest.getOptional(-1, 5).isEmpty());
+    }
+
+    @Test
+    public void yMax_01_2() {
+        val underTest = new Immutable2DArray<String>(10, 20).set(5, 19, "0");
+        assertEquals("0", underTest.getOptional(5, 19).orElseThrow());
+    }
+
+    @Test
+    public void yMax_02_2() {
+        val underTest = new Immutable2DArray<String>(100, 200).set(50, 190, "0");
+        assertEquals("0", underTest.getOptional(50, 190).orElseThrow());
+    }
+
+    @Test
+    public void optionalGet_misses() {
+        val underTest = new Immutable2DArray<String>(100, 200).set(50, 190, "0");
+        assertTrue(underTest.getOptional(50, 191).isEmpty());
     }
 
 }

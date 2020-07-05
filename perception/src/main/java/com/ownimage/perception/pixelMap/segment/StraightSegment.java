@@ -99,22 +99,22 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMaxX();
     }
 
     @Override
-    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMaxY();
     }
 
     @Override
-    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMinX();
     }
 
     @Override
-    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMinY();
     }
 

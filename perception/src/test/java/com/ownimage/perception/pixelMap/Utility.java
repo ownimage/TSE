@@ -129,6 +129,10 @@ class Utility {
         return pixelMap;
     }
 
+    static IPixelMapTransformSource getTransformSource(String[] map) {
+        return getDefaultTransformSource(map.length);
+    }
+
     static PixelMap createMap(final String[] map) {
         return createMap(map, getDefaultTransformSource(map.length));
     }

@@ -121,13 +121,13 @@ public interface ISegment extends Serializable, Cloneable {
 
     void graffiti(PixelMapData pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
-    double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
-    double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
-    double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
-    double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
     ISegment withStartPosition(double pStartPosition);
 

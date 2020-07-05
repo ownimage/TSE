@@ -145,22 +145,22 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
     }
 
     @Override
-    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 
     @Override
-    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
     }
 
     @Override
-    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 

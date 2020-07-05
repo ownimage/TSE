@@ -10,6 +10,7 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelChainBuilder;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 public class PixelChainService {
 
+    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
     private final static Logger mLogger = Framework.getLogger();
 
@@ -139,30 +141,17 @@ public class PixelChainService {
         return pixelChain.getPixels().firstElement().orElseThrow();
     }
 
-    public Optional<Node> getEndNode(PixelMap pPixelMap, PixelChain pixelChain) {
-        return pixelChain.getPixels().lastElement().flatMap(pPixelMap::getNode);
+    public Optional<Node> getEndNode(PixelMapData pixelMap, PixelChain pixelChain) {
+        return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
     }
 
 
-    public Optional<Node> getStartNode(PixelMap pPixelMap, PixelChain pixelChain) {
-        return pPixelMap.getNode(pixelChain.getPixels().firstElement().orElseThrow());
+    public Optional<Node> getStartNode(PixelMapData pixelMap, PixelChain pixelChain) {
+        return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
     public IVertex getStartVertex(PixelChain pixelChain) {
         return pixelChain.getVertexes().firstElement().orElse(null);
-    }
-
-    public void clearInChainAndVisitedThenSetEdge(PixelMap pPixelMap, PixelChain pixelChain) {
-        pixelChain.getPixels().forEach(p -> p.setInChain(pPixelMap, false));
-        pixelChain.getPixels().forEach(p -> p.setVisited(pPixelMap, false));
-        pixelChain.getPixels().stream()
-                .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
-                .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
-                .forEach(p -> p.setEdge(pPixelMap, false));
-        pixelChain.getPixels().stream()
-                .filter(pPixel -> pPixel.isNode(pPixelMap))
-                .filter(p -> p.countEdgeNeighbours(pPixelMap) < 2 || p.countNodeNeighbours(pPixelMap) == 2)
-                .forEach(p -> p.setEdge(pPixelMap, false));
     }
 
     /**

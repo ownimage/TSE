@@ -4,6 +4,8 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.NonNull;
 import lombok.val;
@@ -31,6 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class PixelMapTest {
+
+
     private static List<Pixel> chainS1 = Arrays.asList(
             new Pixel(0, 0),
             new Pixel(0, -1),
@@ -44,6 +48,8 @@ public class PixelMapTest {
             new Pixel(3, 3)
     );
 
+    private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    private PixelMapMappingService pixelMapMappignService = Services.getDefaultServices().getPixelMapMappingService();
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @BeforeClass
@@ -324,16 +330,17 @@ public class PixelMapTest {
                 "NEEE EEEN  ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.actionProcess(null);
-        assertEquals(3, pixelMap.getPixelChainCount());
+        var pixelMap = Utility.createMap(input);
+        var immputablePixelMap = pixelMapMappignService.toImmutablePixelMapData(pixelMap);
+        immputablePixelMap = pixelMapService.actionProcess(immputablePixelMap, Utility.getTransformSource(input), null);
+        assertEquals(3, immputablePixelMap.pixelChains().size());
         val deletePixels = new ArrayList<Pixel>();
         deletePixels.add(new Pixel(4, 1));
         // WHEN
-        PixelMap result = pixelMap.actionDeletePixelChain(deletePixels);
+        var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, deletePixels);
         // THEN
-        assertEquals(2, result.getPixelChainCount());
-        String[] actual = Utility.getMap(result);
+        assertEquals(2, result.pixelChains().size());
+        String[] actual = Utility.getMap(pixelMapMappignService.toPixelMap(result, null));
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -524,6 +531,7 @@ public class PixelMapTest {
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
+        var underTest = pixelMapMappignService.toImmutablePixelMapData(pixelMap);
         pixelMap.actionProcess(null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(3, 11).add(offset),
@@ -562,8 +570,8 @@ public class PixelMapTest {
                 new Pixel(1, 11).add(offset),
                 new Pixel(2, 11).add(offset)
         );
-        pixelMap = pixelMap.actionPixelOn(pixels);
-        assertEquals(1, pixelMap.getPixelChainCount());
+        var actual = pixelMapService.actionPixelOn(underTest, ts, pixels);
+        assertEquals(1, actual.pixelChains().size());
     }
 
     @Test

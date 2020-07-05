@@ -100,22 +100,22 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
