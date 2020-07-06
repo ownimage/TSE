@@ -177,18 +177,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
 
 
-    public PixelMap actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
-        val pixelChains = getPixelChains(pPixel);
-        if (getPixelChains(pPixel).isEmpty() || pixelChains.size() != 1) {
-            return this;
-        }
 
-        PixelMap clone = new PixelMap(this);
-        clone.pixelChainsClear();
-        clone.pixelChainsAddAll(pixelChains);
-        //copy.indexSegments();
-        return clone;
-    }
 
 
     public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {

@@ -23,6 +23,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.NonNull;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -348,9 +349,16 @@ public class PixelMapService {
     public ImmutablePixelMapData actionPixelChainDeleteAllButThis(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelChainDeleteAllButThis(pixel);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        val pixelChains = getPixelChains(pixelMap, pixel);
+        if (pixelChains.size() != 1) {
+            return pixelMap;
+        }
+
+        var result = clearAllPixelChains(pixelMap);
+        result = pixelChainsAddAll(result, pixelChains);
+        return result;
     }
+
 
     public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
             @NotNull ImmutablePixelMapData pixelMap,
