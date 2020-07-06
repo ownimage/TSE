@@ -9,7 +9,7 @@ import static org.junit.Assert.fail;
 
 class Utility {
 
-    private static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
+    static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
         return new IPixelMapTransformSource() {
             @Override
             public int getHeight() {

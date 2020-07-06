@@ -3,12 +3,14 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.NonNull;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -472,10 +474,10 @@ public class PixelMapTest {
         pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
-    public PixelMap addChain(@NonNull PixelMap pixelMap, @NonNull Pixel pStart, @NonNull List<Pixel> pChain) {
-        StrongReference<PixelMap> pixelMapRef = new StrongReference<>(pixelMap);
-        pChain.forEach(pixel -> pixelMapRef.set(pixelMapRef.get().actionPixelOn(pStart.add(pixel))));
-        return pixelMapRef.get();
+    public PixelMap addChain(@NonNull PixelMapData pixelMap, @NotNull IPixelMapTransformSource ts, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
+        var pixelMapRef =  StrongReference.of(pixelMap);
+        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapService.actionPixelOn(pixelMapMappignService.toImmutablePixelMapData(pm), ts, List.of(pStart.add(pixel)))));
+        return pixelMapMappignService.toPixelMap(pixelMapRef.get(), ts);
     }
 
     @Test
@@ -631,7 +633,7 @@ public class PixelMapTest {
     public void testBuildChain_01() {
         // GIVEN WHEN
         PixelMap pixelMap = Utility.createMap(20, 20);
-        pixelMap = addChain(pixelMap, new Pixel(3, 4), chainS1);
+        pixelMap = addChain(pixelMap, Utility.getDefaultTransformSource(20), new Pixel(3, 4), chainS1);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -644,23 +646,25 @@ public class PixelMapTest {
         // GIVEN
         Pixel start1 = new Pixel(3, 4);
         Pixel start2 = new Pixel(10, 10);
-        PixelMap pixelMap = Utility.createMap(20, 20);
-        pixelMap = addChain(pixelMap, start1, chainS1);
-        pixelMap = addChain(pixelMap, start2, chainNE);
-        BiConsumer<PixelMap, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
-            assertEquals(2, pPixelMap.getPixelChainCount());
-            List<PixelChain> chains1 = pPixelMap.getPixelChains(start1);
+        var pixelMap = StrongReference.of((PixelMapData)Utility.createMap(20, 20));
+        var source = Utility.getDefaultTransformSource(20);
+        pixelMap.update(pm -> addChain(pm, source, start1, chainS1));
+        pixelMap.update(pm ->  addChain(pm, source, start2, chainNE));
+        BiConsumer<PixelMapData, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
+            assertEquals(2, pPixelMap.pixelChains().size());
+            List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());
             assertEquals(Thickness.Normal, chains1.get(0).getThickness());
-            List<PixelChain> chains2 = pPixelMap.getPixelChains(start2);
+            List<PixelChain> chains2 = pixelMapService.getPixelChains(pPixelMap, start2);
             assertEquals(1, chains2.size());
             assertEquals(pThickness, chains2.get(0).getThickness());
         };
-        test.accept(pixelMap, Thickness.Normal);
+        test.accept(pixelMap.get(), Thickness.Normal);
         // WHEN
-        pixelMap = pixelMap.actionSetPixelChainThickness(Arrays.asList(start2), t -> Thickness.Thick);
+        var result = pixelMapService
+                .actionSetPixelChainThickness(pixelMapMappignService.toImmutablePixelMapData(pixelMap.get()), Arrays.asList(start2), t -> Thickness.Thick);
         // THEN
-        test.accept(pixelMap, Thickness.Thick);
+        test.accept(result, Thickness.Thick);
     }
 
     @Before

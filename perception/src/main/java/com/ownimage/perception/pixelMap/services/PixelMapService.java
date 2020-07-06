@@ -322,8 +322,20 @@ public class PixelMapService {
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<Pixel> pixels,
             @NotNull Function<PixelChain, IPixelChain.Thickness> mapper) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionSetPixelChainThickness(pixels, mapper);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        var result = StrongReference.of(pixelMap);
+        pixels.stream()
+                .filter(p -> pixelService.isEdge(pixelMap, p))
+                .flatMap(p -> getPixelChains(pixelMap, p).stream())
+                .distinct()
+                .forEach(pc -> {
+                    var currentThickness = pc.getThickness();
+                    var newThickness = mapper.apply(pc);
+                    if (newThickness != currentThickness) {
+                        result.update(r -> pixelChainsRemove(r, pc));
+                        result.update(r -> pixelChainAdd(r, pixelChainService.withThickness(pc, newThickness)));
+                    }
+                });
+        return result.get();
     }
 
     public ImmutablePixelMapData actionPixelToggle(
@@ -394,6 +406,12 @@ public class PixelMapService {
         return indexSegments(pixelMap, chain, true)
                 .withPixelChains(pixelMap.pixelChains().add(chain));
     }
+
+    public ImmutablePixelMapData pixelChainsRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
+        return indexSegments(pixelMap, chain, false)
+                .withPixelChains(pixelMap.pixelChains().remove(chain));
+    }
+
 
     public ImmutablePixelMapData actionEqualizeValues(
             @NotNull ImmutablePixelMapData pixelMap,

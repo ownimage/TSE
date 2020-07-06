@@ -20,7 +20,6 @@ import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -42,7 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -159,6 +157,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mPixelChains = mPixelChains.add(chain);
     }
 
+    // moved to Service
     private void pixelChainsRemove(PixelChain pChain) {
         mPixelChains = mPixelChains.remove(pChain);
         pixelChainService.indexSegments(this, pChain, false);
@@ -176,27 +175,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
 
 
-    public PixelMap actionSetPixelChainThickness(
-            @NonNull Collection<Pixel> pPixels,
-            @NonNull Function<PixelChain, Thickness> pMap
-    ) {
-        PixelMap clone = new PixelMap(this);
-        val changesMade = new StrongReference<>(false);
-        pPixels.stream()
-                .filter(p -> p.isEdge(clone))
-                .flatMap(p -> this.getPixelChains(p).stream())
-                .distinct()
-                .forEach(pc -> {
-                    var currentThickness = pc.getThickness();
-                    var newThickness = pMap.apply(pc);
-                    if (newThickness != currentThickness) {
-                        clone.pixelChainsRemove(pc);
-                        clone.pixelChainsAdd(pixelChainService.withThickness(pc, newThickness));
-                        changesMade.set(true);
-                    }
-                });
-        return changesMade.get() ? clone : this;
-    }
 
 
     public PixelMap actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
