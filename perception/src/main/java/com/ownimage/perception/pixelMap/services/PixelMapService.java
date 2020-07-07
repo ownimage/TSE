@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.services;
 
-import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersistDB;
@@ -25,7 +24,6 @@ import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class PixelMapService {
 
-    private final static Logger mLogger = Framework.getLogger();
+    private final static Logger logger = Framework.getLogger();
 
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
@@ -56,7 +54,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData read(IPersistDB db, String id, IPixelMapTransformSource transformSource) {
-        Framework.logEntry(mLogger);
+        Framework.logEntry(logger);
 
         var width = Integer.parseInt(db.read(id + ".width"));
         var height = Integer.parseInt(db.read(id + ".height"));
@@ -93,7 +91,7 @@ public class PixelMapService {
                     }
                 }
                 pixelMap = pixelMap.withData(data);
-                mLogger.info("mData cnt = " + cnt);
+                logger.info("mData cnt = " + cnt);
             }
             // mPixelChains
             {
@@ -114,19 +112,19 @@ public class PixelMapService {
                 ois = null;
                 objectString = null;
                 objectBytes = null;
-                mLogger.info("mAllNodes size() = " + pixelMap.nodeCount());
-                mLogger.info("mPixelChains size() = " + pixelMap.getPixelChains().size());
-                mLogger.info("mSegmentCount = " + pixelMap.getSegmentCount());
+                logger.info("mAllNodes size() = " + pixelMap.nodeCount());
+                logger.info("mPixelChains size() = " + pixelMap.getPixelChains().size());
+                logger.info("mSegmentCount = " + pixelMap.getSegmentCount());
             }
         } catch (Exception pEx) {
-            mLogger.log(Level.SEVERE, "PixelMap.read()", pEx);
+            logger.log(Level.SEVERE, "PixelMap.read()", pEx);
         }
 
-        mLogger.info("node count = " + pixelMap.nodeCount());
-        mLogger.info("pixelChain count = " + pixelMap.getPixelChains().size());
-        mLogger.info("segment count = " + pixelMap.getSegmentCount());
+        logger.info("node count = " + pixelMap.nodeCount());
+        logger.info("pixelChain count = " + pixelMap.getPixelChains().size());
+        logger.info("segment count = " + pixelMap.getSegmentCount());
 
-        Framework.logExit(mLogger);
+        Framework.logExit(logger);
         return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
     }
 
@@ -170,17 +168,17 @@ public class PixelMapService {
     }
 
     public List<PixelChain> getPixelChains(@NotNull PixelMapData pixelMapData, @NonNull Pixel pPixel) {
-        Framework.logEntry(mLogger);
+        Framework.logEntry(logger);
         List<PixelChain> pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
                 .collect(Collectors.toList());
-        Framework.logExit(mLogger);
+        Framework.logExit(logger);
         return pixelChains;
     }
 
     public void write(PixelMapData pixelMap, IPersistDB db, String id) throws IOException {
         // note that write/read does not preserve the mAllNodes values
-        Framework.logEntry(mLogger);
+        Framework.logEntry(logger);
 
         db.write(id + ".width", String.valueOf(pixelMap.width()));
         db.write(id + ".heioght", String.valueOf(pixelMap.height()));
@@ -190,7 +188,7 @@ public class PixelMapService {
         ObjectOutputStream oos;
         // mData
         {
-            mLogger.finest("About to write mData");
+            logger.finest("About to write mData");
             baos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(baos);
             for (int x = 0; x < pixelMap.width(); x++) {
@@ -206,9 +204,9 @@ public class PixelMapService {
             pixelString = null;
         }
 
-        mLogger.info("node count = " + pixelMap.nodes().size());
-        mLogger.info("pixelChain count = " + pixelMap.pixelChains().size());
-        mLogger.info("segment count = " + pixelMap.segmentCount());
+        logger.info("node count = " + pixelMap.nodes().size());
+        logger.info("pixelChain count = " + pixelMap.pixelChains().size());
+        logger.info("segment count = " + pixelMap.segmentCount());
 
         baos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(baos);
@@ -218,7 +216,7 @@ public class PixelMapService {
         String objectString = MyBase64.compressAndEncode(baos.toByteArray());
         db.write(id + ".objects", objectString);
         objectString = null;
-        Framework.logExit(mLogger);
+        Framework.logExit(logger);
     }
 
     public ImmutablePixelMapData actionPixelOn(
@@ -462,15 +460,6 @@ public class PixelMapService {
         return chains;
     }
 
-
-    public ImmutablePixelMapData actionProcess(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            ProgressControl progres) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionProcess(progres);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
-    }
-
     // TODO need to make this immutable
     public ImmutablePixelMapData clearInChainAndVisitedThenSetEdge(ImmutablePixelMapData pixelMapData, PixelChain pixelChain) {
         var pixelMap = pixelMapMappingService.toPixelMap(pixelMapData, null);
@@ -498,7 +487,7 @@ public class PixelMapService {
             // TODO it is not believed that this is needed as Nodes shuould be immutable 2020/07/04
 //            node = new Node(point);
 //            mNodes.put(point, node);
-            mLogger.severe("Found a node that is not in the node map");
+            logger.severe("Found a node that is not in the node map");
             return Optional.of(node);
         }
         return Optional.empty();

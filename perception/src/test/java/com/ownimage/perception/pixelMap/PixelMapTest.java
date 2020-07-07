@@ -5,6 +5,7 @@ import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
@@ -51,6 +52,7 @@ public class PixelMapTest {
     );
 
     private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    private PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
     private PixelMapMappingService pixelMapMappignService = Services.getDefaultServices().getPixelMapMappingService();
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
@@ -334,7 +336,7 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input);
         var immputablePixelMap = pixelMapMappignService.toImmutablePixelMapData(pixelMap);
-        immputablePixelMap = pixelMapService.actionProcess(immputablePixelMap, Utility.getTransformSource(input), null);
+        immputablePixelMap = pixelMapApproximationService.actionProcess(immputablePixelMap, Utility.getTransformSource(input), null);
         assertEquals(3, immputablePixelMap.pixelChains().size());
         val deletePixels = new ArrayList<Pixel>();
         deletePixels.add(new Pixel(4, 1));

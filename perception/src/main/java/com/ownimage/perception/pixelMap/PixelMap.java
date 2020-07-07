@@ -22,8 +22,6 @@ import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelService;
 import io.vavr.Tuple2;
 import lombok.Getter;
 import lombok.NonNull;
@@ -62,15 +60,11 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    private static PixelMapService pixelMapService;
     private static PixelChainService pixelChainService;
-    private static PixelService pixelService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
-        pixelMapService = defaultServices.getPixelMapService();
         pixelChainService = defaultServices.getPixelChainService();
-        pixelService = defaultServices.getPixelService();
     }
 
     @Getter
@@ -481,10 +475,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     @Deprecated // already moved to PixelMapService
     private Optional<Pixel> getOptionalPixelAt(Point pPoint) {
-        return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
-    }
-
-    public Optional<Pixel> getOptionalPixelAt(IntegerPoint pPoint) {
         return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
     }
 
@@ -1027,10 +1017,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mNodes.size();
     }
 
-    private void nodesRemoveAll() {
-        mNodes.clear();
-    }
-
     public synchronized void indexSegments() {
 //        var pixelChains = new ArrayList<PixelChain>();
 //        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
@@ -1129,9 +1115,11 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return canEliminate;
     }
 
-    private Point toUHVW(Point pIn) {
-        return pIn.scaleX(mAspectRatio);
-    }
+// --Commented out by Inspection START (06/07/2020 12:58):
+//    private Point toUHVW(Point pIn) {
+//        return pIn.scaleX(mAspectRatio);
+//    }
+// --Commented out by Inspection STOP (06/07/2020 12:58)
 
 
     private void validate() {
@@ -1200,11 +1188,13 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mHeight;
     }
 
-    public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
-        var clone = new PixelMap(this);
-        clone.mNodes = nodes;
-        return clone;
-    }
+// --Commented out by Inspection START (06/07/2020 12:58):
+//    public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
+//        var clone = new PixelMap(this);
+//        clone.mNodes = nodes;
+//        return clone;
+//    }
+// --Commented out by Inspection STOP (06/07/2020 12:58)
 
     public PixelMap withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
         var clone = new PixelMap(this);

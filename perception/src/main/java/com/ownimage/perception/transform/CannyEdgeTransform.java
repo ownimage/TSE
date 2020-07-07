@@ -28,6 +28,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
@@ -51,6 +52,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private static com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
     private PixelMapService pixelMapService = defaultServices.getPixelMapService();
+    private PixelMapApproximationService pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
     private PixelMapTransformService pixelMapTransformService = defaultServices.getPixelMapTransformService();
     private PixelMapMappingService pixelMapMappingService = defaultServices.getPixelMapMappingService();
 
@@ -537,7 +539,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             }
 
             if (pixelMap != null) {
-                pixelMap = pixelMapService.actionProcess(pixelMap, this, getProgressControl().reset());
+                pixelMap = pixelMapApproximationService.actionProcess(pixelMap, this, getProgressControl().reset());
                 setPixelMap(pixelMap);
             }
         } finally {
