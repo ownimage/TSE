@@ -40,10 +40,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
+import static com.ownimage.perception.pixelMap.PixelConstants.E;
+import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
+import static com.ownimage.perception.pixelMap.PixelConstants.N;
+import static com.ownimage.perception.pixelMap.PixelConstants.NE;
+import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
+import static com.ownimage.perception.pixelMap.PixelConstants.NW;
+import static com.ownimage.perception.pixelMap.PixelConstants.S;
+import static com.ownimage.perception.pixelMap.PixelConstants.SE;
+import static com.ownimage.perception.pixelMap.PixelConstants.SW;
+import static com.ownimage.perception.pixelMap.PixelConstants.W;
+
 public class PixelMapService {
 
     private final static Logger logger = Framework.getLogger();
 
+    private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
@@ -126,6 +139,84 @@ public class PixelMapService {
 
         Framework.logExit(logger);
         return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+    }
+
+    // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerPoint
+    private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
+        // this is because pIntegerPoint might be a Node or Pixel
+        return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
+    }
+
+    public @NotNull ImmutablePixelMapData setEdge(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel,
+            @NotNull boolean isEdge) {
+        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
+        var newValue = (byte) (isEdge ? oldValue | EDGE : oldValue & (ALL ^ EDGE));
+        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
+    }
+
+    public @NotNull ImmutablePixelMapData setNode(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NonNull Pixel pixel,
+            boolean pValue) {
+        var result = pixelMap;
+        if (pixelService.isNode(pixelMap, pixel) && !pValue) {
+            result = nodeRemove(result, pixel);
+        }
+        if (!pixelService.isNode(pixelMap, pixel) && pValue) {
+            result = nodeAdd(result, pixel);
+        }
+        return setData(result, pixel, pValue, NODE);
+    }
+
+    public @NotNull ImmutablePixelMapData setData(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel,
+            boolean pState,
+            byte pValue) {
+        if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
+            int x = modWidth(pixelMap, pixel.getX());
+            var oldValue = pixelMap.data().get(x, pixel.getY());
+            var newValue = (byte) (oldValue & (ALL ^ pValue));
+            if (pState) {
+                newValue |= pValue;
+            }
+            return pixelMap.withData(pixelMap.data().set(x, pixel.getY(), newValue));
+        }
+        return pixelMap;
+    }
+
+    public @NotNull ImmutablePixelMapData nodeAdd(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NonNull Pixel pixel) {
+        return pixelMap.withNodes(
+                pixelMap.nodes().put(getTrueIntegerPoint(pixel), new Node(pixel)));
+    }
+
+    public @NotNull ImmutablePixelMapData nodeRemove(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NonNull Pixel pixel) {
+        return pixelMap.withNodes(
+                pixelMap.nodes().remove(getTrueIntegerPoint(pixel)));
+    }
+
+    public int countEdgeNeighboursTransitions(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NonNull Pixel pixel) {
+        int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
+
+        int count = 0;
+        boolean currentState = pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, NW));
+
+        for (int neighbour : loop) {
+            var newState = pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, neighbour));
+            if (currentState != newState) {
+                currentState = newState;
+                count++;
+            }
+        }
+        return count;
     }
 
     public void checkCompatibleSize(@NonNull PixelMapData one, @NotNull PixelMapData other) {
@@ -221,17 +312,35 @@ public class PixelMapService {
 
     public ImmutablePixelMapData actionPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource source,
+            @NotNull IPixelMapTransformSource transformSource,
             @NotNull Collection<Pixel> pixels) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionPixelOn(pixels);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+//        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionPixelOn(pixels);
+//        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+
+
+//        PixelMap clone = new PixelMap(this);
+//        clone.mAutoTrackChanges = false;
+//        pPixels.forEach(pixel -> pixel.setEdge(clone, true));
+//        clone.mAutoTrackChanges = true;
+//        clone.trackPixelOn(pPixels);
+//        return clone;
+
+
+        var result = StrongReference.of(pixelMap);
+        result.update(r -> r.withAutoTrackChanges(false));
+        pixels.forEach(pixel ->
+                result.update(r -> pixelMapApproximationService.setEdge(r, transformSource,  pixel, true)));
+        result.update(r -> r.withAutoTrackChanges(true));
+        result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixels));
+        return result.get();
     }
 
     public ImmutablePixelMapData actionPixelOff(
             @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
             int cursorSize) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelOff(pixel, cursorSize);
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionPixelOff(pixel, cursorSize);
         return pixelMapMappingService.toImmutablePixelMapData(mutable);
     }
 
@@ -330,7 +439,7 @@ public class PixelMapService {
                     var currentThickness = pc.getThickness();
                     var newThickness = mapper.apply(pc);
                     if (newThickness != currentThickness) {
-                        result.update(r -> pixelChainsRemove(r, pc));
+                        result.update(r -> pixelChainRemove(r, pc));
                         result.update(r -> pixelChainAdd(r, pixelChainService.withThickness(pc, newThickness)));
                     }
                 });
@@ -413,9 +522,21 @@ public class PixelMapService {
                 .withPixelChains(pixelMap.pixelChains().add(chain));
     }
 
-    public ImmutablePixelMapData pixelChainsRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
-        return indexSegments(pixelMap, chain, false)
-                .withPixelChains(pixelMap.pixelChains().remove(chain));
+    public ImmutablePixelMapData pixelChainRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
+        val result = StrongReference.of(pixelMap);
+        result.update(r -> indexSegments(r, chain, false)
+                .withPixelChains(r.pixelChains().remove(chain)));
+        chain.getPixels()
+                .firstElement()
+                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
+                .map(pixelService::pixelToIntegerPoint)
+                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
+        chain.getPixels()
+                .lastElement()
+                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
+                .map(pixelService::pixelToIntegerPoint)
+                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
+        return result.get();
     }
 
 
@@ -491,13 +612,6 @@ public class PixelMapService {
             return Optional.of(node);
         }
         return Optional.empty();
-    }
-
-    private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
-        // this is because pIntegerPoint might be a Node or Pixel
-        return pIntegerPoint.getClass() == IntegerPoint.class
-                ? pIntegerPoint
-                : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
     }
 
     public Optional<Pixel> getPixelOptionalAt(@NotNull PixelMapData pixelMapData, int x, int y) {

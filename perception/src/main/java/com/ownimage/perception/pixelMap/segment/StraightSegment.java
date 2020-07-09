@@ -10,7 +10,6 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 
 public class StraightSegment extends SegmentBase {
@@ -20,12 +19,12 @@ public class StraightSegment extends SegmentBase {
 
     private final LineSegment mLineSegment;
 
-    StraightSegment(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
+    StraightSegment(PixelMapData pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
         this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
     }
 
     private StraightSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             int pSegmentIndex,
             double pStartPosition
@@ -124,7 +123,7 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Vector getStartTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getAB().minus().normalize();
     }
 

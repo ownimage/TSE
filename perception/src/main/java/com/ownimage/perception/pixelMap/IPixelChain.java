@@ -4,6 +4,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.IImmutableVector;
 import com.ownimage.perception.app.Services;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -84,12 +85,12 @@ public interface IPixelChain {
      * @param pIndex    the index
      * @return the UHVW Point
      */
-    default Point getUHVWPoint(PixelMap pPixelMap, int pIndex) {
+    default Point getUHVWPoint(PixelMapData pPixelMap, int pIndex) {
         if (pIndex < 0 || pIndex > getPixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
             throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
         }
-        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap.getHeight());
+        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap.height());
     }
 
     default Optional<ISegment> getOptionalLastSegment() {

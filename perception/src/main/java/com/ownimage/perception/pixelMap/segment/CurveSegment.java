@@ -28,7 +28,7 @@ public class CurveSegment extends SegmentBase {
     private final Point mB;
 
     CurveSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             int pSegmentIndex,
             Point pP1
@@ -37,7 +37,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     private CurveSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             IPixelChain pPixelChain,
             int pSegmentIndex,
             Point pP1,
@@ -206,7 +206,7 @@ public class CurveSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Vector getStartTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return getP0P1(pPixelMap, pPixelChain).minus().normalize();
     }
 

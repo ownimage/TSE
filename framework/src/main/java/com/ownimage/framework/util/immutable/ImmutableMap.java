@@ -46,6 +46,9 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
     public ImmutableMap remove(K pKey) {
         synchronized (getSynchronisationObject()) {
             val master = getMaster();
+            if (!master.containsKey(pKey)) {
+                return this;
+            }
             val currentValue = master.get(pKey);
             Consumer<HashMap<K, V>> redo = m -> m.remove(pKey);
             Consumer<HashMap<K, V>> undo = master.containsKey(pKey)

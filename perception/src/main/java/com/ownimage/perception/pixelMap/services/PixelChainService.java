@@ -64,7 +64,7 @@ public class PixelChainService {
 
 
     public PixelChain approximate(
-            @NotNull PixelMap pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull PixelChain pixelChain,
             double tolerance
     ) {

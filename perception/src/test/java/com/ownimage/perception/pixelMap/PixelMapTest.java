@@ -53,7 +53,7 @@ public class PixelMapTest {
 
     private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
-    private PixelMapMappingService pixelMapMappignService = Services.getDefaultServices().getPixelMapMappingService();
+    private PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @BeforeClass
@@ -73,13 +73,13 @@ public class PixelMapTest {
         underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE));
         val start = Instant.now();
         // WHEN
-        underTest.process01_reset(null);
+        var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);
         val end = Instant.now();
         // THEN
-        Assert.assertEquals(0, underTest.getValue(1, 1));
+        Assert.assertEquals(new Byte((byte) 0), result.data().get(1, 1));
         val duration = Duration.between(start, end);
         System.out.println("Duration = " + duration.toMillis());
-        Assert.assertEquals(1, underTest.getDataSize());
+        Assert.assertEquals(1, result.data().getSize());
     }
 
     @Test
@@ -89,13 +89,13 @@ public class PixelMapTest {
         underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE));
         val start = Instant.now();
         // WHEN
-        underTest.process01_reset(null);
+        var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);
         val end = Instant.now();
         // THEN
-        Assert.assertEquals(EDGE, underTest.getValue(1, 1));
+        Assert.assertEquals(Byte.valueOf(EDGE), result.data().get(1, 1));
         val duration = Duration.between(start, end);
         System.out.println("Duration = " + duration.toMillis());
-        Assert.assertEquals(1, underTest.getDataSize());
+        Assert.assertEquals(1, result.data().getSize());
     }
 
     @Test
@@ -335,7 +335,7 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input);
-        var immputablePixelMap = pixelMapMappignService.toImmutablePixelMapData(pixelMap);
+        var immputablePixelMap = pixelMapMappingService.toImmutablePixelMapData(pixelMap);
         immputablePixelMap = pixelMapApproximationService.actionProcess(immputablePixelMap, Utility.getTransformSource(input), null);
         assertEquals(3, immputablePixelMap.pixelChains().size());
         val deletePixels = new ArrayList<Pixel>();
@@ -344,7 +344,7 @@ public class PixelMapTest {
         var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, deletePixels);
         // THEN
         assertEquals(2, result.pixelChains().size());
-        String[] actual = Utility.getMap(pixelMapMappignService.toPixelMap(result, null));
+        String[] actual = Utility.getMap(pixelMapMappingService.toPixelMap(result, null));
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -362,7 +362,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
     }
@@ -379,7 +379,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -401,7 +401,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -423,7 +423,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -445,7 +445,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -467,7 +467,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
@@ -478,8 +478,8 @@ public class PixelMapTest {
 
     public PixelMap addChain(@NonNull PixelMapData pixelMap, @NotNull IPixelMapTransformSource ts, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
         var pixelMapRef =  StrongReference.of(pixelMap);
-        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapService.actionPixelOn(pixelMapMappignService.toImmutablePixelMapData(pm), ts, List.of(pStart.add(pixel)))));
-        return pixelMapMappignService.toPixelMap(pixelMapRef.get(), ts);
+        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapService.actionPixelOn(pixelMapMappingService.toImmutablePixelMapData(pm), ts, List.of(pStart.add(pixel)))));
+        return pixelMapMappingService.toPixelMap(pixelMapRef.get(), ts);
     }
 
     @Test
@@ -489,7 +489,7 @@ public class PixelMapTest {
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         pixelMap = pixelMap.actionPixelOn(new Pixel(3, 11).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(4, 11).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(5, 12).add(offset));
@@ -535,8 +535,8 @@ public class PixelMapTest {
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
-        var underTest = pixelMapMappignService.toImmutablePixelMapData(pixelMap);
-        pixelMap.actionProcess(null);
+        var underTest = pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(3, 11).add(offset),
                 new Pixel(4, 11).add(offset),
@@ -582,7 +582,7 @@ public class PixelMapTest {
     public void test_closeLoop_3() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(9, 11, false, ts);
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -608,7 +608,7 @@ public class PixelMapTest {
     public void test_closeLoop_4() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(9, 11, false, ts);
-        pixelMap.actionProcess(null);
+        pixelMapApproximationService.actionProcess(pixelMap, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -664,7 +664,7 @@ public class PixelMapTest {
         test.accept(pixelMap.get(), Thickness.Normal);
         // WHEN
         var result = pixelMapService
-                .actionSetPixelChainThickness(pixelMapMappignService.toImmutablePixelMapData(pixelMap.get()), Arrays.asList(start2), t -> Thickness.Thick);
+                .actionSetPixelChainThickness(pixelMapMappingService.toImmutablePixelMapData(pixelMap.get()), Arrays.asList(start2), t -> Thickness.Thick);
         // THEN
         test.accept(result, Thickness.Thick);
     }

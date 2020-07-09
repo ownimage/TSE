@@ -30,6 +30,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_01() {
         // GIVEN a pixelMap that returns NONE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NONE);
         // WHEN
         var actual = underTest.isNode(pixelMap, x, y);
@@ -41,6 +43,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_02() {
         // GIVEN a pixelMap that returns EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(EDGE);
         // WHEN
         var actual = underTest.isNode(pixelMap, x, y);
@@ -52,6 +56,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_03() {
         // GIVEN a pixelMap that returns NODE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NODE);
         // WHEN
         var actual = underTest.isNode(pixelMap, x, y);
@@ -63,6 +69,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_04() {
         // GIVEN a pixelMap that returns NODE + EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn((byte) (NODE + EDGE));
         // WHEN
         var actual = underTest.isNode(pixelMap, x, y);
@@ -74,6 +82,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_01() {
         // GIVEN a pixelMap that returns NONE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NONE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, x, y);
@@ -85,6 +95,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_02() {
         // GIVEN a pixelMap that returns EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(EDGE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, x, y);
@@ -96,6 +108,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_03() {
         // GIVEN a pixelMap that returns NODE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NODE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, x, y);
@@ -107,6 +121,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_04() {
         // GIVEN a pixelMap that returns NODE + EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn((byte) (NODE + EDGE));
         // WHEN
         var actual = underTest.isEdge(pixelMap, x, y);
@@ -118,6 +134,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_05() {
         // GIVEN a pixelMap that returns NONE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NONE);
         // WHEN
         var actual = underTest.isNode(pixelMap, integerPoint);
@@ -129,6 +147,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_06() {
         // GIVEN a pixelMap that returns EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(EDGE);
         // WHEN
         var actual = underTest.isNode(pixelMap, integerPoint);
@@ -140,6 +160,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_07() {
         // GIVEN a pixelMap that returns NODE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NODE);
         // WHEN
         var actual = underTest.isNode(pixelMap, integerPoint);
@@ -151,6 +173,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isNode_08() {
         // GIVEN a pixelMap that returns NODE + EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn((byte) (NODE + EDGE));
         // WHEN
         var actual = underTest.isNode(pixelMap, integerPoint);
@@ -162,6 +186,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_05() {
         // GIVEN a pixelMap that returns NONE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NONE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, integerPoint);
@@ -173,6 +199,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_06() {
         // GIVEN a pixelMap that returns EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(EDGE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, integerPoint);
@@ -184,6 +212,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_07() {
         // GIVEN a pixelMap that returns NODE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn(NODE);
         // WHEN
         var actual = underTest.isEdge(pixelMap, integerPoint);
@@ -195,6 +225,8 @@ public class PixelServiceTest extends TestCase {
     public void test_isEdge_08() {
         // GIVEN a pixelMap that returns NODE + EDGE
         when(pixelMap.data()).thenReturn(data);
+        when(pixelMap.height()).thenReturn(10);
+        when(pixelMap.width()).thenReturn(10);
         when(data.get(x, y)).thenReturn((byte) (NODE + EDGE));
         // WHEN
         var actual = underTest.isEdge(pixelMap, integerPoint);

@@ -38,7 +38,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public double calcError(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
@@ -164,7 +164,7 @@ public abstract class SegmentBase implements ISegment {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
     }
 
-    public boolean noPixelFurtherThan(PixelMap pPixelMap, IPixelChain pPixelChain, double pDistance) {
+    public boolean noPixelFurtherThan(PixelMapData pPixelMap, IPixelChain pPixelChain, double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
             if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {

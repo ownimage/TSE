@@ -74,7 +74,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
      */
     private final double mAspectRatio;
     private final Point mUHVWHalfPixel;
-    private IPixelMapTransformSource mTransformSource;
+    public  IPixelMapTransformSource mTransformSource;
     private int mWidth;
     private int mHeight;
     private int mVersion = 0;
@@ -93,7 +93,8 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
      * This is turned off whilst the bulk processing is running. // TODO should this extend to the conversion of Pixels to Nodes etc.
      */
     @Getter
-    private boolean mAutoTrackChanges = false;
+            // privacy changed to ease migration
+    public boolean mAutoTrackChanges = false;
 
     public PixelMap(int pWidth, int pHeight, boolean p360, IPixelMapTransformSource pTransformSource) {
         setWidth(pWidth);
@@ -235,14 +236,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return clone;
     }
 
-    private boolean getShowPixels() {
-        return mTransformSource.getShowPixels();
-    }
-
-    private Color getPixelColor() {
-        return mTransformSource.getPixelColor();
-    }
-
     private void addPixelChains(Collection<PixelChain> pPixelChains) {
         Framework.logEntry(mLogger);
         pPixelChains.forEach(this::addPixelChain);
@@ -321,7 +314,8 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
     }
 
-    private Collection<PixelChain> generateChains(PixelMap pPixelMap, Node pStartNode) {
+    public Collection<PixelChain> generateChains(PixelMap pPixelMap, Node pStartNode) {
+        HashMap x;
         Vector<PixelChain> chains = new Vector<>();
         pStartNode.setVisited(this, true);
         pStartNode.setInChain(this, true);
@@ -354,28 +348,12 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mHeight = pHeight;
     }
 
-    private double getLineOpacity() {
-        return mTransformSource.getLineOpacity();
-    }
-
     public double getLineTolerance() {
         return mTransformSource.getLineTolerance();
     }
 
     public double getLineCurvePreference() {
         return mTransformSource.getLineCurvePreference();
-    }
-
-    private double getLongLineThickness() {
-        return mTransformSource.getLongLineThickness();
-    }
-
-    private Color getMaxiLineColor() {
-        return mTransformSource.getLineColor();
-    }
-
-    private boolean getShowLines() {
-        return mTransformSource.getShowLines();
     }
 
 
@@ -429,10 +407,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
             //  throw new RuntimeException("Node to be removed does not already exist");
         }
         mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
-    }
-
-    public double getNormalWidth() {
-        return getMediumLineThickness() / 1000d;
     }
 
     @Deprecated // already moved to PixelMapService
@@ -506,33 +480,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return Optional.ofNullable(segmentIndex);
     }
 
-    private Color getShadowColor() {
-        return mTransformSource.getShadowColor();
-    }
 
-    private double getShadowOpacity() {
-        return mTransformSource.getShadowOpacity();
-    }
-
-    private double getShadowThickness() {
-        return mTransformSource.getShadowThickness();
-    }
-
-    private double getShadowXOffset() {
-        return mTransformSource.getShadowXOffset();
-    }
-
-    private double getShadowYOffset() {
-        return mTransformSource.getShadowYOffset();
-    }
-
-    private double getShortLineThickness() {
-        return mTransformSource.getShortLineThickness();
-    }
-
-    private boolean getShowShadow() {
-        return mTransformSource.getShowShadow();
-    }
 
     private IPixelMapTransformSource getTransformSource() {
         return mTransformSource;
@@ -662,79 +610,9 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return clone;
     }
 
-    public PixelMap actionProcess(IProgressObserver pProgressObserver) {
-        try {
-            SplitTimer.split("PixelMap actionProcess() start");
-            mAutoTrackChanges = false;
-            // // pProgress.showProgressBar();
-            process01_reset(pProgressObserver);
-            mLogger.info("############## reset done");
-            process02_thin(pProgressObserver);
-            mLogger.info("############## thin done");
-            process03_generateNodes(pProgressObserver);
-            mLogger.info("############## generateNodes done");
 
-            process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
-            mLogger.info("############## removeBristles done");
 
-            process04a_removeLoneNodes(pProgressObserver);
-            mLogger.info("############## removeLoneNodes done");
-
-            process05_generateChains(pProgressObserver);
-            mLogger.info("############## generateChains done");
-
-            process05a_findLoops(pProgressObserver);
-            mLogger.info("############## findLoops done");
-
-            var pegs = new Object[]{
-                    IPixelChain.PegCounters.RefineCornersAttempted,
-                    IPixelChain.PegCounters.RefineCornersSuccessful
-            };
-            getPegCounter().clear(pegs);
-            process06_straightLinesRefineCorners(pProgressObserver, mTransformSource.getLineTolerance() / mTransformSource.getHeight());
-            mLogger.info("############## straightLinesRefineCorners done");
-
-            mLogger.info(getPegCounter().getString(pegs));
-            //validate();
-            mLogger.info("############## validate done");
-            process07_mergeChains(pProgressObserver);
-            mLogger.info("############## process07_mergeChains done");
-            //validate();
-            mLogger.info("############## validate done");
-            pegs = new Object[]{
-                    IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
-                    IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
-                    IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
-                    IPixelChain.PegCounters.MidSegmentEatForwardSuccessful,
-                    IPixelChain.PegCounters.refine01FirstSegmentAttempted,
-                    IPixelChain.PegCounters.refine01FirstSegmentSuccessful
-            };
-            getPegCounter().clear(pegs);
-            process08_refine(pProgressObserver);
-            mLogger.info(getPegCounter().getString(pegs));
-            mLogger.info("############## process08_refine done");
-            //validate();
-            mLogger.info("############## validate done");
-            // // reapproximate(null, mTransformSource.getLineTolerance());
-            //validate();
-            mLogger.info("############## validate done");
-            //process04a_removeLoneNodes();
-            indexSegments();
-            mLogger.info("############## indesSegments done");
-            validate();
-            //
-        } catch (Exception pEx) {
-            mLogger.info(() -> "pEx");
-            Framework.logThrowable(mLogger, Level.INFO, pEx);
-        } finally {
-            // pProgress.hideProgressBar();
-            SplitTimer.split("PixelMap actionProcess() end");
-            mAutoTrackChanges = true;
-        }
-        return this;
-    }
-
-    private void process05a_findLoops(IProgressObserver pProgressObserver) {
+    public void process05a_findLoops(IProgressObserver pProgressObserver) {
         forEachPixel(pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
                 setNode(pixel, true);
@@ -745,7 +623,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     //
     // resets everything but the isEdgeData
-    void process01_reset(IProgressObserver pProgressObserver) {
+    public void process01_reset(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Resetting ...", 0);
         resetVisited();
         resetInChain();
@@ -757,12 +635,12 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
-    void process02_thin(IProgressObserver pProgressObserver) {
+    public void process02_thin(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Thinning ...", 0);
         forEachPixel(this::thin);
     }
 
-    void process03_generateNodes(IProgressObserver pProgressObserver) {
+    public void process03_generateNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.calcIsNode(this)) {
@@ -802,7 +680,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
     }
 
-    private void trackPixelOn(@NonNull Collection<Pixel> pPixels) {
+    public void trackPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) {
             return;
         }
@@ -841,6 +719,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                 .forEach(this::addPixelChain);
     }
 
+    // moved to PixelMapApproximationServices
     private Stream<PixelChain> generateChainsAndApproximate(Node pNode) {
         double tolerance = getLineTolerance() / getHeight();
         double lineCurvePreference = getLineCurvePreference();
@@ -908,7 +787,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return shouldBeNode;
     }
 
-    void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
+    public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.isNode(this)) {
@@ -927,7 +806,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return ((HashMap) mNodes.clone()).values().stream();
     }
 
-    void process04b_removeBristles(IProgressObserver pProgressObserver) {
+    public void process04b_removeBristles(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         Vector<Pixel> toBeRemoved = new Vector<>();
         nodesStream().forEach(node -> node.getNodeNeighbours(this).forEach(other -> {
@@ -956,7 +835,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         pToBeRemoved.forEach(mNodes::remove);
     }
 
-    void process05_generateChains(IProgressObserver pProgressObserver) {
+    public void process05_generateChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
         nodesStream().forEach(node -> pixelChainsAddAll(generateChains(this, node)));
         forEachPixel(pixel -> {
@@ -967,7 +846,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mLogger.info(() -> "Number of chains: " + getPixelChainCount());
     }
 
-    private void process06_straightLinesRefineCorners(
+    public void process06_straightLinesRefineCorners(
             IProgressObserver pProgressObserver,
             double pMaxiLineTolerance
     ) {
@@ -982,14 +861,14 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mLogger.info("approximate - done");
     }
 
-    private void process07_mergeChains(IProgressObserver pProgressObserver) {
+    public void process07_mergeChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
         nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
-    private void process08_refine(IProgressObserver pProgressObserver) {
+    public void process08_refine(IProgressObserver pProgressObserver) {
         if (mPixelChains.size() > 0) {
             var counter = Counter.createMaxCounter(mPixelChains.size());
             reportProgress(pProgressObserver, "Refining ...", 0);
@@ -1008,7 +887,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
     }
 
-    private PegCounter getPegCounter() {
+    public PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
     }
 
@@ -1122,7 +1001,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 // --Commented out by Inspection STOP (06/07/2020 12:58)
 
 
-    private void validate() {
+    public void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
@@ -1161,10 +1040,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mPixelChains.stream();
     }
 
-
-    public int getDataSize() {
-        return mData.getSize();
-    }
 
     public PixelMap withData(@NotNull ImmutableMap2D<Byte> data) {
         if (data.width() != width() || data.height() != height()) {
@@ -1246,12 +1121,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     public PixelMap withAutoTrackChanges(boolean autoTrackChanges) {
         var clone = new PixelMap(this);
         clone.mAutoTrackChanges = autoTrackChanges;
-        return clone;
-    }
-
-    public PixelMap withTransformSource(IPixelMapTransformSource source) {
-        var clone = new PixelMap(this);
-        clone.mTransformSource = source;
         return clone;
     }
 

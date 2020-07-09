@@ -848,7 +848,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     synchronized private boolean actionPixelOff(@NonNull Pixel pPixel) {
         ImmutablePixelMapData undo = getPixelMap();
-        setPixelMap(pixelMapService.actionPixelOff(getPixelMap(), pPixel, getCursorSize()));
+        setPixelMap(pixelMapService.actionPixelOff(getPixelMap(), mCannyEdgeTransform, pPixel, getCursorSize()));
         boolean changesMade = getPixelMap() != undo;
         if (changesMade) {
             addUndoRedoEntry("Action Pixel Off", undo, getPixelMap());

@@ -7,6 +7,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
@@ -380,13 +381,13 @@ public class PixelChainBuilder implements IPixelChain {
         return error;
     }
 
-    public void approximate(PixelMap pPixelMap, double pTolerance) {
+    public void approximate(PixelMapData pPixelMap, double pTolerance) {
         approximate01_straightLines(pPixelMap, pTolerance);
         approximate02_refineCorners(pPixelMap);
     }
 
     public void approximateCurvesOnly(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             double pTolerance,
             double pLineCurvePreference
     ) {
@@ -402,7 +403,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void approximateCurvesOnly_subsequentSegments(
-            PixelMap pixelMap,
+            PixelMapData pixelMap,
             double tolerance,
             double lineCurvePreference
     ) {
@@ -450,13 +451,13 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    private boolean segmentMidpointValid(PixelMap pPixelMap, CurveSegment pSegment, double pDistance) {
+    private boolean segmentMidpointValid(PixelMapData pPixelMap, CurveSegment pSegment, double pDistance) {
         Point curveMidPoint = pSegment.getPointFromLambda(pPixelMap, this, 0.5d);
-        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap.getHeight()).distance(curveMidPoint) < pDistance);
+        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap.height()).distance(curveMidPoint) < pDistance);
     }
 
     private void approximateCurvesOnly_firstSegment(
-            PixelMap pixelMap,
+            PixelMapData pixelMap,
             double tolerance,
             double lineCurvePreference
     ) {
@@ -511,7 +512,7 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    private void approximate01_straightLines(PixelMap pPixelMap, double pTolerance) {
+    private void approximate01_straightLines(PixelMapData pPixelMap, double pTolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
         if (getPixelCount() <= 1) {
@@ -557,7 +558,7 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    private void approximate02_refineCorners(PixelMap pPixelMap) {
+    private void approximate02_refineCorners(PixelMapData pPixelMap) {
         if (getSegmentCount() <= 1) {
             return;
         }

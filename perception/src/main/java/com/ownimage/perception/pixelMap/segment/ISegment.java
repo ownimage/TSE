@@ -27,7 +27,7 @@ public interface ISegment extends Serializable, Cloneable {
      *
      * @return the sum of the distances.
      */
-    double calcError(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double calcError(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
     boolean closerThanActual(PixelMapData pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
@@ -100,7 +100,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the owning PixelChain
      * @return the start tangent
      */
-    Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain);
+    Vector getStartTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start uhvw point.
