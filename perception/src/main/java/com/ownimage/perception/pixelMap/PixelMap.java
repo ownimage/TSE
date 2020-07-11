@@ -22,6 +22,7 @@ import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
 import lombok.Getter;
 import lombok.NonNull;
@@ -60,10 +61,12 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+    private static PixelMapService pixelMapService;
     private static PixelChainService pixelChainService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
+        pixelMapService = defaultServices.getPixelMapService();
         pixelChainService = defaultServices.getPixelChainService();
     }
 
@@ -168,21 +171,14 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mPixelChains.size();
     }
 
-
-
-
-
-
-
-
     public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {
-        if (getPixelChains(pPixel).isEmpty()) {
+        if (pixelMapService.getPixelChains(this, pPixel).isEmpty()) {
             return this;
         }
         double tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
         double lineCurvePreference = getTransformSource().getLineCurvePreference();
         PixelMap clone = new PixelMap(this);
-        clone.getPixelChains(pPixel).forEach(pc -> {
+        pixelMapService.getPixelChains(clone, pPixel).forEach(pc -> {
             clone.removePixelChain(pc);
             val pc2 = pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference);
             clone.addPixelChain(pc2);
@@ -241,18 +237,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         pPixelChains.forEach(this::addPixelChain);
         Framework.logExit(mLogger);
     }
-
-    @Deprecated // already migrated to PixelMapService
-    public List<PixelChain> getPixelChains(@NonNull Pixel pPixel) {
-        Framework.logEntry(mLogger);
-        List<PixelChain> pixelChains = mPixelChains.stream()
-                .filter(pc -> pixelChainService.contains(pc, pPixel))
-                .collect(Collectors.toList());
-        Framework.logExit(mLogger);
-        return pixelChains;
-    }
-
-
 
     private PixelChain generateChain(PixelMap pPixelMap, Node pStartNode, Pixel pCurrentPixel, PixelChain pPixelChain) {
         try {
@@ -693,7 +677,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
             pixel.getNode(this).ifPresent(nodes::add);
             pixel.getNeighbours()
                     .forEach(neighbour -> {
-                        getPixelChains(neighbour)
+                        pixelMapService.getPixelChains(this, neighbour)
                                 .forEach(pc -> {
                                     pixelChainService.getStartNode(this, pc).ifPresent(nodes::add);
                                     pixelChainService.getEndNode(this, pc).ifPresent(nodes::add);
@@ -712,7 +696,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                 .filter(p -> p.isEdge(this))
                 .findFirst()
                 .filter(p -> !p.isNode(this))
-                .filter(p -> getPixelChains(p).isEmpty())
+                .filter(p -> pixelMapService.getPixelChains(this, p).isEmpty())
                 .stream()
                 .map(p -> setNode(p, true))
                 .flatMap(p -> generateChainsAndApproximate(new Node(p)))
@@ -742,7 +726,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private void trackPixelOff(@NonNull List<Pixel> pPixels) {
         double tolerance = getLineTolerance() / getHeight();
         double lineCurvePreference = getLineCurvePreference();
-        pPixels.forEach(pixel -> getPixelChains(pixel).forEach(pc -> {
+        pPixels.forEach(pixel -> pixelMapService.getPixelChains(this, pixel).forEach(pc -> {
             pixelChainsRemove(pc);
             pc.getPixels().stream().forEach(p -> {
                 this.setInChain(p, false);
@@ -1014,10 +998,10 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                 }
             }
         }
-        if (mSegmentCount != segments.size()) {
-            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
-            throw new IllegalStateException(message);
-        }
+//        if (mSegmentCount != segments.size()) {
+//            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
+//            throw new IllegalStateException(message);
+//        }
     }
 
 

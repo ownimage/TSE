@@ -450,7 +450,7 @@ public class PixelMapTest {
         assertEquals(1, pixelMap.getPixelChainCount());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
-        assertEquals("PixelChain[ Node(5, 1), Pixel(4, 2), Pixel(3, 3), Node(3, 4) ]\n", result.toString());
+        assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
         pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
     }
 

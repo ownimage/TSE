@@ -606,8 +606,8 @@ public class PixelMapService {
         }
         if (pixelService.isNode(pixelMap, point)) {
             // TODO it is not believed that this is needed as Nodes shuould be immutable 2020/07/04
-//            node = new Node(point);
-//            mNodes.put(point, node);
+            node = new Node(point);
+//            mNodes = mNodes.put(point, node);
             logger.severe("Found a node that is not in the node map");
             return Optional.of(node);
         }

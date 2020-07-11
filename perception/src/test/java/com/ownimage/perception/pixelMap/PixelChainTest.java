@@ -66,6 +66,7 @@ public class PixelChainTest {
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().orElseThrow();
+        chain = pixelChainService.reverse(pixelMap, chain); // this reverse is here as it chain approximates differently backwards to forwards
         chain = pixelChainService.approximate(pixelMap, chain, tolerance);
         assertEquals(3, chain.getSegmentCount());
     }
