@@ -522,8 +522,8 @@ public class PixelMapService {
                 .withPixelChains(pixelMap.pixelChains().add(chain));
     }
 
-    public ImmutablePixelMapData pixelChainRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
-        val result = StrongReference.of(pixelMap);
+    public ImmutablePixelMapData pixelChainRemove(@NotNull PixelMapData pixelMap, @NotNull PixelChain chain) {
+        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         result.update(r -> indexSegments(r, chain, false)
                 .withPixelChains(r.pixelChains().remove(chain)));
         chain.getPixels()

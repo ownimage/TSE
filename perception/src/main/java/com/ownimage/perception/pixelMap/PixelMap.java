@@ -20,6 +20,7 @@ import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -29,7 +30,6 @@ import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -153,12 +153,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private void pixelChainsAdd(PixelChain pChain) {
         val chain = pixelChainService.indexSegments(this, pChain, true);
         mPixelChains = mPixelChains.add(chain);
-    }
-
-    // moved to Service
-    private void pixelChainsRemove(PixelChain pChain) {
-        mPixelChains = mPixelChains.remove(pChain);
-        pixelChainService.indexSegments(this, pChain, false);
     }
 
     // TODO MUTATOR CHANGED ACCESS
@@ -727,7 +721,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         double tolerance = getLineTolerance() / getHeight();
         double lineCurvePreference = getLineCurvePreference();
         pPixels.forEach(pixel -> pixelMapService.getPixelChains(this, pixel).forEach(pc -> {
-            pixelChainsRemove(pc);
+            setData(pixelMapService.pixelChainRemove(this, pc));
             pc.getPixels().stream().forEach(p -> {
                 this.setInChain(p, false);
                 this.setVisited(p, false);
@@ -744,6 +738,18 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                             })
                     );
         }));
+    }
+
+    private void setData(ImmutablePixelMapData other) {
+        if (m360 != other.is360() || mWidth != other.width() || mHeight != other.height()) {
+            throw new IllegalStateException("Incompatible PixelMaps");
+        }
+        mData = other.data();
+        mNodes = other.nodes();
+        mPixelChains = other.pixelChains();
+        mSegmentIndex = other.segmentIndex();
+        mSegmentCount = other.segmentCount();
+        mAutoTrackChanges = other.autoTrackChanges();
     }
 
     private Pixel setNode(@NonNull Pixel pPixel, boolean pValue) {
@@ -902,7 +908,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
      * @param pPixelChain
      */
     synchronized void removePixelChain(PixelChain pPixelChain) {
-        pixelChainsRemove(pPixelChain);
+        setData(pixelMapService.pixelChainRemove(this, pPixelChain));
         pixelChainService.getStartNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
         pixelChainService.getEndNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
     }
