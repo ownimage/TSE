@@ -71,4 +71,10 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         }
     }
 
+    public java.util.Collection<V> values() {
+        synchronized (getSynchronisationObject()) {
+            return getMaster().values();
+        }
+    }
+
 }

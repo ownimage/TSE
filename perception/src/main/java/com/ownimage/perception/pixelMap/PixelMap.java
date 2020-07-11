@@ -80,7 +80,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private int mVersion = 0;
     @Getter
     private ImmutableMap2D<Byte> mData;
-    private HashMap<IntegerPoint, Node> mNodes = new HashMap<>();
+    private ImmutableMap<IntegerPoint, Node> mNodes = new ImmutableMap<>();
     @Getter
     private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
     @Getter
@@ -120,7 +120,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mAspectRatio = pFrom.mAspectRatio;
         mSegmentCount = pFrom.mSegmentCount;
         mData = pFrom.mData;
-        mNodes = (HashMap<IntegerPoint, Node>) pFrom.mNodes.clone(); // TODO
+        mNodes = pFrom.mNodes;
         mPixelChains = pFrom.mPixelChains;
         mSegmentIndex = pFrom.mSegmentIndex;
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
@@ -128,7 +128,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     @Deprecated
     public ImmutableMap<IntegerPoint, Node> getImmutableNodeMap() {
-        return new ImmutableMap(mNodes);
+        return mNodes;
     }
 
     @Override
@@ -376,7 +376,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
         if (new Pixel(point).isNode(this)) {
             node = new Node(point);
-            mNodes.put(point, node);
+            mNodes = mNodes.put(point, node);
             return Optional.of(node);
         }
         return Optional.empty();
@@ -397,7 +397,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
             return node;            // throw new RuntimeException(String.format("Trying to add node that already exists, nodesCount=%s", nodeCount()));
         }
         node = new Node(pIntegerPoint);
-        mNodes.put(pIntegerPoint, node);
+        mNodes = mNodes.put(pIntegerPoint, node);
         return node;
     }
 
@@ -406,7 +406,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         if (node == null) {
             //  throw new RuntimeException("Node to be removed does not already exist");
         }
-        mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
+        mNodes = mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
     }
 
     @Deprecated // already moved to PixelMapService
@@ -803,7 +803,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     private Stream<Node> nodesStream() {
         // note this is to prevent concurrent modification exception
-        return ((HashMap) mNodes.clone()).values().stream();
+        return mNodes.values().stream();
     }
 
     public void process04b_removeBristles(IProgressObserver pProgressObserver) {
@@ -832,7 +832,8 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
     private void nodesRemoveAll(Collection<Pixel> pToBeRemoved) {
-        pToBeRemoved.forEach(mNodes::remove);
+        var result = StrongReference.of(mNodes);
+        pToBeRemoved.forEach(p -> result.update(r -> r.remove(p.toIntegerPoint())));
     }
 
     public void process05_generateChains(IProgressObserver pProgressObserver) {
@@ -929,7 +930,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
     private void replaceNode(Node pNode) {
-        mNodes.put(pNode.toIntegerPoint(), pNode);
+        mNodes = mNodes.put(pNode.toIntegerPoint(), pNode);
     }
 
     private void resetInChain() {
@@ -1073,7 +1074,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     public PixelMap withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
         var clone = new PixelMap(this);
-        clone.mNodes = nodes.toHashMap();
+        clone.mNodes = mNodes;
         return clone;
     }
 
@@ -1097,10 +1098,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     @Override
     public ImmutableMap<IntegerPoint, Node> nodes() {
-        mLogger.severe("############################################################");
-        mLogger.severe("PixelMap.nodes() ... this is a very poorly performing method");
-        mLogger.severe("############################################################");
-        return new ImmutableMap(mNodes);
+        return mNodes;
     }
 
     @Override
