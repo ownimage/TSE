@@ -382,16 +382,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return node;
     }
 
-    private void nodeRemove(IntegerPoint pIntegerPoint) {
-//        Node node = mNodes.get(pIntegerPoint);
-//        if (node == null) {
-//            //  throw new RuntimeException("Node to be removed does not already exist");
-//        }
-//        mNodes = mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
-//        mData = mData.set()
-        setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), new Pixel(pIntegerPoint)));
-    }
-
     @Deprecated // already moved to PixelMapService
     private Optional<Pixel> getOptionalPixelAt(double pX, double pY) {
         return Optional.ofNullable(getPixelAt(pX, pY));
@@ -761,7 +751,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 
     private Pixel setNode(@NonNull Pixel pPixel, boolean pValue) {
         if (pPixel.isNode(this) && !pValue) {
-            nodeRemove(pPixel);
+            setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), pPixel));
         }
         if (!pPixel.isNode(this) && pValue) {
             nodeAdd(pPixel);

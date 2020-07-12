@@ -201,9 +201,10 @@ public class PixelMapService {
     public @NotNull ImmutablePixelMapData nodeRemove(
             @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
-        var x = pixel.getX(); var y = pixel.getY();
+        var x = pixel.getX();
+        var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
-        var newValue = (byte)(oldValue & (ALL ^ NODE));
+        var newValue = (byte) (oldValue & (ALL ^ NODE));
         return pixelMap.withNodes(
                 pixelMap.nodes().remove(getTrueIntegerPoint(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
