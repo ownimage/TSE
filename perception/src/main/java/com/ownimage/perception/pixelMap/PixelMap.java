@@ -24,7 +24,6 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
 import lombok.Getter;
@@ -64,13 +63,11 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private static PixelMapService pixelMapService;
-    private static PixelMapMappingService pixelMapMappingService;
     private static PixelChainService pixelChainService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
         pixelMapService = defaultServices.getPixelMapService();
-        pixelMapMappingService = defaultServices.getPixelMapMappingService();
         pixelChainService = defaultServices.getPixelChainService();
     }
 
@@ -635,7 +632,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     public void process03_generateNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         forEachPixel(pixel -> {
-            var calsIsNodeResult = pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pixel);
+            var calsIsNodeResult = pixelMapService.calcIsNode(this, pixel);
             setValuesFrom(calsIsNodeResult._1);
             if (calsIsNodeResult._2) {
                 setValuesFrom(pixelMapService.nodeAdd(calsIsNodeResult._1, pixel));
@@ -659,10 +656,10 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
             setNode(pPixel, false);
         }
         setData(pPixel, pValue, EDGE);
-        setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pPixel)._1);
+        setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1);
         pPixel.getNeighbours().forEach(p -> {
             thin(p);
-            setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), p)._1);
+            setValuesFrom(pixelMapService.calcIsNode(this, p)._1);
         });
         thin(pPixel);
         if (mAutoTrackChanges) {
@@ -770,7 +767,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
 
     private Pixel setNode(@NonNull Pixel pPixel, boolean pValue) {
         if (pPixel.isNode(this) && !pValue) {
-            setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), pPixel));
+            setValuesFrom(pixelMapService.nodeRemove(this, pPixel));
         }
         if (!pPixel.isNode(this) && pValue) {
             nodeAdd(pPixel);
@@ -819,7 +816,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
                 .forEach(pixel -> {
                     pixel.setEdge(this, false);
                     pixel.allEdgeNeighbours(this)
-                            .forEach(pPixel -> setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pPixel)._1));
+                            .forEach(pPixel -> setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1));
                 });
     }
 
@@ -983,7 +980,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         }
         if (canEliminate) {
             pPixel.setEdge(this, false);
-            setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), pPixel));
+            setValuesFrom(pixelMapService.nodeRemove(this, pPixel));
         }
         return canEliminate;
     }

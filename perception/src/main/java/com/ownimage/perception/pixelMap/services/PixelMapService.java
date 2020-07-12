@@ -157,7 +157,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setNode(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NonNull Pixel pixel,
             boolean pValue) {
         var result = pixelMap;
@@ -171,7 +171,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setData(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull Pixel pixel,
             boolean pState,
             byte pValue) {
@@ -184,11 +184,11 @@ public class PixelMapService {
             }
             return pixelMap.withData(pixelMap.data().set(x, pixel.getY(), newValue));
         }
-        return pixelMap;
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
     }
 
     public @NotNull ImmutablePixelMapData nodeAdd(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NonNull Pixel pixel) {
         var x = pixel.getX(); var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -211,7 +211,7 @@ public class PixelMapService {
     }
 
     public int countEdgeNeighboursTransitions(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NonNull Pixel pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
@@ -659,15 +659,17 @@ public class PixelMapService {
     }
 
     public Tuple2<ImmutablePixelMapData, Boolean> calcIsNode(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull Pixel pixel) {
         boolean shouldBeNode = false;
+        var pixelMapResult = pixelMap;
         if (pixelService.isEdge(pixelMap, pixel.toIntegerPoint())) {
             // here we use transitions to eliminate double counting connected neighbours
             // also note the the number of transitions is twice the number of neighbours
             int transitionCount = countEdgeNeighboursTransitions(pixelMap, pixel);
             if (transitionCount != 4) {
                 shouldBeNode = true;
+                pixelMapResult = setNode(pixelMap, pixel, true);
             }
         }
         return new Tuple2<>(setNode(pixelMap, pixel, shouldBeNode), shouldBeNode);
