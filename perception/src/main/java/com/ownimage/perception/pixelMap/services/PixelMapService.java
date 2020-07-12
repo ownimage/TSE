@@ -190,15 +190,23 @@ public class PixelMapService {
     public @NotNull ImmutablePixelMapData nodeAdd(
             @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
+        var x = pixel.getX(); var y = pixel.getY();
+        var oldValue = pixelMap.data().get(x, y);
+        var newValue = (byte)(oldValue |  NODE);
         return pixelMap.withNodes(
-                pixelMap.nodes().put(getTrueIntegerPoint(pixel), new Node(pixel)));
+                pixelMap.nodes().put(getTrueIntegerPoint(pixel), new Node(pixel)))
+                .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public @NotNull ImmutablePixelMapData nodeRemove(
             @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
+        var x = pixel.getX(); var y = pixel.getY();
+        var oldValue = pixelMap.data().get(x, y);
+        var newValue = (byte)(oldValue & (ALL ^ NODE));
         return pixelMap.withNodes(
-                pixelMap.nodes().remove(getTrueIntegerPoint(pixel)));
+                pixelMap.nodes().remove(getTrueIntegerPoint(pixel)))
+                .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public int countEdgeNeighboursTransitions(
@@ -347,23 +355,20 @@ public class PixelMapService {
     public ImmutablePixelMapData actionDeletePixelChain(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<Pixel> pixels) {
-        var pm = pixelMapMappingService.toPixelMap(pixelMap, null);
         var clone = StrongReference.of(pixelMap.withAutoTrackChanges(false));
         pixels.stream()
                 .filter(p -> pixelService.isEdge(clone.get(), p))
                 .forEach(p -> getPixelChains(clone.get(), p)
                         .forEach(pc -> {
                             // TODO in the implementation of the method below make the parameter immutable
-                            clone.set(clearInChainAndVisitedThenSetEdge(clone.get(), pc));
+                            clone.update(c -> clearInChainAndVisitedThenSetEdge(c, pc));
                             pixelChainService.getStartNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> c.withNodes(clone.get().nodes().remove(n))));
+                                    .ifPresent(n -> clone.update(c -> nodeRemove(c, n)));
                             pixelChainService.getEndNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> c.withNodes(clone.get().nodes().remove(n))));
+                                    .ifPresent(n -> clone.update(c -> nodeRemove(c, n)));
                             clone.update(c -> c.withPixelChains(c.pixelChains().remove(pc)));
                             clone.update(c -> indexSegments(c, pc, false));
-//                            pixelChainService.indexSegments(pm, pc, false);
                             clone.update(c -> indexSegments(c, pc, false));
-                            int x = 0;
                         }));
         return clone.get().withAutoTrackChanges(true);
     }
@@ -650,5 +655,20 @@ public class PixelMapService {
      */
     public double aspectRatio(@NotNull PixelMapData pixelMap) {
         return (double) pixelMap.width() / pixelMap.height();
+    }
+
+    public Tuple2<ImmutablePixelMapData, Boolean> calcIsNode(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel) {
+        boolean shouldBeNode = false;
+        if (pixelService.isEdge(pixelMap, pixel.toIntegerPoint())) {
+            // here we use transitions to eliminate double counting connected neighbours
+            // also note the the number of transitions is twice the number of neighbours
+            int transitionCount = countEdgeNeighboursTransitions(pixelMap, pixel);
+            if (transitionCount != 4) {
+                shouldBeNode = true;
+            }
+        }
+        return new Tuple2<>(setNode(pixelMap, pixel, shouldBeNode), shouldBeNode);
     }
 }

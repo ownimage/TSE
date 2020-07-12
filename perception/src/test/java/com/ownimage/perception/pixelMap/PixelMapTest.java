@@ -148,6 +148,7 @@ public class PixelMapTest {
                 "E    E    "
         };
         PixelMap pixelMap = Utility.createMap(input);
+        System.out.println(pixelMap.getData().get(2, 0));
         // WHEN
         pixelMap.process02_thin(null);
         // THEN

@@ -23,6 +23,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
 import lombok.Getter;
@@ -62,11 +63,13 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private static PixelMapService pixelMapService;
+    private static PixelMapMappingService pixelMapMappingService;
     private static PixelChainService pixelChainService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
         pixelMapService = defaultServices.getPixelMapService();
+        pixelMapMappingService = defaultServices.getPixelMapMappingService();
         pixelChainService = defaultServices.getPixelChainService();
     }
 
@@ -380,11 +383,13 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
     private void nodeRemove(IntegerPoint pIntegerPoint) {
-        Node node = mNodes.get(pIntegerPoint);
-        if (node == null) {
-            //  throw new RuntimeException("Node to be removed does not already exist");
-        }
-        mNodes = mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
+//        Node node = mNodes.get(pIntegerPoint);
+//        if (node == null) {
+//            //  throw new RuntimeException("Node to be removed does not already exist");
+//        }
+//        mNodes = mNodes.remove(getTrueIntegerPoint(pIntegerPoint));
+//        mData = mData.set()
+        setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), new Pixel(pIntegerPoint)));
     }
 
     @Deprecated // already moved to PixelMapService
@@ -621,8 +626,10 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     public void process03_generateNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         forEachPixel(pixel -> {
-            if (pixel.calcIsNode(this)) {
-                nodeAdd(pixel);
+            var calsIsNodeResult = pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pixel);
+            setValuesFrom(calsIsNodeResult._1);
+            if (calsIsNodeResult._2) {
+                setValuesFrom(pixelMapService.nodeAdd(calsIsNodeResult._1, pixel));
             }
         });
     }
@@ -643,10 +650,10 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
             setNode(pPixel, false);
         }
         setData(pPixel, pValue, EDGE);
-        calcIsNode(pPixel);
+        setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pPixel)._1);
         pPixel.getNeighbours().forEach(p -> {
             thin(p);
-            calcIsNode(p);
+            setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), p)._1);
         });
         thin(pPixel);
         if (mAutoTrackChanges) {
@@ -721,7 +728,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         double tolerance = getLineTolerance() / getHeight();
         double lineCurvePreference = getLineCurvePreference();
         pPixels.forEach(pixel -> pixelMapService.getPixelChains(this, pixel).forEach(pc -> {
-            setData(pixelMapService.pixelChainRemove(this, pc));
+            setValuesFrom(pixelMapService.pixelChainRemove(this, pc));
             pc.getPixels().stream().forEach(p -> {
                 this.setInChain(p, false);
                 this.setVisited(p, false);
@@ -740,7 +747,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }));
     }
 
-    private void setData(ImmutablePixelMapData other) {
+    private void setValuesFrom(ImmutablePixelMapData other) {
         if (m360 != other.is360() || mWidth != other.width() || mHeight != other.height()) {
             throw new IllegalStateException("Incompatible PixelMaps");
         }
@@ -761,20 +768,6 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
         setData(pPixel, pValue, NODE);
         return pPixel;
-    }
-
-    boolean calcIsNode(Pixel pPixel) {
-        boolean shouldBeNode = false;
-        if (pPixel.isEdge(this)) {
-            // here we use transitions to eliminate double counting connected neighbours
-            // also note the the number of transitions is twice the number of neighbours
-            int transitionCount = pPixel.countEdgeNeighboursTransitions(this);
-            if (transitionCount != 4) {
-                shouldBeNode = true;
-            }
-        }
-        setNode(pPixel, shouldBeNode);
-        return shouldBeNode;
     }
 
     public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
@@ -817,7 +810,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
                 .forEach(pixel -> {
                     pixel.setEdge(this, false);
                     pixel.allEdgeNeighbours(this)
-                            .forEach(pPixel -> pPixel.calcIsNode(this));
+                            .forEach(pPixel -> setValuesFrom(pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(this), pPixel)._1));
                 });
     }
 
@@ -908,7 +901,7 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
      * @param pPixelChain
      */
     synchronized void removePixelChain(PixelChain pPixelChain) {
-        setData(pixelMapService.pixelChainRemove(this, pPixelChain));
+        setValuesFrom(pixelMapService.pixelChainRemove(this, pPixelChain));
         pixelChainService.getStartNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
         pixelChainService.getEndNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
     }
@@ -975,12 +968,13 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         }
         boolean canEliminate = false;
         for (int[] set : eliminate) {
-            canEliminate |= pPixel.getNeighbour(set[0]).isEdge(this) && pPixel.getNeighbour(set[1]).isEdge(this) &&
-                    !pPixel.getNeighbour(set[2]).isEdge(this);
+            canEliminate |= pPixel.getNeighbour(set[0]).isEdge(this)
+                    && pPixel.getNeighbour(set[1]).isEdge(this)
+                    && !pPixel.getNeighbour(set[2]).isEdge(this);
         }
         if (canEliminate) {
             pPixel.setEdge(this, false);
-            nodeRemove(pPixel);
+            setValuesFrom(pixelMapService.nodeRemove(pixelMapMappingService.toImmutablePixelMapData(this), pPixel));
         }
         return canEliminate;
     }

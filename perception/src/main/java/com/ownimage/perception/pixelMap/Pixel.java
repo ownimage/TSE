@@ -68,10 +68,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return allNeighbours;
     }
 
-    public boolean calcIsNode(PixelMap pPixelMap) {
-        return pPixelMap.calcIsNode(this);
-    }
-
     private synchronized void calcUHVWMidPoint(int height) {
         double y = (getY() + 0.5d) / height;
         double x = (getX() + 0.5d) / height;
