@@ -10,6 +10,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import io.vavr.Tuple2;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 @Value.Immutable
 public interface PixelMapData {
@@ -59,4 +60,13 @@ public interface PixelMapData {
         return false;
     }
 
+    ImmutablePixelMapData withData(@NotNull ImmutableMap2D<Byte> data);
+
+    ImmutablePixelMapData withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);
+
+    ImmutablePixelMapData withPixelChains(@NotNull ImmutableSet<PixelChain> pixelChains);
+
+    ImmutablePixelMapData withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex);
+
+    ImmutablePixelMapData withAutoTrackChanges(boolean autoTrackChanges);
 }

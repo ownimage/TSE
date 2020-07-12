@@ -103,7 +103,7 @@ public class PixelMapService {
                         }
                     }
                 }
-                pixelMap = pixelMap.withData(data);
+                pixelMap = new PixelMap(pixelMap.withData(data), pixelMap.mTransformSource);
                 logger.info("mData cnt = " + cnt);
             }
             // mPixelChains
@@ -199,7 +199,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData nodeRemove(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NonNull Pixel pixel) {
         var x = pixel.getX();
         var y = pixel.getY();

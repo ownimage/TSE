@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Test;
 
@@ -13,6 +14,7 @@ public class PixelTest {
 
     private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
+    private PixelService pixelService = Services.getDefaultServices().getPixelService();
 
 //    @BeforeClass
 //    public static void setUpBeforeClass() throws Exception {
@@ -254,11 +256,13 @@ public class PixelTest {
         Pixel underTest = pixelMap.getPixelAt(0, 2);
 
         // WHEN
-        boolean n = pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(pixelMap), underTest)._2;
+        var actual = pixelMapService.calcIsNode(pixelMapMappingService.toImmutablePixelMapData(pixelMap), underTest);
+        boolean n = actual._2;
+        var finalPM = actual._1;
 
         // THEN
         assertTrue(n);
-        assertTrue(underTest.isNode(pixelMap));
+        assertTrue(pixelService.isNode(finalPM, underTest));
     }
 
     @Test

@@ -21,6 +21,7 @@ import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
@@ -58,7 +59,7 @@ import java.util.stream.Stream;
  * <br/>     +-- Vertex
  * </code>
  */
-public class PixelMap implements Serializable, PixelConstants, com.ownimage.perception.pixelMap.immutable.PixelMapData {
+public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
@@ -130,6 +131,24 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         mPixelChains = pFrom.mPixelChains;
         mSegmentIndex = pFrom.mSegmentIndex;
         mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
+    }
+
+    public PixelMap(
+            @NotNull PixelMapData from,
+    @NotNull IPixelMapTransformSource transformSource) {
+        mVersion = 0;
+        setWidth(from.width());
+        setHeight(from.height());
+        m360 = from.is360();
+        mTransformSource = transformSource;
+        mAutoTrackChanges = from.autoTrackChanges();
+        mAspectRatio = (double) mWidth / mHeight;
+        mSegmentCount = from.segmentCount();
+        mData = from.data();
+        mNodes = from.nodes();
+        mPixelChains = from.pixelChains();
+        mSegmentIndex = from.segmentIndex();
+        mUHVWHalfPixel = new Point(0.5d * mAspectRatio / mWidth, 0.5d / mHeight);
     }
 
     @Deprecated
@@ -1016,16 +1035,14 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
     }
 
 
-    public PixelMap withData(@NotNull ImmutableMap2D<Byte> data) {
+    public ImmutablePixelMapData withData(@NotNull ImmutableMap2D<Byte> data) {
         if (data.width() != width() || data.height() != height()) {
             var msg = String.format("PixelMap wxh = %sx%s, data wxh = %sx%s",
                     width(), height(), data.width(), data.height());
             throw new IllegalArgumentException(msg);
         }
 
-        var clone = new PixelMap(this);
-        clone.mData = data;
-        return clone;
+        return ImmutablePixelMapData.copyOf(this).withData(data);
     }
 
     @Override
@@ -1046,22 +1063,16 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
 //    }
 // --Commented out by Inspection STOP (06/07/2020 12:58)
 
-    public PixelMap withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
-        var clone = new PixelMap(this);
-        clone.mNodes = mNodes;
-        return clone;
+    public ImmutablePixelMapData withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
+        return ImmutablePixelMapData.copyOf(this).withNodes(nodes);
     }
 
-    public PixelMap withPixelChains(Collection<PixelChain> pixelChains) {
-        var clone = new PixelMap(this);
-        clone.mPixelChains = new ImmutableSet<PixelChain>().addAll(pixelChains);
-        return clone;
+    public ImmutablePixelMapData withPixelChains(ImmutableSet<PixelChain> pixelChains) {
+        return ImmutablePixelMapData.copyOf(this).withPixelChains(pixelChains);
     }
 
-    public PixelMap withSegmentIndex(Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex) {
-        var clone = new PixelMap(this);
-        clone.mSegmentIndex = segmentIndex;
-        return clone;
+    public ImmutablePixelMapData withSegmentIndex(Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex) {
+        return ImmutablePixelMapData.copyOf(this).withSegmentIndex(segmentIndex);
     }
 
     public PixelMap withSegmentCount(int segmentCount) {
@@ -1090,10 +1101,8 @@ public class PixelMap implements Serializable, PixelConstants, com.ownimage.perc
         return mAutoTrackChanges;
     }
 
-    public PixelMap withAutoTrackChanges(boolean autoTrackChanges) {
-        var clone = new PixelMap(this);
-        clone.mAutoTrackChanges = autoTrackChanges;
-        return clone;
+    public ImmutablePixelMapData withAutoTrackChanges(boolean autoTrackChanges) {
+        return ImmutablePixelMapData.copyOf(this).withAutoTrackChanges(autoTrackChanges);
     }
 
     @Override

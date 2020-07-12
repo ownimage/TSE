@@ -27,14 +27,8 @@ public class PixelMapMappingService {
     }
 
     public PixelMap toPixelMap(
-            @NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMapData,
+            @NotNull PixelMapData pixelMapData,
             @Nullable IPixelMapTransformSource transformSource) {
-        return new PixelMap(pixelMapData.width(), pixelMapData.height(), pixelMapData.is360(), transformSource)
-                .withData(pixelMapData.data())
-                .withNodes(pixelMapData.nodes())
-                .withPixelChains(pixelMapData.pixelChains().toCollection())
-                .withSegmentIndex(pixelMapData.segmentIndex())
-                .withSegmentCount(pixelMapData.segmentCount())
-                .withAutoTrackChanges(pixelMapData.autoTrackChanges());
+        return new PixelMap(pixelMapData, transformSource);
     }
 }
