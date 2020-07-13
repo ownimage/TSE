@@ -723,7 +723,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }));
     }
 
-    private void setValuesFrom(ImmutablePixelMapData other) {
+    public void setValuesFrom(ImmutablePixelMapData other) {
         if (m360 != other.is360() || mWidth != other.width() || mHeight != other.height()) {
             throw new IllegalStateException("Incompatible PixelMaps");
         }

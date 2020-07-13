@@ -8,6 +8,7 @@ import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -19,10 +20,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
@@ -211,22 +216,22 @@ public class PixelMapApproximationService {
     }
 
 
-        public @NotNull ImmutablePixelMapData calcIsNode (
-                @NotNull ImmutablePixelMapData pixelMap,
-                @NonNull Pixel pixel){
-            boolean shouldBeNode = false;
-            if (pixelService.isEdge(pixelMap, pixel)) {
-                // here we use transitions to eliminate double counting connected neighbours
-                // also note the the number of transitions is twice the number of neighbours
-                int transitionCount = pixelMapService.countEdgeNeighboursTransitions(pixelMap, pixel);
-                if (transitionCount != 4) {
-                    shouldBeNode = true;
-                }
+    public @NotNull ImmutablePixelMapData calcIsNode (
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NonNull Pixel pixel){
+        boolean shouldBeNode = false;
+        if (pixelService.isEdge(pixelMap, pixel)) {
+            // here we use transitions to eliminate double counting connected neighbours
+            // also note the the number of transitions is twice the number of neighbours
+            int transitionCount = pixelMapService.countEdgeNeighboursTransitions(pixelMap, pixel);
+            if (transitionCount != 4) {
+                shouldBeNode = true;
             }
-            return pixelMapService.setNode(pixelMap, pixel, shouldBeNode);
         }
+        return pixelMapService.setNode(pixelMap, pixel, shouldBeNode);
+    }
 
-    public ImmutablePixelMapData actionProcess(@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver) {
+    public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
             SplitTimer.split("PixelMap actionProcess() start");
 
@@ -238,60 +243,60 @@ public class PixelMapApproximationService {
             pixelMap.validate();
             logger.info("############## removeBristles done");
 
-                pixelMap.process04a_removeLoneNodes(pProgressObserver);
-                pixelMap.validate();
-                logger.info("############## removeLoneNodes done");
+            pixelMap.process04a_removeLoneNodes(pProgressObserver);
+            pixelMap.validate();
+            logger.info("############## removeLoneNodes done");
 
-                pixelMap.process05_generateChains(pProgressObserver);
-                pixelMap.validate();
-                logger.info("############## generateChains done");
+            pixelMap.process05_generateChains(pProgressObserver);
+            pixelMap.validate();
+            logger.info("############## generateChains done");
 
-                pixelMap.process05a_findLoops(pProgressObserver);
-                pixelMap.validate();
-                logger.info("############## findLoops done");
+            pixelMap.process05a_findLoops(pProgressObserver);
+            pixelMap.validate();
+            logger.info("############## findLoops done");
 
-                var pegs = new Object[]{
-                        IPixelChain.PegCounters.RefineCornersAttempted,
-                        IPixelChain.PegCounters.RefineCornersSuccessful
-                };
-                pixelMap.getPegCounter().clear(pegs);
-                pixelMap.process06_straightLinesRefineCorners(pProgressObserver, pixelMap.mTransformSource.getLineTolerance() / pixelMap.mTransformSource.getHeight());
-                pixelMap.validate();
-                logger.info("############## straightLinesRefineCorners done");
+            var pegs = new Object[]{
+                    IPixelChain.PegCounters.RefineCornersAttempted,
+                    IPixelChain.PegCounters.RefineCornersSuccessful
+            };
+            pixelMap.getPegCounter().clear(pegs);
+            pixelMap.process06_straightLinesRefineCorners(pProgressObserver, pixelMap.mTransformSource.getLineTolerance() / pixelMap.mTransformSource.getHeight());
+            pixelMap.validate();
+            logger.info("############## straightLinesRefineCorners done");
 
-                logger.info(pixelMap.getPegCounter().getString(pegs));
-                pixelMap.process07_mergeChains(pProgressObserver);
-                pixelMap.validate();
-                logger.info("############## process07_mergeChains done");
+            logger.info(pixelMap.getPegCounter().getString(pegs));
+            pixelMap.process07_mergeChains(pProgressObserver);
+            pixelMap.validate();
+            logger.info("############## process07_mergeChains done");
 
-                pegs = new Object[]{
-                        IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
-                        IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
-                        IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
-                        IPixelChain.PegCounters.MidSegmentEatForwardSuccessful,
-                        IPixelChain.PegCounters.refine01FirstSegmentAttempted,
-                        IPixelChain.PegCounters.refine01FirstSegmentSuccessful
-                };
-                pixelMap.getPegCounter().clear(pegs);
-                pixelMap.process08_refine(pProgressObserver);
-                logger.info(pixelMap.getPegCounter().getString(pegs));
-                pixelMap.validate();
-                logger.info("############## process08_refine done");
-                // // reapproximate(null, mTransformSource.getLineTolerance());
+            pegs = new Object[]{
+                    IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
+                    IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
+                    IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
+                    IPixelChain.PegCounters.MidSegmentEatForwardSuccessful,
+                    IPixelChain.PegCounters.refine01FirstSegmentAttempted,
+                    IPixelChain.PegCounters.refine01FirstSegmentSuccessful
+            };
+            pixelMap.getPegCounter().clear(pegs);
+            pixelMap.process08_refine(pProgressObserver);
+            logger.info(pixelMap.getPegCounter().getString(pegs));
+            pixelMap.validate();
+            logger.info("############## process08_refine done");
+            // // reapproximate(null, mTransformSource.getLineTolerance());
 //                pixelMap.validate();
 //                logger.info("############## validate done");
-                //process04a_removeLoneNodes();
-                pixelMap.indexSegments();
-                logger.info("############## indesSegments done");
-                pixelMap.validate();
-                //
-            } catch (Exception pEx) {
-                logger.info(() -> "pEx");
-                Framework.logThrowable(logger, Level.INFO, pEx);
-            } finally {
-                // pProgress.hideProgressBar();
-                SplitTimer.split("PixelMap actionProcess() end");
+            //process04a_removeLoneNodes();
+            pixelMap.indexSegments();
+            logger.info("############## indexSegments done");
+            pixelMap.validate();
+            //
+        } catch (Exception pEx) {
+            logger.info(() -> "pEx");
+            Framework.logThrowable(logger, Level.INFO, pEx);
+        } finally {
+            // pProgress.hideProgressBar();
+            SplitTimer.split("PixelMap actionProcess() end");
         }
-            return ImmutablePixelMapData.copyOf(pixelMap).withAutoTrackChanges(true);
-        }
+        return pixelMap.withAutoTrackChanges(true);
     }
+}

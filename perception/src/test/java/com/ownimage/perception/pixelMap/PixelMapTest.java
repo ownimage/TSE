@@ -490,7 +490,7 @@ public class PixelMapTest {
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, null));
         pixelMap = pixelMap.actionPixelOn(new Pixel(3, 11).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(4, 11).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(5, 12).add(offset));
