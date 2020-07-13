@@ -58,7 +58,7 @@ import java.util.stream.Stream;
  * <br/>     +-- Vertex
  * </code>
  */
-public class PixelMap implements Serializable, PixelConstants, PixelMapData {
+public class PixelMap extends PixelMapBase implements Serializable, PixelConstants, PixelMapData {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
@@ -71,34 +71,9 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         pixelChainService = defaultServices.getPixelChainService();
     }
 
-    @Getter
-    private final boolean m360;
-    /**
-     * The Aspect ratio of the image. An aspect ration of 2 means that the image is twice a wide as it is high.
-     */
-    private final double mAspectRatio;
-    private final Point mUHVWHalfPixel;
-    public  IPixelMapTransformSource mTransformSource;
-    private int mWidth;
-    private int mHeight;
-    private int mVersion = 0;
-    @Getter
-    private ImmutableMap2D<Byte> mData;
-    private ImmutableMap<IntegerPoint, Node> mNodes = new ImmutableMap<>();
-    @Getter
-    private ImmutableSet<PixelChain> mPixelChains = new ImmutableSet<>();
-    @Getter
-    private Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> mSegmentIndex;
 
-    private int mSegmentCount;
 
-    /**
-     * Means that the PixelMap will add/remove/reapproximate PixelChains as nodes are added and removed.
-     * This is turned off whilst the bulk processing is running. // TODO should this extend to the conversion of Pixels to Nodes etc.
-     */
-    @Getter
-            // privacy changed to ease migration
-    public boolean mAutoTrackChanges = false;
+
 
     public PixelMap(int pWidth, int pHeight, boolean p360, IPixelMapTransformSource pTransformSource) {
         setWidth(pWidth);
@@ -153,10 +128,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         return mNodes;
     }
 
-    @Override
-    public int segmentCount() {
-        return mSegmentCount;
-    }
+
 
     public ImmutableSet<PixelChain> getPixelChains() {
         return mPixelChains;
@@ -337,9 +309,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
         }
     }
 
-    public int getHeight() {
-        return mHeight;
-    }
+
 
     private void setHeight(int pHeight) {
         mHeight = pHeight;
@@ -1032,25 +1002,9 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
     }
 
 
-    public ImmutablePixelMapData withData(@NotNull ImmutableMap2D<Byte> data) {
-        if (data.width() != width() || data.height() != height()) {
-            var msg = String.format("PixelMap wxh = %sx%s, data wxh = %sx%s",
-                    width(), height(), data.width(), data.height());
-            throw new IllegalArgumentException(msg);
-        }
 
-        return ImmutablePixelMapData.copyOf(this).withData(data);
-    }
 
-    @Override
-    public int width() {
-        return mWidth;
-    }
 
-    @Override
-    public int height() {
-        return mHeight;
-    }
 
 // --Commented out by Inspection START (06/07/2020 12:58):
 //    public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
@@ -1060,50 +1014,7 @@ public class PixelMap implements Serializable, PixelConstants, PixelMapData {
 //    }
 // --Commented out by Inspection STOP (06/07/2020 12:58)
 
-    public ImmutablePixelMapData withNodes(ImmutableMap<IntegerPoint, Node> nodes) {
-        return ImmutablePixelMapData.copyOf(this).withNodes(nodes);
-    }
 
-    public ImmutablePixelMapData withPixelChains(ImmutableSet<PixelChain> pixelChains) {
-        return ImmutablePixelMapData.copyOf(this).withPixelChains(pixelChains);
-    }
 
-    public ImmutablePixelMapData withSegmentIndex(Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex) {
-        return ImmutablePixelMapData.copyOf(this).withSegmentIndex(segmentIndex);
-    }
 
-    public PixelMap withSegmentCount(int segmentCount) {
-        var clone = new PixelMap(this);
-        clone.mSegmentCount = segmentCount;
-        return clone;
-    }
-
-    @Override
-    public ImmutableMap<IntegerPoint, Node> nodes() {
-        return mNodes;
-    }
-
-    @Override
-    public ImmutableSet<PixelChain> pixelChains() {
-        return mPixelChains;
-    }
-
-    @Override
-    public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex() {
-        return mSegmentIndex;
-    }
-
-    @Override
-    public boolean autoTrackChanges() {
-        return mAutoTrackChanges;
-    }
-
-    public ImmutablePixelMapData withAutoTrackChanges(boolean autoTrackChanges) {
-        return ImmutablePixelMapData.copyOf(this).withAutoTrackChanges(autoTrackChanges);
-    }
-
-    @Override
-    public ImmutableMap2D<Byte> data() {
-        return mData;
-    }
 }

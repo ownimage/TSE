@@ -8,7 +8,6 @@ import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -20,14 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
@@ -61,8 +56,7 @@ public class PixelMapApproximationService {
         result = process02_thin(result, transformSource, progress);
         logger.info("############## thin done");
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
-        actionProcess(mutable, progress);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        return actionProcess(mutable, progress);
     }
 
     public @NotNull ImmutablePixelMapData process01_reset(
@@ -232,17 +226,17 @@ public class PixelMapApproximationService {
             return pixelMapService.setNode(pixelMap, pixel, shouldBeNode);
         }
 
-        public PixelMap actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
-            try {
-                SplitTimer.split("PixelMap actionProcess() start");
+    public ImmutablePixelMapData actionProcess(@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver) {
+        try {
+            SplitTimer.split("PixelMap actionProcess() start");
 
-                pixelMap.process03_generateNodes(pProgressObserver);
-                pixelMap.validate();
-                logger.info("############## generateNodes done");
+            pixelMap.process03_generateNodes(pProgressObserver);
+            pixelMap.validate();
+            logger.info("############## generateNodes done");
 
-                pixelMap.process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
-                pixelMap.validate();
-                logger.info("############## removeBristles done");
+            pixelMap.process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
+            pixelMap.validate();
+            logger.info("############## removeBristles done");
 
                 pixelMap.process04a_removeLoneNodes(pProgressObserver);
                 pixelMap.validate();
@@ -297,8 +291,7 @@ public class PixelMapApproximationService {
             } finally {
                 // pProgress.hideProgressBar();
                 SplitTimer.split("PixelMap actionProcess() end");
-                pixelMap.mAutoTrackChanges = true;
-            }
-            return pixelMap;
+        }
+            return ImmutablePixelMapData.copyOf(pixelMap).withAutoTrackChanges(true);
         }
     }

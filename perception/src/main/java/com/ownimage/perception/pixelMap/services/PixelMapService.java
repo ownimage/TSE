@@ -127,7 +127,7 @@ public class PixelMapService {
                 objectBytes = null;
                 logger.info("mAllNodes size() = " + pixelMap.nodeCount());
                 logger.info("mPixelChains size() = " + pixelMap.getPixelChains().size());
-                logger.info("mSegmentCount = " + pixelMap.getSegmentCount());
+                logger.info("mSegmentCount = " + pixelMap.segmentCount());
             }
         } catch (Exception pEx) {
             logger.log(Level.SEVERE, "PixelMap.read()", pEx);
