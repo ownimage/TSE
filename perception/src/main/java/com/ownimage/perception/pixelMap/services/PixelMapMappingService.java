@@ -28,7 +28,7 @@ public class PixelMapMappingService {
 
     public PixelMap toPixelMap(
             @NotNull PixelMapData pixelMapData,
-            @Nullable IPixelMapTransformSource transformSource) {
+            @NotNull IPixelMapTransformSource transformSource) {
         return new PixelMap(pixelMapData, transformSource);
     }
 }

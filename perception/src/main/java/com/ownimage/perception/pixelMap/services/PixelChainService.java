@@ -406,7 +406,7 @@ public class PixelChainService {
     }
 
     @Deprecated // this modifies the pixelmap there is a better version in
-    public PixelChain indexSegments(PixelMap pixelMap, PixelChain pixelChain, boolean add) {
+    public PixelChain indexSegments (PixelMap pixelMap, PixelChain pixelChain, boolean add) {
         if (add) {
             val builder = builder(pixelChain);
             double[] startPosition = {0.0d};

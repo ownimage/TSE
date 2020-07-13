@@ -62,7 +62,7 @@ public class PixelChainTest {
 
         // WHEN
         pixelMap.process05_generateChains(null);
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
 
         // THEN
         PixelChain chain = pixelMap.streamPixelChains().findFirst().orElseThrow();

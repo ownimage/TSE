@@ -125,17 +125,17 @@ public class PixelMapService {
                 ois = null;
                 objectString = null;
                 objectBytes = null;
-                logger.info("mAllNodes size() = " + pixelMap.nodeCount());
-                logger.info("mPixelChains size() = " + pixelMap.getPixelChains().size());
+                logger.info("mAllNodes size() = " + pixelMap.nodes().size());
+                logger.info("mPixelChains size() = " + pixelMap.pixelChains().size());
                 logger.info("mSegmentCount = " + pixelMap.segmentCount());
             }
         } catch (Exception pEx) {
             logger.log(Level.SEVERE, "PixelMap.read()", pEx);
         }
 
-        logger.info("node count = " + pixelMap.nodeCount());
-        logger.info("pixelChain count = " + pixelMap.getPixelChains().size());
-        logger.info("segment count = " + pixelMap.getSegmentCount());
+        logger.info("node count = " + pixelMap.nodes().size());
+        logger.info("pixelChain count = " + pixelMap.pixelChains().size());
+        logger.info("segment count = " + pixelMap.segmentCount());
 
         Framework.logExit(logger);
         return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
@@ -373,6 +373,7 @@ public class PixelMapService {
                         }));
         return clone.get().withAutoTrackChanges(true);
     }
+
 
     public ImmutablePixelMapData indexSegments(
             @NotNull ImmutablePixelMapData pixelMap,

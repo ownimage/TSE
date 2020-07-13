@@ -16,7 +16,6 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
-import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.app.Services;
@@ -26,7 +25,6 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -107,7 +105,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     public PixelMap(
             @NotNull PixelMapData from,
-    @NotNull IPixelMapTransformSource transformSource) {
+            @NotNull IPixelMapTransformSource transformSource) {
         mVersion = 0;
         setWidth(from.width());
         setHeight(from.height());
@@ -123,16 +121,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / mWidth, 0.5d / mHeight);
     }
 
-    @Deprecated
-    public ImmutableMap<IntegerPoint, Node> getImmutableNodeMap() {
-        return mNodes;
-    }
-
-
-
-    public ImmutableSet<PixelChain> getPixelChains() {
-        return mPixelChains;
-    }
 
     // TODO MUTATOR CHANGED ACCESS
     // Moved tp service

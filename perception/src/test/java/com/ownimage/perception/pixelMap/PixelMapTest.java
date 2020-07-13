@@ -34,6 +34,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PixelMapTest {
 
@@ -365,7 +366,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
     }
 
     @Test
@@ -382,7 +383,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
@@ -404,7 +405,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
@@ -426,7 +427,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Node(7, 1) ]\n", result.toString());
@@ -448,7 +449,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
@@ -470,7 +471,7 @@ public class PixelMapTest {
         // WHEN
         pixelMapApproximationService.actionProcess(pixelMap, null);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
@@ -526,7 +527,7 @@ public class PixelMapTest {
         pixelMap = pixelMap.actionPixelOn(new Pixel(1, 10).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(1, 11).add(offset));
         pixelMap = pixelMap.actionPixelOn(new Pixel(2, 11).add(offset));
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
     }
 
     @Test
@@ -602,7 +603,7 @@ public class PixelMapTest {
                 new Pixel(6, 8)
         );
         pixelMap = pixelMap.actionPixelOn(pixels);
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
     }
 
     @Test
@@ -629,7 +630,7 @@ public class PixelMapTest {
                 new Pixel(6, 9)
         );
         pixelMap = pixelMap.actionPixelOn(pixels);
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
     }
 
     @Test
@@ -638,7 +639,7 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(20, 20);
         pixelMap = addChain(pixelMap, Utility.getDefaultTransformSource(20), new Pixel(3, 4), chainS1);
         // THEN
-        assertEquals(1, pixelMap.getPixelChainCount());
+        assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
