@@ -477,9 +477,20 @@ public class PixelMapService {
     public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
-            @NotNull IPixelMapTransformSource source) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionPixelChainApproximateCurvesOnly(pixel);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+            @NotNull IPixelMapTransformSource transformSource) {
+        if (getPixelChains(pixelMap, pixel).isEmpty()) {
+            return pixelMap;
+        }
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        var clone = StrongReference.of(pixelMap);
+        getPixelChains(clone.get(), pixel).forEach(pc -> {
+            clone.update(c -> pixelChainRemove(c, pc));
+            val pc2 = pixelChainService.approximateCurvesOnly(clone.get(), pc, tolerance, lineCurvePreference);
+            clone.update(c -> pixelChainAdd(c, pc2));
+        });
+        //copy.indexSegments();
+        return clone.get();
     }
 
     public ImmutablePixelMapData actionReapproximate(

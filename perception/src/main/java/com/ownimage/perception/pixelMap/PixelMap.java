@@ -105,7 +105,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     public PixelMap(
             @NotNull PixelMapData from,
-            @NotNull IPixelMapTransformSource transformSource) {
+            IPixelMapTransformSource transformSource) {
         mVersion = 0;
         setWidth(from.width());
         setHeight(from.height());
@@ -140,25 +140,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mSegmentIndex = mSegmentIndex.clear();
     }
 
-    public int getPixelChainCount() {
-        return mPixelChains.size();
-    }
-
-    public PixelMap actionPixelChainApproximateCurvesOnly(Pixel pPixel) {
-        if (pixelMapService.getPixelChains(this, pPixel).isEmpty()) {
-            return this;
-        }
-        double tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
-        double lineCurvePreference = getTransformSource().getLineCurvePreference();
-        PixelMap clone = new PixelMap(this);
-        pixelMapService.getPixelChains(clone, pPixel).forEach(pc -> {
-            clone.removePixelChain(pc);
-            val pc2 = pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference);
-            clone.addPixelChain(pc2);
-        });
-        //copy.indexSegments();
-        return clone;
-    }
 
     public String toString() {
         return "PixelMap{mVersion=" + mVersion + "}";
@@ -791,7 +772,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 getNode(pixel).ifPresent(node -> pixelChainsAddAll(generateChains(this, node)));
             }
         });
-        mLogger.info(() -> "Number of chains: " + getPixelChainCount());
+        mLogger.info(() -> "Number of chains: " + pixelChains().size());
     }
 
     public void process06_straightLinesRefineCorners(

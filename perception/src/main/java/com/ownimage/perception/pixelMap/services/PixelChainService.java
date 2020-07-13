@@ -74,7 +74,7 @@ public class PixelChainService {
     }
 
     public PixelChain approximateCurvesOnly(
-            @NotNull PixelMap pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
