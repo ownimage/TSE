@@ -268,7 +268,7 @@ public class PixelChainTest {
         for (Pixel pixel : pixels) {
             pixelChain = pixelChainService.add(pixelChain, pixel);
         }
-        pixelChain = pixelChainService.setEndNode(null, pixelChain, new Node(6, 7));
+        pixelChain = pixelChainService.setEndNode(pixelMap, pixelChain, new Node(6, 7))._2;
         return pixelChain;
     }
 

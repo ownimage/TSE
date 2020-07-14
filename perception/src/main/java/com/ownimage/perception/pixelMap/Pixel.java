@@ -8,6 +8,10 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
+import com.ownimage.perception.pixelMap.services.Services;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,9 +29,12 @@ import java.util.logging.Logger;
  */
 public class Pixel extends IntegerPoint implements PixelConstants {
 
-
     final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
+
+    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    private static PixelService pixelService = Services.getDefaultServices().getPixelService();
+
     private static final IntegerPoint[] mNeighbours = { //
             //
             new IntegerPoint(-1, -1), new IntegerPoint(0, -1), new IntegerPoint(1, -1), //
@@ -120,7 +127,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Neighbours();
     }
 
-    public Vector<Pixel> getNodeNeighbours(PixelMap pPixelMap) {
+    public Vector<Pixel> getNodeNeighbours(PixelMapData pPixelMap) {
         Framework.logEntry(mLogger);
         if (mLogger.isLoggable(Level.FINEST)) {
             mLogger.finest("Pixel = " + this);
@@ -128,7 +135,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
         Vector<Pixel> allNeighbours = new Vector<>();
         for (Pixel pixel : getNeighbours()) {
-            if (pixel.isNode(pPixelMap)) {
+            if (pixelService.isNode(pPixelMap, pixel.toIntegerPoint())) {
                 allNeighbours.add(pixel);
             }
         }
@@ -153,8 +160,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return mUHVW;
     }
 
-    public boolean isEdge(PixelMap pPixelMap) {
-        return pPixelMap.getData(this, EDGE);
+    public boolean isEdge(PixelMapData pPixelMap) {
+        return pixelService.isEdge(pPixelMap, this.toIntegerPoint());
     }
 
     public void setEdge(PixelMap pPixelMap, boolean pValue) {
@@ -171,8 +178,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
                 Math.max(Math.abs(pPixel.getX() - getX()), Math.abs(pPixel.getY() - getY())) < 2;
     }
 
-    public boolean isNode(PixelMap pPixelMap) {
-        return pPixelMap.getData(this, NODE);
+    public boolean isNode(PixelMapData pPixelMap) {
+        return pixelService.isNode(pPixelMap, this.toIntegerPoint());
     }
 
     public boolean isInChain(PixelMap pPixelMap) {
@@ -183,12 +190,12 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pPixelMap.getNode(this);
     }
 
-    public boolean isUnVisitedEdge(PixelMap pPixelMap) {
+    public boolean isUnVisitedEdge(PixelMapData pPixelMap) {
         return isEdge(pPixelMap) && !isVisited(pPixelMap);
     }
 
-    public boolean isVisited(PixelMap pPixelMap) {
-        return pPixelMap.getData(this, VISITED);
+    public boolean isVisited(PixelMapData pPixelMap) {
+        return pixelService.isVisited(pPixelMap, this.toIntegerPoint());
     }
 
     public void setVisited(PixelMap pPixelMap, boolean pValue) {

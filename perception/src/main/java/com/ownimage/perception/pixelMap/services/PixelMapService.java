@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
+import static com.ownimage.perception.pixelMap.PixelConstants.IN_CHAIN;
 import static com.ownimage.perception.pixelMap.PixelConstants.N;
 import static com.ownimage.perception.pixelMap.PixelConstants.NE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
@@ -50,6 +51,7 @@ import static com.ownimage.perception.pixelMap.PixelConstants.NW;
 import static com.ownimage.perception.pixelMap.PixelConstants.S;
 import static com.ownimage.perception.pixelMap.PixelConstants.SE;
 import static com.ownimage.perception.pixelMap.PixelConstants.SW;
+import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
 import static com.ownimage.perception.pixelMap.PixelConstants.W;
 
 public class PixelMapService {
@@ -153,6 +155,23 @@ public class PixelMapService {
             @NotNull boolean isEdge) {
         var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
         var newValue = (byte) (isEdge ? oldValue | EDGE : oldValue & (ALL ^ EDGE));
+        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
+    }
+
+    public @NotNull ImmutablePixelMapData setVisited(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel,
+            @NotNull boolean isVisited) {
+        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
+        var newValue = (byte) (isVisited ? oldValue | VISITED : oldValue & (ALL ^ VISITED));
+        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
+    }
+    public @NotNull ImmutablePixelMapData setInChain(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel,
+            @NotNull boolean isInChain) {
+        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
+        var newValue = (byte) (isInChain ? oldValue | IN_CHAIN : oldValue & (ALL ^ IN_CHAIN));
         return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
     }
 

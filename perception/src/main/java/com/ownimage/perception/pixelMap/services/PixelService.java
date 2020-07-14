@@ -23,6 +23,14 @@ public class PixelService {
         return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.NODE) != 0 : false;
     }
 
+    public boolean isVisited(PixelMapData pixelMap, IntegerPoint integerPoint) {
+        return isVisited(pixelMap, integerPoint.getX(), integerPoint.getY());
+    }
+
+    public boolean isVisited(PixelMapData pixelMap, Integer x, Integer y) {
+        return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.VISITED) != 0 : false;
+    }
+
     public boolean isNode(PixelMapData pixelMap, IntegerPoint integerPoint) {
         return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
     }

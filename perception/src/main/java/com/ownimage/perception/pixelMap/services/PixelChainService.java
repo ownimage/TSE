@@ -10,10 +10,12 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelChainBuilder;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -170,19 +172,19 @@ public class PixelChainService {
     }
 
 
-    public PixelChain setEndNode(@NotNull PixelMap pPixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
-
-        val builder = builder(pixelChain);
+    public Tuple2<ImmutablePixelMapData, PixelChain> setEndNode(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
+        var pixelMapResult = ImmutablePixelMapData.copyOf(pixelMap);
+        var builder = builder(pixelChain);
         builder.changePixels(p -> p.add(pNode));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
         if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
-            builder.getPixel(index).setVisited(pPixelMap, false);
+            pixelMapResult = pixelMapService.setVisited(pixelMapResult, builder.getPixel(index), false);
             builder.changePixels(p -> p.remove(index));
         }
-        return builder.build();
+        return new Tuple2(pixelMapResult, builder.build());
     }
 
     public IPixelChain.Thickness getThickness(
