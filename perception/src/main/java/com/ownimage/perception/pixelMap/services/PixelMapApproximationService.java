@@ -8,7 +8,6 @@ import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -20,14 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
@@ -47,6 +42,7 @@ public class PixelMapApproximationService {
     private final static Logger logger = Framework.getLogger();
 
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
@@ -191,8 +187,9 @@ public class PixelMapApproximationService {
                             .ifPresent(node -> {
                                 // TODO needs to be fixed
                                 var pm = pixelMapMappingService.toPixelMap(pixelMap, transformSource);
-                                var chains = pm.generateChains(pm, node)
-                                        .parallelStream()
+                                var gc = pixelMapChainGenerationService.generateChains(pm, node);
+                                result.set(gc._1);
+                                var chains = gc._2.parallelStream()
                                         .map(pc2 -> pixelChainService.approximate(pixelMap, pc2, tolerance))
                                         .collect(Collectors.toList());
                                 chainsToAdd.addAll(chains);

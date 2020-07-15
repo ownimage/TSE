@@ -7,6 +7,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
@@ -77,7 +78,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
      * @param pPixelMap
      * @param pStartNode the start node
      */
-    public PixelChain(PixelMap pPixelMap, Node pStartNode) {
+    public PixelChain(PixelMapData pPixelMap, Node pStartNode) {
         if (pStartNode == null) {
             throw new IllegalArgumentException("pStartNode must not be null");
         }

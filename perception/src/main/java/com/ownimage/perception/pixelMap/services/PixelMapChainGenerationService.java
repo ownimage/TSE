@@ -1,14 +1,19 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import io.vavr.Tuple2;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,5 +80,28 @@ public class PixelMapChainGenerationService {
             logger.severe("Stack Overflow Error");
             throw new RuntimeException("oops");
         }
+    }
+
+    public Tuple2<ImmutablePixelMapData, Collection<PixelChain>> generateChains(
+            @NotNull PixelMapData pixelMap, @NotNull Node pStartNode) {
+        var pixelMapResult = StrongReference.of(ImmutablePixelMapData.copyOf(pixelMap));
+
+        Vector<PixelChain> chains = new Vector<>();
+        pixelMapResult.update(pmr -> pixelMapService.setVisited(pmr, pStartNode, true));
+        pixelMapResult.update(pmr -> pixelMapService.setInChain(pmr, pStartNode, true));
+        pStartNode.getNeighbours().forEach(neighbour -> {
+            if (neighbour.isNode(pixelMapResult.get())
+                    || neighbour.isEdge(pixelMapResult.get())
+                    && !neighbour.isVisited(pixelMapResult.get())) {
+                PixelChain chain = new PixelChain(pixelMap, pStartNode);
+                var generatedChain = generateChain(pixelMap, pStartNode, neighbour, chain);
+                pixelMapResult.set(generatedChain._1);
+                chain = generatedChain._2;
+                if (pixelChainService.pixelLength(chain) > 2) {
+                    chains.add(chain);
+                }
+            }
+        });
+        return new Tuple2<>(pixelMapResult.get(), chains);
     }
 }

@@ -33,14 +33,12 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -191,24 +189,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         Framework.logExit(mLogger);
     }
 
-    public Collection<PixelChain> generateChains(PixelMap pPixelMap, Node pStartNode) {
-        HashMap x;
-        Vector<PixelChain> chains = new Vector<>();
-        pStartNode.setVisited(this, true);
-        pStartNode.setInChain(this, true);
-        pStartNode.getNeighbours().forEach(neighbour -> {
-            if (neighbour.isNode(this) || neighbour.isEdge(this) && !neighbour.isVisited(this)) {
-                PixelChain chain = new PixelChain(pPixelMap, pStartNode);
-                 var generatedChain = pixelMapChainGenerationService.generateChain(pPixelMap, pStartNode, neighbour, chain);
-                chain = generatedChain._2;
-                setValuesFrom(generatedChain._1);
-                if (pixelChainService.pixelLength(chain) > 2) {
-                    chains.add(chain);
-                }
-            }
-        });
-        return chains;
-    }
+
 
     boolean getData(Pixel pPixel, byte pValue) {
         if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
@@ -485,7 +466,11 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         forEachPixel(pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
                 setNode(pixel, true);
-                getNode(pixel).ifPresent(node -> pixelChainsAddAll(generateChains(this, node)));
+                getNode(pixel).ifPresent(node -> {
+                    var result = pixelMapChainGenerationService.generateChains(this, node);
+                    setValuesFrom(result._1);
+                    pixelChainsAddAll(result._2);
+                });
             }
         });
     }
@@ -575,7 +560,9 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
 
         nodes.stream()
-                .flatMap(this::generateChainsAndApproximate)
+                .map(n -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), n))
+                .peek(r -> setValuesFrom(r._1))
+                .flatMap(r -> r._2)
                 .forEach(this::addPixelChain);
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
@@ -586,19 +573,12 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .filter(p -> pixelMapService.getPixelChains(this, p).isEmpty())
                 .stream()
                 .map(p -> setNode(p, true))
-                .flatMap(p -> generateChainsAndApproximate(new Node(p)))
+                .map(p -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), new Node(p)))
+                .peek(r -> setValuesFrom(r._1))
+                .flatMap(r -> r._2)
                 .forEach(this::addPixelChain);
     }
 
-    // moved to PixelMapApproximationServices
-    private Stream<PixelChain> generateChainsAndApproximate(Node pNode) {
-        double tolerance = getLineTolerance() / getHeight();
-        double lineCurvePreference = getLineCurvePreference();
-        return generateChains(this, pNode)
-                .parallelStream()
-                .map(pc -> pixelChainService.approximate(this, pc, tolerance))
-                .map(pc -> pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference));
-    }
 
     private void trackPixelOn(@NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
@@ -623,7 +603,9 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                     .filter(pPixel1 -> pPixel1.isNode(this))
                     .forEach(chainPixel -> chainPixel.getNode(this)
                             .ifPresent(node -> {
-                                List<PixelChain> chains = generateChains(this, node)
+                                var generatedChains = pixelMapChainGenerationService.generateChains(this, node);
+                                setValuesFrom(generatedChains._1);
+                                var chains = generatedChains._2
                                         .parallelStream()
                                         .map(pc2 -> pixelChainService.approximate(this, pc2, tolerance))
                                         .collect(Collectors.toList());
@@ -707,10 +689,18 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     public void process05_generateChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
-        nodesStream().forEach(node -> pixelChainsAddAll(generateChains(this, node)));
+        nodesStream().forEach(node -> {
+            val gc = pixelMapChainGenerationService.generateChains(this, node);
+            setValuesFrom(gc._1);
+            pixelChainsAddAll(gc._2);
+        });
         forEachPixel(pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
-                getNode(pixel).ifPresent(node -> pixelChainsAddAll(generateChains(this, node)));
+                getNode(pixel).ifPresent(node -> {
+                    var gc = pixelMapChainGenerationService.generateChains(this, node);
+                    setValuesFrom(gc._1);
+                    pixelChainsAddAll(gc._2);
+                });
             }
         });
         mLogger.info(() -> "Number of chains: " + pixelChains().size());

@@ -39,6 +39,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
@@ -58,6 +59,7 @@ public class PixelMapService {
 
     private final static Logger logger = Framework.getLogger();
 
+    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
     private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
@@ -704,5 +706,18 @@ public class PixelMapService {
             }
         }
         return new Tuple2<>(setNode(pixelMap, pixel, shouldBeNode), shouldBeNode);
+    }
+
+    public Tuple2<ImmutablePixelMapData, Stream<PixelChain>> generateChainsAndApproximate(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
+            @NotNull Node pNode) {
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        var result = pixelMapChainGenerationService.generateChains(pixelMap, pNode);
+        var stream =  result._2.parallelStream()
+                .map(pc -> pixelChainService.approximate(pixelMap, pc, tolerance))
+                .map(pc -> pixelChainService.approximateCurvesOnly(pixelMap, pc, tolerance, lineCurvePreference));
+        return new Tuple2<>(result._1, stream);
     }
 }
