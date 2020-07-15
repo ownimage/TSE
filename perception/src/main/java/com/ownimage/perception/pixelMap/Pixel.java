@@ -187,7 +187,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public Optional<Node> getNode(PixelMap pPixelMap) {
-        return pPixelMap.getNode(this);
+        return pixelMapService.getNode(pPixelMap, this);
     }
 
     public boolean isUnVisitedEdge(PixelMapData pPixelMap) {

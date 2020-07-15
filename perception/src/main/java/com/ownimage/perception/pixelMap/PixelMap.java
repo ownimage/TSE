@@ -215,31 +215,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
 
-    private double getMediumLineThickness() {
-        return mTransformSource.getMediumLineThickness();
-    }
-
-    /**
-     * Gets the Node at the PixelPosition if it is a Node either because it is in mNodes or because mData says that it is a Node.
-     *
-     * @param pIntegerPoint the pixel
-     * @return the node
-     */
-    public Optional<Node> getNode(IntegerPoint pIntegerPoint) {
-        // this is because pIntegerPoint might be a Node or Pixel
-        IntegerPoint point = getTrueIntegerPoint(pIntegerPoint);
-        Node node = mNodes.get(point);
-        if (node != null) {
-            return Optional.of(node);
-        }
-        if (new Pixel(point).isNode(this)) {
-            node = new Node(point);
-            mNodes = mNodes.put(point, node);
-            return Optional.of(node);
-        }
-        return Optional.empty();
-    }
-
     private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
         // this is because pIntegerPoint might be a Node or Pixel
         return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
@@ -365,10 +340,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mWidth = pWidth;
     }
 
-    public int getSegmentCount() {
-        return mSegmentCount;
-    }
-
     public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
@@ -466,7 +437,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         forEachPixel(pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
                 setNode(pixel, true);
-                getNode(pixel).ifPresent(node -> {
+                pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var result = pixelMapChainGenerationService.generateChains(this, node);
                     setValuesFrom(result._1);
                     pixelChainsAddAll(result._2);
@@ -631,7 +602,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         forEachPixel(pixel -> {
             if (pixel.isNode(this)) {
-                Node node = getNode(pixel).get();
+                Node node = pixelMapService.getNode(this, pixel).get();
                 if (node.countEdgeNeighbours(this) == 0) {
                     pixel.setEdge(this, false);
                     setNode(pixel, false);
@@ -685,7 +656,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
         forEachPixel(pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
-                getNode(pixel).ifPresent(node -> {
+                pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var gc = pixelMapChainGenerationService.generateChains(this, node);
                     setValuesFrom(gc._1);
                     pixelChainsAddAll(gc._2);
