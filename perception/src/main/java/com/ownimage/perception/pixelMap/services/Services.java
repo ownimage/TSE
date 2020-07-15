@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public interface Services {
 
     @NotNull PixelMapService getPixelMapService();
+    @NotNull PixelMapChainGenerationService pixelMapChainGenerationService();
     @NotNull PixelMapApproximationService getPixelMapApproximationService();
     @NotNull PixelMapTransformService getPixelMapTransformService();
     @NotNull PixelMapMappingService getPixelMapMappingService();
@@ -16,6 +17,7 @@ public interface Services {
 
     static Services getDefaultServices() {
         var pixelMapService = new PixelMapService();
+        var pixelMapChainGenerationService = new PixelMapChainGenerationService();
         var pixelMapApproximationService = new PixelMapApproximationService();
         var pixelMapTransformService = new PixelMapTransformService();
         var pixelMapMappingService = new PixelMapMappingService();
@@ -24,6 +26,7 @@ public interface Services {
         var vertexService = new VertexService();
         return ImmutableServices.builder()
                 .pixelMapService(pixelMapService)
+                .pixelMapChainGenerationService(pixelMapChainGenerationService)
                 .pixelMapApproximationService(pixelMapApproximationService)
                 .pixelMapTransformService(pixelMapTransformService)
                 .pixelMapMappingService(pixelMapMappingService)
