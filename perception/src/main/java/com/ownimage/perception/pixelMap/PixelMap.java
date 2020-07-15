@@ -191,14 +191,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
 
 
-    boolean getData(Pixel pPixel, byte pValue) {
-        if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
-            int x = modWidth(pPixel.getX());
-            return (getValue(x, pPixel.getY()) & pValue) != 0;
-        } else {
-            return false;
-        }
-    }
+
 
 
 
@@ -246,7 +239,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         int x = (int) (pX * getWidth());
         int y = (int) (pY * getHeight());
         y = y == getHeight() ? getHeight() - 1 : y;
-        x = modWidth(x);
+        x = pixelMapService.modWidth(this, x);
         Pixel pixel = getPixelAt(x, y);
         Framework.logExit(mLogger);
         return pixel;
@@ -268,7 +261,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         if (!m360 && (0 > pX || pX >= getWidth())) {
             return Optional.empty();
         }
-        int x = modWidth(pX);
+        int x = pixelMapService.modWidth(this, pX);
         return Optional.of(new Pixel(x, pY));
     }
 
@@ -315,22 +308,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return mUHVWHalfPixel;
     }
 
-    public byte getValue(int pX, int pY) {
-        // TODO change these to Framework checks
-        if (pX < 0) {
-            throw new IllegalArgumentException("pX must be > 0.");
-        }
-        if (pX > getWidth() - 1) {
-            throw new IllegalArgumentException("pX must be less than getWidth() -1. pX = " + pX + ", getWidth() = " + getWidth());
-        }
-        if (pY < 0) {
-            throw new IllegalArgumentException("pY must be > 0.");
-        }
-        if (pY > getHeight() - 1) {
-            throw new IllegalArgumentException("pX must be less than getHeight() -1. pX = " + pX + ", getHeight() = " + getHeight());
-        }
-        return mData.get(pX, pY);
-    }
+
 
     public int getWidth() {
         return mWidth;
@@ -371,25 +349,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, ISegment>>().addAll(segments));
             }
         });
-    }
-
-
-    @Deprecated // already moved to PixelMapService
-    private int modWidth(int pX) {
-        if (0 <= pX && pX < mWidth) {
-            return pX;
-        }
-        if (m360) {
-            if (pX < 0) {
-                return modWidth(pX + mWidth);
-            }
-            return modWidth(pX - mWidth);
-        } else {
-            if (pX < 0) {
-                return 0;
-            }
-            return mWidth - 1;
-        }
     }
 
     private void reportProgress(IProgressObserver pProgressObserver, String pProgressString, int pPercent) {
@@ -465,11 +424,11 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
     void setVisited(Pixel pPixel, boolean pValue) {
-        setData(pPixel, pValue, VISITED);
+        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, VISITED));
     }
 
     void setInChain(Pixel pPixel, boolean pValue) {
-        setData(pPixel, pValue, IN_CHAIN);
+        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, IN_CHAIN));
     }
 
     void setEdge(@NonNull Pixel pPixel, boolean pValue) {
@@ -479,7 +438,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         if (pPixel.isNode(this) && !pValue) {
             setNode(pPixel, false);
         }
-        setData(pPixel, pValue, EDGE);
+        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, EDGE));
         setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1);
         pPixel.getNeighbours().forEach(p -> {
             thin(p);
@@ -594,7 +553,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         if (!pPixel.isNode(this) && pValue) {
             nodeAdd(pPixel);
         }
-        setData(pPixel, pValue, NODE);
+        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, NODE));
         return pPixel;
     }
 
@@ -756,19 +715,10 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     // access weakened for testing only
     protected void setData_FOR_TESTING_PURPOSES_ONLY(Pixel pPixel, boolean pState, byte pValue) {
-        setData(pPixel, pState, pValue);
+        setValuesFrom(pixelMapService.setData(this, pPixel, pState, pValue));
     }
 
-    private void setData(Pixel pPixel, boolean pState, byte pValue) {
-        if (0 <= pPixel.getY() && pPixel.getY() < getHeight()) {
-            int x = modWidth(pPixel.getX());
-            byte newValue = (byte) (getValue(x, pPixel.getY()) & (ALL ^ pValue));
-            if (pState) {
-                newValue |= pValue;
-            }
-            setValue(x, pPixel.getY(), newValue);
-        }
-    }
+
 
 
     void setValue(int pX, int pY, byte pValue) {

@@ -105,19 +105,19 @@ public class PixelMapTest {
         Pixel pixel = new Pixel(1, 1);
         PixelMap pixelMap = Utility.createMap(3, 3);
         // WHEN
-        assertFalse(pixelMap.getData(pixel, NODE));
-        assertFalse(pixelMap.getData(pixel, EDGE));
+        assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
+        assertFalse(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
         pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, true, NODE);
         pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, true, EDGE);
         // THEN
-        assertTrue(pixelMap.getData(pixel, NODE));
-        assertTrue(pixelMap.getData(pixel, EDGE));
+        assertTrue(pixelMapService.getData(pixelMap, pixel, NODE));
+        assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
         pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, false, NODE);
         // THEN
-        assertFalse(pixelMap.getData(pixel, NODE));
-        assertTrue(pixelMap.getData(pixel, EDGE));
+        assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
+        assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
     }
 
     @Test

@@ -168,6 +168,7 @@ public class PixelMapService {
         var newValue = (byte) (isVisited ? oldValue | VISITED : oldValue & (ALL ^ VISITED));
         return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
     }
+
     public @NotNull ImmutablePixelMapData setInChain(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
@@ -270,7 +271,7 @@ public class PixelMapService {
         return Optional.of(new Pixel(newX, y));
     }
 
-    private int modWidth(@NotNull PixelMapData pixelMapData, int pX) {
+    public int modWidth(@NotNull PixelMapData pixelMapData, int pX) {
         int width = pixelMapData.width();
         if (0 <= pX && pX < width) {
             return pX;
@@ -735,4 +736,33 @@ public class PixelMapService {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
         return pixelMap.withData(data);
     }
+
+    public boolean getData(@NotNull PixelMapData pixelMap, @NotNull  Pixel pixel, byte pValue) {
+        if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
+            int x = modWidth(pixelMap, pixel.getX());
+            return (getValue(pixelMap, x, pixel.getY()) & pValue) != 0;
+        } else {
+            return false;
+        }
+    }
+
+    public byte getValue(@NotNull PixelMapData pixelMap, int pX, int pY) {
+        // TODO change these to Framework checks
+        if (pX < 0) {
+            throw new IllegalArgumentException("pX must be > 0.");
+        }
+        var width = pixelMap.width();
+        if (pX > width - 1) {
+            throw new IllegalArgumentException("pX must be less than width() -1. pX = " + pX + ", getWidth() = " + width);
+        }
+        if (pY < 0) {
+            throw new IllegalArgumentException("pY must be > 0.");
+        }
+        var height = pixelMap.height();
+        if (pY > height - 1) {
+            throw new IllegalArgumentException("pX must be less than geight() -1. pX = " + pX + ", getHeight() = " + height);
+        }
+        return pixelMap.data().get(pX, pY);
+    }
+
 }
