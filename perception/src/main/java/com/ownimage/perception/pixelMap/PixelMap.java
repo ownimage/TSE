@@ -148,7 +148,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         double radius = (double) pCursorSize / getHeight();
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize, pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
                 .forEach((x, y) ->
-                        clone.getOptionalPixelAt(x, y)
+                        pixelMapService.getOptionalPixelAt(clone, x, y)
                                 .filter(pPixel1 -> pPixel1.isEdge(clone))
                                 .filter(p -> pPixel.getUHVWMidPoint(clone.getHeight()).distance(p.getUHVWMidPoint(clone.getHeight())) < radius)
                                 .ifPresent(p -> {
@@ -189,30 +189,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         Framework.logExit(mLogger);
     }
 
-
-
-
-
-
-
-    private void setHeight(int pHeight) {
-        mHeight = pHeight;
-    }
-
-    public double getLineTolerance() {
-        return mTransformSource.getLineTolerance();
-    }
-
-    public double getLineCurvePreference() {
-        return mTransformSource.getLineCurvePreference();
-    }
-
-
-    private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
-        // this is because pIntegerPoint might be a Node or Pixel
-        return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
-    }
-
     /*
      * Adds a node at the position specified, will throw a RuntimeException if the node already exists.  @See getNode(IntegerPoint).
      * @param pIntegerPoint the pixel
@@ -226,64 +202,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mNodes = mNodes.put(pIntegerPoint, node);
         return node;
     }
-
-    @Deprecated // already moved to PixelMapService
-    private Optional<Pixel> getOptionalPixelAt(double pX, double pY) {
-        return Optional.ofNullable(getPixelAt(pX, pY));
-    }
-
-    @Deprecated // already moved to PixelMapService
-    private Pixel getPixelAt(double pX, double pY) {
-        Framework.logEntry(mLogger);
-        // Framework.logParams(mLogger, "pX, pY", pX, pY);
-        int x = (int) (pX * getWidth());
-        int y = (int) (pY * getHeight());
-        y = y == getHeight() ? getHeight() - 1 : y;
-        x = pixelMapService.modWidth(this, x);
-        Pixel pixel = getPixelAt(x, y);
-        Framework.logExit(mLogger);
-        return pixel;
-    }
-
-    /**
-     * @deprecated TODO: explain
-     */
-    @Deprecated
-    public Pixel getPixelAt(int pX, int pY) {
-        return new Pixel(pX, pY);
-    }
-
-    @Deprecated // already moved to PixelMapService
-    public Optional<Pixel> getOptionalPixelAt(int pX, int pY) {
-        if (0 > pY || pY >= getHeight()) {
-            return Optional.empty();
-        }
-        if (!m360 && (0 > pX || pX >= getWidth())) {
-            return Optional.empty();
-        }
-        int x = pixelMapService.modWidth(this, pX);
-        return Optional.of(new Pixel(x, pY));
-    }
-
-    @Deprecated // already moved to PixelMapService
-    private Optional<Pixel> getOptionalPixelAt(Point pPoint) {
-        return getOptionalPixelAt(pPoint.getX(), pPoint.getY());
-    }
-
-    /**
-     * @deprecated TODO: explain
-     */
-    @Deprecated
-    public Pixel getPixelAt(Point pPoint) {
-        Framework.logEntry(mLogger);
-        Framework.logParams(mLogger, "pPoint", pPoint);
-        Pixel pixel = getPixelAt(pPoint.getX(), pPoint.getY());
-        Framework.logExit(mLogger);
-        return pixel;
-    }
-
-
-
 
     public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
         return mSegmentIndex;
@@ -335,7 +253,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         maxY = Math.min(maxY, getHeight() - 1);
 
         new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
-            Pixel pixel = getPixelAt(i.getX(), i.getY());
+            Pixel pixel = pixelMapService.getPixelAt(this, i.getX(), i.getY());
             Point centre = pixel.getUHVWMidPoint(this.getHeight());
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
                 val segments = new HashSet();
@@ -781,7 +699,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
      */ // move to a stream
     @Deprecated
     private void forEachPixel(Consumer<Pixel> pFunction) {
-        new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(getPixelAt(x, y)));
+        new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(pixelMapService.getPixelAt(this, x, y)));
     }
 
     /**

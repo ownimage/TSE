@@ -10,6 +10,7 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
 import java.awt.*;
@@ -65,6 +66,8 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 
     @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
+    private static PixelMapService pixelMapService =
+            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
 
     private final static float GAUSSIAN_CUT_OFF = 0.005f;
     private final static float MAGNITUDE_SCALE = 100F;
@@ -660,7 +663,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean edge = pixels[index] == -1;
-                mPixelMap.getPixelAt(x, y).setEdge(mPixelMap, edge);
+                pixelMapService.getPixelAt(mPixelMap, x, y).setEdge(mPixelMap, edge);
             }
         }
 

@@ -12,6 +12,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
 import java.awt.*;
@@ -69,6 +70,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
 
     private final static Logger mLogger = Framework.getLogger();
+    private static PixelMapService pixelMapService =
+            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
 
     // statics
 
@@ -829,7 +832,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
                 final boolean col = pixels[x][y] == -1;
                 // Color c = new Color(col);
-                edgeData.getPixelAt(x, y).setEdge(edgeData, col);
+                pixelMapService.getPixelAt(edgeData, x, y).setEdge(edgeData, col);
             }
         }
 

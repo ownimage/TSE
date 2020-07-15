@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -11,6 +12,7 @@ import static org.junit.Assert.fail;
 
 class Utility {
 
+    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
 
     static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
@@ -152,7 +154,7 @@ class Utility {
         for (int y = 0; y < pPixelMap.getHeight(); y++) {
             final StringBuffer row = new StringBuffer();
             for (int x = 0; x < pPixelMap.getWidth(); x++) {
-                final Pixel p = pPixelMap.getPixelAt(x, y);
+                final Pixel p = pixelMapService.getPixelAt(pPixelMap, x, y);
                 if (p.isNode(pPixelMap)) row.append("N");
                 else if (p.isEdge(pPixelMap)) row.append("E");
                 else row.append(" ");

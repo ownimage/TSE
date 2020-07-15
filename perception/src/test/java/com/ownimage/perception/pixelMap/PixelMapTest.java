@@ -683,24 +683,24 @@ public class PixelMapTest {
     public void setPixelOnOff() {
         PixelMap underTest = new PixelMap(10, 10, false, null);
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
         pixel.setEdge(underTest, true);
-        assertTrue(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertTrue(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
         pixel.setEdge(underTest, false);
-        assertFalse(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
     }
 
     @Test
     public void actionPixelOnOff() {
         PixelMap underTest = new PixelMap(10, 10, false, null);
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
         PixelMap resultOn = underTest.actionPixelOn(pixel);
-        assertFalse(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
-        assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
+        assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
         PixelMap resultOff = underTest.actionPixelOff(pixel, 1);
-        assertFalse(underTest.getOptionalPixelAt(5, 5).get().isEdge(underTest));
-        assertTrue(resultOn.getOptionalPixelAt(5, 5).get().isEdge(resultOn));
-        assertFalse(resultOff.getOptionalPixelAt(5, 5).get().isEdge(resultOff));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
+        assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
+        assertFalse(pixelMapService.getOptionalPixelAt(resultOff,5, 5).get().isEdge(resultOff));
     }
 }

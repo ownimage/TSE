@@ -665,17 +665,21 @@ public class PixelMapService {
         return getOptionalPixelAt(pixelMapData, point.getX(), point.getY());
     }
 
-    private Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, double x, double y) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, double x, double y) {
         return Optional.ofNullable(getPixelAt(pixelMapData, x, y));
     }
 
-    private Pixel getPixelAt(@NotNull PixelMapData pixelMapData, double xIn, double yIn) {
+    public Pixel getPixelAt(@NotNull PixelMapData pixelMapData, double xIn, double yIn) {
         int h = pixelMapData.height();
         int x = (int) (xIn * pixelMapData.width());
         int y = (int) (yIn * h);
         y = y == h ? h - 1 : y;
         x = modWidth(pixelMapData, x);
         return new Pixel(x, y);
+    }
+
+    public Pixel getPixelAt(@NotNull PixelMapData pixelMapData, int xIn, int yIn) {
+        return getOptionalPixelAt(pixelMapData, xIn, yIn).orElse(null);
     }
 
     public Point toUHVW(@NotNull PixelMapData pixelMap, @NotNull Point point) {
@@ -760,7 +764,7 @@ public class PixelMapService {
         }
         var height = pixelMap.height();
         if (pY > height - 1) {
-            throw new IllegalArgumentException("pX must be less than geight() -1. pX = " + pX + ", getHeight() = " + height);
+            throw new IllegalArgumentException("pX must be less than height() -1. pX = " + pX + ", getHeight() = " + height);
         }
         return pixelMap.data().get(pX, pY);
     }

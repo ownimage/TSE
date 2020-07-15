@@ -119,4 +119,17 @@ public class PixelMapBase implements PixelMapData {
     public int getHeight() {
         return mHeight;
     }
+
+
+    protected void setHeight(int pHeight) {
+        mHeight = pHeight;
+    }
+
+    protected double getLineTolerance() {
+        return mTransformSource.getLineTolerance();
+    }
+
+    public double getLineCurvePreference() {
+        return mTransformSource.getLineCurvePreference();
+    }
 }
