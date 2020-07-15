@@ -475,16 +475,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    //
-    // resets everything but the isEdgeData
-    public void process01_reset(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Resetting ...", 0);
-        var reset = pixelMapService.resetVisited(this);
-        reset = pixelMapService.resetInChain(reset);
-        reset = pixelMapService.resetNode(reset);
-        setValuesFrom(reset);
-    }
-
     // chains need to have been thinned
     // TODO need to work out how to have a progress bar
     public void process02_thin(IProgressObserver pProgressObserver) {
@@ -884,21 +874,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     public Stream<PixelChain> streamPixelChains() {
         return mPixelChains.stream();
     }
-
-
-
-
-
-
-// --Commented out by Inspection START (06/07/2020 12:58):
-//    public PixelMap withNodes(HashMap<IntegerPoint, Node> nodes) {
-//        var clone = new PixelMap(this);
-//        clone.mNodes = nodes;
-//        return clone;
-//    }
-// --Commented out by Inspection STOP (06/07/2020 12:58)
-
-
 
 
 }

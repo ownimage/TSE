@@ -214,7 +214,7 @@ public class PixelMapTest {
                 "    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process01_reset(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process01_reset(pixelMap, null));
         pixelMap.process02_thin(null);
         pixelMap.process03_generateNodes(null);
         // WHEN

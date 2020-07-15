@@ -705,7 +705,7 @@ public class PixelMapService {
                 pixelMapResult = setNode(pixelMap, pixel, true);
             }
         }
-        return new Tuple2<>(setNode(pixelMap, pixel, shouldBeNode), shouldBeNode);
+        return new Tuple2<>(setNode(pixelMapResult, pixel, shouldBeNode), shouldBeNode);
     }
 
     public Tuple2<ImmutablePixelMapData, Stream<PixelChain>> generateChainsAndApproximate(
@@ -723,16 +723,16 @@ public class PixelMapService {
 
     public ImmutablePixelMapData resetVisited(@NotNull PixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ VISITED)));
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
+        return pixelMap.withData(data);
     }
 
     public ImmutablePixelMapData resetNode(@NotNull PixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ NODE)));
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
+        return pixelMap.withData(data);
     }
 
     public ImmutablePixelMapData resetInChain(@NotNull PixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
+        return pixelMap.withData(data);
     }
 }
