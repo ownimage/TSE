@@ -71,7 +71,7 @@ public class PixelMapTest {
     public void process01_reset_01() {
         // GIVEN
         val underTest = Utility.createMap(2000, 1500);
-        underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE));
+        underTest.setValuesFrom(pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE)));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);
@@ -87,7 +87,7 @@ public class PixelMapTest {
     public void process01_reset_02() {
         // GIVEN
         val underTest = Utility.createMap(2000, 1500);
-        underTest.setValue(1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE));
+        underTest.setValuesFrom(pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE)));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);

@@ -636,13 +636,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         setValuesFrom(pixelMapService.setData(this, pPixel, pState, pValue));
     }
 
-
-
-
-    void setValue(int pX, int pY, byte pValue) {
-        mData = mData.set(pX, pY, pValue);
-    }
-
     /**
      * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
      * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
@@ -667,13 +660,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
         return canEliminate;
     }
-
-// --Commented out by Inspection START (06/07/2020 12:58):
-//    private Point toUHVW(Point pIn) {
-//        return pIn.scaleX(mAspectRatio);
-//    }
-// --Commented out by Inspection STOP (06/07/2020 12:58)
-
 
     public void validate() {
         mLogger.info(() -> "Number of chains: " + mPixelChains.size());

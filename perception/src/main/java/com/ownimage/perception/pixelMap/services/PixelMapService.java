@@ -769,4 +769,8 @@ public class PixelMapService {
         return pixelMap.data().get(pX, pY);
     }
 
+    public ImmutablePixelMapData setValue(@NotNull PixelMapData pixelMap,int pX, int pY, byte pValue) {
+        return pixelMap.withData(pixelMap.data().set(pX, pY, pValue));
+    }
+
 }

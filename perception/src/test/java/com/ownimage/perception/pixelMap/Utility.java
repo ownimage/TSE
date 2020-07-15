@@ -177,10 +177,10 @@ class Utility {
                     case ' ':
                         break;
                     case 'N':
-                        pixelMap.setValue(x, y, (byte) (Pixel.NODE | Pixel.EDGE));
+                        pixelMap.setValuesFrom(pixelMapService.setValue(pixelMap, x, y, (byte) (Pixel.NODE | Pixel.EDGE)));
                         break;
                     case 'E':
-                        pixelMap.setValue(x, y, Pixel.EDGE);
+                        pixelMap.setValuesFrom(pixelMapService.setValue(pixelMap, x, y, Pixel.EDGE));
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected char:" + c + ", y=" + y);
