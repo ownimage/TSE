@@ -479,12 +479,10 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     // resets everything but the isEdgeData
     public void process01_reset(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Resetting ...", 0);
-        resetVisited();
-        resetInChain();
-        resetNode();
-        // mAllNodes.removeAllElements();
-        // mPixelChains.removeAllElements();
-        // resetSegmentIndex();
+        var reset = pixelMapService.resetVisited(this);
+        reset = pixelMapService.resetInChain(reset);
+        reset = pixelMapService.resetNode(reset);
+        setValuesFrom(reset);
     }
 
     // chains need to have been thinned
@@ -541,8 +539,9 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
             return;
         }
 
-        resetInChain();
-        resetVisited();
+        var reset = pixelMapService.resetInChain(this);
+        reset = pixelMapService.resetVisited(reset);
+        setValuesFrom(reset);
 
         var nodes = new HashSet<Node>();
         pPixels.forEach(pixel -> {
@@ -752,9 +751,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
 
-    public int nodeCount() {
-        return mNodes.size();
-    }
 
     public synchronized void indexSegments() {
 //        var pixelChains = new ArrayList<PixelChain>();
@@ -792,21 +788,9 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mNodes = mNodes.put(pNode.toIntegerPoint(), pNode);
     }
 
-    private void resetInChain() {
-        mData = mData.forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
-    }
-
-    private void resetNode() {
-        mData = mData.forEach(v -> (byte) (v & (ALL ^ NODE)));
-    }
-
     private void clearSegmentIndex() {
         mSegmentIndex = new Immutable2DArray<>(mWidth, mHeight, 20);
         mSegmentCount = 0;
-    }
-
-    private void resetVisited() {
-        mData = mData.forEach(v -> (byte) (v & (ALL ^ VISITED)));
     }
 
     // access weakened for testing only

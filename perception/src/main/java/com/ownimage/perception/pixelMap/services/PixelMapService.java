@@ -715,9 +715,24 @@ public class PixelMapService {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         var result = pixelMapChainGenerationService.generateChains(pixelMap, pNode);
-        var stream =  result._2.parallelStream()
+        var stream = result._2.parallelStream()
                 .map(pc -> pixelChainService.approximate(pixelMap, pc, tolerance))
                 .map(pc -> pixelChainService.approximateCurvesOnly(pixelMap, pc, tolerance, lineCurvePreference));
         return new Tuple2<>(result._1, stream);
+    }
+
+    public ImmutablePixelMapData resetVisited(@NotNull PixelMapData pixelMap) {
+        var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ VISITED)));
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
+    }
+
+    public ImmutablePixelMapData resetNode(@NotNull PixelMapData pixelMap) {
+        var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ NODE)));
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
+    }
+
+    public ImmutablePixelMapData resetInChain(@NotNull PixelMapData pixelMap) {
+        var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withData(data);
     }
 }
