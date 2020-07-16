@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
 import org.junit.*;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PixelChainTest {
 
+    private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @Mock
@@ -65,7 +67,7 @@ public class PixelChainTest {
         assertEquals(1, pixelMap.pixelChains().size());
 
         // THEN
-        PixelChain chain = pixelMap.streamPixelChains().findFirst().orElseThrow();
+        PixelChain chain = pixelMapService.streamPixelChains(pixelMap).findFirst().orElseThrow();
         chain = pixelChainService.reverse(pixelMap, chain); // this reverse is here as it chain approximates differently backwards to forwards
         chain = pixelChainService.approximate(pixelMap, chain, tolerance);
         assertEquals(3, chain.getSegmentCount());

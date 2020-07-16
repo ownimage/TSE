@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -823,6 +824,27 @@ public class PixelMapService {
         var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         pixelChains.forEach(pixelChain -> result.update(r-> addPixelChain(r, pixelChain)));
         return result.get();
+    }
+
+
+    /**
+     * @deprecated TODO: explain
+     */ // move to a stream
+    @Deprecated
+    public void forEachPixel(@NotNull PixelMapData pixelMap, @NotNull Consumer<Pixel> pFunction) {
+        new Range2D(pixelMap.width(), pixelMap.height()).forEach((x, y) -> pFunction.accept(getPixelAt(pixelMap, x, y)));
+    }
+
+    /**
+     * @deprecated TODO: explain
+     */ // Move to a stream
+    @Deprecated
+    public void forEachPixelChain(@NotNull PixelMapData pixelMap, @NotNull Consumer<PixelChain> pFunction) {
+        pixelMap.pixelChains().forEach(pFunction);
+    }
+
+    public Stream<PixelChain> streamPixelChains(@NotNull PixelMapData pixelMap) {
+        return pixelMap.pixelChains().stream();
     }
 
 }

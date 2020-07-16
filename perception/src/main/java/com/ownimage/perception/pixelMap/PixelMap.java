@@ -291,7 +291,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
 
     public void process05a_findLoops(IProgressObserver pProgressObserver) {
-        forEachPixel(pixel -> {
+        pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
                 setNode(pixel, true);
                 pixelMapService.getNode(this, pixel).ifPresent(node -> {
@@ -306,12 +306,12 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     // TODO need to work out how to have a progress bar
     public void process02_thin(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Thinning ...", 0);
-        forEachPixel(this::thin);
+        pixelMapService.forEachPixel(this, this::thin);
     }
 
     public void process03_generateNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
-        forEachPixel(pixel -> {
+        pixelMapService.forEachPixel(this, pixel -> {
             var calsIsNodeResult = pixelMapService.calcIsNode(this, pixel);
             setValuesFrom(calsIsNodeResult._1);
             if (calsIsNodeResult._2) {
@@ -456,7 +456,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
-        forEachPixel(pixel -> {
+        pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isNode(this)) {
                 Node node = pixelMapService.getNode(this, pixel).get();
                 if (node.countEdgeNeighbours(this) == 0) {
@@ -510,7 +510,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
             setValuesFrom(gc._1);
             setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
         });
-        forEachPixel(pixel -> {
+        pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
                 pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var gc = pixelMapChainGenerationService.generateChains(this, node);
@@ -639,25 +639,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
 
-    /**
-     * @deprecated TODO: explain
-     */ // move to a stream
-    @Deprecated
-    private void forEachPixel(Consumer<Pixel> pFunction) {
-        new Range2D(getWidth(), getHeight()).forEach((x, y) -> pFunction.accept(pixelMapService.getPixelAt(this, x, y)));
-    }
-
-    /**
-     * @deprecated TODO: explain
-     */ // Move to a stream
-    @Deprecated
-    public void forEachPixelChain(Consumer<PixelChain> pFunction) {
-        mPixelChains.forEach(pFunction);
-    }
-
-    public Stream<PixelChain> streamPixelChains() {
-        return mPixelChains.stream();
-    }
 
 
 }

@@ -385,9 +385,9 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
+        pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -407,9 +407,9 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
+        pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -429,9 +429,9 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Node(7, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
+        pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -451,9 +451,9 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
+        pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     @Test
@@ -473,9 +473,9 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
-        pixelMap.forEachPixelChain(pc -> pixelChainService.validate(pc, false, "test"));
+        pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
     public PixelMap addChain(@NonNull PixelMapData pixelMap, @NotNull IPixelMapTransformSource ts, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
@@ -641,7 +641,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.forEachPixelChain(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
     }
 
