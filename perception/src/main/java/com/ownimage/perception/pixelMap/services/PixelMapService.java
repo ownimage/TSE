@@ -76,7 +76,7 @@ public class PixelMapService {
         var width = Integer.parseInt(db.read(id + ".width"));
         var height = Integer.parseInt(db.read(id + ".height"));
 
-        var pixelMap = new PixelMap(width, height, false, transformSource);
+        PixelMapData pixelMap = new PixelMap(width, height, false, transformSource);
         var data = new ImmutableMap2D<>(width, height, (byte) 0);
 
         try {
@@ -107,7 +107,7 @@ public class PixelMapService {
                         }
                     }
                 }
-                pixelMap = new PixelMap(pixelMap.withData(data), pixelMap.mTransformSource);
+                pixelMap = pixelMap.withData(data);
                 logger.info("mData cnt = " + cnt);
             }
             // mPixelChains
@@ -122,8 +122,8 @@ public class PixelMapService {
                 Function<PixelChain, PixelChain> fixNullPositionVertexes =
                         pc -> pixelChainService.fixNullPositionVertexes(height, pc);
                 pixelChains = pixelChains.stream().map(fixNullPositionVertexes).collect(Collectors.toList());
-                pixelMap.pixelChainsClear();
-                pixelMap.pixelChainsAddAll(pixelChains);
+                pixelMap = pixelChainsClear(pixelMap);
+                pixelMap = pixelChainsAddAll(pixelMap, pixelChains);
                 //TODO this will need to change
                 bais = null;
                 ois = null;
@@ -212,9 +212,10 @@ public class PixelMapService {
     public @NotNull ImmutablePixelMapData nodeAdd(
             @NotNull PixelMapData pixelMap,
             @NonNull Pixel pixel) {
-        var x = pixel.getX(); var y = pixel.getY();
+        var x = pixel.getX();
+        var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
-        var newValue = (byte)(oldValue |  NODE);
+        var newValue = (byte) (oldValue | NODE);
         return pixelMap.withNodes(
                 pixelMap.nodes().put(getTrueIntegerPoint(pixel), new Node(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
@@ -360,7 +361,7 @@ public class PixelMapService {
         var result = StrongReference.of(pixelMap);
         result.update(r -> r.withAutoTrackChanges(false));
         pixels.forEach(pixel ->
-                result.update(r -> pixelMapApproximationService.setEdge(r, transformSource,  pixel, true)));
+                result.update(r -> pixelMapApproximationService.setEdge(r, transformSource, pixel, true)));
         result.update(r -> r.withAutoTrackChanges(true));
         result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixels));
         return result.get();
@@ -741,7 +742,7 @@ public class PixelMapService {
         return pixelMap.withData(data);
     }
 
-    public boolean getData(@NotNull PixelMapData pixelMap, @NotNull  Pixel pixel, byte pValue) {
+    public boolean getData(@NotNull PixelMapData pixelMap, @NotNull Pixel pixel, byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
             int x = modWidth(pixelMap, pixel.getX());
             return (getValue(pixelMap, x, pixel.getY()) & pValue) != 0;
@@ -769,8 +770,59 @@ public class PixelMapService {
         return pixelMap.data().get(pX, pY);
     }
 
-    public ImmutablePixelMapData setValue(@NotNull PixelMapData pixelMap,int pX, int pY, byte pValue) {
+    public ImmutablePixelMapData setValue(@NotNull PixelMapData pixelMap, int pX, int pY, byte pValue) {
         return pixelMap.withData(pixelMap.data().set(pX, pY, pValue));
+    }
+
+    /**
+     * The removes a pixelChain from the PixelMap.  It also removes it from the Nodes that it was attached to.
+     * This is different from deletePixelChain which can cause the nodes that it was attached to to be merged.
+     *
+     * @param pixelChain
+     */
+    public ImmutablePixelMapData removePixelChain(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+        var result = StrongReference.of(pixelChainRemove(pixelMap,  pixelChain));
+        pixelChainService.getStartNode(result.get(), pixelChain)
+                .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
+        pixelChainService.getEndNode(result.get(), pixelChain)
+                .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
+        return result.get();
+    }
+
+    public ImmutablePixelMapData addPixelChain(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+        var result = pixelChainsAdd(pixelMap, pixelChain);
+        result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
+        result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
+        return result;
+    }
+
+    public ImmutablePixelMapData replaceNode(@NotNull PixelMapData pixelMap, @NotNull Node node) {
+        return pixelMap.withNodes(pixelMap.nodes().put(node.toIntegerPoint(), node));
+    }
+
+    public ImmutablePixelMapData pixelChainsAddAll(
+            @NotNull PixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        pixelChains.forEach(chain -> result.update(r -> pixelChainsAdd(r, chain)));
+        return result.get();
+    }
+
+    public ImmutablePixelMapData pixelChainsAdd(@NotNull PixelMapData pixelMap, @NotNull PixelChain pChain) {
+        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null);
+        var chain = pixelChainService.indexSegments(mutable, pChain, true);
+        return mutable.withPixelChains(mutable.pixelChains().add(chain));
+    }
+
+    public ImmutablePixelMapData pixelChainsClear(@NotNull PixelMapData pixelMap) {
+        return pixelMap
+                .withPixelChains(pixelMap.pixelChains().clear())
+                .withSegmentIndex(pixelMap.segmentIndex().clear());
+    }
+
+    public ImmutablePixelMapData addPixelChains(@NotNull PixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        pixelChains.forEach(pixelChain -> result.update(r-> addPixelChain(r, pixelChain)));
+        return result.get();
     }
 
 }

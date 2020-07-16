@@ -119,23 +119,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
 
-    // TODO MUTATOR CHANGED ACCESS
-    // Moved tp service
-    public void pixelChainsAddAll(Collection<PixelChain> pAll) {
-        pAll.forEach(this::pixelChainsAdd);
-    }
 
-    // moved to Service
-    private void pixelChainsAdd(PixelChain pChain) {
-        val chain = pixelChainService.indexSegments(this, pChain, true);
-        mPixelChains = mPixelChains.add(chain);
-    }
-
-    // TODO MUTATOR CHANGED ACCESS
-    public void pixelChainsClear() {
-        mPixelChains = mPixelChains.clear();
-        mSegmentIndex = mSegmentIndex.clear();
-    }
 
 
     public String toString() {
@@ -183,11 +167,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return clone;
     }
 
-    private void addPixelChains(Collection<PixelChain> pPixelChains) {
-        Framework.logEntry(mLogger);
-        pPixelChains.forEach(this::addPixelChain);
-        Framework.logExit(mLogger);
-    }
+
 
     /*
      * Adds a node at the position specified, will throw a RuntimeException if the node already exists.  @See getNode(IntegerPoint).
@@ -287,8 +267,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
-        clone.pixelChainsClear();
-        clone.pixelChainsAddAll(updates);
+        clone.setValuesFrom(pixelMapService.pixelChainsClear(clone));
+        clone.setValuesFrom(pixelMapService.pixelChainsAddAll(clone, updates));
         SplitTimer.split("PixelMap actionReapproximate() end");
         return clone;
     }
@@ -303,8 +283,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
                 //.map(pc -> pc.indexSegments(this, true))
                 .forEach(updates::add);
-        clone.pixelChainsClear();
-        clone.pixelChainsAddAll(updates);
+        clone.setValuesFrom(pixelMapService.pixelChainsClear(clone));
+        clone.setValuesFrom(pixelMapService.pixelChainsAddAll(clone, updates));
         return clone;
     }
 
@@ -316,8 +296,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 setNode(pixel, true);
                 pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var result = pixelMapChainGenerationService.generateChains(this, node);
-                    setValuesFrom(result._1);
-                    pixelChainsAddAll(result._2);
+                    setValuesFrom(pixelMapService.pixelChainsAddAll(result._1, result._2));
                 });
             }
         });
@@ -390,7 +369,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                                 .forEach(pc -> {
                                     pixelChainService.getStartNode(this, pc).ifPresent(nodes::add);
                                     pixelChainService.getEndNode(this, pc).ifPresent(nodes::add);
-                                    removePixelChain(pc);
+                                    setValuesFrom(pixelMapService.removePixelChain(this, pc));
                                 });
                         neighbour.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
                     });
@@ -400,7 +379,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .map(n -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), n))
                 .peek(r -> setValuesFrom(r._1))
                 .flatMap(r -> r._2)
-                .forEach(this::addPixelChain);
+                .forEach(pc -> setValuesFrom(pixelMapService.addPixelChain(this, pc)));
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
         pPixels.stream()
@@ -413,7 +392,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .map(p -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), new Node(p)))
                 .peek(r -> setValuesFrom(r._1))
                 .flatMap(r -> r._2)
-                .forEach(this::addPixelChain);
+                .forEach(pc -> setValuesFrom(pixelMapService.addPixelChain(this, pc)));
     }
 
 
@@ -446,7 +425,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                                         .parallelStream()
                                         .map(pc2 -> pixelChainService.approximate(this, pc2, tolerance))
                                         .collect(Collectors.toList());
-                                addPixelChains(chains);
+                                setValuesFrom(pixelMapService.addPixelChains(this, chains));
                             })
                     );
         }));
@@ -529,14 +508,14 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         nodesStream().forEach(node -> {
             val gc = pixelMapChainGenerationService.generateChains(this, node);
             setValuesFrom(gc._1);
-            pixelChainsAddAll(gc._2);
+            setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
         });
         forEachPixel(pixel -> {
             if (pixel.isUnVisitedEdge(this)) {
                 pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var gc = pixelMapChainGenerationService.generateChains(this, node);
                     setValuesFrom(gc._1);
-                    pixelChainsAddAll(gc._2);
+                    setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
                 });
             }
         });
@@ -553,8 +532,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
         Vector<PixelChain> refined = new Vector<>();
         mPixelChains.forEach(pixelChain -> refined.add(pixelChainService.approximate(this, pixelChain, tolerance)));
-        pixelChainsClear();
-        pixelChainsAddAll(refined);
+        setValuesFrom(pixelMapService.pixelChainsClear(this));
+        setValuesFrom(pixelMapService.pixelChainsAddAll(this, refined));
         mLogger.info("approximate - done");
     }
 
@@ -579,8 +558,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 counter.increase();
                 reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
             });
-            pixelChainsClear();
-            pixelChainsAddAll(refined);
+            setValuesFrom(pixelMapService.pixelChainsClear(this));
+            setValuesFrom(pixelMapService.pixelChainsAddAll(this, refined));
         }
     }
 
@@ -604,27 +583,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mPixelChains.forEach(pc -> pc.getSegments().forEach(seg -> index(pc, seg, true)));
     }
 
-    /**
-     * The removes a pixelChain from the PixelMap.  It also removes it from the Nodes that it was attached to.
-     * This is different from deletePixelChain which can cause the nodes that it was attached to to be merged.
-     *
-     * @param pPixelChain
-     */
-    synchronized void removePixelChain(PixelChain pPixelChain) {
-        setValuesFrom(pixelMapService.pixelChainRemove(this, pPixelChain));
-        pixelChainService.getStartNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
-        pixelChainService.getEndNode(this, pPixelChain).ifPresent(n -> replaceNode(n.removePixelChain(pPixelChain)));
-    }
 
-    synchronized void addPixelChain(PixelChain pPixelChain) {
-        pixelChainsAdd(pPixelChain);
-        replaceNode(pixelChainService.getStartNode(this, pPixelChain).get().addPixelChain(pPixelChain));
-        replaceNode(pixelChainService.getEndNode(this, pPixelChain).get().addPixelChain(pPixelChain));
-    }
-
-    private void replaceNode(Node pNode) {
-        mNodes = mNodes.put(pNode.toIntegerPoint(), pNode);
-    }
 
     private void clearSegmentIndex() {
         mSegmentIndex = new Immutable2DArray<>(mWidth, mHeight, 20);
