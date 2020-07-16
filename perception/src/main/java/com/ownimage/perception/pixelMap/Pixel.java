@@ -165,7 +165,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     }
 
     public void setEdge(PixelMap pPixelMap, boolean pValue) {
-        pPixelMap.setEdge(this, pValue);
+        pPixelMap.setValuesFrom(pixelMapService.setEdge(pPixelMap, pPixelMap.mTransformSource, this, pValue));
     }
 
     public void setInChain(PixelMap pPixelMap, boolean pValue) {

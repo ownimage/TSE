@@ -159,15 +159,6 @@ public class PixelMapService {
         return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
     }
 
-    public @NotNull ImmutablePixelMapData setEdge(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel,
-            @NotNull boolean isEdge) {
-        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
-        var newValue = (byte) (isEdge ? oldValue | EDGE : oldValue & (ALL ^ EDGE));
-        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
-    }
-
     public @NotNull ImmutablePixelMapData setVisited(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
@@ -909,10 +900,42 @@ public class PixelMapService {
     }
 
 
-    public ImmutablePixelMapData  clearSegmentIndex(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData clearSegmentIndex(@NotNull PixelMapData pixelMap) {
         return pixelMap
-        .withSegmentIndex(new Immutable2DArray<>(pixelMap.width(), pixelMap.height(), 20))
-        .withSegmentCount(0);
+                .withSegmentIndex(new Immutable2DArray<>(pixelMap.width(), pixelMap.height(), 20))
+                .withSegmentCount(0);
+    }
+
+
+    public @NotNull ImmutablePixelMapData setEdge(
+            @NotNull PixelMapData pixelMap,
+            @Nullable IPixelMapTransformSource transformSource,
+            @NotNull Pixel pixel,
+            @NotNull boolean isEdge) {
+        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        if (pixelService.isEdge(pixelMap, pixel) == isEdge) {
+            return result.get();
+        }
+        if (pixelService.isNode(pixelMap, pixel) && !isEdge) {
+            result.update(r -> setNode(r, pixel, false));
+        }
+        result.update(r -> setData(r, pixel, isEdge, EDGE));
+        result.update(r -> calcIsNode(r, pixel)._1);
+        pixel.getNeighbours().forEach(p -> {
+            result.update(r -> thin(r, transformSource, p)._1);
+            result.update(r -> calcIsNode(r, p)._1);
+        });
+        result.update(r -> thin(r, transformSource, pixel)._1);
+        if (result.get().autoTrackChanges()) {
+            var mutable = pixelMapMappingService.toPixelMap(result.get(), transformSource);
+            if (isEdge) { // turning pixel on
+                mutable.trackPixelOn(pixel);
+            } else { // turning pixel off
+                mutable.trackPixelOff(pixel);
+            }
+            result.set(pixelMapMappingService.toImmutablePixelMapData(mutable));
+        }
+        return result.get();
     }
 
 }

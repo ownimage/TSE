@@ -291,7 +291,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     public void process05a_findLoops(IProgressObserver pProgressObserver) {
         pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
-                setNode(pixel, true);
+                setValuesFrom(pixelMapService.setNode(this, pixel, true));
                 pixelMapService.getNode(this, pixel).ifPresent(node -> {
                     var result = pixelMapChainGenerationService.generateChains(this, node);
                     setValuesFrom(pixelMapService.pixelChainsAddAll(result._1, result._2));
@@ -328,30 +328,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         setValuesFrom(pixelMapService.setData(this, pPixel, pValue, IN_CHAIN));
     }
 
-    void setEdge(@NonNull Pixel pPixel, boolean pValue) {
-        if (pPixel.isEdge(this) == pValue) {
-            return; // ignore no change
-        }
-        if (pPixel.isNode(this) && !pValue) {
-            setNode(pPixel, false);
-        }
-        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, EDGE));
-        setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1);
-        var result = StrongReference.of(ImmutablePixelMapData.copyOf(this));
-        pPixel.getNeighbours().forEach(p -> {
-            result.update(r -> pixelMapService.thin(r, getTransformSource(), p)._1);
-            result.update(r -> pixelMapService.calcIsNode(r, p)._1);
-        });
-        result.update(r -> pixelMapService.thin(r, getTransformSource(), pPixel)._1);
-        setValuesFrom(result.get());
-        if (mAutoTrackChanges) {
-            if (pValue) { // turning pixel on
-                trackPixelOn(pPixel);
-            } else { // turning pixel off
-                trackPixelOff(pPixel);
-            }
-        }
-    }
+
 
     public void trackPixelOn(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) {
@@ -390,7 +367,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 .filter(p -> !p.isNode(this))
                 .filter(p -> pixelMapService.getPixelChains(this, p).isEmpty())
                 .stream()
-                .map(p -> setNode(p, true))
+                .peek(p -> setValuesFrom(pixelMapService.setNode(this, p, true)))
                 .map(p -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), new Node(p)))
                 .peek(r -> setValuesFrom(r._1))
                 .flatMap(r -> r._2)
@@ -398,12 +375,12 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     }
 
 
-    private void trackPixelOn(@NonNull Pixel pPixel) {
+    public void trackPixelOn(@NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
         trackPixelOn(pixels);
     }
 
-    private void trackPixelOff(@NonNull Pixel pPixel) {
+    public void trackPixelOff(@NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
         trackPixelOff(pixels);
     }
@@ -445,17 +422,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mAutoTrackChanges = other.autoTrackChanges();
     }
 
-    private Pixel setNode(@NonNull Pixel pPixel, boolean pValue) {
-        if (pPixel.isNode(this) && !pValue) {
-            setValuesFrom(pixelMapService.nodeRemove(this, pPixel));
-        }
-        if (!pPixel.isNode(this) && pValue) {
-            nodeAdd(pPixel);
-        }
-        setValuesFrom(pixelMapService.setData(this, pPixel, pValue, NODE));
-        return pPixel;
-    }
-
     public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(this, pixel -> {
@@ -463,7 +429,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 Node node = pixelMapService.getNode(this, pixel).get();
                 if (node.countEdgeNeighbours(this) == 0) {
                     pixel.setEdge(this, false);
-                    setNode(pixel, false);
+                    setValuesFrom(pixelMapService.setNode(this, pixel, false));
                     pixel.setVisited(this, false);
                 }
             }
