@@ -7,6 +7,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.EqualizeValues;
@@ -882,6 +883,14 @@ public class PixelMapService {
         return new Tuple2<>(pixelMapResult, canEliminate);
     }
 
+
+    public ImmutablePixelMapData nodesRemoveAll(
+            @NotNull PixelMapData pixelMap, @NotNull Collection<Pixel> pToBeRemoved) {
+        var nodes = StrongReference.of(pixelMap.nodes());
+        pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p.toIntegerPoint())));
+        return pixelMap.withNodes(nodes.get());
+    }
+
     public void validate(@NotNull PixelMapData pixelMap) {
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
@@ -897,6 +906,13 @@ public class PixelMapService {
 //            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
 //            throw new IllegalStateException(message);
 //        }
+    }
+
+
+    public ImmutablePixelMapData  clearSegmentIndex(@NotNull PixelMapData pixelMap) {
+        return pixelMap
+        .withSegmentIndex(new Immutable2DArray<>(pixelMap.width(), pixelMap.height(), 20))
+        .withSegmentCount(0);
     }
 
 }

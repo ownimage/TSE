@@ -38,10 +38,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed through the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -74,13 +72,14 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         setHeight(pHeight);
         m360 = p360;
         mTransformSource = pTransformSource;
-        clearSegmentIndex();
         // mHalfPixel = new Point(0.5d / getHeight(), 0.5d / getWidth());
         mAspectRatio = (double) pWidth / pHeight;
         mData = new ImmutableMap2D<>(pWidth, pHeight, (byte) 0);
         // resetSegmentIndex();
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / pWidth, 0.5d / pHeight);
         //mAutoTrackChanges = true;
+        mSegmentIndex = new Immutable2DArray<>(width(), height(), 20);
+        mSegmentCount = 0;
     }
 
     public PixelMap(PixelMap pFrom) {
@@ -471,15 +470,10 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    private Stream<Node> nodesStream() {
-        // note this is to prevent concurrent modification exception
-        return mNodes.values().stream();
-    }
-
     public void process04b_removeBristles(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         Vector<Pixel> toBeRemoved = new Vector<>();
-        nodesStream().forEach(node -> node.getNodeNeighbours(this).forEach(other -> {
+        nodes().values().forEach(node -> node.getNodeNeighbours(this).forEach(other -> {
                     Set<Pixel> nodeSet = node.allEdgeNeighbours(this);
                     Set<Pixel> otherSet = other.allEdgeNeighbours(this);
                     nodeSet.remove(other);
@@ -492,7 +486,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                     }
                 })
         );
-        nodesRemoveAll(toBeRemoved);
+        setValuesFrom(pixelMapService.nodesRemoveAll(this, toBeRemoved));
         toBeRemoved
                 .forEach(pixel -> {
                     pixel.setEdge(this, false);
@@ -501,14 +495,10 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 });
     }
 
-    private void nodesRemoveAll(Collection<Pixel> pToBeRemoved) {
-        var result = StrongReference.of(mNodes);
-        pToBeRemoved.forEach(p -> result.update(r -> r.remove(p.toIntegerPoint())));
-    }
 
     public void process05_generateChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
-        nodesStream().forEach(node -> {
+        nodes().values().forEach(node -> {
             val gc = pixelMapChainGenerationService.generateChains(this, node);
             setValuesFrom(gc._1);
             setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
@@ -543,7 +533,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     public void process07_mergeChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
-        nodesStream().forEach(pNode -> pNode.mergePixelChains(this));
+        nodes().values().forEach(pNode -> pNode.mergePixelChains(this));
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
     }
 
@@ -588,10 +578,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
 
 
-    private void clearSegmentIndex() {
-        mSegmentIndex = new Immutable2DArray<>(mWidth, mHeight, 20);
-        mSegmentCount = 0;
-    }
 
     // access weakened for testing only
     protected void setData_FOR_TESTING_PURPOSES_ONLY(Pixel pPixel, boolean pState, byte pValue) {
