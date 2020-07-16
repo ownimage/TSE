@@ -24,7 +24,10 @@ public class PixelService {
     }
 
     public boolean isVisited(PixelMapData pixelMap, IntegerPoint integerPoint) {
-        return isVisited(pixelMap, integerPoint.getX(), integerPoint.getY());
+        var ip = integerPoint.getClass() == IntegerPoint.class
+                ? integerPoint
+                : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
+        return isVisited(pixelMap, ip.getX(), ip.getY());
     }
 
     public boolean isVisited(PixelMapData pixelMap, Integer x, Integer y) {
@@ -32,7 +35,10 @@ public class PixelService {
     }
 
     public boolean isNode(PixelMapData pixelMap, IntegerPoint integerPoint) {
-        return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
+        var ip = integerPoint.getClass() == IntegerPoint.class
+                ? integerPoint
+                : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
+        return isNode(pixelMap, ip.getX(), ip.getY());
     }
 
     public boolean isEdge(PixelMapData pixelMap, int x, int y) {
@@ -50,7 +56,10 @@ public class PixelService {
     }
 
     public boolean isEdge(PixelMapData pixelMap, IntegerPoint integerPoint) {
-        return isEdge(pixelMap, integerPoint.getX(), integerPoint.getY());
+        var ip = integerPoint.getClass() == IntegerPoint.class
+                ? integerPoint
+                : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
+        return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
     public Pixel getNeighbour(@NotNull Pixel pixel, int pN) {

@@ -58,7 +58,6 @@ import java.util.stream.Stream;
 public class PixelMap extends PixelMapBase implements Serializable, PixelConstants, PixelMapData {
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
-    private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private static PixelMapService pixelMapService;
     private static PixelMapChainGenerationService pixelMapChainGenerationService;
     private static PixelChainService pixelChainService;
@@ -306,7 +305,9 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     // TODO need to work out how to have a progress bar
     public void process02_thin(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Thinning ...", 0);
-        pixelMapService.forEachPixel(this, this::thin);
+        var result = StrongReference.of(ImmutablePixelMapData.copyOf(this));
+        pixelMapService.forEachPixel(this, p-> result.update(r -> pixelMapService.thin(r, getTransformSource(), p)._1));
+        setValuesFrom(result.get());
     }
 
     public void process03_generateNodes(IProgressObserver pProgressObserver) {
@@ -337,11 +338,13 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
         setValuesFrom(pixelMapService.setData(this, pPixel, pValue, EDGE));
         setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1);
+        var result = StrongReference.of(ImmutablePixelMapData.copyOf(this));
         pPixel.getNeighbours().forEach(p -> {
-            thin(p);
-            setValuesFrom(pixelMapService.calcIsNode(this, p)._1);
+            result.update(r -> pixelMapService.thin(r, getTransformSource(), p)._1);
+            result.update(r -> pixelMapService.calcIsNode(r, p)._1);
         });
-        thin(pPixel);
+        result.update(r -> pixelMapService.thin(r, getTransformSource(), pPixel)._1);
+        setValuesFrom(result.get());
         if (mAutoTrackChanges) {
             if (pValue) { // turning pixel on
                 trackPixelOn(pPixel);
@@ -594,51 +597,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     protected void setData_FOR_TESTING_PURPOSES_ONLY(Pixel pPixel, boolean pState, byte pValue) {
         setValuesFrom(pixelMapService.setData(this, pPixel, pState, pValue));
     }
-
-    /**
-     * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
-     * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
-     * false.
-     *
-     * @param pPixel the pixel
-     * @return true, if the Pixel was thinned.
-     */
-    private boolean thin(Pixel pPixel) {
-        if (!pPixel.isEdge(this)) {
-            return false;
-        }
-        boolean canEliminate = false;
-        for (int[] set : eliminate) {
-            canEliminate |= pPixel.getNeighbour(set[0]).isEdge(this)
-                    && pPixel.getNeighbour(set[1]).isEdge(this)
-                    && !pPixel.getNeighbour(set[2]).isEdge(this);
-        }
-        if (canEliminate) {
-            pPixel.setEdge(this, false);
-            setValuesFrom(pixelMapService.nodeRemove(this, pPixel));
-        }
-        return canEliminate;
-    }
-
-    public void validate() {
-        mLogger.info(() -> "Number of chains: " + mPixelChains.size());
-//        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
-        Set segments = new HashSet<ISegment>();
-        for (int x = 0; x < mWidth; x++) {
-            for (int y = 0; y < mHeight; y++) {
-                var list = mSegmentIndex.get(x, y);
-                if (list != null) {
-                    list.stream().forEach(t -> segments.add(t._2));
-                }
-            }
-        }
-//        if (mSegmentCount != segments.size()) {
-//            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
-//            throw new IllegalStateException(message);
-//        }
-    }
-
-
 
 
 }

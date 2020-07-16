@@ -234,23 +234,23 @@ public class PixelMapApproximationService {
             SplitTimer.split("PixelMap actionProcess() start");
 
             pixelMap.process03_generateNodes(pProgressObserver);
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## generateNodes done");
 
             pixelMap.process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## removeBristles done");
 
             pixelMap.process04a_removeLoneNodes(pProgressObserver);
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## removeLoneNodes done");
 
             pixelMap.process05_generateChains(pProgressObserver);
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## generateChains done");
 
             pixelMap.process05a_findLoops(pProgressObserver);
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## findLoops done");
 
             var pegs = new Object[]{
@@ -259,12 +259,12 @@ public class PixelMapApproximationService {
             };
             pixelMap.getPegCounter().clear(pegs);
             pixelMap.process06_straightLinesRefineCorners(pProgressObserver, pixelMap.mTransformSource.getLineTolerance() / pixelMap.mTransformSource.getHeight());
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## straightLinesRefineCorners done");
 
             logger.info(pixelMap.getPegCounter().getString(pegs));
             pixelMap.process07_mergeChains(pProgressObserver);
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## process07_mergeChains done");
 
             pegs = new Object[]{
@@ -278,7 +278,7 @@ public class PixelMapApproximationService {
             pixelMap.getPegCounter().clear(pegs);
             pixelMap.process08_refine(pProgressObserver);
             logger.info(pixelMap.getPegCounter().getString(pegs));
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             logger.info("############## process08_refine done");
             // // reapproximate(null, mTransformSource.getLineTolerance());
 //                pixelMap.validate();
@@ -286,7 +286,7 @@ public class PixelMapApproximationService {
             //process04a_removeLoneNodes();
             pixelMap.indexSegments();
             logger.info("############## indexSegments done");
-            pixelMap.validate();
+            pixelMapService.validate(pixelMap);
             //
         } catch (Exception pEx) {
             logger.info(() -> "pEx");

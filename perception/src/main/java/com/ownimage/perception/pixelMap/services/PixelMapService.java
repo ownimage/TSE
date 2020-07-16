@@ -24,6 +24,7 @@ import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,8 +33,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -65,6 +68,9 @@ public class PixelMapService {
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
+
+    private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+
 
     public boolean canRead(IPersistDB pDB, String pId) {
         String pixelString = pDB.read(pId + ".data");
@@ -845,6 +851,52 @@ public class PixelMapService {
 
     public Stream<PixelChain> streamPixelChains(@NotNull PixelMapData pixelMap) {
         return pixelMap.pixelChains().stream();
+    }
+
+    /**
+     * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
+     * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
+     * false.
+     *
+     * @param pixel the pixel
+     * @return true, if the Pixel was thinned.
+     */
+    public Tuple2<ImmutablePixelMapData, Boolean> thin(
+            @NotNull PixelMapData pixelMap,
+            @Nullable IPixelMapTransformSource transformSource,
+            @NotNull Pixel pixel) {
+        if (!pixelService.isEdge(pixelMap, pixel)) {
+            return new Tuple2<>(pixelMapMappingService.toImmutablePixelMapData(pixelMap), false);
+        }
+        var pixelMapResult = pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+        boolean canEliminate = false;
+        for (int[] set : eliminate) {
+            canEliminate |= pixelService.isEdge(pixelMap,pixel.getNeighbour(set[0]))
+                    && pixelService.isEdge(pixelMap, pixel.getNeighbour(set[1]))
+                    && !pixelService.isEdge(pixelMap, pixel.getNeighbour(set[2]));
+        }
+        if (canEliminate) {
+            pixelMapResult = pixelMapApproximationService.setEdge(pixelMapResult, transformSource, pixel, false);
+            pixelMapResult = nodeRemove(pixelMapResult, pixel);
+        }
+        return new Tuple2<>(pixelMapResult, canEliminate);
+    }
+
+    public void validate(@NotNull PixelMapData pixelMap) {
+//        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
+        Set segments = new HashSet<ISegment>();
+        for (int x = 0; x < pixelMap.width(); x++) {
+            for (int y = 0; y < pixelMap.height(); y++) {
+                var list = pixelMap.segmentIndex().get(x, y);
+                if (list != null) {
+                    list.stream().forEach(t -> segments.add(t._2));
+                }
+            }
+        }
+//        if (mSegmentCount != segments.size()) {
+//            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
+//            throw new IllegalStateException(message);
+//        }
     }
 
 }
