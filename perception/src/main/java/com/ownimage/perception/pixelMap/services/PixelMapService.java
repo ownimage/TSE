@@ -150,7 +150,7 @@ public class PixelMapService {
         logger.info("segment count = " + pixelMap.segmentCount());
 
         Framework.logExit(logger);
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withAutoTrackChanges(true);
     }
 
     // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerPoint
