@@ -8,6 +8,7 @@ import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,12 +145,12 @@ public class PixelMapApproximationService {
         return result.get();
     }
 
-    private void trackPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public @NotNull ImmutablePixelMapData trackPixelOn(
+            @NotNull PixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
-        trackPixelOn(pixelMap, transformSource, pixels);
+        return trackPixelOn(pixelMap, transformSource, pixels);
     }
 
     private void trackPixelOff(
@@ -202,15 +204,51 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Collection<Pixel> pixels) {
         if (pixels.isEmpty()) {
-            return pixelMap;
+            return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
         }
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource);
-        mutable.trackPixelOn(pixels);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+
+        var result = StrongReference.of(pixelMapService.resetInChain(pixelMap));
+        result.update(r -> pixelMapService.resetVisited(r));
+
+        var nodes = new HashSet<Node>();
+        pixels.forEach(pixel -> {
+            pixelMapService.getNode(result.get(), pixel).ifPresent(nodes::add);
+            pixel.getNeighbours()
+                    .forEach(neighbour -> {
+                        pixelMapService.getPixelChains(result.get(), neighbour)
+                                .forEach(pc -> {
+                                    pixelChainService.getStartNode(result.get(), pc).ifPresent(nodes::add);
+                                    pixelChainService.getEndNode(result.get(), pc).ifPresent(nodes::add);
+                                    result.update(r -> pixelMapService.removePixelChain(r, pc));
+                                });
+                        neighbour.getNode(result.get()).ifPresent(nodes::add); // this is the case where is is not in a chain
+                    });
+        });
+
+        nodes.stream()
+                .map(n -> pixelMapService.generateChainsAndApproximate(result.get(), transformSource, n))
+                .peek(gca -> result.update(r -> gca._1))
+                .flatMap(r -> r._2)
+                .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));
+
+        // if there is a loop then this ensures that it is closed and converted to pixel chain
+        pixels.stream()
+                .filter(p -> pixelService.isEdge(result.get(), p))
+                .findFirst()
+                .filter(p -> !pixelService.isNode(result.get(), p))
+                .filter(p -> pixelMapService.getPixelChains(result.get(), p).isEmpty())
+                .stream()
+                .peek(p -> result.update(r -> pixelMapService.setNode(r, p, true)))
+                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), transformSource, new Node(p)))
+                .peek(gca -> result.update(r -> gca._1))
+                .flatMap(r -> r._2)
+                .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));
+
+        return result.get();
     }
 
 

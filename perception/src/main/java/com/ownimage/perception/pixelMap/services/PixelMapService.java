@@ -929,7 +929,7 @@ public class PixelMapService {
         if (result.get().autoTrackChanges()) {
             var mutable = pixelMapMappingService.toPixelMap(result.get(), transformSource);
             if (isEdge) { // turning pixel on
-                mutable.trackPixelOn(pixel);
+                mutable.setValuesFrom(pixelMapApproximationService.trackPixelOn(mutable, transformSource, pixel));
             } else { // turning pixel off
                 mutable.trackPixelOff(pixel);
             }

@@ -23,7 +23,9 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapChainGenerationService;
+import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
 import lombok.NonNull;
@@ -58,13 +60,17 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     private final static long serialVersionUID = 1L;
     private static PixelMapService pixelMapService;
     private static PixelMapChainGenerationService pixelMapChainGenerationService;
+    private static PixelMapApproximationService pixelMapApproximationService;
     private static PixelChainService pixelChainService;
+    private static PixelMapMappingService pixelMapMappingService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
         pixelMapService = defaultServices.getPixelMapService();
         pixelMapChainGenerationService = defaultServices.pixelMapChainGenerationService();
+        pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
         pixelChainService = defaultServices.getPixelChainService();
+        pixelMapMappingService = defaultServices.getPixelMapMappingService();
     }
 
     public PixelMap(int pWidth, int pHeight, boolean p360, IPixelMapTransformSource pTransformSource) {
@@ -146,7 +152,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         clone.mAutoTrackChanges = false;
         pPixels.forEach(pixel -> pixel.setEdge(clone, true));
         clone.mAutoTrackChanges = true;
-        clone.trackPixelOn(pPixels);
+        clone.setValuesFrom(pixelMapApproximationService.trackPixelOn(clone, mTransformSource, pPixels));
         return clone;
     }
 
@@ -286,8 +292,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return clone;
     }
 
-
-
     public void process05a_findLoops(IProgressObserver pProgressObserver) {
         pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
@@ -326,58 +330,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     void setInChain(Pixel pPixel, boolean pValue) {
         setValuesFrom(pixelMapService.setData(this, pPixel, pValue, IN_CHAIN));
-    }
-
-
-
-    public void trackPixelOn(@NonNull Collection<Pixel> pPixels) {
-        if (pPixels.isEmpty()) {
-            return;
-        }
-
-        var reset = pixelMapService.resetInChain(this);
-        reset = pixelMapService.resetVisited(reset);
-        setValuesFrom(reset);
-
-        var nodes = new HashSet<Node>();
-        pPixels.forEach(pixel -> {
-            pixel.getNode(this).ifPresent(nodes::add);
-            pixel.getNeighbours()
-                    .forEach(neighbour -> {
-                        pixelMapService.getPixelChains(this, neighbour)
-                                .forEach(pc -> {
-                                    pixelChainService.getStartNode(this, pc).ifPresent(nodes::add);
-                                    pixelChainService.getEndNode(this, pc).ifPresent(nodes::add);
-                                    setValuesFrom(pixelMapService.removePixelChain(this, pc));
-                                });
-                        neighbour.getNode(this).ifPresent(nodes::add); // this is the case where is is not in a chain
-                    });
-        });
-
-        nodes.stream()
-                .map(n -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), n))
-                .peek(r -> setValuesFrom(r._1))
-                .flatMap(r -> r._2)
-                .forEach(pc -> setValuesFrom(pixelMapService.addPixelChain(this, pc)));
-
-        // if there is a loop then this ensures that it is closed and converted to pixel chain
-        pPixels.stream()
-                .filter(p -> p.isEdge(this))
-                .findFirst()
-                .filter(p -> !p.isNode(this))
-                .filter(p -> pixelMapService.getPixelChains(this, p).isEmpty())
-                .stream()
-                .peek(p -> setValuesFrom(pixelMapService.setNode(this, p, true)))
-                .map(p -> pixelMapService.generateChainsAndApproximate(this, this.getTransformSource(), new Node(p)))
-                .peek(r -> setValuesFrom(r._1))
-                .flatMap(r -> r._2)
-                .forEach(pc -> setValuesFrom(pixelMapService.addPixelChain(this, pc)));
-    }
-
-
-    public void trackPixelOn(@NonNull Pixel pPixel) {
-        List<Pixel> pixels = Collections.singletonList(pPixel);
-        trackPixelOn(pixels);
     }
 
     public void trackPixelOff(@NonNull Pixel pPixel) {
@@ -461,7 +413,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
                 });
     }
 
-
     public void process05_generateChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
         nodes().values().forEach(node -> {
@@ -526,8 +477,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return Services.getServices().getPegCounter();
     }
 
-
-
     public synchronized void indexSegments() {
 //        var pixelChains = new ArrayList<PixelChain>();
 //        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
@@ -542,13 +491,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mPixelChains.forEach(pc -> pc.getSegments().forEach(seg -> index(pc, seg, true)));
     }
 
-
-
-
     // access weakened for testing only
     protected void setData_FOR_TESTING_PURPOSES_ONLY(Pixel pPixel, boolean pState, byte pValue) {
         setValuesFrom(pixelMapService.setData(this, pPixel, pState, pValue));
     }
-
-
 }
