@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -339,6 +340,14 @@ public class PixelMapService {
         db.write(id + ".objects", objectString);
         objectString = null;
         Framework.logExit(logger);
+    }
+
+    public ImmutablePixelMapData actionPixelOn(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
+            @NotNull Pixel pixel) {
+        var pixels = Collections.singletonList(pixel);
+        return actionPixelOn(pixelMap, transformSource, pixels);
     }
 
     public ImmutablePixelMapData actionPixelOn(
