@@ -367,12 +367,22 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelOff(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
             int cursorSize) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionPixelOff(pixel, cursorSize);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        double radius = (double) cursorSize / result.get().height();
+        new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
+                .forEach((x, y) ->
+                        getOptionalPixelAt(result.get(), x, y)
+                                .filter(p -> pixelService.isEdge(result.get(), p))
+                                .filter(p -> pixel
+                                        .getUHVWMidPoint(result.get().height())
+                                        .distance(p.getUHVWMidPoint(result.get().height())) < radius)
+                                .ifPresent(p -> result.update(r -> setEdge(r, transformSource, p, false)))
+                );
+        return result.get();
     }
 
     public ImmutablePixelMapData actionDeletePixelChain(

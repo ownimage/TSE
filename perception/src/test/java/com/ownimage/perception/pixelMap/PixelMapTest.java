@@ -698,7 +698,7 @@ public class PixelMapTest {
         PixelMap resultOn = underTest.actionPixelOn(pixel);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
         assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
-        PixelMap resultOff = underTest.actionPixelOff(pixel, 1);
+        var resultOff = pixelMapService.actionPixelOff(underTest, underTest.mTransformSource, pixel, 1);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
         assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
         assertFalse(pixelMapService.getOptionalPixelAt(resultOff,5, 5).get().isEdge(resultOff));

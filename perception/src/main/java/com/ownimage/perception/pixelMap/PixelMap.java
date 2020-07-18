@@ -123,23 +123,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return "PixelMap{mVersion=" + mVersion + "}";
     }
 
-    public PixelMap actionPixelOff(Pixel pPixel, int pCursorSize) {
-        PixelMap clone = new PixelMap(this);
-        StrongReference<Boolean> changesMade = new StrongReference<>(false);
-        double radius = (double) pCursorSize / getHeight();
-        new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize, pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
-                .forEach((x, y) ->
-                        pixelMapService.getOptionalPixelAt(clone, x, y)
-                                .filter(pPixel1 -> pPixel1.isEdge(clone))
-                                .filter(p -> pPixel.getUHVWMidPoint(clone.getHeight()).distance(p.getUHVWMidPoint(clone.getHeight())) < radius)
-                                .ifPresent(p -> {
-                                    p.setEdge(clone, false);
-                                    changesMade.set(true);
-                                })
-                );
-        return changesMade.get() ? clone : this;
-    }
-
     public PixelMap actionPixelOn(Collection<Pixel> pPixels) {
         PixelMap clone = new PixelMap(this);
         clone.mAutoTrackChanges = false;
