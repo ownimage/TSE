@@ -342,22 +342,10 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Collection<Pixel> pixels) {
-//        var mutable = pixelMapMappingService.toPixelMap(pixelMap, transformSource).actionPixelOn(pixels);
-//        return pixelMapMappingService.toImmutablePixelMapData(mutable);
-
-
-//        PixelMap clone = new PixelMap(this);
-//        clone.mAutoTrackChanges = false;
-//        pPixels.forEach(pixel -> pixel.setEdge(clone, true));
-//        clone.mAutoTrackChanges = true;
-//        clone.trackPixelOn(pPixels);
-//        return clone;
-
-
-        var result = StrongReference.of(pixelMap);
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         result.update(r -> r.withAutoTrackChanges(false));
         pixels.forEach(pixel ->
                 result.update(r -> pixelMapApproximationService.setEdge(r, transformSource, pixel, true)));

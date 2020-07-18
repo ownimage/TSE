@@ -602,7 +602,7 @@ public class PixelMapTest {
                 new Pixel(6, 7),
                 new Pixel(6, 8)
         );
-        pixelMap = pixelMap.actionPixelOn(pixels);
+        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), pixels));
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -629,7 +629,7 @@ public class PixelMapTest {
                 new Pixel(6, 8),
                 new Pixel(6, 9)
         );
-        pixelMap = pixelMap.actionPixelOn(pixels);
+        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), pixels));
         assertEquals(1, pixelMap.pixelChains().size());
     }
 

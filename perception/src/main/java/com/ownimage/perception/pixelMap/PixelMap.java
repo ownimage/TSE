@@ -123,15 +123,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return "PixelMap{mVersion=" + mVersion + "}";
     }
 
-    public PixelMap actionPixelOn(Collection<Pixel> pPixels) {
-        PixelMap clone = new PixelMap(this);
-        clone.mAutoTrackChanges = false;
-        pPixels.forEach(pixel -> pixel.setEdge(clone, true));
-        clone.mAutoTrackChanges = true;
-        clone.setValuesFrom(pixelMapApproximationService.trackPixelOn(clone, mTransformSource, pPixels));
-        return clone;
-    }
-
     public PixelMap actionPixelOn(Pixel pPixel) {
         if (pPixel.isEdge(this)) {
             return this; // short circuit return
