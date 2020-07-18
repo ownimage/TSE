@@ -27,6 +27,7 @@ import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapChainGenerationService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
 import io.vavr.Tuple2;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +59,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
     private static PixelMapChainGenerationService pixelMapChainGenerationService;
     private static PixelMapApproximationService pixelMapApproximationService;
     private static PixelChainService pixelChainService;
-    private static PixelMapMappingService pixelMapMappingService;
+    private static PixelMapTransformService pixelMapTransformService;
 
     static {
         com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
@@ -66,7 +67,7 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         pixelMapChainGenerationService = defaultServices.pixelMapChainGenerationService();
         pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
         pixelChainService = defaultServices.getPixelChainService();
-        pixelMapMappingService = defaultServices.getPixelMapMappingService();
+        pixelMapTransformService = defaultServices.getPixelMapTransformService();
     }
 
     public PixelMap(int pWidth, int pHeight, boolean p360, IPixelMapTransformSource pTransformSource) {
@@ -163,15 +164,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return clone;
     }
 
-    private Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(int pX, int pY) {
-        Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
-        Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
-        Framework.checkParameterGreaterThanEqual(mLogger, pY, 0, "pY");
-        Framework.checkParameterLessThan(mLogger, pY, getHeight(), "pY");
-        val segmentIndex = getSegmentIndex().get(pX, pY);
-        return Optional.ofNullable(segmentIndex);
-    }
-
     public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
@@ -193,7 +185,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
             Point centre = pixel.getUHVWMidPoint(this.getHeight());
             if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
                 val segments = new HashSet();
-                getSegments(i.getX(), i.getY()).map(ImmutableSet::toCollection).ifPresent(segments::addAll);
+                pixelMapTransformService.getSegments(this, i.getX(), i.getY())
+                        .map(ImmutableSet::toCollection).ifPresent(segments::addAll);
                 if (pAdd) {
                     segments.add(new Tuple2<>(pPixelChain, pSegment));
                 } else {

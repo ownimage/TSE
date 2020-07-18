@@ -11,6 +11,7 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.render.ITransformResult;
 import io.vavr.Tuple2;
@@ -136,7 +137,8 @@ public class PixelMapTransformService {
         return result.get();
     }
 
-    private Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(@NotNull com.ownimage.perception.pixelMap.immutable.PixelMapData pixelMap, int x, int y) {
+    public Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(
+            @NotNull PixelMapData pixelMap, int x, int y) {
         Framework.checkParameterGreaterThanEqual(mLogger, x, 0, "x");
         Framework.checkParameterLessThan(mLogger, x, pixelMap.width(), "x");
         Framework.checkParameterGreaterThanEqual(mLogger, y, 0, "y");
