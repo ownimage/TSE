@@ -132,4 +132,17 @@ public class PixelMapBase implements PixelMapData {
     public double getLineCurvePreference() {
         return mTransformSource.getLineCurvePreference();
     }
+
+
+    public void setValuesFrom(ImmutablePixelMapData other) {
+        if (m360 != other.is360() || mWidth != other.width() || mHeight != other.height()) {
+            throw new IllegalStateException("Incompatible PixelMaps");
+        }
+        mData = other.data();
+        mNodes = other.nodes();
+        mPixelChains = other.pixelChains();
+        mSegmentIndex = other.segmentIndex();
+        mSegmentCount = other.segmentCount();
+        mAutoTrackChanges = other.autoTrackChanges();
+    }
 }

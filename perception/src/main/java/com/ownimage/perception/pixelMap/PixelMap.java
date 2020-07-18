@@ -41,7 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /*
  * The Class PixelMap is so that there is an efficient way to manipulate the edges once it has passed through the Canny Edge Detector.  This class and all of its supporting classes work in UHVW units.
@@ -330,48 +329,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     void setInChain(Pixel pPixel, boolean pValue) {
         setValuesFrom(pixelMapService.setData(this, pPixel, pValue, IN_CHAIN));
-    }
-
-    public void trackPixelOff(@NonNull Pixel pPixel) {
-        List<Pixel> pixels = Collections.singletonList(pPixel);
-        trackPixelOff(pixels);
-    }
-
-    private void trackPixelOff(@NonNull List<Pixel> pPixels) {
-        double tolerance = getLineTolerance() / getHeight();
-        double lineCurvePreference = getLineCurvePreference();
-        pPixels.forEach(pixel -> pixelMapService.getPixelChains(this, pixel).forEach(pc -> {
-            setValuesFrom(pixelMapService.pixelChainRemove(this, pc));
-            pc.getPixels().stream().forEach(p -> {
-                this.setInChain(p, false);
-                this.setVisited(p, false);
-            });
-            pc.streamPixels()
-                    .filter(pPixel1 -> pPixel1.isNode(this))
-                    .forEach(chainPixel -> chainPixel.getNode(this)
-                            .ifPresent(node -> {
-                                var generatedChains = pixelMapChainGenerationService.generateChains(this, node);
-                                setValuesFrom(generatedChains._1);
-                                var chains = generatedChains._2
-                                        .parallelStream()
-                                        .map(pc2 -> pixelChainService.approximate(this, pc2, tolerance))
-                                        .collect(Collectors.toList());
-                                setValuesFrom(pixelMapService.addPixelChains(this, chains));
-                            })
-                    );
-        }));
-    }
-
-    public void setValuesFrom(ImmutablePixelMapData other) {
-        if (m360 != other.is360() || mWidth != other.width() || mHeight != other.height()) {
-            throw new IllegalStateException("Incompatible PixelMaps");
-        }
-        mData = other.data();
-        mNodes = other.nodes();
-        mPixelChains = other.pixelChains();
-        mSegmentIndex = other.segmentIndex();
-        mSegmentCount = other.segmentCount();
-        mAutoTrackChanges = other.autoTrackChanges();
     }
 
     public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {

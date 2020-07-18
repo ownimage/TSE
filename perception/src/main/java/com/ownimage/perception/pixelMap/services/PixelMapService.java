@@ -931,7 +931,7 @@ public class PixelMapService {
             if (isEdge) { // turning pixel on
                 mutable.setValuesFrom(pixelMapApproximationService.trackPixelOn(mutable, transformSource, pixel));
             } else { // turning pixel off
-                mutable.trackPixelOff(pixel);
+                mutable.setValuesFrom(pixelMapApproximationService.trackPixelOff(mutable, transformSource, pixel));
             }
             result.set(pixelMapMappingService.toImmutablePixelMapData(mutable));
         }

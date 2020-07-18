@@ -10,7 +10,6 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
@@ -18,7 +17,6 @@ import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,17 +25,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
-import static com.ownimage.perception.pixelMap.PixelConstants.IN_CHAIN;
 import static com.ownimage.perception.pixelMap.PixelConstants.N;
 import static com.ownimage.perception.pixelMap.PixelConstants.NE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NW;
 import static com.ownimage.perception.pixelMap.PixelConstants.S;
 import static com.ownimage.perception.pixelMap.PixelConstants.SE;
 import static com.ownimage.perception.pixelMap.PixelConstants.SW;
-import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
 import static com.ownimage.perception.pixelMap.PixelConstants.W;
 
 public class PixelMapApproximationService {
@@ -153,53 +148,41 @@ public class PixelMapApproximationService {
         return trackPixelOn(pixelMap, transformSource, pixels);
     }
 
-    private void trackPixelOff(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public @NotNull ImmutablePixelMapData trackPixelOff(
+            @NotNull PixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
-        trackPixelOff(pixelMap, transformSource, pixels);
+        return trackPixelOff(pixelMap, transformSource, pixels);
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOff(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull List<Pixel> pixels) {
-        if (pixels.isEmpty()) {
-            return pixelMap;
-        }
-
-        var result = StrongReference.of(pixelMap);
         double tolerance = transformSource.getLineTolerance() / pixelMap.height();
         double lineCurvePreference = transformSource.getLineCurvePreference();
-
-        var chainsToAdd = new ArrayList<PixelChain>();
-        var chainsToRemove = new ArrayList<PixelChain>();
-        pixels.forEach(pixel -> pixelMapService.getPixelChains(pixelMap, pixel).forEach(pc -> {
-            chainsToRemove.add(pc);
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
+            result.update(r -> pixelMapService.pixelChainRemove(r, pc));
             pc.getPixels().stream().forEach(p -> {
-                result.update(r -> {
-                    var oldVal = r.data().get(p.getX(), p.getY());
-                    var newVal = (byte) (oldVal & (ALL ^ (IN_CHAIN & VISITED)));
-                    return r.withData(r.data().set(p.getX(), p.getY(), newVal));
-                });
+                result.update(r -> pixelMapService.setInChain(r, p, false));
+                result.update(r -> pixelMapService.setVisited(r, p, false));
             });
             pc.streamPixels()
-                    .filter(p -> pixelService.isNode(pixelMap, p))
-                    .forEach(p -> pixelMapService.getNode(pixelMap, p)
+                    .filter(pPixel1 -> pixelService.isNode(result.get(), pPixel1))
+                    .forEach(chainPixel -> pixelMapService.getNode(result.get(), chainPixel)
                             .ifPresent(node -> {
-                                // TODO needs to be fixed
-                                var pm = pixelMapMappingService.toPixelMap(pixelMap, transformSource);
-                                var gc = pixelMapChainGenerationService.generateChains(pm, node);
-                                result.set(gc._1);
-                                var chains = gc._2.parallelStream()
-                                        .map(pc2 -> pixelChainService.approximate(pixelMap, pc2, tolerance))
+                                var generatedChains = pixelMapChainGenerationService.generateChains(result.get(), node);
+                                result.update(r -> generatedChains._1);
+                                var chains = generatedChains._2
+                                        .parallelStream()
+                                        .map(pc2 -> pixelChainService.approximateCurvesOnly(result.get(), pc2, tolerance, lineCurvePreference))
                                         .collect(Collectors.toList());
-                                chainsToAdd.addAll(chains);
+                                result.update(r -> pixelMapService.addPixelChains(r, chains));
                             })
                     );
         }));
-        result.update(r -> r.withPixelChains(r.pixelChains().addAll(chainsToAdd)));
         return result.get();
     }
 
