@@ -2,10 +2,12 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
+import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -145,4 +147,33 @@ public class PixelMapBase implements PixelMapData {
         mSegmentCount = other.segmentCount();
         mAutoTrackChanges = other.autoTrackChanges();
     }
+
+    public IPixelMapTransformSource getTransformSource() {
+        return mTransformSource;
+    }
+
+    public Point getUHVWHalfPixel() {
+        return mUHVWHalfPixel;
+    }
+
+
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public void setWidth(int pWidth) {
+        mWidth = pWidth;
+    }
+
+
+    public PegCounter getPegCounter() {
+        return Services.getServices().getPegCounter();
+    }
+
+
+    public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
+        return mSegmentIndex;
+    }
+
 }

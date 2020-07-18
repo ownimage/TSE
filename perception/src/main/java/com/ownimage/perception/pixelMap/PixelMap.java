@@ -28,15 +28,12 @@ import com.ownimage.perception.pixelMap.services.PixelMapChainGenerationService;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import io.vavr.Tuple2;
-import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
@@ -121,10 +118,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / mWidth, 0.5d / mHeight);
     }
 
-
-
-
-
     public String toString() {
         return "PixelMap{mVersion=" + mVersion + "}";
     }
@@ -170,26 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return clone;
     }
 
-
-
-    /*
-     * Adds a node at the position specified, will throw a RuntimeException if the node already exists.  @See getNode(IntegerPoint).
-     * @param pIntegerPoint the pixel
-     */
-    private Node nodeAdd(IntegerPoint pIntegerPoint) {
-        Node node = mNodes.get(pIntegerPoint);
-        if (node != null) {
-            return node;            // throw new RuntimeException(String.format("Trying to add node that already exists, nodesCount=%s", nodeCount()));
-        }
-        node = new Node(pIntegerPoint);
-        mNodes = mNodes.put(pIntegerPoint, node);
-        return node;
-    }
-
-    public Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegmentIndex() {
-        return mSegmentIndex;
-    }
-
     private Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(int pX, int pY) {
         Framework.checkParameterGreaterThanEqual(mLogger, pX, 0, "pX");
         Framework.checkParameterLessThan(mLogger, pX, getWidth(), "pX");
@@ -197,26 +170,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         Framework.checkParameterLessThan(mLogger, pY, getHeight(), "pY");
         val segmentIndex = getSegmentIndex().get(pX, pY);
         return Optional.ofNullable(segmentIndex);
-    }
-
-
-
-    private IPixelMapTransformSource getTransformSource() {
-        return mTransformSource;
-    }
-
-    private Point getUHVWHalfPixel() {
-        return mUHVWHalfPixel;
-    }
-
-
-
-    public int getWidth() {
-        return mWidth;
-    }
-
-    private void setWidth(int pWidth) {
-        mWidth = pWidth;
     }
 
     public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
@@ -430,9 +383,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public PegCounter getPegCounter() {
-        return Services.getServices().getPegCounter();
-    }
 
     public synchronized void indexSegments() {
 //        var pixelChains = new ArrayList<PixelChain>();
