@@ -343,7 +343,7 @@ public class PixelMapTest {
         val deletePixels = new ArrayList<Pixel>();
         deletePixels.add(new Pixel(4, 1));
         // WHEN
-        var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, deletePixels);
+        var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, pixelMap.mTransformSource, deletePixels);
         // THEN
         assertEquals(2, result.pixelChains().size());
         String[] actual = Utility.getMap(pixelMapMappingService.toPixelMap(result, null));

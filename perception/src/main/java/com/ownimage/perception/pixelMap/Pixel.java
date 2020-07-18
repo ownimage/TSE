@@ -81,7 +81,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         mUHVW = new Point(x, y);
     }
 
-    public int countEdgeNeighbours(PixelMap pPixelMap) {
+    public int countEdgeNeighbours(PixelMapData pPixelMap) {
         int count = 0;
 
         for (Pixel pixel : getNeighbours()) {
@@ -148,7 +148,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return allNeighbours;
     }
 
-    public int countNodeNeighbours(PixelMap pPixelMap) {
+    public int countNodeNeighbours(PixelMapData pPixelMap) {
         return getNodeNeighbours(pPixelMap).size();
     }
 
@@ -166,10 +166,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public void setEdge(PixelMap pPixelMap, boolean pValue) {
         pPixelMap.setValuesFrom(pixelMapService.setEdge(pPixelMap, pPixelMap.mTransformSource, this, pValue));
-    }
-
-    public void setInChain(PixelMap pPixelMap, boolean pValue) {
-        pPixelMap.setInChain(this, pValue);
     }
 
     public boolean isNeighbour(Pixel pPixel) {
@@ -196,10 +192,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public boolean isVisited(PixelMapData pPixelMap) {
         return pixelService.isVisited(pPixelMap, this.toIntegerPoint());
-    }
-
-    public void setVisited(PixelMap pPixelMap, boolean pValue) {
-        pPixelMap.setVisited(this, pValue);
     }
 
 //    public void printNeighbours(final int pSize) {

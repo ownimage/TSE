@@ -160,7 +160,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setVisited(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull Pixel pixel,
             @NotNull boolean isVisited) {
         var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
@@ -169,7 +169,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setInChain(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @NotNull Pixel pixel,
             @NotNull boolean isInChain) {
         var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
@@ -377,6 +377,7 @@ public class PixelMapService {
 
     public ImmutablePixelMapData actionDeletePixelChain(
             @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
             @NotNull Collection<Pixel> pixels) {
         var clone = StrongReference.of(pixelMap.withAutoTrackChanges(false));
         pixels.stream()
@@ -384,7 +385,7 @@ public class PixelMapService {
                 .forEach(p -> getPixelChains(clone.get(), p)
                         .forEach(pc -> {
                             // TODO in the implementation of the method below make the parameter immutable
-                            clone.update(c -> clearInChainAndVisitedThenSetEdge(c, pc));
+                            clone.update(c -> clearInChainAndVisitedThenSetEdge(c, transformSource, pc));
                             pixelChainService.getStartNode(clone.get(), pc)
                                     .ifPresent(n -> clone.update(c -> nodeRemove(c, n)));
                             pixelChainService.getEndNode(clone.get(), pc)
@@ -498,8 +499,8 @@ public class PixelMapService {
 
     public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel,
-            @NotNull IPixelMapTransformSource transformSource) {
+            @NotNull IPixelMapTransformSource transformSource,
+            @NotNull Pixel pixel) {
         if (getPixelChains(pixelMap, pixel).isEmpty()) {
             return pixelMap;
         }
@@ -621,20 +622,24 @@ public class PixelMapService {
         return chains;
     }
 
-    // TODO need to make this immutable
-    public ImmutablePixelMapData clearInChainAndVisitedThenSetEdge(ImmutablePixelMapData pixelMapData, PixelChain pixelChain) {
-        var pixelMap = pixelMapMappingService.toPixelMap(pixelMapData, null);
-        pixelChain.getPixels().forEach(p -> p.setInChain(pixelMap, false));
-        pixelChain.getPixels().forEach(p -> p.setVisited(pixelMap, false));
+    public ImmutablePixelMapData clearInChainAndVisitedThenSetEdge(
+            @NotNull PixelMapData pixelMapData,
+            @NotNull IPixelMapTransformSource transformSource,
+            @NotNull PixelChain pixelChain) {
+        var result = StrongReference.of(pixelMapData);
+        pixelChain.getPixels().forEach(p -> {
+            result.update(r -> setInChain(r, p, false));
+            result.update(r -> setVisited(r, p, false));
+        });
         pixelChain.getPixels().stream()
                 .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
                 .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
-                .forEach(p -> p.setEdge(pixelMap, false));
+                .forEach(p -> result.update(r -> setEdge(r, transformSource, p, false)));
         pixelChain.getPixels().stream()
-                .filter(pPixel -> pPixel.isNode(pixelMap))
-                .filter(p -> p.countEdgeNeighbours(pixelMap) < 2 || p.countNodeNeighbours(pixelMap) == 2)
-                .forEach(p -> p.setEdge(pixelMap, false));
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+                .filter(p -> pixelService.isNode(result.get(), p))
+                .filter(p -> p.countEdgeNeighbours(result.get()) < 2 || p.countNodeNeighbours(result.get()) == 2)
+                .forEach(p -> result.update(r -> setEdge(r, transformSource, p, false)));
+        return pixelMapMappingService.toImmutablePixelMapData(result.get());
     }
 
     public Optional<Node> getNode(PixelMapData pixelMap, IntegerPoint pIntegerPoint) {

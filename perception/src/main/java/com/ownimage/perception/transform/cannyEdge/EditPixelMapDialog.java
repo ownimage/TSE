@@ -897,7 +897,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             return false;
         }
         ImmutablePixelMapData undo = getPixelMap();
-        setPixelMap(pixelMapService.actionDeletePixelChain(getPixelMap(), pPixels));
+        setPixelMap(pixelMapService.actionDeletePixelChain(getPixelMap(), mCannyEdgeTransform, pPixels));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Delete PixelChain", undo, getPixelMap());
             return true;
@@ -962,7 +962,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     synchronized private boolean actionPixelChainApproximateCurvesOnly(@NonNull Pixel pPixel) {
         ImmutablePixelMapData undo = getPixelMap();
-        setPixelMap(pixelMapService.actionPixelChainApproximateCurvesOnly(getPixelMap(), pPixel, mCannyEdgeTransform));
+        setPixelMap(pixelMapService.actionPixelChainApproximateCurvesOnly(getPixelMap(), mCannyEdgeTransform, pPixel));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Approximate Curves Only PixelChain", undo, getPixelMap());
             return true;
