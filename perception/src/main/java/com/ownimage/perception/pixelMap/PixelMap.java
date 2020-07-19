@@ -175,17 +175,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    public void process03_generateNodes(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Generating Nodes ...", 0);
-        pixelMapService.forEachPixel(this, pixel -> {
-            var calsIsNodeResult = pixelMapService.calcIsNode(this, pixel);
-            setValuesFrom(calsIsNodeResult._1);
-            if (calsIsNodeResult._2) {
-                setValuesFrom(pixelMapService.nodeAdd(calsIsNodeResult._1, pixel));
-            }
-        });
-    }
-
     public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(this, pixel -> {

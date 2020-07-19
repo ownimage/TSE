@@ -171,7 +171,8 @@ public class PixelMapTest {
                 "    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
         // THEN
@@ -216,7 +217,8 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(input);
         pixelMap.setValuesFrom(pixelMapApproximationService.process01_reset(pixelMap, null));
         pixelMap.setValuesFrom(pixelMapApproximationService.process02_thin(pixelMap, pixelMap.getTransformSource(), null));
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);
         // THEN
@@ -239,7 +241,8 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -259,7 +262,8 @@ public class PixelMapTest {
                 "N    E    "
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // WHEN
         pixelMap.process04b_removeBristles(null);
         // THEN
@@ -285,7 +289,8 @@ public class PixelMapTest {
                 "           ",
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // WHEN
         pixelMap.process04b_removeBristles(null);
         // THEN
@@ -311,7 +316,8 @@ public class PixelMapTest {
                 "           ",
         };
         PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+
         // WHEN
         pixelMap.process04b_removeBristles(null);
         // THEN
@@ -385,7 +391,10 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> {
+            val cp = pixelChainService.reverse(pixelMap, pc);
+            result.append(cp.toString());
+        });
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -407,7 +416,10 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> {
+            val cp = pixelChainService.reverse(pixelMap, pc);
+            result.append(cp.toString());
+        });
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -473,7 +485,10 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> {
+            val cp = pixelChainService.reverse(pixelMap, pc);
+            result.append(cp.toString());
+        });
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }

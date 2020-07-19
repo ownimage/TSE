@@ -53,6 +53,8 @@ public class PixelMapApproximationService {
         var result = pixelMap.withAutoTrackChanges(false);
         result = process01_reset(result, progress);
         result = process02_thin(result, transformSource, progress);
+        result = process03_generateNodes(result, progress);
+
         logger.info("############## thin done");
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
@@ -86,6 +88,20 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         new Range2D(pixelMap.width(), pixelMap.height())
                 .forEach((x, y) -> result.update(r -> thin(r, transformSource, pixelMapService.getPixelOptionalAt(r, x, y).orElseThrow())));
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process03_generateNodes(
+            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        reportProgress(pProgressObserver, "Generating Nodes ...", 0);
+        pixelMapService.forEachPixel(result.get(), pixel -> {
+            var calsIsNodeResult = pixelMapService.calcIsNode(result.get(), pixel);
+            result.set(calsIsNodeResult._1);
+            if (calsIsNodeResult._2) {
+                result.update(r -> pixelMapService.nodeAdd(r, pixel));
+            }
+        });
         return result.get();
     }
 
@@ -253,10 +269,6 @@ public class PixelMapApproximationService {
     public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
             SplitTimer.split("PixelMap actionProcess() start");
-
-            pixelMap.process03_generateNodes(pProgressObserver);
-            pixelMapService.validate(pixelMap);
-            logger.info("############## generateNodes done");
 
             pixelMap.process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
             pixelMapService.validate(pixelMap);

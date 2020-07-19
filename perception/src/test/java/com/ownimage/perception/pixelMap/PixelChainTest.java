@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 public class PixelChainTest {
 
     private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    private PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @Mock
@@ -60,7 +62,7 @@ public class PixelChainTest {
         double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
 
         PixelMap pixelMap = Utility.createMap(input, ipmts);
-        pixelMap.process03_generateNodes(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
 
         // WHEN
         pixelMap.process05_generateChains(null);
