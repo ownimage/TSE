@@ -175,31 +175,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    public void process04b_removeBristles(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Removing Bristles ...", 0);
-        Vector<Pixel> toBeRemoved = new Vector<>();
-        nodes().values().forEach(node -> node.getNodeNeighbours(this).forEach(other -> {
-                    Set<Pixel> nodeSet = node.allEdgeNeighbours(this);
-                    Set<Pixel> otherSet = other.allEdgeNeighbours(this);
-                    nodeSet.remove(other);
-                    nodeSet.removeAll(otherSet);
-                    otherSet.remove(node);
-                    otherSet.removeAll(nodeSet);
-                    if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-                        // TODO should be a better check here to see whether it is better to remove the other node
-                        toBeRemoved.add(node);
-                    }
-                })
-        );
-        setValuesFrom(pixelMapService.nodesRemoveAll(this, toBeRemoved));
-        toBeRemoved
-                .forEach(pixel -> {
-                    pixel.setEdge(this, false);
-                    pixel.allEdgeNeighbours(this)
-                            .forEach(pPixel -> setValuesFrom(pixelMapService.calcIsNode(this, pPixel)._1));
-                });
-    }
-
     public void process05_generateChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Chains ...", 0);
         nodes().values().forEach(node -> {

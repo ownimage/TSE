@@ -65,7 +65,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
     }
 
-    public Set<Pixel> allEdgeNeighbours(PixelMap pPixelMap) {
+    public Set<Pixel> allEdgeNeighbours(PixelMapData pPixelMap) {
         HashSet<Pixel> allNeighbours = new HashSet<>();
         for (Pixel pixel : getNeighbours()) {
             if (pixel.isEdge(pPixelMap)) {

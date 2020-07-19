@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -54,6 +56,7 @@ public class PixelMapApproximationService {
         result = process01_reset(result, progress);
         result = process02_thin(result, transformSource, progress);
         result = process03_generateNodes(result, progress);
+        result = process04b_removeBristles(result, transformSource, progress);
         result = process04a_removeLoneNodes(result, transformSource, progress);
 
         logger.info("############## thin done");
@@ -117,11 +120,41 @@ public class PixelMapApproximationService {
                 Node node = pixelMapService.getNode(result.get(), pixel).get();
                 if (node.countEdgeNeighbours(result.get()) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
-                    result.update(r-> pixelMapService.setNode(r, pixel, false));
+                    result.update(r -> pixelMapService.setNode(r, pixel, false));
                     result.update(r -> pixelMapService.setVisited(r, pixel, false));
                 }
             }
         });
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process04b_removeBristles(
+            @NotNull PixelMapData pixelMap,
+            @Nullable IPixelMapTransformSource transformSource,
+            IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Removing Bristles ...", 0);
+        var toBeRemoved = new Vector<Pixel>();
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        result.get().nodes().values().forEach(node -> node.getNodeNeighbours(result.get()).forEach(other -> {
+                    Set<Pixel> nodeSet = node.allEdgeNeighbours(result.get());
+                    Set<Pixel> otherSet = other.allEdgeNeighbours(result.get());
+                    nodeSet.remove(other);
+                    nodeSet.removeAll(otherSet);
+                    otherSet.remove(node);
+                    otherSet.removeAll(nodeSet);
+                    if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                        // TODO should be a better check here to see whether it is better to remove the other node
+                        toBeRemoved.add(node);
+                    }
+                })
+        );
+        result.update(r -> pixelMapService.nodesRemoveAll(r, toBeRemoved));
+        toBeRemoved
+                .forEach(pixel -> {
+                    result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
+                    pixel.allEdgeNeighbours(result.get())
+                            .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)._1));
+                });
         return result.get();
     }
 
@@ -289,14 +322,6 @@ public class PixelMapApproximationService {
     public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
             SplitTimer.split("PixelMap actionProcess() start");
-
-            pixelMap.process04b_removeBristles(pProgressObserver);  // the side effect of this is to convert Gemini's into Lone Nodes so it is now run first
-            pixelMapService.validate(pixelMap);
-            logger.info("############## removeBristles done");
-
-//            pixelMap.process04a_removeLoneNodes(pProgressObserver);
-//            pixelMapService.validate(pixelMap);
-//            logger.info("############## removeLoneNodes done");
 
             pixelMap.process05_generateChains(pProgressObserver);
             pixelMapService.validate(pixelMap);

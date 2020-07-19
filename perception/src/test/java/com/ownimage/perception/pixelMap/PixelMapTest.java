@@ -267,7 +267,7 @@ public class PixelMapTest {
         pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
 
         // WHEN
-        pixelMap.process04b_removeBristles(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -294,7 +294,7 @@ public class PixelMapTest {
         pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
 
         // WHEN
-        pixelMap.process04b_removeBristles(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -321,7 +321,8 @@ public class PixelMapTest {
         pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
 
         // WHEN
-        pixelMap.process04b_removeBristles(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
+
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
