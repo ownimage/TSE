@@ -546,10 +546,19 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionRerefine(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource source) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionRerefine();
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+            @NotNull PixelMapData pixelMap,
+            @NotNull CannyEdgeTransform transformSource) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        Vector<PixelChain> updates = new Vector<>();
+        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        val lineCurvePreference = transformSource.getLineCurvePreference();
+        result.get().pixelChains().stream()
+                .parallel()
+                .map(pc -> pixelChainService.refine(result.get(), pc, tolerance, lineCurvePreference))
+                .forEach(updates::add);
+        result.update(r -> pixelChainsClear(r));
+        result.update(r -> pixelChainsAddAll(r, updates));
+        return result.get();
     }
 
     public ImmutablePixelMapData actionSetPixelChainDefaultThickness(

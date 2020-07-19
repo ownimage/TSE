@@ -163,21 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public PixelMap actionRerefine() {
-        PixelMap clone = new PixelMap(this);
-        Vector<PixelChain> updates = new Vector<>();
-        val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
-        val lineCurvePreference = getTransformSource().getLineCurvePreference();
-        mPixelChains.stream()
-                .parallel()
-                .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
-                //.map(pc -> pc.indexSegments(this, true))
-                .forEach(updates::add);
-        clone.setValuesFrom(pixelMapService.pixelChainsClear(clone));
-        clone.setValuesFrom(pixelMapService.pixelChainsAddAll(clone, updates));
-        return clone;
-    }
-
     public void process05a_findLoops(IProgressObserver pProgressObserver) {
         pixelMapService.forEachPixel(this, pixel -> {
             if (pixel.isEdge(this) && !pixel.isInChain(this)) {
