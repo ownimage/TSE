@@ -79,11 +79,11 @@ public class PixelMapApproximationService {
 
     // TODO need to work out how to have a progress bar
     public ImmutablePixelMapData process02_thin(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             IProgressObserver progress) {
         reportProgress(progress, "thinning ...", 0);
-        var result = StrongReference.of(pixelMap);
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         new Range2D(pixelMap.width(), pixelMap.height())
                 .forEach((x, y) -> result.update(r -> thin(r, transformSource, pixelMapService.getPixelOptionalAt(r, x, y).orElseThrow())));
         return result.get();

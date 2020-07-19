@@ -151,7 +151,7 @@ public class PixelMapTest {
         PixelMap pixelMap = Utility.createMap(input);
         System.out.println(pixelMap.getData().get(2, 0));
         // WHEN
-        pixelMap.process02_thin(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process02_thin(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -215,7 +215,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         pixelMap.setValuesFrom(pixelMapApproximationService.process01_reset(pixelMap, null));
-        pixelMap.process02_thin(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process02_thin(pixelMap, pixelMap.getTransformSource(), null));
         pixelMap.process03_generateNodes(null);
         // WHEN
         pixelMap.process04a_removeLoneNodes(null);

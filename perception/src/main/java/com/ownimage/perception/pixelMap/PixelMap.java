@@ -175,15 +175,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    // chains need to have been thinned
-    // TODO need to work out how to have a progress bar
-    public void process02_thin(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Thinning ...", 0);
-        var result = StrongReference.of(ImmutablePixelMapData.copyOf(this));
-        pixelMapService.forEachPixel(this, p-> result.update(r -> pixelMapService.thin(r, getTransformSource(), p)._1));
-        setValuesFrom(result.get());
-    }
-
     public void process03_generateNodes(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         pixelMapService.forEachPixel(this, pixel -> {
