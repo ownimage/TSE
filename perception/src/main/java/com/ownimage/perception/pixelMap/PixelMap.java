@@ -175,25 +175,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    public void process05_generateChains(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Generating Chains ...", 0);
-        nodes().values().forEach(node -> {
-            val gc = pixelMapChainGenerationService.generateChains(this, node);
-            setValuesFrom(gc._1);
-            setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
-        });
-        pixelMapService.forEachPixel(this, pixel -> {
-            if (pixel.isUnVisitedEdge(this)) {
-                pixelMapService.getNode(this, pixel).ifPresent(node -> {
-                    var gc = pixelMapChainGenerationService.generateChains(this, node);
-                    setValuesFrom(gc._1);
-                    setValuesFrom(pixelMapService.pixelChainsAddAll(this, gc._2));
-                });
-            }
-        });
-        mLogger.info(() -> "Number of chains: " + pixelChains().size());
-    }
-
     public void process06_straightLinesRefineCorners(
             IProgressObserver pProgressObserver,
             double pMaxiLineTolerance

@@ -6,11 +6,13 @@ import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 
 import java.util.Optional;
 
@@ -65,7 +67,7 @@ public class PixelChainTest {
         pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
 
         // WHEN
-        pixelMap.process05_generateChains(null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.process05_generateChains(pixelMap, null));
         assertEquals(1, pixelMap.pixelChains().size());
 
         // THEN

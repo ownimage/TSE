@@ -462,7 +462,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();

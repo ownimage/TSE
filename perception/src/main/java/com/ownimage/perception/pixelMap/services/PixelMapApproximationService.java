@@ -49,17 +49,16 @@ public class PixelMapApproximationService {
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
 
     public ImmutablePixelMapData actionProcess(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            ProgressControl progress) {
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
+            IProgressObserver progress) {
         var result = pixelMap.withAutoTrackChanges(false);
         result = process01_reset(result, progress);
         result = process02_thin(result, transformSource, progress);
         result = process03_generateNodes(result, progress);
         result = process04b_removeBristles(result, transformSource, progress);
         result = process04a_removeLoneNodes(result, transformSource, progress);
-
-        logger.info("############## thin done");
+        result = process05_generateChains(result, progress);
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
     }
@@ -155,6 +154,26 @@ public class PixelMapApproximationService {
                     pixel.allEdgeNeighbours(result.get())
                             .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)._1));
                 });
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process05_generateChains(
+            @NotNull PixelMapData pixelMap,
+            IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        pixelMap.nodes().values().forEach(node -> {
+            var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
+            result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+        });
+        pixelMapService.forEachPixel(result.get(), pixel -> {
+            if (pixel.isUnVisitedEdge(result.get())) {
+                pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
+                    var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
+                    result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+                });
+            }
+        });
+        logger.info(() -> "Number of chains: " + result.get().pixelChains().size());
         return result.get();
     }
 
@@ -322,10 +341,6 @@ public class PixelMapApproximationService {
     public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
             SplitTimer.split("PixelMap actionProcess() start");
-
-            pixelMap.process05_generateChains(pProgressObserver);
-            pixelMapService.validate(pixelMap);
-            logger.info("############## generateChains done");
 
             pixelMap.process05a_findLoops(pProgressObserver);
             pixelMapService.validate(pixelMap);
