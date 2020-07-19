@@ -945,7 +945,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     synchronized private boolean actionPixelToggle(@NonNull Pixel pPixel) {
         ImmutablePixelMapData undo = getPixelMap();
         graffitiPixelWorkingColor(pPixel);
-        setPixelMap(pixelMapService.actionPixelToggle(getPixelMap(), pPixel));
+        setPixelMap(pixelMapService.actionPixelToggle(getPixelMap(), mCannyEdgeTransform, pPixel));
         addUndoRedoEntry("Action Pixel Toggle", undo, getPixelMap());
         return true;
     }

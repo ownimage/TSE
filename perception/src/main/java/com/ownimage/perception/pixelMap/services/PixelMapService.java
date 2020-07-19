@@ -484,10 +484,11 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelToggle(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null).actionPixelToggle(pixel);
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+        var newValue = !pixelService.isEdge(pixelMap, pixel);
+        return setEdge(pixelMap, transformSource, pixel, newValue);
     }
 
     public ImmutablePixelMapData actionPixelChainDeleteAllButThis(

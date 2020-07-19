@@ -123,12 +123,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         return "PixelMap{mVersion=" + mVersion + "}";
     }
 
-    public PixelMap actionPixelToggle(Pixel pPixel) {
-        PixelMap clone = new PixelMap(this);
-        pPixel.setEdge(clone, !pPixel.isEdge(this));
-        return clone;
-    }
-
     public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
         mSegmentCount++;
         // // TODO make assumption that this is 360
