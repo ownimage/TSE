@@ -175,20 +175,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    public void process04a_removeLoneNodes(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
-        pixelMapService.forEachPixel(this, pixel -> {
-            if (pixel.isNode(this)) {
-                Node node = pixelMapService.getNode(this, pixel).get();
-                if (node.countEdgeNeighbours(this) == 0) {
-                    pixel.setEdge(this, false);
-                    setValuesFrom(pixelMapService.setNode(this, pixel, false));
-                    setValuesFrom(pixelMapService.setVisited(this, pixel, false));
-                }
-            }
-        });
-    }
-
     public void process04b_removeBristles(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         Vector<Pixel> toBeRemoved = new Vector<>();

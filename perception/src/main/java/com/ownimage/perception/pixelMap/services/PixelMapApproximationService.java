@@ -54,6 +54,7 @@ public class PixelMapApproximationService {
         result = process01_reset(result, progress);
         result = process02_thin(result, transformSource, progress);
         result = process03_generateNodes(result, progress);
+        result = process04a_removeLoneNodes(result, transformSource, progress);
 
         logger.info("############## thin done");
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
@@ -100,6 +101,25 @@ public class PixelMapApproximationService {
             result.set(calsIsNodeResult._1);
             if (calsIsNodeResult._2) {
                 result.update(r -> pixelMapService.nodeAdd(r, pixel));
+            }
+        });
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process04a_removeLoneNodes(
+            @NotNull PixelMapData pixelMap,
+            @Nullable IPixelMapTransformSource transformSource,
+            IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
+        pixelMapService.forEachPixel(result.get(), pixel -> {
+            if (pixelService.isNode(result.get(), pixel)) {
+                Node node = pixelMapService.getNode(result.get(), pixel).get();
+                if (node.countEdgeNeighbours(result.get()) == 0) {
+                    result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
+                    result.update(r-> pixelMapService.setNode(r, pixel, false));
+                    result.update(r -> pixelMapService.setVisited(r, pixel, false));
+                }
             }
         });
         return result.get();
@@ -274,9 +294,9 @@ public class PixelMapApproximationService {
             pixelMapService.validate(pixelMap);
             logger.info("############## removeBristles done");
 
-            pixelMap.process04a_removeLoneNodes(pProgressObserver);
-            pixelMapService.validate(pixelMap);
-            logger.info("############## removeLoneNodes done");
+//            pixelMap.process04a_removeLoneNodes(pProgressObserver);
+//            pixelMapService.validate(pixelMap);
+//            logger.info("############## removeLoneNodes done");
 
             pixelMap.process05_generateChains(pProgressObserver);
             pixelMapService.validate(pixelMap);
