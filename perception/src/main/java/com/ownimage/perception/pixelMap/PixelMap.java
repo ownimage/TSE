@@ -163,21 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public void process06_straightLinesRefineCorners(
-            IProgressObserver pProgressObserver,
-            double pMaxiLineTolerance
-    ) {
-        double tolerance = getLineTolerance() / getHeight();
-        double lineCurvePreference = getLineCurvePreference();
-        reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
-        mLogger.info(() -> "process06_straightLinesRefineCorners " + pMaxiLineTolerance);
-        Vector<PixelChain> refined = new Vector<>();
-        mPixelChains.forEach(pixelChain -> refined.add(pixelChainService.approximate(this, pixelChain, tolerance)));
-        setValuesFrom(pixelMapService.pixelChainsClear(this));
-        setValuesFrom(pixelMapService.pixelChainsAddAll(this, refined));
-        mLogger.info("approximate - done");
-    }
-
     public void process07_mergeChains(IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());

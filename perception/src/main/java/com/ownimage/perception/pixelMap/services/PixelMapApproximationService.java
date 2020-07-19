@@ -9,6 +9,7 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
@@ -59,6 +60,7 @@ public class PixelMapApproximationService {
         result = process04a_removeLoneNodes(result, transformSource, progress);
         result = process05_generateChains(result, progress);
         result = process05a_findLoops(result, progress);
+        result = process06_straightLinesRefineCorners(result, transformSource, progress);
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
     }
@@ -129,7 +131,7 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process04b_removeBristles(
             @NotNull PixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
+            @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         var toBeRemoved = new Vector<Pixel>();
@@ -191,6 +193,25 @@ public class PixelMapApproximationService {
         });
         return result.get();
     }
+
+    public ImmutablePixelMapData  process06_straightLinesRefineCorners(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
+            IProgressObserver pProgressObserver
+    ) {
+        reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
+        double tolerance = transformSource.getLineTolerance() / pixelMap.height();
+        logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var refined = new Vector<PixelChain>();
+        result.get().pixelChains().forEach(pixelChain ->
+                refined.add(pixelChainService.approximate(result.get(), pixelChain, tolerance)));
+        result.update(r -> pixelMapService.pixelChainsClear(r));
+        result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
+        logger.info("approximate - done");
+        return result.get();
+    }
+
 
     public @NotNull ImmutablePixelMapData thin(
             @NotNull ImmutablePixelMapData pixelMap,
@@ -364,10 +385,6 @@ public class PixelMapApproximationService {
                     IPixelChain.PegCounters.RefineCornersSuccessful
             };
             pixelMap.getPegCounter().clear(pegs);
-            pixelMap.process06_straightLinesRefineCorners(pProgressObserver, pixelMap.mTransformSource.getLineTolerance() / pixelMap.mTransformSource.getHeight());
-            pixelMapService.validate(pixelMap);
-            logger.info("############## straightLinesRefineCorners done");
-
             logger.info(pixelMap.getPegCounter().getString(pegs));
             pixelMap.process07_mergeChains(pProgressObserver);
             pixelMapService.validate(pixelMap);
