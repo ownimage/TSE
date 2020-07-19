@@ -34,6 +34,17 @@ public class PixelService {
         return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.VISITED) != 0 : false;
     }
 
+    public boolean isInChain(PixelMapData pixelMap, IntegerPoint integerPoint) {
+        var ip = integerPoint.getClass() == IntegerPoint.class
+                ? integerPoint
+                : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
+        return isInChain(pixelMap, ip.getX(), ip.getY());
+    }
+
+    public boolean isInChain(PixelMapData pixelMap, Integer x, Integer y) {
+        return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.IN_CHAIN) != 0 : false;
+    }
+
     public boolean isNode(PixelMapData pixelMap, IntegerPoint integerPoint) {
         var ip = integerPoint.getClass() == IntegerPoint.class
                 ? integerPoint

@@ -1,7 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.control.control.IProgressObserver;
-import com.ownimage.framework.control.control.ProgressControl;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
@@ -59,6 +58,7 @@ public class PixelMapApproximationService {
         result = process04b_removeBristles(result, transformSource, progress);
         result = process04a_removeLoneNodes(result, transformSource, progress);
         result = process05_generateChains(result, progress);
+        result = process05a_findLoops(result, progress);
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
     }
@@ -174,6 +174,21 @@ public class PixelMapApproximationService {
             }
         });
         logger.info(() -> "Number of chains: " + result.get().pixelChains().size());
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process05a_findLoops(
+            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        pixelMapService.forEachPixel(result.get(), pixel -> {
+            if (pixelService.isEdge(result.get(), pixel) && !pixelService.isInChain(result.get(), pixel)) {
+                result.update(r -> pixelMapService.setNode(r, pixel, true));
+                pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
+                    var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
+                    result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+                });
+            }
+        });
         return result.get();
     }
 
@@ -342,8 +357,6 @@ public class PixelMapApproximationService {
         try {
             SplitTimer.split("PixelMap actionProcess() start");
 
-            pixelMap.process05a_findLoops(pProgressObserver);
-            pixelMapService.validate(pixelMap);
             logger.info("############## findLoops done");
 
             var pegs = new Object[]{

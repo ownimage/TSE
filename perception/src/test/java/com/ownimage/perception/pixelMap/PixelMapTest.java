@@ -34,7 +34,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class PixelMapTest {
 
@@ -373,7 +372,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(),null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
     }
@@ -390,14 +389,11 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> {
-            val cp = pixelChainService.reverse(pixelMap, pc);
-            result.append(cp.toString());
-        });
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -415,14 +411,11 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> {
-            val cp = pixelChainService.reverse(pixelMap, pc);
-            result.append(cp.toString());
-        });
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -440,7 +433,7 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -484,14 +477,11 @@ public class PixelMapTest {
         };
         PixelMap pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> {
-            val cp = pixelChainService.reverse(pixelMap, pc);
-            result.append(cp.toString());
-        });
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }

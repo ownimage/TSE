@@ -163,18 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public void process05a_findLoops(IProgressObserver pProgressObserver) {
-        pixelMapService.forEachPixel(this, pixel -> {
-            if (pixel.isEdge(this) && !pixel.isInChain(this)) {
-                setValuesFrom(pixelMapService.setNode(this, pixel, true));
-                pixelMapService.getNode(this, pixel).ifPresent(node -> {
-                    var result = pixelMapChainGenerationService.generateChains(this, node);
-                    setValuesFrom(pixelMapService.pixelChainsAddAll(result._1, result._2));
-                });
-            }
-        });
-    }
-
     public void process06_straightLinesRefineCorners(
             IProgressObserver pProgressObserver,
             double pMaxiLineTolerance
