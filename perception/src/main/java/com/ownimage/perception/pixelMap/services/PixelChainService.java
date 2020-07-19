@@ -128,7 +128,11 @@ public class PixelChainService {
         return builder.build();
     }
 
-    public PixelChain refine(PixelMap pixelMap, PixelChain pixelChain, double tolerance, double lineCurvePreference) {
+    public PixelChain refine(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference) {
         var builder = builder(pixelChain);
         // builder.refine(pixelMap, pSource);
         builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);

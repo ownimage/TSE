@@ -6,6 +6,7 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
@@ -525,10 +526,23 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionReapproximate(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource source) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, source).actionReapproximate();
-        return pixelMapMappingService.toImmutablePixelMapData(mutable);
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource) {
+        SplitTimer.split("PixelMap actionReapproximate() start");
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        Vector<PixelChain> updates = new Vector<>();
+        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        val lineCurvePreference = transformSource.getLineCurvePreference();
+        result.get().pixelChains().stream()
+                .parallel()
+                .map(pc -> pixelChainService.approximate(result.get(), pc, tolerance))
+                .map(pc -> pixelChainService.refine(result.get(), pc, tolerance, lineCurvePreference))
+                //.map(pc -> pc.indexSegments(this, true))
+                .forEach(updates::add);
+        result.update(r -> pixelChainsClear(r));
+        result.update(r -> pixelChainsAddAll(r, updates));
+        SplitTimer.split("PixelMap actionReapproximate() end");
+        return result.get();
     }
 
     public ImmutablePixelMapData actionRerefine(

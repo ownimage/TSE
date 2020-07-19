@@ -163,24 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public PixelMap actionReapproximate() {
-        SplitTimer.split("PixelMap actionReapproximate() start");
-        PixelMap clone = new PixelMap(this);
-        Vector<PixelChain> updates = new Vector<>();
-        val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
-        val lineCurvePreference = getTransformSource().getLineCurvePreference();
-        clone.mPixelChains.stream()
-                .parallel()
-                .map(pc -> pixelChainService.approximate(this, pc, tolerance))
-                .map(pc -> pixelChainService.refine(this, pc, tolerance, lineCurvePreference))
-                //.map(pc -> pc.indexSegments(this, true))
-                .forEach(updates::add);
-        clone.setValuesFrom(pixelMapService.pixelChainsClear(clone));
-        clone.setValuesFrom(pixelMapService.pixelChainsAddAll(clone, updates));
-        SplitTimer.split("PixelMap actionReapproximate() end");
-        return clone;
-    }
-
     public PixelMap actionRerefine() {
         PixelMap clone = new PixelMap(this);
         Vector<PixelChain> updates = new Vector<>();
