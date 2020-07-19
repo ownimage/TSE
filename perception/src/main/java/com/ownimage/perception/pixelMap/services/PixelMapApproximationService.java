@@ -61,6 +61,7 @@ public class PixelMapApproximationService {
         result = process05_generateChains(result, progress);
         result = process05a_findLoops(result, progress);
         result = process06_straightLinesRefineCorners(result, transformSource, progress);
+        result = process07_mergeChains(result, progress);
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
     }
@@ -209,6 +210,17 @@ public class PixelMapApproximationService {
         result.update(r -> pixelMapService.pixelChainsClear(r));
         result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
         logger.info("approximate - done");
+        return result.get();
+    }
+
+    public ImmutablePixelMapData process07_mergeChains(
+            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Merging Chains ...", 0);
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        logger.info(() -> "number of PixelChains: " + result.get().pixelChains().size());
+        result.get().nodes().values().forEach(pNode ->
+                result.update(r -> pNode.mergePixelChains(r)));
+        logger.info(() -> "number of PixelChains: " + result.get().pixelChains().size());
         return result.get();
     }
 
@@ -386,7 +398,7 @@ public class PixelMapApproximationService {
             };
             pixelMap.getPegCounter().clear(pegs);
             logger.info(pixelMap.getPegCounter().getString(pegs));
-            pixelMap.process07_mergeChains(pProgressObserver);
+
             pixelMapService.validate(pixelMap);
             logger.info("############## process07_mergeChains done");
 

@@ -163,13 +163,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         }
     }
 
-    public void process07_mergeChains(IProgressObserver pProgressObserver) {
-        reportProgress(pProgressObserver, "Merging Chains ...", 0);
-        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
-        nodes().values().forEach(pNode -> pNode.mergePixelChains(this));
-        mLogger.info(() -> "number of PixelChains: " + mPixelChains.size());
-    }
-
     public void process08_refine(IProgressObserver pProgressObserver) {
         if (mPixelChains.size() > 0) {
             var counter = Counter.createMaxCounter(mPixelChains.size());

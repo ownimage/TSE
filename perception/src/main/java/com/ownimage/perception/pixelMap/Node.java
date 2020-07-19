@@ -6,10 +6,15 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 
+import java.util.SplittableRandom;
 import java.util.Vector;
 
 // TODO: Auto-generated Javadoc
@@ -27,6 +32,7 @@ public class Node extends Pixel {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
 
     /**
      * The m pixel chains.
@@ -102,7 +108,8 @@ public class Node extends Pixel {
         return clone;
     }
 
-    void mergePixelChains(PixelMap pPixelMap) {
+    public ImmutablePixelMapData mergePixelChains(PixelMapData pPixelMap) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pPixelMap));
         int count = countPixelChains();
         mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
         switch (count) {
@@ -110,10 +117,10 @@ public class Node extends Pixel {
                 PixelChain chain0 = getPixelChain(0);
                 PixelChain chain1 = getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    PixelChain merged = pixelChainService.merge(pPixelMap, chain0, chain1, this);
-                    pPixelMap.setValuesFrom(pixelMapService.removePixelChain(pPixelMap, chain0));
-                    pPixelMap.setValuesFrom(pixelMapService.removePixelChain(pPixelMap, chain1));
-                    pPixelMap.setValuesFrom(pixelMapService.addPixelChain(pPixelMap, merged));
+                    PixelChain merged = pixelChainService.merge(result.get(), chain0, chain1, this);
+                    result.update(r -> pixelMapService.removePixelChain(r, chain0));
+                    result.update(r -> pixelMapService.removePixelChain(r, chain1));
+                    result.update(r -> pixelMapService.addPixelChain(r, merged));
                 }
                 break;
             case 3:
@@ -121,6 +128,7 @@ public class Node extends Pixel {
             case 4:
                 break;
         }
+        return result.get();
     }
 
     @Override

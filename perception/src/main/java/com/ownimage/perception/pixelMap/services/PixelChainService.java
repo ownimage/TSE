@@ -96,7 +96,7 @@ public class PixelChainService {
      * @param pixelMap the PixelMap this chain belongs to
      * @return a new PixelChain with the elements reversed
      */
-    public PixelChain reverse(PixelMap pixelMap, PixelChain pixelChain) {
+    public PixelChain reverse(PixelMapData pixelMap, PixelChain pixelChain) {
         // note that this uses direct access to the data members as the public setters have other side effects
         //validate("reverse");
         val builder = builder(pixelChain);
@@ -222,7 +222,7 @@ public class PixelChainService {
      * @param pPixelMap   the pixelMap
      * @param otherChain the other chain
      */
-    public PixelChain merge(@NotNull PixelMap pPixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
+    public PixelChain merge(@NotNull PixelMapData pPixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
         val builder = builder(thisChain);
 
         validate(thisChain, false, "add otherChain");
@@ -458,7 +458,7 @@ public class PixelChainService {
      * @param otherChain the other chain
      * @param pNode       the node
      */
-    public PixelChain merge(PixelMap pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
+    public PixelChain merge(PixelMapData pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
         mLogger.fine("merge");
 //        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
 //            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
