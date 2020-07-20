@@ -107,17 +107,18 @@ public class PixelMapTest {
         assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
         assertFalse(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
-        pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, true, NODE);
-        pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, true, EDGE);
+        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, true, NODE));
+        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, true, EDGE));
         // THEN
         assertTrue(pixelMapService.getData(pixelMap, pixel, NODE));
         assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
-        pixelMap.setData_FOR_TESTING_PURPOSES_ONLY(pixel, false, NODE);
+        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, false, NODE));
         // THEN
         assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
         assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
     }
+
 
     @Test
     public void genericNullTest() {

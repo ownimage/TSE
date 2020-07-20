@@ -93,12 +93,4 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mUHVWHalfPixel = new Point(0.5d * mAspectRatio / mWidth, 0.5d / mHeight);
     }
 
-    public String toString() {
-        return "PixelMap{mVersion=" + mVersion + "}";
-    }
-
-    // access weakened for testing only
-    protected void setData_FOR_TESTING_PURPOSES_ONLY(Pixel pPixel, boolean pState, byte pValue) {
-        setValuesFrom(pixelMapService.setData(this, pPixel, pState, pValue));
-    }
 }
