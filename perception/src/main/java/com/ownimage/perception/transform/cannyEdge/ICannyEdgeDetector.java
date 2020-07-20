@@ -8,6 +8,7 @@ package com.ownimage.perception.transform.cannyEdge;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 
 public interface ICannyEdgeDetector {
 
@@ -21,7 +22,7 @@ public interface ICannyEdgeDetector {
      * @return an mData containing the detected edges, or null if the process method has not yet been called.
      */
 
-    PixelMap getEdgeData();
+    PixelMapData getEdgeData();
 
     /**
      * The radius of the Gaussian convolution kernel used to smooth the source image prior to gradient calculation. The default

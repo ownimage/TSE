@@ -10,6 +10,8 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -95,7 +97,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     private float[] yGradient;
 
     private boolean mKeepRunning;
-    private PixelMap mPixelMap;
+    private PixelMapData mPixelMap;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -320,7 +322,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMap getEdgeData() {
+    public PixelMapData getEdgeData() {
         return mPixelMap;
     }
 
@@ -655,15 +657,16 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     }
 
     private void writeEdges(final int pixels[]) {
-        if (mPixelMap == null || mPixelMap.getWidth() != width || mPixelMap.getHeight() != height) {
-            mPixelMap = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
+        if (mPixelMap == null || mPixelMap.width() != width || mPixelMap.height() != height) {
+            mPixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
         }
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean edge = pixels[index] == -1;
-                pixelMapService.getPixelAt(mPixelMap, x, y).setEdge(mPixelMap, edge);
+                var pixel = pixelMapService.getPixelAt(mPixelMap, x, y);
+                mPixelMap = pixelMapService.setEdge(mPixelMap, mTransform, pixel, edge);
             }
         }
 

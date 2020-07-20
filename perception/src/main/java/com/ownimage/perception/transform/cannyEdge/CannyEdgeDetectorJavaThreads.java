@@ -12,6 +12,8 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -88,7 +90,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
     private int[][] mData;
     private int[][] mMagnitude;
     private IPictureSource sourceImage;
-    private PixelMap edgeData;
+    private PixelMapData edgeData;
 
     private float gaussianKernelRadius;
     private float lowThreshold;
@@ -300,7 +302,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMap getEdgeData() {
+    public PixelMapData getEdgeData() {
         return edgeData;
     }
 
@@ -821,10 +823,12 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
     }
 
     private void writeEdges(final int pixels[][]) {
+        // TODO this looks the same across all of the implementations
         // NOTE: There is currently no mechanism for obtaining the edge data
         // in any other format other than an INT_ARGB type BufferedImage.
         // This may be easily remedied by providing alternative accessors.
-        edgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
+        edgeData = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
+
 
         for (int x = 0; x < width; x++) {
             if (!showProgressBar("Writing Edges ...", (float) x / width)) return;
@@ -832,7 +836,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
 
                 final boolean col = pixels[x][y] == -1;
                 // Color c = new Color(col);
-                pixelMapService.getPixelAt(edgeData, x, y).setEdge(edgeData, col);
+                var pixel = pixelMapService.getPixelAt(edgeData, x, y);
+                edgeData = pixelMapService.setEdge(edgeData, mTransform, pixel, col);
             }
         }
 

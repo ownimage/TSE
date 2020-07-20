@@ -12,6 +12,8 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.val;
@@ -98,7 +100,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
     protected int[] mXYStart;
 
     protected boolean mKeepRunning;
-    protected PixelMap mEdgeData;
+    protected PixelMapData mEdgeData;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -251,7 +253,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMap getEdgeData() {
+    public PixelMapData getEdgeData() {
         return mEdgeData;
     }
 
@@ -600,15 +602,16 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
     }
 
     private void writeEdges(final int pixels[]) {
-        if (mEdgeData == null || mEdgeData.getWidth() != width || mEdgeData.getHeight() != height) {
-            mEdgeData = new PixelMap(width, height, true, mTransform); // TODO needs to come from m360 value
+        if (mEdgeData == null || mEdgeData.width() != width || mEdgeData.height() != height) {
+            mEdgeData = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
         }
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean col = pixels[index] == -1;
-                pixelMapService.getPixelAt(mEdgeData, x, y).setEdge(mEdgeData, col);
+                var pixel = pixelMapService.getPixelAt(mEdgeData, x, y);
+                mEdgeData = pixelMapService.setEdge(mEdgeData, mTransform, pixel, col);
             }
         }
 
