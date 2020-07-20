@@ -132,8 +132,8 @@ class Utility {
     }
 
     static ImmutablePixelMapData createMap(final int pX, final int pY) {
-        final PixelMap pixelMap = new PixelMap(pX, pY, true, getDefaultTransformSource(pY));
-        return pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
+        PixelMapData pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
+        return pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(pY), null);
     }
 
     static IPixelMapTransformSource getTransformSource(String[] map) {
