@@ -60,6 +60,10 @@ public interface PixelMapData {
         return false;
     }
 
+    default double getAspectRatio() {
+        return (double) width() / height();
+    }
+
     ImmutablePixelMapData withData(@NotNull ImmutableMap2D<Byte> data);
 
     ImmutablePixelMapData withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);

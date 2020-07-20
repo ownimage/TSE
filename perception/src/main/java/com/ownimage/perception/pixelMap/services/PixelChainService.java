@@ -1,7 +1,10 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IVertex;
@@ -20,6 +23,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -30,6 +34,7 @@ public class PixelChainService {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
+    private static PixelMapTransformService pixelMapTransformService = Services.getDefaultServices().getPixelMapTransformService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
     private final static Logger mLogger = Framework.getLogger();
 
@@ -412,7 +417,8 @@ public class PixelChainService {
     }
 
     @Deprecated // this modifies the pixelmap there is a better version in
-    public Tuple2<ImmutablePixelMapData, PixelChain> indexSegments(PixelMapData pixelMap, PixelChain pixelChain, boolean add) {
+    public Tuple2<ImmutablePixelMapData, PixelChain> indexSegments(
+            @NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, boolean add) {
         var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         if (add) {
             var builder = builder(pixelChain);
@@ -425,20 +431,59 @@ public class PixelChainService {
             builder.setLength(startPosition[0]);
             var newPixelChain = builder.build();
             newPixelChain.streamSegments().forEach(segment -> {
-                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
-                pm.index(newPixelChain, segment, true);
-                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
+//                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
+                result.update(r -> index(r, newPixelChain, segment, true));
+//                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
             });
             return new Tuple2<>(result.get(), newPixelChain);
         } else {
             pixelChain.getSegments().forEach(segment -> {
-                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
-                pm.index(pixelChain, segment, false);
-                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
+//                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
+                result.update(r -> index(r, pixelChain, segment, false));
+//                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
             });
             return new Tuple2<>(result.get(), pixelChain);
         }
     }
+
+    public ImmutablePixelMapData index(
+            @NotNull PixelMapData pixelMap, @NotNull PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
+        var result = StrongReference.of(
+                pixelMapMappingService.toImmutablePixelMapData(pixelMap).withSegmentCount(pixelMap.segmentCount() + 1));
+        // // TODO make assumption that this is 360
+        // // mSegmentIndex.add(pLineSegment);
+        //
+        int minX = (int) Math.floor(pSegment.getMinX(pixelMap, pPixelChain) * pixelMap.width() / pixelMap.getAspectRatio()) - 1;
+        minX = Math.max(minX, 0);
+        minX = Math.min(minX, pixelMap.width() - 1);
+        int maxX = (int) Math.ceil(pSegment.getMaxX(pixelMap, pPixelChain) * pixelMap.width() / pixelMap.getAspectRatio()) + 1;
+        maxX = Math.min(maxX, pixelMap.width() - 1);
+        int minY = (int) Math.floor(pSegment.getMinY(pixelMap, pPixelChain) * pixelMap.height()) - 1;
+        minY = Math.max(minY, 0);
+        minY = Math.min(minY, pixelMap.height() - 1);
+        int maxY = (int) Math.ceil(pSegment.getMaxY(pixelMap, pPixelChain) * pixelMap.height()) + 1;
+        maxY = Math.min(maxY, pixelMap.height() - 1);
+
+        new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
+            Pixel pixel = pixelMapService.getPixelAt(result.get(), i.getX(), i.getY());
+            Point centre = pixel.getUHVWMidPoint(pixelMap.height());
+            if (pSegment.closerThan(result.get(), pPixelChain, centre, pixelMapService.getUHVWHalfPixel(pixelMap).length())) {
+                val segments = new HashSet();
+                pixelMapTransformService.getSegments(result.get(), i.getX(), i.getY())
+                        .map(ImmutableSet::toCollection).ifPresent(segments::addAll);
+                if (pAdd) {
+                    segments.add(new Tuple2<>(pPixelChain, pSegment));
+                } else {
+                    segments.remove(new Tuple2<>(pPixelChain, pSegment));
+                    System.out.println("########################### PixelMap  remove " + i);
+                }
+                result.update(r -> r.withSegmentIndex(r.segmentIndex()
+                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, ISegment>>().addAll(segments))));
+            }
+        });
+        return result.get();
+    }
+
 //
 //    /**
 //     * @deprecated TODO: explain

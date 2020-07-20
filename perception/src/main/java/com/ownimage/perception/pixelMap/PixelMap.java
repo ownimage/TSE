@@ -75,22 +75,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mSegmentCount = 0;
     }
 
-    public PixelMap(PixelMap pFrom) {
-        mVersion = pFrom.mVersion + 1;
-        setWidth(pFrom.getWidth());
-        setHeight(pFrom.getHeight());
-        m360 = pFrom.m360;
-        mTransformSource = pFrom.mTransformSource;
-        mAutoTrackChanges = pFrom.mAutoTrackChanges;
-        mAspectRatio = pFrom.mAspectRatio;
-        mSegmentCount = pFrom.mSegmentCount;
-        mData = pFrom.mData;
-        mNodes = pFrom.mNodes;
-        mPixelChains = pFrom.mPixelChains;
-        mSegmentIndex = pFrom.mSegmentIndex;
-        mUHVWHalfPixel = pFrom.mUHVWHalfPixel;
-    }
-
     public PixelMap(
             @NotNull PixelMapData from,
             IPixelMapTransformSource transformSource) {
@@ -111,45 +95,6 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
 
     public String toString() {
         return "PixelMap{mVersion=" + mVersion + "}";
-    }
-
-    public void index(PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
-        mSegmentCount++;
-        // // TODO make assumption that this is 360
-        // // mSegmentIndex.add(pLineSegment);
-        //
-        int minX = (int) Math.floor(pSegment.getMinX(this, pPixelChain) * getWidth() / mAspectRatio) - 1;
-        minX = Math.max(minX, 0);
-        minX = Math.min(minX, getWidth() - 1);
-        int maxX = (int) Math.ceil(pSegment.getMaxX(this, pPixelChain) * getWidth() / mAspectRatio) + 1;
-        maxX = Math.min(maxX, getWidth() - 1);
-        int minY = (int) Math.floor(pSegment.getMinY(this, pPixelChain) * getHeight()) - 1;
-        minY = Math.max(minY, 0);
-        minY = Math.min(minY, getHeight() - 1);
-        int maxY = (int) Math.ceil(pSegment.getMaxY(this, pPixelChain) * getHeight()) + 1;
-        maxY = Math.min(maxY, getHeight() - 1);
-
-        new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
-            Pixel pixel = pixelMapService.getPixelAt(this, i.getX(), i.getY());
-            Point centre = pixel.getUHVWMidPoint(this.getHeight());
-            if (pSegment.closerThan(this, pPixelChain, centre, getUHVWHalfPixel().length())) {
-                val segments = new HashSet();
-                pixelMapTransformService.getSegments(this, i.getX(), i.getY())
-                        .map(ImmutableSet::toCollection).ifPresent(segments::addAll);
-                if (pAdd) {
-                    segments.add(new Tuple2<>(pPixelChain, pSegment));
-                } else {
-                    segments.remove(new Tuple2<>(pPixelChain, pSegment));
-                    System.out.println("########################### PixelMap  remove " + i);
-                }
-                mSegmentIndex = mSegmentIndex.set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, ISegment>>().addAll(segments));
-            }
-        });
-    }
-
-
-    public synchronized void indexSegments() {
-        mPixelChains.forEach(pc -> pc.getSegments().forEach(seg -> index(pc, seg, true)));
     }
 
     // access weakened for testing only

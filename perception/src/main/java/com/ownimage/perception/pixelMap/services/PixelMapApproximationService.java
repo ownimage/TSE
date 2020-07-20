@@ -434,7 +434,7 @@ public class PixelMapApproximationService {
     public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
 //            pixelMap.process08_refine(pProgressObserver);
-            pixelMap.indexSegments();
+            //pixelMap.indexSegments();
             logger.info("############## indexSegments done");
             pixelMapService.validate(pixelMap);
             //
