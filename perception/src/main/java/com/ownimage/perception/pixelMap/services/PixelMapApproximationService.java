@@ -65,8 +65,9 @@ public class PixelMapApproximationService {
         result = process06_straightLinesRefineCorners(result, transformSource, progress);
         result = process07_mergeChains(result, progress);
         result = process08_refine(result, transformSource, progress);
-        var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
-        return actionProcess(mutable, progress);
+        result = result.withAutoTrackChanges(true);
+        pixelMapService.validate(pixelMap);
+        return result;
     }
 
     public @NotNull ImmutablePixelMapData process01_reset(
@@ -431,20 +432,4 @@ public class PixelMapApproximationService {
         return pixelMapService.setNode(pixelMap, pixel, shouldBeNode);
     }
 
-    public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
-        try {
-//            pixelMap.process08_refine(pProgressObserver);
-            //pixelMap.indexSegments();
-            logger.info("############## indexSegments done");
-            pixelMapService.validate(pixelMap);
-            //
-        } catch (Exception pEx) {
-            logger.info(() -> "pEx");
-            Framework.logThrowable(logger, Level.INFO, pEx);
-        } finally {
-            // pProgress.hideProgressBar();
-            SplitTimer.split("PixelMap actionProcess() end");
-        }
-        return pixelMap.withAutoTrackChanges(true);
-    }
 }

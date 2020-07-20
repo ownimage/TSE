@@ -32,20 +32,6 @@ public class PixelMapTransformService {
 
     private final static Logger mLogger = Framework.getLogger();
 
-    // TODO this needs to be removed when we can just use a PixelMapData
-    private Tuple2<com.ownimage.perception.pixelMap.immutable.PixelMapData, PixelMap> cache;
-
-    // TODO this needs to be removed when we can just use a PixelMapData
-    public PixelMap cachedToPixelMap(
-            @NotNull ImmutablePixelMapData pixelMapData,
-            @Nullable IPixelMapTransformSource transformSource) {
-        if (cache != null && pixelMapData == cache._1) {
-            return cache._2;
-        }
-        cache = new Tuple2<>(pixelMapData, pixelMapMappingService.toPixelMap(pixelMapData, transformSource));
-        return cache._2;
-    }
-
     public void transform(
             @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,

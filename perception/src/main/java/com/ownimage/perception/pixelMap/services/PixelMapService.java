@@ -830,10 +830,9 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData pixelChainAdd(@NotNull PixelMapData pixelMap, @NotNull PixelChain pChain) {
-        var mutable = pixelMapMappingService.toPixelMap(pixelMap, null);
-        var is = pixelChainService.indexSegments(mutable, pChain, true);
-        return mutable
-                .withPixelChains(mutable.pixelChains().add(is._2))
+        var is = pixelChainService.indexSegments(pixelMap, pChain, true);
+        return pixelMap
+                .withPixelChains(pixelMap.pixelChains().add(is._2))
                 .withSegmentIndex(is._1.segmentIndex());
     }
 
@@ -952,13 +951,11 @@ public class PixelMapService {
         });
         result.update(r -> thin(r, transformSource, pixel)._1);
         if (result.get().autoTrackChanges()) {
-            var mutable = pixelMapMappingService.toPixelMap(result.get(), transformSource);
             if (isEdge) { // turning pixel on
-                mutable.setValuesFrom(pixelMapApproximationService.trackPixelOn(mutable, transformSource, pixel));
+                result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixel));
             } else { // turning pixel off
-                mutable.setValuesFrom(pixelMapApproximationService.trackPixelOff(mutable, transformSource, pixel));
+                result.update(r -> pixelMapApproximationService.trackPixelOff(r, transformSource, pixel));
             }
-            result.set(pixelMapMappingService.toImmutablePixelMapData(mutable));
         }
         return result.get();
     }

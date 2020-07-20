@@ -26,9 +26,4 @@ public class PixelMapMappingService {
                 .build();
     }
 
-    public PixelMap toPixelMap(
-            @NotNull PixelMapData pixelMapData,
-             IPixelMapTransformSource transformSource) {
-        return new PixelMap(pixelMapData, transformSource);
-    }
 }

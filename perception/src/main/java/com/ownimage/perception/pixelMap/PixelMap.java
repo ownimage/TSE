@@ -75,22 +75,4 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         mSegmentCount = 0;
     }
 
-    public PixelMap(
-            @NotNull PixelMapData from,
-            IPixelMapTransformSource transformSource) {
-        mVersion = 0;
-        setWidth(from.width());
-        setHeight(from.height());
-        m360 = from.is360();
-        mTransformSource = transformSource;
-        mAutoTrackChanges = from.autoTrackChanges();
-        mAspectRatio = (double) mWidth / mHeight;
-        mSegmentCount = from.segmentCount();
-        mData = from.data();
-        mNodes = from.nodes();
-        mPixelChains = from.pixelChains();
-        mSegmentIndex = from.segmentIndex();
-        mUHVWHalfPixel = new Point(0.5d * mAspectRatio / mWidth, 0.5d / mHeight);
-    }
-
 }

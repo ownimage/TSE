@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
@@ -131,7 +132,7 @@ class Utility {
 
     static PixelMap createMap(final int pX, final int pY) {
         final PixelMap pixelMap = new PixelMap(pX, pY, true, getDefaultTransformSource(pY));
-        pixelMapApproximationService.actionProcess(pixelMap, null);
+        pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
         return pixelMap;
     }
 
@@ -149,11 +150,11 @@ class Utility {
         return pixelMap;
     }
 
-    static String[] getMap(final PixelMap pPixelMap) {
-        final String[] map = new String[pPixelMap.getHeight()];
-        for (int y = 0; y < pPixelMap.getHeight(); y++) {
+    static String[] getMap(final PixelMapData pPixelMap) {
+        final String[] map = new String[pPixelMap.height()];
+        for (int y = 0; y < pPixelMap.height(); y++) {
             final StringBuffer row = new StringBuffer();
-            for (int x = 0; x < pPixelMap.getWidth(); x++) {
+            for (int x = 0; x < pPixelMap.width(); x++) {
                 final Pixel p = pixelMapService.getPixelAt(pPixelMap, x, y);
                 if (p.isNode(pPixelMap)) row.append("N");
                 else if (p.isEdge(pPixelMap)) row.append("E");
