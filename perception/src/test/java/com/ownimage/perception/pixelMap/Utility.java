@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -130,24 +131,23 @@ class Utility {
         };
     }
 
-    static PixelMap createMap(final int pX, final int pY) {
+    static ImmutablePixelMapData createMap(final int pX, final int pY) {
         final PixelMap pixelMap = new PixelMap(pX, pY, true, getDefaultTransformSource(pY));
-        pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
-        return pixelMap;
+        return pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
     }
 
     static IPixelMapTransformSource getTransformSource(String[] map) {
         return getDefaultTransformSource(map.length);
     }
 
-    static PixelMap createMap(final String[] map) {
+    static PixelMapData createMap(final String[] map) {
         return createMap(map, getDefaultTransformSource(map.length));
     }
 
-    static PixelMap createMap(final String[] map, final IPixelMapTransformSource transformSource) {
-        final PixelMap pixelMap = new PixelMap(map[0].length(), map.length, true, transformSource);
-        setMap(pixelMap, map);
-        return pixelMap;
+    static PixelMapData createMap(final String[] map, final IPixelMapTransformSource transformSource) {
+        final ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
+                .width(map[0].length()).height(map.length).is360(true).build();
+        return setMap(pixelMap, map);
     }
 
     static String[] getMap(final PixelMapData pPixelMap) {
@@ -165,12 +165,13 @@ class Utility {
         return map;
     }
 
-    private static void setMap(final PixelMap pixelMap, final String[] map) {
-        if (map.length != pixelMap.getHeight())
+    private static ImmutablePixelMapData setMap(final PixelMapData pixelMap, final String[] map) {
+        var result = ImmutablePixelMapData.copyOf(pixelMap);
+        if (map.length != pixelMap.height())
             throw new IllegalArgumentException("map.pixelLength != pixelMap.getHeight()");
         int y = 0;
         for (final String string : map) {
-            if (string.length() != pixelMap.getWidth())
+            if (string.length() != pixelMap.width())
                 throw new IllegalArgumentException("string.pixelLength() != pixelMap.getWidth() with:" + string + ", y=" + y);
             for (int x = 0; x < string.length(); x++) {
                 final char c = string.charAt(x);
@@ -178,10 +179,10 @@ class Utility {
                     case ' ':
                         break;
                     case 'N':
-                        pixelMap.setValuesFrom(pixelMapService.setValue(pixelMap, x, y, (byte) (Pixel.NODE | Pixel.EDGE)));
+                        result = pixelMapService.setValue(result, x, y, (byte) (Pixel.NODE | Pixel.EDGE));
                         break;
                     case 'E':
-                        pixelMap.setValuesFrom(pixelMapService.setValue(pixelMap, x, y, Pixel.EDGE));
+                        result = pixelMapService.setValue(result, x, y, Pixel.EDGE);
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected char:" + c + ", y=" + y);
@@ -189,6 +190,7 @@ class Utility {
             }
             y++;
         }
+        return result;
     }
 
     /**

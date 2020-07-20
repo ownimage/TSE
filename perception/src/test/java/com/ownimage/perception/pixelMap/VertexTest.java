@@ -158,7 +158,6 @@ public class VertexTest {
         var pixelChain = new MockPixelChainBuilder(11).with_getPixel_returns(pixelIndex, pixel).build();
         IVertex underTest1 = services.getVertexService().createVertex(pixelMap, pixelChain, 1, pixelIndex);
         var services = Services.getDefaultServices();
-        var pixelMap = new PixelMap(100, 100, false, null);
         // WHEN THEN
         assertEquals(pixel, services.getVertexService().getPixel(pixelChain, underTest1));
         verify(pixelChain, times(1)).getPixelCount();
@@ -181,7 +180,6 @@ public class VertexTest {
                 .build();
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var services = Services.getDefaultServices();
-        var pixelMap = new PixelMap(100, 100, false, null);
         // WHEN THEN
         assertEquals(expected, services.getVertexService().getStartSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
@@ -204,7 +202,6 @@ public class VertexTest {
                 .build();
         IVertex underTest = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var services = Services.getDefaultServices();
-        var pixelMap = new PixelMap(100, 100, false, null);
         // WHEN THEN
         assertEquals(expected, services.getVertexService().getEndSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();

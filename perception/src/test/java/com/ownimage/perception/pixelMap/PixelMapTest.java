@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
@@ -69,8 +70,8 @@ public class PixelMapTest {
     @Test
     public void process01_reset_01() {
         // GIVEN
-        val underTest = Utility.createMap(2000, 1500);
-        underTest.setValuesFrom(pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE)));
+        var underTest = Utility.createMap(2000, 1500);
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);
@@ -85,8 +86,8 @@ public class PixelMapTest {
     @Test
     public void process01_reset_02() {
         // GIVEN
-        val underTest = Utility.createMap(2000, 1500);
-        underTest.setValuesFrom(pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE)));
+        var underTest = Utility.createMap(2000, 1500);
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(pixelMapMappingService.toImmutablePixelMapData(underTest), null);
@@ -102,18 +103,18 @@ public class PixelMapTest {
     public void setData_01() {
         // GIVEN
         Pixel pixel = new Pixel(1, 1);
-        PixelMap pixelMap = Utility.createMap(3, 3);
+        ImmutablePixelMapData pixelMap = Utility.createMap(3, 3);
         // WHEN
         assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
         assertFalse(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
-        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, true, NODE));
-        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, true, EDGE));
+        pixelMap = pixelMapService.setData(pixelMap, pixel, true, NODE);
+        pixelMap = pixelMapService.setData(pixelMap, pixel, true, EDGE);
         // THEN
         assertTrue(pixelMapService.getData(pixelMap, pixel, NODE));
         assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
         // WHEN
-        pixelMap.setValuesFrom(pixelMapService.setData(pixelMap, pixel, false, NODE));
+        pixelMap = pixelMapService.setData(pixelMap, pixel, false, NODE);
         // THEN
         assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
         assertTrue(pixelMapService.getData(pixelMap, pixel, EDGE));
@@ -129,7 +130,7 @@ public class PixelMapTest {
                 "E    N    "
         };
         // WHEN
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(actual, input);
@@ -148,10 +149,10 @@ public class PixelMapTest {
                 "   EE EE  ",
                 "E    E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        System.out.println(pixelMap.getData().get(2, 0));
+        PixelMapData pixelMap = Utility.createMap(input);
+        System.out.println(pixelMap.data().get(2, 0));
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process02_thin(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -170,11 +171,11 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -193,9 +194,9 @@ public class PixelMapTest {
                 "  NEEEEN  ",
                 "E    N    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -215,13 +216,13 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process01_reset(pixelMap, null));
-        pixelMap.setValuesFrom(pixelMapApproximationService.process02_thin(pixelMap, pixelMap.getTransformSource(), null));
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input);
+        pixelMap = pixelMapApproximationService.process01_reset(pixelMap, null);
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -241,9 +242,9 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N N  E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -263,11 +264,11 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N    E    "
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
@@ -290,11 +291,11 @@ public class PixelMapTest {
                 " N    E    ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -317,11 +318,11 @@ public class PixelMapTest {
                 "     EEEN  ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process04b_removeBristles(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
         String[] actual = Utility.getMap(pixelMap);
@@ -352,7 +353,7 @@ public class PixelMapTest {
         val deletePixels = new ArrayList<Pixel>();
         deletePixels.add(new Pixel(4, 1));
         // WHEN
-        var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, pixelMap.mTransformSource, deletePixels);
+        var result = pixelMapService.actionDeletePixelChain(immputablePixelMap, Utility.getTransformSource(input), deletePixels);
         // THEN
         assertEquals(2, result.pixelChains().size());
         String[] actual = Utility.getMap(result);
@@ -371,9 +372,9 @@ public class PixelMapTest {
                 "    E      ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(),null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length),null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
     }
@@ -388,9 +389,9 @@ public class PixelMapTest {
                 "    N      ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -410,9 +411,9 @@ public class PixelMapTest {
                 "    N      ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -432,9 +433,9 @@ public class PixelMapTest {
                 "   N       ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -454,9 +455,9 @@ public class PixelMapTest {
                 "   N       ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -476,9 +477,9 @@ public class PixelMapTest {
                 "     N     ",
                 "           ",
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -499,43 +500,45 @@ public class PixelMapTest {
         int yMargin = 2;
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
-        pixelMap.setValuesFrom(pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(3, 11).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(4, 11).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(5, 12).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(6, 13).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(7, 13).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(8, 13).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(9, 12).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(9, 11).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 10).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 9).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 8).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 7).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 6).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 5).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 4).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(10, 3).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(9, 2).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(8, 1).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(7, 0).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(6, 0).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(5, 0).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(4, 0).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(3, 0).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(2, 1).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 2).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(0, 3).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(0, 4).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(0, 5).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(0, 6).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 7).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 8).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 9).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 10).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(1, 11).add(offset)));
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), new Pixel(2, 11).add(offset)));
+        var width = 11 + 2 * xMargin;
+        var height = 14 + 2 * yMargin;
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(height), null);
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 11).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 11).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 12).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 13).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 13).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 13).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 12).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 11).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 10).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 9).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 8).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 7).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 6).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 5).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 4).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 3).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 2).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 1).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 0).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 0).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 0).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 0).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 0).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 1).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 2).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 3).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 4).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 5).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 6).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 7).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 8).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 9).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 10).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 11).add(offset));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 11).add(offset));
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -545,9 +548,11 @@ public class PixelMapTest {
         int yMargin = 2;
         Pixel offset = new Pixel(xMargin, yMargin);
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        PixelMap pixelMap = new PixelMap(11 + 2 * xMargin, 14 + 2 * yMargin, false, ts);
+        var width = 11 + 2 * xMargin;
+        var height = 14 + 2 * yMargin;
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
         var underTest = pixelMapMappingService.toImmutablePixelMapData(pixelMap);
-        pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
+        pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(height), null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(3, 11).add(offset),
                 new Pixel(4, 11).add(offset),
@@ -592,8 +597,8 @@ public class PixelMapTest {
     @Test
     public void test_closeLoop_3() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        PixelMap pixelMap = new PixelMap(9, 11, false, ts);
-        pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(11), null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -611,15 +616,15 @@ public class PixelMapTest {
                 new Pixel(6, 7),
                 new Pixel(6, 8)
         );
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), pixels));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
     @Test
     public void test_closeLoop_4() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        PixelMap pixelMap = new PixelMap(9, 11, false, ts);
-        pixelMapApproximationService.actionProcess(pixelMap, pixelMap.getTransformSource(), null);
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(11), null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -638,7 +643,7 @@ public class PixelMapTest {
                 new Pixel(6, 8),
                 new Pixel(6, 9)
         );
-        pixelMap.setValuesFrom(pixelMapService.actionPixelOn(pixelMap, pixelMap.getTransformSource(), pixels));
+        pixelMap = pixelMapService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 

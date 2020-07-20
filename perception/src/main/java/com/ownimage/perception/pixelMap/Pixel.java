@@ -93,7 +93,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return count;
     }
 
-    public int countEdgeNeighboursTransitions(PixelMap pPixelMap) {
+    public int countEdgeNeighboursTransitions(PixelMapData pPixelMap) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;

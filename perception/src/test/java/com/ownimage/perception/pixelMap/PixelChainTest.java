@@ -1,6 +1,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -63,11 +65,11 @@ public class PixelChainTest {
         when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
         double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
 
-        PixelMap pixelMap = Utility.createMap(input, ipmts);
-        pixelMap.setValuesFrom(pixelMapApproximationService.process03_generateNodes(pixelMap, null));
+        PixelMapData pixelMap = Utility.createMap(input, ipmts);
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap.setValuesFrom(pixelMapApproximationService.process05_generateChains(pixelMap, null));
+        pixelMap = pixelMapApproximationService.process05_generateChains(pixelMap, null);
         assertEquals(1, pixelMap.pixelChains().size());
 
         // THEN

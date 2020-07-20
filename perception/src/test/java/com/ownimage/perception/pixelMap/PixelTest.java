@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
@@ -30,7 +31,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -47,7 +48,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -64,7 +65,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 0);
 
         // WHEN
@@ -81,7 +82,7 @@ public class PixelTest {
                 "   ",
                 " E "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -98,7 +99,7 @@ public class PixelTest {
                 "   ",
                 " E "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, -1, 2);
 
         // WHEN
@@ -115,7 +116,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -132,7 +133,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -149,7 +150,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -166,7 +167,7 @@ public class PixelTest {
                 "    ",
                 "N N "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -184,7 +185,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -201,7 +202,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -218,7 +219,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -235,7 +236,7 @@ public class PixelTest {
                 "E  ",
                 "EE "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -252,7 +253,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -273,7 +274,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        PixelMap pixelMap = Utility.createMap(input);
+        PixelMapData pixelMap = Utility.createMap(input);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
         StrongReference<Integer> count = new StrongReference<>(0);
 
