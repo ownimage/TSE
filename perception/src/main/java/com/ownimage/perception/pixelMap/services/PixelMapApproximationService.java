@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.control.control.IProgressObserver;
+import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
@@ -14,6 +15,7 @@ import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import lombok.NonNull;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,6 +64,7 @@ public class PixelMapApproximationService {
         result = process05a_findLoops(result, progress);
         result = process06_straightLinesRefineCorners(result, transformSource, progress);
         result = process07_mergeChains(result, progress);
+        result = process08_refine(result, transformSource, progress);
         var mutable = pixelMapMappingService.toPixelMap(result, transformSource);
         return actionProcess(mutable, progress);
     }
@@ -195,12 +198,19 @@ public class PixelMapApproximationService {
         return result.get();
     }
 
+
     public ImmutablePixelMapData  process06_straightLinesRefineCorners(
             @NotNull PixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver
     ) {
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
+        var pegs = new Object[]{
+                IPixelChain.PegCounters.RefineCornersAttempted,
+                IPixelChain.PegCounters.RefineCornersSuccessful
+        };
+        var pegCounter = com.ownimage.perception.app.Services.getServices().getPegCounter();
+        pegCounter.clear(pegs);
         double tolerance = transformSource.getLineTolerance() / pixelMap.height();
         logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
         var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
@@ -209,6 +219,7 @@ public class PixelMapApproximationService {
                 refined.add(pixelChainService.approximate(result.get(), pixelChain, tolerance)));
         result.update(r -> pixelMapService.pixelChainsClear(r));
         result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
+        logger.info(pegCounter.getString(pegs));
         logger.info("approximate - done");
         return result.get();
     }
@@ -224,6 +235,40 @@ public class PixelMapApproximationService {
         return result.get();
     }
 
+    public ImmutablePixelMapData process08_refine(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelMapTransformSource transformSource,
+            IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var pegs = new Object[]{
+                IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
+                IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
+                IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
+                IPixelChain.PegCounters.MidSegmentEatForwardSuccessful,
+                IPixelChain.PegCounters.refine01FirstSegmentAttempted,
+                IPixelChain.PegCounters.refine01FirstSegmentSuccessful
+        };
+        var pegCounter = com.ownimage.perception.app.Services.getServices().getPegCounter();
+        pegCounter.clear(pegs);
+        var pixelChainCount = result.get().pixelChains().size();
+        if (pixelChainCount > 0) {
+            var counter = Counter.createMaxCounter(pixelChainCount);
+            reportProgress(pProgressObserver, "Refining ...", 0);
+            Vector<PixelChain> refined = new Vector<>();
+            result.get().pixelChains().stream().parallel().forEach(pc -> {
+                var tolerance = transformSource.getLineTolerance() / result.get().height();
+                var lineCurvePreference = transformSource.getLineCurvePreference();
+                var refinedPC = pixelChainService.approximateCurvesOnly(result.get(), pc, tolerance, lineCurvePreference);
+                refined.add(refinedPC);
+                counter.increase();
+                reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
+            });
+            result.update(r -> pixelMapService.pixelChainsClear(r));
+            result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
+        }
+        logger.info(pegCounter.getString(pegs));
+        return result.get();
+    }
 
     public @NotNull ImmutablePixelMapData thin(
             @NotNull ImmutablePixelMapData pixelMap,
@@ -388,37 +433,7 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData actionProcess (@NotNull PixelMap pixelMap, IProgressObserver pProgressObserver){
         try {
-            SplitTimer.split("PixelMap actionProcess() start");
-
-            logger.info("############## findLoops done");
-
-            var pegs = new Object[]{
-                    IPixelChain.PegCounters.RefineCornersAttempted,
-                    IPixelChain.PegCounters.RefineCornersSuccessful
-            };
-            pixelMap.getPegCounter().clear(pegs);
-            logger.info(pixelMap.getPegCounter().getString(pegs));
-
-            pixelMapService.validate(pixelMap);
-            logger.info("############## process07_mergeChains done");
-
-            pegs = new Object[]{
-                    IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
-                    IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
-                    IPixelChain.PegCounters.MidSegmentEatForwardAttempted,
-                    IPixelChain.PegCounters.MidSegmentEatForwardSuccessful,
-                    IPixelChain.PegCounters.refine01FirstSegmentAttempted,
-                    IPixelChain.PegCounters.refine01FirstSegmentSuccessful
-            };
-            pixelMap.getPegCounter().clear(pegs);
-            pixelMap.process08_refine(pProgressObserver);
-            logger.info(pixelMap.getPegCounter().getString(pegs));
-            pixelMapService.validate(pixelMap);
-            logger.info("############## process08_refine done");
-            // // reapproximate(null, mTransformSource.getLineTolerance());
-//                pixelMap.validate();
-//                logger.info("############## validate done");
-            //process04a_removeLoneNodes();
+//            pixelMap.process08_refine(pProgressObserver);
             pixelMap.indexSegments();
             logger.info("############## indexSegments done");
             pixelMapService.validate(pixelMap);

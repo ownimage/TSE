@@ -580,20 +580,6 @@ public class PixelMapService {
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
 
-    public ImmutablePixelMapData pixelChainsAddAll(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Collection<PixelChain> pixelChains) {
-        var result = StrongReference.of(pixelMap);
-        pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
-        return result.get();
-    }
-
-
-    public ImmutablePixelMapData pixelChainAdd(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
-        return indexSegments(pixelMap, chain, true)
-                .withPixelChains(pixelMap.pixelChains().add(chain));
-    }
-
     public ImmutablePixelMapData pixelChainRemove(@NotNull PixelMapData pixelMap, @NotNull PixelChain chain) {
         val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         result.update(r -> indexSegments(r, chain, false)
@@ -825,7 +811,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData addPixelChain(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
-        var result = pixelChainsAdd(pixelMap, pixelChain);
+        var result = pixelChainAdd(pixelMap, pixelChain);
         result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
         result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
         return result;
@@ -836,16 +822,19 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData pixelChainsAddAll(
-            @NotNull PixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
+            @NotNull PixelMapData pixelMap,
+            @NotNull Collection<PixelChain> pixelChains) {
         var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
-        pixelChains.forEach(chain -> result.update(r -> pixelChainsAdd(r, chain)));
+        pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
         return result.get();
     }
 
-    public ImmutablePixelMapData pixelChainsAdd(@NotNull PixelMapData pixelMap, @NotNull PixelChain pChain) {
+    public ImmutablePixelMapData pixelChainAdd(@NotNull PixelMapData pixelMap, @NotNull PixelChain pChain) {
         var mutable = pixelMapMappingService.toPixelMap(pixelMap, null);
-        var chain = pixelChainService.indexSegments(mutable, pChain, true);
-        return mutable.withPixelChains(mutable.pixelChains().add(chain));
+        var is = pixelChainService.indexSegments(mutable, pChain, true);
+        return mutable
+                .withPixelChains(mutable.pixelChains().add(is._2))
+                .withSegmentIndex(is._1.segmentIndex());
     }
 
     public ImmutablePixelMapData pixelChainsClear(@NotNull PixelMapData pixelMap) {

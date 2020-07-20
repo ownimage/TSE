@@ -7,25 +7,18 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.control.control.IProgressObserver;
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.SplitTimer;
-import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapChainGenerationService;
-import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
 import io.vavr.Tuple2;
@@ -33,10 +26,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -157,43 +147,8 @@ public class PixelMap extends PixelMapBase implements Serializable, PixelConstan
         });
     }
 
-    private void reportProgress(IProgressObserver pProgressObserver, String pProgressString, int pPercent) {
-        if (pProgressObserver != null) {
-            pProgressObserver.setProgress(pProgressString, pPercent);
-        }
-    }
-
-    public void process08_refine(IProgressObserver pProgressObserver) {
-        if (mPixelChains.size() > 0) {
-            var counter = Counter.createMaxCounter(mPixelChains.size());
-            reportProgress(pProgressObserver, "Refining ...", 0);
-            Vector<PixelChain> refined = new Vector<>();
-            mPixelChains.stream().parallel().forEach(pc -> {
-                //PixelChain refinedPC = pc.refine(this, getTransformSource());
-                val tolerance = getTransformSource().getLineTolerance() / getTransformSource().getHeight();
-                val lineCurvePreference = getTransformSource().getLineCurvePreference();
-                PixelChain refinedPC = pixelChainService.approximateCurvesOnly(this, pc, tolerance, lineCurvePreference);
-                refined.add(refinedPC);
-                counter.increase();
-                reportProgress(pProgressObserver, "Refining ...", counter.getPercentInt());
-            });
-            setValuesFrom(pixelMapService.pixelChainsClear(this));
-            setValuesFrom(pixelMapService.pixelChainsAddAll(this, refined));
-        }
-    }
-
 
     public synchronized void indexSegments() {
-//        var pixelChains = new ArrayList<PixelChain>();
-//        mPixelChains.stream().forEach(pc -> pixelChains.add(pixelChainService.indexSegments(this, pc, true)));
-//        pixelChainsClear();
-//        pixelChainsAddAll(pixelChains);
-//        val count = new AtomicInteger();
-//        pixelChains.stream().parallel()
-//                .flatMap(PixelChain::streamSegments)
-//                .filter(s -> s instanceof StraightSegment)
-//                .forEach(s -> count.incrementAndGet());
-//        mLogger.info(() -> "Number of straight segments = " + count.get());
         mPixelChains.forEach(pc -> pc.getSegments().forEach(seg -> index(pc, seg, true)));
     }
 

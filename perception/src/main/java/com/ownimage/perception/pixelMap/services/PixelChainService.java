@@ -9,7 +9,6 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelChainBuilder;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 public class PixelChainService {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
     private final static Logger mLogger = Framework.getLogger();
 
@@ -412,9 +412,10 @@ public class PixelChainService {
     }
 
     @Deprecated // this modifies the pixelmap there is a better version in
-    public PixelChain indexSegments (PixelMap pixelMap, PixelChain pixelChain, boolean add) {
+    public Tuple2<ImmutablePixelMapData, PixelChain> indexSegments(PixelMapData pixelMap, PixelChain pixelChain, boolean add) {
+        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
         if (add) {
-            val builder = builder(pixelChain);
+            var builder = builder(pixelChain);
             double[] startPosition = {0.0d};
             pixelChain.getSegments().forEach(segment -> {
                 ISegment segmentClone = segment.withStartPosition(startPosition[0]);
@@ -422,12 +423,20 @@ public class PixelChainService {
                 startPosition[0] += segment.getLength(pixelMap, builder);
             });
             builder.setLength(startPosition[0]);
-            val newPixelChain = builder.build();
-            newPixelChain.streamSegments().forEach(segment -> pixelMap.index(newPixelChain, segment, true));
-            return newPixelChain;
+            var newPixelChain = builder.build();
+            newPixelChain.streamSegments().forEach(segment -> {
+                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
+                pm.index(newPixelChain, segment, true);
+                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
+            });
+            return new Tuple2<>(result.get(), newPixelChain);
         } else {
-            pixelChain.getSegments().forEach(segment -> pixelMap.index(pixelChain, segment, false));
-            return pixelChain;
+            pixelChain.getSegments().forEach(segment -> {
+                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
+                pm.index(pixelChain, segment, false);
+                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
+            });
+            return new Tuple2<>(result.get(), pixelChain);
         }
     }
 //
