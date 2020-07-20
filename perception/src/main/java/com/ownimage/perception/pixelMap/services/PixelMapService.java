@@ -86,7 +86,7 @@ public class PixelMapService {
         var width = Integer.parseInt(db.read(id + ".width"));
         var height = Integer.parseInt(db.read(id + ".height"));
 
-        PixelMapData pixelMap = new PixelMap(width, height, false, transformSource);
+        PixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
         var data = new ImmutableMap2D<>(width, height, (byte) 0);
 
         try {
