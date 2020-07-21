@@ -99,7 +99,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
     protected int[] mXYStart;
 
     protected boolean mKeepRunning;
-    protected PixelMapData mEdgeData;
+    protected ImmutablePixelMapData mEdgeData;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -252,7 +252,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMapData getEdgeData() {
+    public ImmutablePixelMapData getEdgeData() {
         return mEdgeData;
     }
 
@@ -264,7 +264,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
      */
 
     @Override
-    public void setEdgeData(final PixelMapData edgeData) {
+    public void setEdgeData(final ImmutablePixelMapData edgeData) {
         mEdgeData = edgeData;
     }
 

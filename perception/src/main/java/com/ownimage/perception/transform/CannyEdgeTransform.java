@@ -54,7 +54,6 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private PixelMapService pixelMapService = defaultServices.getPixelMapService();
     private PixelMapApproximationService pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
     private PixelMapTransformService pixelMapTransformService = defaultServices.getPixelMapTransformService();
-    private PixelMapMappingService pixelMapMappingService = defaultServices.getPixelMapMappingService();
 
     public enum LineEndLengthType {
         Percent, Pixels
@@ -528,7 +527,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
                 if (detector.getKeepRunning()) {
                     // only set the mData if the detector was allowed to finish
-                    pixelMap = pixelMapMappingService.toImmutablePixelMapData(detector.getEdgeData());
+                    pixelMap = detector.getEdgeData();
                     // mPreviewControl.getValue().setValue(mPreviewPicture);
                     mLogger.info(() -> "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ :)");
                 }

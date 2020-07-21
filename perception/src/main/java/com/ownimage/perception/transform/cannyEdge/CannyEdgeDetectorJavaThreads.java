@@ -89,7 +89,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
     private int[][] mData;
     private int[][] mMagnitude;
     private IPictureSource sourceImage;
-    private PixelMapData edgeData;
+    private ImmutablePixelMapData edgeData;
 
     private float gaussianKernelRadius;
     private float lowThreshold;
@@ -301,7 +301,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMapData getEdgeData() {
+    public ImmutablePixelMapData getEdgeData() {
         return edgeData;
     }
 
@@ -692,7 +692,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public void setEdgeData(final PixelMapData edgeData) {
+    public void setEdgeData(final ImmutablePixelMapData edgeData) {
         this.edgeData = edgeData;
     }
 

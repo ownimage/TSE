@@ -10,7 +10,6 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 
@@ -96,7 +95,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     private float[] yGradient;
 
     private boolean mKeepRunning;
-    private PixelMapData mPixelMap;
+    private ImmutablePixelMapData mPixelMap;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -321,7 +320,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
      */
 
     @Override
-    public PixelMapData getEdgeData() {
+    public ImmutablePixelMapData getEdgeData() {
         return mPixelMap;
     }
 
@@ -598,7 +597,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     }
 
     @Override
-    public void setEdgeData(final PixelMapData pPixelMap) {
+    public void setEdgeData(final ImmutablePixelMapData pPixelMap) {
         mPixelMap = pPixelMap;
     }
 
