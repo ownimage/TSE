@@ -85,7 +85,7 @@ public class PixelMapService {
         var width = Integer.parseInt(db.read(id + ".width"));
         var height = Integer.parseInt(db.read(id + ".height"));
 
-        PixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
         var data = new ImmutableMap2D<>(width, height, (byte) 0);
 
         try {
@@ -809,7 +809,7 @@ public class PixelMapService {
         return result.get();
     }
 
-    public ImmutablePixelMapData addPixelChain(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+    public ImmutablePixelMapData addPixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
         var result = pixelChainAdd(pixelMap, pixelChain);
         result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
         result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
@@ -821,14 +821,14 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData pixelChainsAddAll(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<PixelChain> pixelChains) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
         return result.get();
     }
 
-    public ImmutablePixelMapData pixelChainAdd(@NotNull PixelMapData pixelMap, @NotNull PixelChain pChain) {
+    public ImmutablePixelMapData pixelChainAdd(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pChain) {
         var is = pixelChainService.indexSegments(pixelMap, pChain, true);
         return pixelMap
                 .withPixelChains(pixelMap.pixelChains().add(is._2))

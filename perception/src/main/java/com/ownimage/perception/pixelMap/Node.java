@@ -32,7 +32,6 @@ public class Node extends Pixel {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
-    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
 
     /**
      * The m pixel chains.
@@ -108,8 +107,8 @@ public class Node extends Pixel {
         return clone;
     }
 
-    public ImmutablePixelMapData mergePixelChains(PixelMapData pPixelMap) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pPixelMap));
+    public ImmutablePixelMapData mergePixelChains(ImmutablePixelMapData pixelMap) {
+        var result = StrongReference.of(pixelMap);
         int count = countPixelChains();
         mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
         switch (count) {

@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 public class PixelMapTransformService {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
 
     private final static Logger mLogger = Framework.getLogger();

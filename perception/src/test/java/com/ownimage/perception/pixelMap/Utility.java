@@ -140,11 +140,11 @@ class Utility {
         return getDefaultTransformSource(map.length);
     }
 
-    static PixelMapData createMap(final String[] map) {
+    static ImmutablePixelMapData createMap(final String[] map) {
         return createMap(map, getDefaultTransformSource(map.length));
     }
 
-    static PixelMapData createMap(final String[] map, final IPixelMapTransformSource transformSource) {
+    static ImmutablePixelMapData createMap(final String[] map, final IPixelMapTransformSource transformSource) {
         final ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
                 .width(map[0].length()).height(map.length).is360(true).build();
         return setMap(pixelMap, map);

@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class PixelChainService {
 
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelMapTransformService pixelMapTransformService = Services.getDefaultServices().getPixelMapTransformService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
     private final static Logger mLogger = Framework.getLogger();
@@ -418,8 +417,8 @@ public class PixelChainService {
 
     @Deprecated // this modifies the pixelmap there is a better version in
     public Tuple2<ImmutablePixelMapData, PixelChain> indexSegments(
-            @NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, boolean add) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain, boolean add) {
+        var result = StrongReference.of(pixelMap);
         if (add) {
             var builder = builder(pixelChain);
             double[] startPosition = {0.0d};
@@ -431,25 +430,20 @@ public class PixelChainService {
             builder.setLength(startPosition[0]);
             var newPixelChain = builder.build();
             newPixelChain.streamSegments().forEach(segment -> {
-//                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
                 result.update(r -> index(r, newPixelChain, segment, true));
-//                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
             });
             return new Tuple2<>(result.get(), newPixelChain);
         } else {
             pixelChain.getSegments().forEach(segment -> {
-//                var pm = pixelMapMappingService.toPixelMap(result.get(), null);
                 result.update(r -> index(r, pixelChain, segment, false));
-//                result.set(pixelMapMappingService.toImmutablePixelMapData(pm));
             });
             return new Tuple2<>(result.get(), pixelChain);
         }
     }
 
     public ImmutablePixelMapData index(
-            @NotNull PixelMapData pixelMap, @NotNull PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
-        var result = StrongReference.of(
-                pixelMapMappingService.toImmutablePixelMapData(pixelMap).withSegmentCount(pixelMap.segmentCount() + 1));
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
+        var result = StrongReference.of(pixelMap.withSegmentCount(pixelMap.segmentCount() + 1));
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
         //
