@@ -11,7 +11,6 @@ public interface Services {
     @NotNull PixelMapChainGenerationService pixelMapChainGenerationService();
     @NotNull PixelMapApproximationService getPixelMapApproximationService();
     @NotNull PixelMapTransformService getPixelMapTransformService();
-    @NotNull PixelMapMappingService getPixelMapMappingService();
     @NotNull PixelService getPixelService();
     @NotNull PixelChainService getPixelChainService();
     @NotNull VertexService getVertexService();
@@ -22,7 +21,6 @@ public interface Services {
         var pixelMapChainGenerationService = new PixelMapChainGenerationService();
         var pixelMapApproximationService = new PixelMapApproximationService();
         var pixelMapTransformService = new PixelMapTransformService();
-        var pixelMapMappingService = new PixelMapMappingService();
         var pixelService = new PixelService();
         var pixelChainService = new PixelChainService();
         var vertexService = new VertexService();
@@ -32,7 +30,6 @@ public interface Services {
                 .pixelMapChainGenerationService(pixelMapChainGenerationService)
                 .pixelMapApproximationService(pixelMapApproximationService)
                 .pixelMapTransformService(pixelMapTransformService)
-                .pixelMapMappingService(pixelMapMappingService)
                 .pixelService(pixelService)
                 .pixelChainService(pixelChainService)
                 .vertexService(vertexService)

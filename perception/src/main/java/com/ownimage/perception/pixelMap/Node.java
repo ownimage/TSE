@@ -8,13 +8,10 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.Services;
 
-import java.util.SplittableRandom;
 import java.util.Vector;
 
 // TODO: Auto-generated Javadoc

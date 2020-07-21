@@ -1,15 +1,15 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
-import com.ownimage.perception.pixelMap.services.PixelMapMappingService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Test;
 
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class PixelTest {
 
