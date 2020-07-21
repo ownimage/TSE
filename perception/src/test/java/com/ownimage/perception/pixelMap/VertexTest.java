@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Before;
@@ -28,12 +29,12 @@ public class VertexTest {
     private Services services = Services.getDefaultServices();
 
     @Mock
-    PixelMap pixelMap;
+    PixelMapData pixelMap;
     
     @Before
     public void before() {
-        when(pixelMap.getHeight()).thenReturn(100);
-        when(pixelMap.getWidth()).thenReturn(100);
+        when(pixelMap.height()).thenReturn(100);
+        when(pixelMap.width()).thenReturn(100);
     }
 
     @Ignore
@@ -55,7 +56,7 @@ public class VertexTest {
         assertEquals(point, underTest.getPosition());
         verify(mockPixelChain, times(1)).getPixelCount();
         verify(mockPixelChain, times(1)).getPixel(index);
-        verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap.getHeight());
+        verify(mockPixel, times(1)).getUHVWMidPoint(mockPixelMap.height());
 //        verifyNoMoreInteractions(mockPixelMap, mockPixelChain, mockPixel);
     }
 
@@ -249,12 +250,12 @@ public class VertexTest {
     }
 
     private class MockPixelMapBuilder {
-        PixelMap mPixelMap = mock(PixelMap.class);
+        PixelMapData mPixelMap = mock(PixelMapData.class);
 
         public MockPixelMapBuilder() {
         }
 
-        PixelMap build() {
+        PixelMapData build() {
             return mPixelMap;
         }
     }

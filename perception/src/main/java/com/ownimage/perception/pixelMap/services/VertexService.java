@@ -45,7 +45,7 @@ public class VertexService {
      * @param pixelChain the Pixel Chain performing this operation
      * @param pixelMap   the PixelMap performing this operation
      */
-    public Line calcTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex) {
+    public Line calcTangent(PixelMapData pixelMap, IPixelChain pixelChain, IVertex vertex) {
         Line tangent;
         ISegment startSegment = getStartSegment( pixelChain, vertex);
         ISegment endSegment = getEndSegment( pixelChain, vertex);

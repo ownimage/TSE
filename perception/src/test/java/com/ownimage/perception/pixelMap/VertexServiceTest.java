@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -21,15 +22,15 @@ import static org.mockito.Mockito.when;
 public class VertexServiceTest {
 
 //    @Mock
-    PixelMap pixelMap;
+    PixelMapData pixelMap;
 
     private Services services = Services.getDefaultServices();
     
     @Before
     public void before() {
-        pixelMap = mock(PixelMap.class);
-        when(pixelMap.getHeight()).thenReturn(100);
-        when(pixelMap.getWidth()).thenReturn(100);
+        pixelMap = mock(PixelMapData.class);
+        when(pixelMap.height()).thenReturn(100);
+        when(pixelMap.width()).thenReturn(100);
     }
 
 //    @Test
@@ -337,12 +338,12 @@ public class VertexServiceTest {
     }
 
     private class MockPixelMapBuilder {
-        PixelMap mPixelMap = mock(PixelMap.class);
+        PixelMapData mPixelMap = mock(PixelMapData.class);
 
         public MockPixelMapBuilder() {
         }
 
-        PixelMap build() {
+        PixelMapData build() {
             return mPixelMap;
         }
     }

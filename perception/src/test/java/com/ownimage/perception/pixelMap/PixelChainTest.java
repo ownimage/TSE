@@ -30,7 +30,7 @@ public class PixelChainTest {
     private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
 
     @Mock
-    PixelMap pixelMap;
+    PixelMapData pixelMap;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -40,9 +40,9 @@ public class PixelChainTest {
 
     @Before
     public void before() {
-        pixelMap = mock(PixelMap.class);
-        when(pixelMap.getHeight()).thenReturn(100);
-        when(pixelMap.getWidth()).thenReturn(100);
+        pixelMap = mock(PixelMapData.class);
+        when(pixelMap.height()).thenReturn(100);
+        when(pixelMap.width()).thenReturn(100);
     }
 
     @Test

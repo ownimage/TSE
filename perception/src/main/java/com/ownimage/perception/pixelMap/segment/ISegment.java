@@ -12,7 +12,6 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 
 import java.io.Serializable;
@@ -91,7 +90,7 @@ public interface ISegment extends Serializable, Cloneable {
      */
     int getStartIndex(IPixelChain pPixelChain);
 
-    Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain);
+    Line getStartTangent(PixelMapData pPixelMap, IPixelChain pPixelChain);
 
     /**
      * Gets the start tangent. This is a vector that points along the tangent to a point before the start, i.e. towards a point that it would join with.

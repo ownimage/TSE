@@ -11,7 +11,6 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -693,7 +692,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public void setEdgeData(final PixelMap edgeData) {
+    public void setEdgeData(final PixelMapData edgeData) {
         this.edgeData = edgeData;
     }
 

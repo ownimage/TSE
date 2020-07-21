@@ -164,10 +164,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pixelService.isEdge(pPixelMap, this.toIntegerPoint());
     }
 
-    public void setEdge(PixelMap pPixelMap, boolean pValue) {
-        pPixelMap.setValuesFrom(pixelMapService.setEdge(pPixelMap, pPixelMap.mTransformSource, this, pValue));
-    }
-
     public boolean isNeighbour(Pixel pPixel) {
         // big question is are you a neighbour of yourself - YES
         return // pPixel.getPixelMap() == getPixelMap() && //
@@ -176,10 +172,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     public boolean isNode(PixelMapData pPixelMap) {
         return pixelService.isNode(pPixelMap, this.toIntegerPoint());
-    }
-
-    public boolean isInChain(PixelMap pPixelMap) {
-        return pixelMapService.getData(pPixelMap, this, IN_CHAIN);
     }
 
     public Optional<Node> getNode(PixelMapData pPixelMap) {

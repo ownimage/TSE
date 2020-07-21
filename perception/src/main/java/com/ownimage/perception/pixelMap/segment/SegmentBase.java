@@ -12,7 +12,6 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
@@ -142,7 +141,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    public Line getStartTangent(PixelMapData pPixelMap, IPixelChain pPixelChain) {
         return new Line(
                 getStartUHVWPoint(pPixelMap, pPixelChain),
                 getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))

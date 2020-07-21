@@ -102,7 +102,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
 
-    private void refine03_matchCurves(PixelMap pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
+    private void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
 
         if (getSegmentCount() == 1) {
             return;
@@ -120,7 +120,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine03FirstSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             PixelChain pPixelChain, IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
@@ -182,7 +182,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine03LastSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             PixelChain pPixelChain, IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
@@ -245,7 +245,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine03MidSegmentEatForward(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             PixelChain pPixelChain, IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
@@ -319,7 +319,7 @@ public class PixelChainBuilder implements IPixelChain {
 
 
     private void refine03MidSegment(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             PixelChain pPixelChain, IPixelMapTransformSource pSource,
             ISegment pCurrentSegment
     ) {
@@ -339,7 +339,7 @@ public class PixelChainBuilder implements IPixelChain {
         // Question 1 what are we going to do with fixed points
     }
 
-    private boolean isValid(PixelMap pPixelMap, ISegment pSegment) { // need to make sure that not only the pixels are close to the line but the line is close to the pixels
+    private boolean isValid(PixelMapData pPixelMap, ISegment pSegment) { // need to make sure that not only the pixels are close to the line but the line is close to the pixels
         if (pSegment == null) {
             return false;
         }
@@ -348,18 +348,18 @@ public class PixelChainBuilder implements IPixelChain {
         }
 
         int startIndexPlus = pSegment.getStartIndex(this) + 1;
-        Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap.getHeight());
+        Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap.height());
         double startPlusLambda = pSegment.closestLambda(pPixelMap, this, startPointPlus);
 
         int endIndexMinus = pSegment.getEndIndex(this) - 1;
-        Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap.getHeight());
+        Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap.width());
         double endMinusLambda = pSegment.closestLambda(pPixelMap, this, endPointMinus);
 
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
     }
 
     private double calcError(
-            PixelMap pPixelMap,
+            PixelMapData pPixelMap,
             int pStartPixelIndex,
             int pEndPixelIndex,
             ISegment pStartSegment,
@@ -618,7 +618,7 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    public void refine(PixelMap pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pTransformSource) {
+    public void refine(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pTransformSource) {
         // TODO dont really want to have to pass a IMPTS in here
         refine01_matchCurves(pPixelMap, pPixelChain, pTransformSource);
         refine03_matchCurves(pPixelMap, pPixelChain, pTransformSource);
@@ -627,7 +627,7 @@ public class PixelChainBuilder implements IPixelChain {
         //approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
     }
 
-    private void refine01_matchCurves(PixelMap pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
+    private void refine01_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
 
         if (getSegmentCount() == 1) {
             return;
@@ -645,7 +645,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine01MidSegment(
-            PixelMap pixelMap,
+            PixelMapData pixelMap,
             PixelChain pixelChain,
             IPixelMapTransformSource source,
             ISegment currentSegment
@@ -688,7 +688,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine01EndSegment(
-            PixelMap pixelMap,
+            PixelMapData pixelMap,
             IPixelMapTransformSource source,
             ISegment currentSegment
     ) {
@@ -728,7 +728,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine01FirstSegment(
-            PixelMap pixelMap,
+            PixelMapData pixelMap,
             double lineCurvePreference,
             ISegment segment
     ) {
