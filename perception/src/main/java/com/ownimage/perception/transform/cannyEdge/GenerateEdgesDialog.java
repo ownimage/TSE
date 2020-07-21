@@ -6,7 +6,14 @@
 package com.ownimage.perception.transform.cannyEdge;
 
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.IAction;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IUIEventListener;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
@@ -23,7 +30,6 @@ import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
