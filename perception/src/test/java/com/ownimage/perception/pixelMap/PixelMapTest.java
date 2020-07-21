@@ -129,7 +129,7 @@ public class PixelMapTest {
                 "E    N    "
         };
         // WHEN
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // THEN
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(actual, input);
@@ -148,7 +148,7 @@ public class PixelMapTest {
                 "   EE EE  ",
                 "E    E    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         System.out.println(pixelMap.data().get(2, 0));
         // WHEN
         pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
@@ -170,7 +170,7 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
@@ -193,7 +193,7 @@ public class PixelMapTest {
                 "  NEEEEN  ",
                 "E    N    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
@@ -215,7 +215,7 @@ public class PixelMapTest {
                 "    ",
                 "    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         pixelMap = pixelMapApproximationService.process01_reset(pixelMap, null);
         pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
@@ -241,7 +241,7 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N N  E    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
@@ -263,7 +263,7 @@ public class PixelMapTest {
                 "   NE EN  ",
                 "N    E    "
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
@@ -290,7 +290,7 @@ public class PixelMapTest {
                 " N    E    ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
@@ -317,7 +317,7 @@ public class PixelMapTest {
                 "     EEEN  ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
@@ -370,7 +370,7 @@ public class PixelMapTest {
                 "    E      ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length),null);
         // THEN
@@ -387,7 +387,7 @@ public class PixelMapTest {
                 "    N      ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
@@ -409,7 +409,7 @@ public class PixelMapTest {
                 "    N      ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
@@ -431,7 +431,7 @@ public class PixelMapTest {
                 "   N       ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
@@ -453,7 +453,7 @@ public class PixelMapTest {
                 "   N       ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
@@ -475,7 +475,7 @@ public class PixelMapTest {
                 "     N     ",
                 "           ",
         };
-        PixelMapData pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input);
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN

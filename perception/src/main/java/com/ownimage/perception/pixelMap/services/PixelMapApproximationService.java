@@ -11,7 +11,6 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,13 +40,12 @@ public class PixelMapApproximationService {
 
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
-    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
 
     public ImmutablePixelMapData actionProcess(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver progress) {
         var result = pixelMap.withAutoTrackChanges(false);
@@ -67,7 +65,7 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData process01_reset(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             IProgressObserver progress) {
         reportProgress(progress, "Resetting ...", 0);
         var result = pixelMap
@@ -87,19 +85,19 @@ public class PixelMapApproximationService {
 
     // TODO need to work out how to have a progress bar
     public ImmutablePixelMapData process02_thin(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             IProgressObserver progress) {
         reportProgress(progress, "thinning ...", 0);
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         new Range2D(pixelMap.width(), pixelMap.height())
                 .forEach((x, y) -> result.update(r -> thin(r, transformSource, pixelMapService.getPixelOptionalAt(r, x, y).orElseThrow())));
         return result.get();
     }
 
     public ImmutablePixelMapData process03_generateNodes(
-            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+            @NotNull ImmutablePixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             var calsIsNodeResult = pixelMapService.calcIsNode(result.get(), pixel);
@@ -112,10 +110,10 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process04a_removeLoneNodes(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
@@ -131,12 +129,12 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process04b_removeBristles(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         var toBeRemoved = new Vector<Pixel>();
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         result.get().nodes().values().forEach(node -> node.getNodeNeighbours(result.get()).forEach(other -> {
                     Set<Pixel> nodeSet = node.allEdgeNeighbours(result.get());
                     Set<Pixel> otherSet = other.allEdgeNeighbours(result.get());
@@ -161,9 +159,9 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process05_generateChains(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             IProgressObserver pProgressObserver) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         pixelMap.nodes().values().forEach(node -> {
             var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
             result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
@@ -181,8 +179,8 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process05a_findLoops(
-            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+            @NotNull ImmutablePixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        var result = StrongReference.of(pixelMap);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isEdge(result.get(), pixel) && !pixelService.isInChain(result.get(), pixel)) {
                 result.update(r -> pixelMapService.setNode(r, pixel, true));
@@ -197,7 +195,7 @@ public class PixelMapApproximationService {
 
 
     public ImmutablePixelMapData  process06_straightLinesRefineCorners(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver
     ) {
@@ -210,7 +208,7 @@ public class PixelMapApproximationService {
         pegCounter.clear(pegs);
         double tolerance = transformSource.getLineTolerance() / pixelMap.height();
         logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         var refined = new Vector<PixelChain>();
         result.get().pixelChains().forEach(pixelChain ->
                 refined.add(pixelChainService.approximate(result.get(), pixelChain, tolerance)));
@@ -222,9 +220,9 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process07_mergeChains(
-            @NotNull PixelMapData pixelMap, IProgressObserver pProgressObserver) {
+            @NotNull ImmutablePixelMapData pixelMap, IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         logger.info(() -> "number of PixelChains: " + result.get().pixelChains().size());
         result.get().nodes().values().forEach(pNode ->
                 result.update(r -> pNode.mergePixelChains(r)));
@@ -233,10 +231,10 @@ public class PixelMapApproximationService {
     }
 
     public ImmutablePixelMapData process08_refine(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         var pegs = new Object[]{
                 IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted,
                 IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful,
@@ -319,7 +317,7 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOn(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
@@ -327,7 +325,7 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOff(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Pixel pPixel) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
@@ -335,12 +333,12 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOff(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull List<Pixel> pixels) {
         double tolerance = transformSource.getLineTolerance() / pixelMap.height();
         double lineCurvePreference = transformSource.getLineCurvePreference();
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
             result.update(r -> pixelMapService.pixelChainRemove(r, pc));
             pc.getPixels().stream().forEach(p -> {
@@ -365,11 +363,11 @@ public class PixelMapApproximationService {
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOn(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NonNull Collection<Pixel> pixels) {
         if (pixels.isEmpty()) {
-            return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+            return pixelMap;
         }
 
         var result = StrongReference.of(pixelMapService.resetInChain(pixelMap));

@@ -132,7 +132,7 @@ class Utility {
     }
 
     static ImmutablePixelMapData createMap(final int pX, final int pY) {
-        PixelMapData pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
+        var pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
         return pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(pY), null);
     }
 
