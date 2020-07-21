@@ -31,7 +31,7 @@ public interface ISegment extends Serializable, Cloneable {
 
     boolean closerThanActual(PixelMapData pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
-    double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel);
+    double calcError(PixelMapData pPixelMap, IPixelChain pPixelChain, Pixel pPixel);
 
     int getSegmentIndex();
 
