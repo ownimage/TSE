@@ -18,7 +18,7 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
@@ -67,7 +67,6 @@ public class PixelMapService {
 
     private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
     private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
-    private static PixelMapMappingService pixelMapMappingService = Services.getDefaultServices().getPixelMapMappingService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
 
@@ -151,7 +150,7 @@ public class PixelMapService {
         logger.info("segment count = " + pixelMap.segmentCount());
 
         Framework.logExit(logger);
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap).withAutoTrackChanges(true);
+        return pixelMap.withAutoTrackChanges(true);
     }
 
     // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerPoint
@@ -161,7 +160,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setVisited(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
             @NotNull boolean isVisited) {
         var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
@@ -170,7 +169,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setInChain(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
             @NotNull boolean isInChain) {
         var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
@@ -179,7 +178,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setNode(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel,
             boolean pValue) {
         var result = pixelMap;
@@ -193,7 +192,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData setData(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
             boolean pState,
             byte pValue) {
@@ -206,11 +205,11 @@ public class PixelMapService {
             }
             return pixelMap.withData(pixelMap.data().set(x, pixel.getY(), newValue));
         }
-        return pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+        return pixelMap;
     }
 
     public @NotNull ImmutablePixelMapData nodeAdd(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
@@ -222,7 +221,7 @@ public class PixelMapService {
     }
 
     public @NotNull ImmutablePixelMapData nodeRemove(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
@@ -234,7 +233,7 @@ public class PixelMapService {
     }
 
     public int countEdgeNeighboursTransitions(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NonNull Pixel pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
@@ -251,17 +250,17 @@ public class PixelMapService {
         return count;
     }
 
-    public void checkCompatibleSize(@NonNull PixelMapData one, @NotNull PixelMapData other) {
+    public void checkCompatibleSize(@NonNull ImmutablePixelMapData one, @NotNull ImmutablePixelMapData other) {
         if (one.width() != other.width() || one.height() != other.height()) {
             throw new IllegalArgumentException("PixelMaps are of different sized.");
         }
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, IntegerPoint integerPoint) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMapData pixelMapData, IntegerPoint integerPoint) {
         return getOptionalPixelAt(pixelMapData, integerPoint.getX(), integerPoint.getY());
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, int x, int y) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMapData pixelMapData, int x, int y) {
         if (0 > y || y >= pixelMapData.height()) {
             return Optional.empty();
         }
@@ -272,7 +271,7 @@ public class PixelMapService {
         return Optional.of(new Pixel(newX, y));
     }
 
-    public int modWidth(@NotNull PixelMapData pixelMapData, int pX) {
+    public int modWidth(@NotNull ImmutablePixelMapData pixelMapData, int pX) {
         int width = pixelMapData.width();
         if (0 <= pX && pX < width) {
             return pX;
@@ -290,7 +289,7 @@ public class PixelMapService {
         }
     }
 
-    public List<PixelChain> getPixelChains(@NotNull PixelMapData pixelMapData, @NonNull Pixel pPixel) {
+    public List<PixelChain> getPixelChains(@NotNull ImmutablePixelMapData pixelMapData, @NonNull Pixel pPixel) {
         Framework.logEntry(logger);
         List<PixelChain> pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
@@ -299,7 +298,7 @@ public class PixelMapService {
         return pixelChains;
     }
 
-    public void write(PixelMapData pixelMap, IPersistDB db, String id) throws IOException {
+    public void write(ImmutablePixelMapData pixelMap, IPersistDB db, String id) throws IOException {
         // note that write/read does not preserve the mAllNodes values
         Framework.logEntry(logger);
 
@@ -343,7 +342,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelOn(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel) {
         var pixels = Collections.singletonList(pixel);
@@ -351,10 +350,10 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelOn(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Collection<Pixel> pixels) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         result.update(r -> r.withAutoTrackChanges(false));
         pixels.forEach(pixel ->
                 result.update(r -> pixelMapApproximationService.setEdge(r, transformSource, pixel, true)));
@@ -364,11 +363,11 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelOff(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
             int cursorSize) {
-        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        val result = StrongReference.of(pixelMap);
         double radius = (double) cursorSize / result.get().height();
         new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
                 .forEach((x, y) ->
@@ -459,7 +458,7 @@ public class PixelMapService {
         return result;
     }
 
-    public Point getUHVWHalfPixel(PixelMapData pixelMap) {
+    public Point getUHVWHalfPixel(ImmutablePixelMapData pixelMap) {
         return new Point(0.5d * aspectRatio(pixelMap) / pixelMap.width(), 0.5d / pixelMap.height());
     }
 
@@ -484,7 +483,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionPixelToggle(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel) {
         var newValue = !pixelService.isEdge(pixelMap, pixel);
@@ -525,10 +524,10 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionReapproximate(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource) {
         SplitTimer.split("PixelMap actionReapproximate() start");
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         Vector<PixelChain> updates = new Vector<>();
         val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         val lineCurvePreference = transformSource.getLineCurvePreference();
@@ -545,9 +544,9 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData actionRerefine(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull CannyEdgeTransform transformSource) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        var result = StrongReference.of(pixelMap);
         Vector<PixelChain> updates = new Vector<>();
         val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         val lineCurvePreference = transformSource.getLineCurvePreference();
@@ -579,8 +578,8 @@ public class PixelMapService {
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
 
-    public ImmutablePixelMapData pixelChainRemove(@NotNull PixelMapData pixelMap, @NotNull PixelChain chain) {
-        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+    public ImmutablePixelMapData pixelChainRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
+        val result = StrongReference.of(pixelMap);
         result.update(r -> indexSegments(r, chain, false)
                 .withPixelChains(r.pixelChains().remove(chain)));
         chain.getPixels()
@@ -639,7 +638,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData clearInChainAndVisitedThenSetEdge(
-            @NotNull PixelMapData pixelMapData,
+            @NotNull ImmutablePixelMapData pixelMapData,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull PixelChain pixelChain) {
         var result = StrongReference.of(pixelMapData);
@@ -655,10 +654,10 @@ public class PixelMapService {
                 .filter(p -> pixelService.isNode(result.get(), p))
                 .filter(p -> p.countEdgeNeighbours(result.get()) < 2 || p.countNodeNeighbours(result.get()) == 2)
                 .forEach(p -> result.update(r -> setEdge(r, transformSource, p, false)));
-        return pixelMapMappingService.toImmutablePixelMapData(result.get());
+        return result.get();
     }
 
-    public Optional<Node> getNode(PixelMapData pixelMap, IntegerPoint pIntegerPoint) {
+    public Optional<Node> getNode(ImmutablePixelMapData pixelMap, IntegerPoint pIntegerPoint) {
         // this is because pIntegerPoint might be a Node or Pixel
         IntegerPoint point = getTrueIntegerPoint(pIntegerPoint);
         Node node = pixelMap.nodes().get(point);
@@ -675,22 +674,22 @@ public class PixelMapService {
         return Optional.empty();
     }
 
-    public Optional<Pixel> getPixelOptionalAt(@NotNull PixelMapData pixelMapData, int x, int y) {
+    public Optional<Pixel> getPixelOptionalAt(@NotNull ImmutablePixelMapData pixelMapData, int x, int y) {
         if (0 > x || x >= pixelMapData.width() || 0 > y || y >= pixelMapData.height()) {
             return Optional.empty();
         }
         return Optional.of(new Pixel(x, y));
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, @NotNull Point point) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMapData pixelMapData, @NotNull Point point) {
         return getOptionalPixelAt(pixelMapData, point.getX(), point.getY());
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull PixelMapData pixelMapData, double x, double y) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMapData pixelMapData, double x, double y) {
         return Optional.ofNullable(getPixelAt(pixelMapData, x, y));
     }
 
-    public Pixel getPixelAt(@NotNull PixelMapData pixelMapData, double xIn, double yIn) {
+    public Pixel getPixelAt(@NotNull ImmutablePixelMapData pixelMapData, double xIn, double yIn) {
         int h = pixelMapData.height();
         int x = (int) (xIn * pixelMapData.width());
         int y = (int) (yIn * h);
@@ -699,11 +698,11 @@ public class PixelMapService {
         return new Pixel(x, y);
     }
 
-    public Pixel getPixelAt(@NotNull PixelMapData pixelMapData, int xIn, int yIn) {
+    public Pixel getPixelAt(@NotNull ImmutablePixelMapData pixelMapData, int xIn, int yIn) {
         return getOptionalPixelAt(pixelMapData, xIn, yIn).orElse(null);
     }
 
-    public Point toUHVW(@NotNull PixelMapData pixelMap, @NotNull Point point) {
+    public Point toUHVW(@NotNull ImmutablePixelMapData pixelMap, @NotNull Point point) {
         return point.scaleX(aspectRatio(pixelMap));
     }
 
@@ -713,12 +712,12 @@ public class PixelMapService {
      * @param pixelMap
      * @return
      */
-    public double aspectRatio(@NotNull PixelMapData pixelMap) {
+    public double aspectRatio(@NotNull ImmutablePixelMapData pixelMap) {
         return (double) pixelMap.width() / pixelMap.height();
     }
 
     public Tuple2<ImmutablePixelMapData, Boolean> calcIsNode(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel) {
         boolean shouldBeNode = false;
         var pixelMapResult = pixelMap;
@@ -735,7 +734,7 @@ public class PixelMapService {
     }
 
     public Tuple2<ImmutablePixelMapData, Stream<PixelChain>> generateChainsAndApproximate(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Node pNode) {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
@@ -747,22 +746,22 @@ public class PixelMapService {
         return new Tuple2<>(result._1, stream);
     }
 
-    public ImmutablePixelMapData resetVisited(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData resetVisited(@NotNull ImmutablePixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ VISITED)));
         return pixelMap.withData(data);
     }
 
-    public ImmutablePixelMapData resetNode(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData resetNode(@NotNull ImmutablePixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ NODE)));
         return pixelMap.withData(data);
     }
 
-    public ImmutablePixelMapData resetInChain(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData resetInChain(@NotNull ImmutablePixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
         return pixelMap.withData(data);
     }
 
-    public boolean getData(@NotNull PixelMapData pixelMap, @NotNull Pixel pixel, byte pValue) {
+    public boolean getData(@NotNull ImmutablePixelMapData pixelMap, @NotNull Pixel pixel, byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
             int x = modWidth(pixelMap, pixel.getX());
             return (getValue(pixelMap, x, pixel.getY()) & pValue) != 0;
@@ -771,7 +770,7 @@ public class PixelMapService {
         }
     }
 
-    public byte getValue(@NotNull PixelMapData pixelMap, int pX, int pY) {
+    public byte getValue(@NotNull ImmutablePixelMapData pixelMap, int pX, int pY) {
         // TODO change these to Framework checks
         if (pX < 0) {
             throw new IllegalArgumentException("pX must be > 0.");
@@ -790,7 +789,7 @@ public class PixelMapService {
         return pixelMap.data().get(pX, pY);
     }
 
-    public ImmutablePixelMapData setValue(@NotNull PixelMapData pixelMap, int pX, int pY, byte pValue) {
+    public ImmutablePixelMapData setValue(@NotNull ImmutablePixelMapData pixelMap, int pX, int pY, byte pValue) {
         return pixelMap.withData(pixelMap.data().set(pX, pY, pValue));
     }
 
@@ -800,7 +799,7 @@ public class PixelMapService {
      *
      * @param pixelChain
      */
-    public ImmutablePixelMapData removePixelChain(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+    public ImmutablePixelMapData removePixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
         var result = StrongReference.of(pixelChainRemove(pixelMap,  pixelChain));
         pixelChainService.getStartNode(result.get(), pixelChain)
                 .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
@@ -816,7 +815,7 @@ public class PixelMapService {
         return result;
     }
 
-    public ImmutablePixelMapData replaceNode(@NotNull PixelMapData pixelMap, @NotNull Node node) {
+    public ImmutablePixelMapData replaceNode(@NotNull ImmutablePixelMapData pixelMap, @NotNull Node node) {
         return pixelMap.withNodes(pixelMap.nodes().put(node.toIntegerPoint(), node));
     }
 
@@ -835,14 +834,14 @@ public class PixelMapService {
                 .withSegmentIndex(is._1.segmentIndex());
     }
 
-    public ImmutablePixelMapData pixelChainsClear(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData pixelChainsClear(@NotNull ImmutablePixelMapData pixelMap) {
         return pixelMap
                 .withPixelChains(pixelMap.pixelChains().clear())
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
 
-    public ImmutablePixelMapData addPixelChains(@NotNull PixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
-        var result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+    public ImmutablePixelMapData addPixelChains(@NotNull ImmutablePixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
+        var result = StrongReference.of(pixelMap);
         pixelChains.forEach(pixelChain -> result.update(r-> addPixelChain(r, pixelChain)));
         return result.get();
     }
@@ -852,7 +851,7 @@ public class PixelMapService {
      * @deprecated TODO: explain
      */ // move to a stream
     @Deprecated
-    public void forEachPixel(@NotNull PixelMapData pixelMap, @NotNull Consumer<Pixel> pFunction) {
+    public void forEachPixel(@NotNull ImmutablePixelMapData pixelMap, @NotNull Consumer<Pixel> pFunction) {
         new Range2D(pixelMap.width(), pixelMap.height()).forEach((x, y) -> pFunction.accept(getPixelAt(pixelMap, x, y)));
     }
 
@@ -860,11 +859,11 @@ public class PixelMapService {
      * @deprecated TODO: explain
      */ // Move to a stream
     @Deprecated
-    public void forEachPixelChain(@NotNull PixelMapData pixelMap, @NotNull Consumer<PixelChain> pFunction) {
+    public void forEachPixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull Consumer<PixelChain> pFunction) {
         pixelMap.pixelChains().forEach(pFunction);
     }
 
-    public Stream<PixelChain> streamPixelChains(@NotNull PixelMapData pixelMap) {
+    public Stream<PixelChain> streamPixelChains(@NotNull ImmutablePixelMapData pixelMap) {
         return pixelMap.pixelChains().stream();
     }
 
@@ -877,13 +876,13 @@ public class PixelMapService {
      * @return true, if the Pixel was thinned.
      */
     public Tuple2<ImmutablePixelMapData, Boolean> thin(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
-            return new Tuple2<>(pixelMapMappingService.toImmutablePixelMapData(pixelMap), false);
+            return new Tuple2<>(pixelMap, false);
         }
-        var pixelMapResult = pixelMapMappingService.toImmutablePixelMapData(pixelMap);
+        var pixelMapResult = pixelMap;
         boolean canEliminate = false;
         for (int[] set : eliminate) {
             canEliminate |= pixelService.isEdge(pixelMap,pixel.getNeighbour(set[0]))
@@ -899,13 +898,13 @@ public class PixelMapService {
 
 
     public ImmutablePixelMapData nodesRemoveAll(
-            @NotNull PixelMapData pixelMap, @NotNull Collection<Pixel> pToBeRemoved) {
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull Collection<Pixel> pToBeRemoved) {
         var nodes = StrongReference.of(pixelMap.nodes());
         pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p.toIntegerPoint())));
         return pixelMap.withNodes(nodes.get());
     }
 
-    public void validate(@NotNull PixelMapData pixelMap) {
+    public void validate(@NotNull ImmutablePixelMapData pixelMap) {
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
         Set segments = new HashSet<ISegment>();
         for (int x = 0; x < pixelMap.width(); x++) {
@@ -923,7 +922,7 @@ public class PixelMapService {
     }
 
 
-    public ImmutablePixelMapData clearSegmentIndex(@NotNull PixelMapData pixelMap) {
+    public ImmutablePixelMapData clearSegmentIndex(@NotNull ImmutablePixelMapData pixelMap) {
         return pixelMap
                 .withSegmentIndex(new Immutable2DArray<>(pixelMap.width(), pixelMap.height(), 20))
                 .withSegmentCount(0);
@@ -931,11 +930,11 @@ public class PixelMapService {
 
 
     public @NotNull ImmutablePixelMapData setEdge(
-            @NotNull PixelMapData pixelMap,
+            @NotNull ImmutablePixelMapData pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
             @NotNull boolean isEdge) {
-        val result = StrongReference.of(pixelMapMappingService.toImmutablePixelMapData(pixelMap));
+        val result = StrongReference.of(pixelMap);
         if (pixelService.isEdge(pixelMap, pixel) == isEdge) {
             return result.get();
         }

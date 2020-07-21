@@ -151,12 +151,12 @@ public class PixelChainService {
         return pixelChain.getPixels().firstElement().orElseThrow();
     }
 
-    public Optional<Node> getEndNode(PixelMapData pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getEndNode(ImmutablePixelMapData pixelMap, PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
     }
 
 
-    public Optional<Node> getStartNode(PixelMapData pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getStartNode(ImmutablePixelMapData pixelMap, PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
@@ -506,7 +506,7 @@ public class PixelChainService {
      * @param otherChain the other chain
      * @param pNode       the node
      */
-    public PixelChain merge(PixelMapData pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
+    public PixelChain merge(ImmutablePixelMapData pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
         mLogger.fine("merge");
 //        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
 //            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);

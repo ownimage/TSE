@@ -26,7 +26,10 @@ public class PixelMapChainGenerationService {
 
 
     public Tuple2<ImmutablePixelMapData, PixelChain> generateChain(
-            PixelMapData pixelMap, Node startNode, Pixel pixel, PixelChain pixelChain) {
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Node startNode,
+            @NotNull Pixel pixel,
+            @NotNull PixelChain pixelChain) {
         try {
             Framework.logEntry(logger);
             if (logger.isLoggable(Level.FINEST)) {
@@ -82,7 +85,7 @@ public class PixelMapChainGenerationService {
     }
 
     public Tuple2<ImmutablePixelMapData, Collection<PixelChain>> generateChains(
-            @NotNull PixelMapData pixelMap, @NotNull Node pStartNode) {
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull Node pStartNode) {
         var pixelMapResult = StrongReference.of(ImmutablePixelMapData.copyOf(pixelMap));
 
         Vector<PixelChain> chains = new Vector<>();

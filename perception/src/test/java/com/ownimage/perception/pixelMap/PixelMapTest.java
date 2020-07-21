@@ -665,7 +665,7 @@ public class PixelMapTest {
         var source = Utility.getDefaultTransformSource(20);
         pixelMap.update(pm -> addChain(pm, source, start1, chainS1));
         pixelMap.update(pm ->  addChain(pm, source, start2, chainNE));
-        BiConsumer<PixelMapData, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
+        BiConsumer<ImmutablePixelMapData, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
             assertEquals(2, pPixelMap.pixelChains().size());
             List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());

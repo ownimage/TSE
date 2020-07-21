@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
@@ -174,7 +175,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return pixelService.isNode(pPixelMap, this.toIntegerPoint());
     }
 
-    public Optional<Node> getNode(PixelMapData pPixelMap) {
+    public Optional<Node> getNode(ImmutablePixelMapData pPixelMap) {
         return pixelMapService.getNode(pPixelMap, this);
     }
 
