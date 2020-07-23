@@ -6,21 +6,17 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
@@ -33,7 +29,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +60,7 @@ public class PixelMapService {
 
     private final static Logger logger = Framework.getLogger();
 
-    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
+    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().getPixelMapGenerationService();
     private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
@@ -341,67 +336,6 @@ public class PixelMapService {
         Framework.logExit(logger);
     }
 
-    public ImmutablePixelMapData actionPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
-        var pixels = Collections.singletonList(pixel);
-        return actionPixelOn(pixelMap, transformSource, pixels);
-    }
-
-    public ImmutablePixelMapData actionPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Collection<Pixel> pixels) {
-        var result = StrongReference.of(pixelMap);
-        result.update(r -> r.withAutoTrackChanges(false));
-        pixels.forEach(pixel ->
-                result.update(r -> pixelMapApproximationService.setEdge(r, transformSource, pixel, true)));
-        result.update(r -> r.withAutoTrackChanges(true));
-        result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixels));
-        return result.get();
-    }
-
-    public ImmutablePixelMapData actionPixelOff(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel,
-            int cursorSize) {
-        val result = StrongReference.of(pixelMap);
-        double radius = (double) cursorSize / result.get().height();
-        new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
-                .forEach((x, y) ->
-                        getOptionalPixelAt(result.get(), x, y)
-                                .filter(p -> pixelService.isEdge(result.get(), p))
-                                .filter(p -> pixel
-                                        .getUHVWMidPoint(result.get().height())
-                                        .distance(p.getUHVWMidPoint(result.get().height())) < radius)
-                                .ifPresent(p -> result.update(r -> setEdge(r, transformSource, p, false)))
-                );
-        return result.get();
-    }
-
-    public ImmutablePixelMapData actionDeletePixelChain(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Collection<Pixel> pixels) {
-        var clone = StrongReference.of(pixelMap.withAutoTrackChanges(false));
-        pixels.stream()
-                .filter(p -> pixelService.isEdge(clone.get(), p))
-                .forEach(p -> getPixelChains(clone.get(), p)
-                        .forEach(pc -> {
-                            // TODO in the implementation of the method below make the parameter immutable
-                            clone.update(c -> clearInChainAndVisitedThenSetEdge(c, transformSource, pc));
-                            pixelChainService.getStartNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> nodeRemove(c, n)));
-                            pixelChainService.getEndNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> nodeRemove(c, n)));
-                            clone.update(c -> c.withPixelChains(c.pixelChains().remove(pc)));
-                            clone.update(c -> indexSegments(c, pc, false));
-                            clone.update(c -> indexSegments(c, pc, false));
-                        }));
-        return clone.get().withAutoTrackChanges(true);
-    }
 
 
     public ImmutablePixelMapData indexSegments(
@@ -462,116 +396,6 @@ public class PixelMapService {
         return new Point(0.5d * aspectRatio(pixelMap) / pixelMap.width(), 0.5d / pixelMap.height());
     }
 
-    public ImmutablePixelMapData actionSetPixelChainThickness(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Collection<Pixel> pixels,
-            @NotNull Function<PixelChain, IPixelChain.Thickness> mapper) {
-        var result = StrongReference.of(pixelMap);
-        pixels.stream()
-                .filter(p -> pixelService.isEdge(pixelMap, p))
-                .flatMap(p -> getPixelChains(pixelMap, p).stream())
-                .distinct()
-                .forEach(pc -> {
-                    var currentThickness = pc.getThickness();
-                    var newThickness = mapper.apply(pc);
-                    if (newThickness != currentThickness) {
-                        result.update(r -> pixelChainRemove(r, pc));
-                        result.update(r -> pixelChainAdd(r, pixelChainService.withThickness(pc, newThickness)));
-                    }
-                });
-        return result.get();
-    }
-
-    public ImmutablePixelMapData actionPixelToggle(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
-        var newValue = !pixelService.isEdge(pixelMap, pixel);
-        return setEdge(pixelMap, transformSource, pixel, newValue);
-    }
-
-    public ImmutablePixelMapData actionPixelChainDeleteAllButThis(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel) {
-        val pixelChains = getPixelChains(pixelMap, pixel);
-        if (pixelChains.size() != 1) {
-            return pixelMap;
-        }
-
-        var result = clearAllPixelChains(pixelMap);
-        result = pixelChainsAddAll(result, pixelChains);
-        return result;
-    }
-
-
-    public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
-        if (getPixelChains(pixelMap, pixel).isEmpty()) {
-            return pixelMap;
-        }
-        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        double lineCurvePreference = transformSource.getLineCurvePreference();
-        var clone = StrongReference.of(pixelMap);
-        getPixelChains(clone.get(), pixel).forEach(pc -> {
-            clone.update(c -> pixelChainRemove(c, pc));
-            val pc2 = pixelChainService.approximateCurvesOnly(clone.get(), pc, tolerance, lineCurvePreference);
-            clone.update(c -> pixelChainAdd(c, pc2));
-        });
-        //copy.indexSegments();
-        return clone.get();
-    }
-
-    public ImmutablePixelMapData actionReapproximate(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource) {
-        SplitTimer.split("PixelMap actionReapproximate() start");
-        var result = StrongReference.of(pixelMap);
-        Vector<PixelChain> updates = new Vector<>();
-        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        val lineCurvePreference = transformSource.getLineCurvePreference();
-        result.get().pixelChains().stream()
-                .parallel()
-                .map(pc -> pixelChainService.approximate(result.get(), pc, tolerance))
-                .map(pc -> pixelChainService.refine(result.get(), pc, tolerance, lineCurvePreference))
-                //.map(pc -> pc.indexSegments(this, true))
-                .forEach(updates::add);
-        result.update(r -> pixelChainsClear(r));
-        result.update(r -> pixelChainsAddAll(r, updates));
-        SplitTimer.split("PixelMap actionReapproximate() end");
-        return result.get();
-    }
-
-    public ImmutablePixelMapData actionRerefine(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull CannyEdgeTransform transformSource) {
-        var result = StrongReference.of(pixelMap);
-        Vector<PixelChain> updates = new Vector<>();
-        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        val lineCurvePreference = transformSource.getLineCurvePreference();
-        result.get().pixelChains().stream()
-                .parallel()
-                .map(pc -> pixelChainService.refine(result.get(), pc, tolerance, lineCurvePreference))
-                .forEach(updates::add);
-        result.update(r -> pixelChainsClear(r));
-        result.update(r -> pixelChainsAddAll(r, updates));
-        return result.get();
-    }
-
-    public ImmutablePixelMapData actionSetPixelChainDefaultThickness(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull CannyEdgeTransform transform) {
-        int shortLength = transform.getShortLineLength();
-        int mediumLength = transform.getMediumLineLength();
-        int longLength = transform.getLongLineLength();
-        Vector<PixelChain> updates = new Vector<>();
-        pixelMap.pixelChains().forEach(chain -> updates.add(pixelChainService.withThickness(chain, shortLength, mediumLength, longLength)));
-        var result = clearAllPixelChains(pixelMap);
-        result = pixelChainsAddAll(result, updates);
-        return result;
-    }
-
     public ImmutablePixelMapData clearAllPixelChains(@NotNull ImmutablePixelMapData pixelMap) {
         return pixelMap
                 .withPixelChains(pixelMap.pixelChains().clear())
@@ -595,41 +419,6 @@ public class PixelMapService {
         return result.get();
     }
 
-
-    public ImmutablePixelMapData actionEqualizeValues(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull EqualizeValues values) {
-        if (pixelMap.pixelChains().size() == 0) {
-            return pixelMap;
-        }
-        // TODO do not like this mutable parameter
-        var totalLength = new StrongReference<>(0);
-        pixelMap.pixelChains().forEach(chain -> totalLength.update(len -> len + chain.getPixelCount()));
-        Vector<PixelChain> sortedChains = getPixelChainsSortedByLength(pixelMap);
-        int shortThreshold = (int) (totalLength.get() * values.getIgnoreFraction());
-        int mediumThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction()));
-        int longThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction() +
-                values.getMediumFraction()));
-        Integer shortLength = null;
-        Integer mediumLength = null;
-        Integer longLength = null;
-        int currentLength = 0;
-        for (PixelChain chain : sortedChains) {
-            currentLength += chain.getPixelCount();
-            if (shortLength == null && currentLength > shortThreshold) {
-                shortLength = chain.getPixelCount();
-            }
-            if (mediumLength == null && currentLength > mediumThreshold) {
-                mediumLength = chain.getPixelCount();
-            }
-            if (longLength == null && currentLength > longThreshold) {
-                longLength = chain.getPixelCount();
-                break;
-            }
-        }
-        values.setReturnValues(shortLength, mediumLength, longLength);
-        return pixelMap;
-    }
 
     public Vector<PixelChain> getPixelChainsSortedByLength(ImmutablePixelMapData pixelMap) {
         var chains = new Vector<>(pixelMap.pixelChains().toCollection());

@@ -19,6 +19,7 @@ import io.vavr.Tuple4;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -55,6 +56,14 @@ public class PixelChainBuilder implements IPixelChain {
         mSegments = new ImmutableVectorClone<ISegment>().addAll(pSegments);
         mLength = pLength;
         mThickness = pThickness;
+    }
+
+    public PixelChainBuilder(@NotNull PixelChain pixelChain) {
+        mPixels = pixelChain.getPixels();
+        mVertexes = pixelChain.getVertexes();
+        mSegments = pixelChain.getSegments();
+        mLength = pixelChain.getLength();
+        mThickness = pixelChain.getThickness();
     }
 
     public PixelChainBuilder changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> pFn) {
@@ -102,7 +111,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
 
-    private void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
+    private void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, double tolerance, double lineCurvePreference) {
 
         if (getSegmentCount() == 1) {
             return;
@@ -110,18 +119,19 @@ public class PixelChainBuilder implements IPixelChain {
 
         streamSegments().forEach(currentSegment -> {
             if (currentSegment == getFirstSegment()) {
-                refine03FirstSegment(pPixelMap, pPixelChain, pSource, currentSegment);
+                refine03FirstSegment(pPixelMap, pPixelChain, lineCurvePreference, currentSegment);
             } else if (currentSegment == getLastSegment()) {
-                refine03LastSegment(pPixelMap, pPixelChain, pSource, currentSegment);
+                refine03LastSegment(pPixelMap, lineCurvePreference, currentSegment);
             } else {
-                refine03MidSegment(pPixelMap, pPixelChain, pSource, currentSegment);
+                refine03MidSegment(pPixelMap, pPixelChain, lineCurvePreference, currentSegment);
             }
         });
     }
 
     private void refine03FirstSegment(
             PixelMapData pPixelMap,
-            PixelChain pPixelChain, IPixelMapTransformSource pSource,
+            PixelChain pPixelChain,
+            double lineCurvePreference,
             ISegment pCurrentSegment
     ) {
         var bestCandidateSegment = pCurrentSegment;
@@ -138,7 +148,7 @@ public class PixelChainBuilder implements IPixelChain {
 
         try {
             getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
-            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
+            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * lineCurvePreference; // TODO
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
             var controlPointEnd = originalEndVertex.getPosition()
                     .add(
@@ -183,7 +193,7 @@ public class PixelChainBuilder implements IPixelChain {
 
     private void refine03LastSegment(
             PixelMapData pPixelMap,
-            PixelChain pPixelChain, IPixelMapTransformSource pSource,
+            double lineCurvePreference,
             ISegment pCurrentSegment
     ) {
         var bestCandidateSegment = pCurrentSegment;
@@ -200,7 +210,7 @@ public class PixelChainBuilder implements IPixelChain {
 
         try {
             getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
-            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * pSource.getLineCurvePreference(); // TODO
+            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * lineCurvePreference; // TODO
             var prevSegmentPixelLength = originalPrevSegment.getPixelLength(this);
             var controlPointEnd = originalStartVertex.getPosition()
                     .add(
@@ -246,7 +256,7 @@ public class PixelChainBuilder implements IPixelChain {
 
     private void refine03MidSegmentEatForward(
             PixelMapData pPixelMap,
-            PixelChain pPixelChain, IPixelMapTransformSource pSource,
+            IPixelChain pPixelChain, double lineCurvePreference,
             ISegment pCurrentSegment
     ) {
         var bestCandidateSegment = pCurrentSegment;
@@ -320,7 +330,8 @@ public class PixelChainBuilder implements IPixelChain {
 
     private void refine03MidSegment(
             PixelMapData pPixelMap,
-            PixelChain pPixelChain, IPixelMapTransformSource pSource,
+            IPixelChain pixelChain,
+            double lineCurvePreference,
             ISegment pCurrentSegment
     ) {
         // instrument
@@ -329,7 +340,7 @@ public class PixelChainBuilder implements IPixelChain {
         // and we will match the final gradient of the last segment
         //
         // If the next segment is a straight line then we can eat half of it
-        refine03MidSegmentEatForward(pPixelMap, pPixelChain, pSource, pCurrentSegment);
+        refine03MidSegmentEatForward(pPixelMap, pixelChain, lineCurvePreference, pCurrentSegment);
         //
         // If the next segment is a curve then
         //  1) try matching with a curve
@@ -442,7 +453,7 @@ public class PixelChainBuilder implements IPixelChain {
         if (best.get() != null) {
             setSegment(best.get()._1);
             setVertex(best.get()._2);
-            if (best.get()._1 == null) {
+            if (best.get()._1 == null || getPixelCount() - startPixelIndex == 1) {
                 setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex));
             }
         } else {
@@ -618,16 +629,24 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    public void refine(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pTransformSource) {
+    public void refine(
+            @NotNull PixelMapData pixelMap,
+            PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference) {
         // TODO dont really want to have to pass a IMPTS in here
-        refine01_matchCurves(pPixelMap, pPixelChain, pTransformSource);
-        refine03_matchCurves(pPixelMap, pPixelChain, pTransformSource);
-        val tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-        val lineCurvePreference = pTransformSource.getLineCurvePreference();
-        //approximateCurvesOnly(pPixelMap, tolerance, lineCurvePreference);
+        refine01_matchCurves(pixelMap, pixelChain, tolerance, lineCurvePreference);
+        refine03_matchCurves(pixelMap, pixelChain, tolerance, lineCurvePreference);
+//        var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
+//        var lineCurvePreference = pTransformSource.getLineCurvePreference();
+//        approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
     }
 
-    private void refine01_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pSource) {
+    private void refine01_matchCurves(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference) {
 
         if (getSegmentCount() == 1) {
             return;
@@ -635,19 +654,19 @@ public class PixelChainBuilder implements IPixelChain {
         streamSegments().forEach(segment -> {
             var index = segment.getSegmentIndex();
             if (segment == getFirstSegment()) { // TODO remove IPMTS
-                refine01FirstSegment(pPixelMap, pSource.getLineCurvePreference(), segment);
+                refine01FirstSegment(pixelMap, lineCurvePreference, segment);
             } else if (segment == getLastSegment()) {
-                refine01EndSegment(pPixelMap, pSource, segment);
+                refine01EndSegment(pixelMap, pixelChain, lineCurvePreference, segment);
             } else {
-                refine01MidSegment(pPixelMap, pPixelChain, pSource, segment);
+                refine01MidSegment(pixelMap, pixelChain, lineCurvePreference, segment);
             }
         });
     }
 
     private void refine01MidSegment(
-            PixelMapData pixelMap,
-            PixelChain pixelChain,
-            IPixelMapTransformSource source,
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference,
             ISegment currentSegment
     ) {
 
@@ -659,7 +678,7 @@ public class PixelChainBuilder implements IPixelChain {
         ISegment bestSegment = currentSegment;
         try {
             double lowestError = currentSegment.calcError(pixelMap, this);
-            lowestError *= source.getLineCurvePreference();
+            lowestError *= lineCurvePreference;
             Line startTangent = services.getVertexService().calcTangent(pixelMap, this, currentSegment.getStartVertex(this));
             Line endTangent = services.getVertexService().calcTangent(pixelMap, this, currentSegment.getEndVertex(this));
 
@@ -688,15 +707,16 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     private void refine01EndSegment(
-            PixelMapData pixelMap,
-            IPixelMapTransformSource source,
-            ISegment currentSegment
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference,
+            @NotNull ISegment currentSegment
     ) {
         ISegment bestSegment = currentSegment;
 
         try {
             double lowestError = currentSegment.calcError(pixelMap, this);
-            lowestError *= source.getLineCurvePreference();
+            lowestError *= lineCurvePreference;
             // calculate start tangent
             Line tangent = services.getVertexService().calcTangent(pixelMap, this, currentSegment.getStartVertex(this));
             Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(pixelMap, this));

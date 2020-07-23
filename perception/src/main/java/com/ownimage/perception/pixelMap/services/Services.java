@@ -8,7 +8,7 @@ public interface Services {
 
     @NotNull PixelMapService getPixelMapService();
     @NotNull PixelMapActionService getPixelMapActionService();
-    @NotNull PixelMapChainGenerationService pixelMapChainGenerationService();
+    @NotNull PixelMapChainGenerationService getPixelMapGenerationService();
     @NotNull PixelMapApproximationService getPixelMapApproximationService();
     @NotNull PixelMapTransformService getPixelMapTransformService();
     @NotNull PixelService getPixelService();
@@ -27,7 +27,7 @@ public interface Services {
         return ImmutableServices.builder()
                 .pixelMapService(pixelMapService)
                 .pixelMapActionService(pixelMapActionService)
-                .pixelMapChainGenerationService(pixelMapChainGenerationService)
+                .pixelMapGenerationService(pixelMapChainGenerationService)
                 .pixelMapApproximationService(pixelMapApproximationService)
                 .pixelMapTransformService(pixelMapTransformService)
                 .pixelService(pixelService)

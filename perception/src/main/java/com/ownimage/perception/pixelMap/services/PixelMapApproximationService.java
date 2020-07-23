@@ -39,7 +39,7 @@ public class PixelMapApproximationService {
     private final static Logger logger = Framework.getLogger();
 
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().pixelMapChainGenerationService();
+    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().getPixelMapGenerationService();
     private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
     private static PixelService pixelService = Services.getDefaultServices().getPixelService();
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();

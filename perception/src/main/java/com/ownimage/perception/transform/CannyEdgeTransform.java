@@ -28,6 +28,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
@@ -51,6 +52,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
     private static com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
     private PixelMapService pixelMapService = defaultServices.getPixelMapService();
+    private PixelMapActionService pixelMapActionService = defaultServices.getPixelMapActionService();
     private PixelMapApproximationService pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
     private PixelMapTransformService pixelMapTransformService = defaultServices.getPixelMapTransformService();
 
@@ -176,17 +178,17 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
                 if (pControl.isOneOf(mShortLineLength, mMediumLineLength, mLongLineLength)) {
                     if (getPixelMap().isPresent()) {
-                        setPixelMap(pixelMapService.actionSetPixelChainDefaultThickness(getPixelMap().get(), this));
+                        setPixelMap(pixelMapActionService.actionSetPixelChainDefaultThickness(getPixelMap().get(), this));
                     }
                     mEqualize.setValue(EqualizeValues.getDefaultValue());
                 }
 
                 if (pControl == mLineTolerance && !pIsMutating) {
-                    setPixelMap(pixelMapService.actionReapproximate(mPixelMap, this));
+                    setPixelMap(pixelMapActionService.actionReapproximate(mPixelMap, this));
                 }
 
                 if (pControl == mLineCurvePreference && !pIsMutating) {
-                    setPixelMap(pixelMapService.actionRerefine(mPixelMap, this));
+                    setPixelMap(pixelMapActionService.actionRerefine(mPixelMap, this));
                 }
 
                 if (pControl == mEqualize) {
@@ -206,12 +208,12 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             mLogger.info("Equalize");
             getPixelMap().ifPresent(pm -> {
                 EqualizeValues values = mEqualize.getValue();
-                setPixelMap(pixelMapService.actionEqualizeValues(pm, values));
+                setPixelMap(pixelMapActionService.actionEqualizeValues(pm, values));
                 mShortLineLength.setValue(values.getShortLineLength());
                 mMediumLineLength.setValue(values.getMediumLineLength());
                 mLongLineLength.setValue(values.getLongLineLength());
                 // TODO would be better to pass these three values in ... or pass the EqualizeValues in
-                setPixelMap(pixelMapService.actionSetPixelChainDefaultThickness(pm, this));
+                setPixelMap(pixelMapActionService.actionSetPixelChainDefaultThickness(pm, this));
                 refreshOutputPreview();
             });
         } finally {

@@ -138,8 +138,8 @@ public class PixelChainService {
             double tolerance,
             double lineCurvePreference) {
         var builder = builder(pixelChain);
-        // builder.refine(pixelMap, pSource);
-        builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
+        builder.refine(pixelMap, null, tolerance, lineCurvePreference);
+        //builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
         return builder.build();
     }
 
