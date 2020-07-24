@@ -62,10 +62,8 @@ public class PixelChainService {
         );
     }
 
-    public PixelChain add(PixelChain pixelChain, Pixel pPixel) {
-        val builder = builder(pixelChain);
-        builder.changePixels(p -> p.add(pPixel));
-        return builder.build();
+    public PixelChain add(IPixelChain pixelChain, Pixel pPixel) {
+        return pixelChain.changePixels(p -> p.add(pPixel));
     }
 
 
@@ -103,12 +101,12 @@ public class PixelChainService {
     public PixelChain reverse(PixelMapData pixelMap, PixelChain pixelChain) {
         // note that this uses direct access to the data members as the public setters have other side effects
         //validate("reverse");
-        val builder = builder(pixelChain);
+        IPixelChain builder = builder(pixelChain);
 
         // reverse pixels
         Vector<Pixel> pixels = builder.getPixels().toVector();
         Collections.reverse(pixels);
-        builder.changePixels(p -> p.clear().addAll(pixels));
+        builder = builder.changePixels(p -> p.clear().addAll(pixels));
 
         // reverse vertexes
         int maxPixelIndex = builder.getPixels().size() - 1;
@@ -118,18 +116,17 @@ public class PixelChainService {
             IVertex v = vertexService.createVertex(pixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
-        builder.changeVertexes(v -> v.clear().addAll(vertexes));
+        builder = builder.changeVertexes(v -> v.clear().addAll(vertexes));
 
         // reverse segments
         Vector<ISegment> segments = new Vector<>();
         for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
             if (i != pixelChain.getVertexes().size() - 1) {
-                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder.build(), segments.size());
+                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder, segments.size());
                 segments.add(newSegment);
             }
         }
-        builder.changeSegments(s -> s.clear().addAll(segments));
-        return builder.build();
+        return builder.changeSegments(s -> s.clear().addAll(segments));
     }
 
     public PixelChain refine(
@@ -160,7 +157,7 @@ public class PixelChainService {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
-    public IVertex getStartVertex(PixelChain pixelChain) {
+    public IVertex getStartVertex(IPixelChain pixelChain) {
         return pixelChain.getVertexes().firstElement().orElse(null);
     }
 
@@ -182,17 +179,16 @@ public class PixelChainService {
 
     public Tuple2<ImmutablePixelMapData, PixelChain> setEndNode(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
         var pixelMapResult = ImmutablePixelMapData.copyOf(pixelMap);
-        var builder = builder(pixelChain);
-        builder.changePixels(p -> p.add(pNode));
+        IPixelChain builder = pixelChain.changePixels(p -> p.add(pNode));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
         if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
             pixelMapResult = pixelMapService.setVisited(pixelMapResult, builder.getPixel(index), false);
-            builder.changePixels(p -> p.remove(index));
+            builder = builder.changePixels(p -> p.remove(index));
         }
-        return new Tuple2(pixelMapResult, builder.build());
+        return new Tuple2(pixelMapResult, builder);
     }
 
     public IPixelChain.Thickness getThickness(
@@ -223,55 +219,54 @@ public class PixelChainService {
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the otherChain are all
      * LineApproximations.
      *
-     * @param pPixelMap   the pixelMap
+     * @param pixelMap   the pixelMap
      * @param otherChain the other chain
      */
-    public PixelChain merge(@NotNull PixelMapData pPixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
-        val builder = builder(thisChain);
+    public PixelChain merge(@NotNull PixelMapData pixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
+        StrongReference<IPixelChain> builder = StrongReference.of(thisChain);
 
         validate(thisChain, false, "add otherChain");
-        mLogger.fine(() -> String.format("builder.getPixels().size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().getPixels().size()));
         mLogger.fine(() -> String.format("pixelLength(otherChain) = %s", pixelLength(otherChain)));
-        mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.getSegments().size()));
+        mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.get().getSegments().size()));
         mLogger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
         if (mLogger.isLoggable(Level.FINE)) {
-            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
-            builder.streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+            builder.get().streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+            builder.get().streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
             otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
             otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
         }
 
-        validate(builder.build(), false, "merge");
+        validate(builder.get(), false, "merge");
         validate(otherChain, false, "merge");
 
         // TODO this should be a pixelChainService mergable
-        if (!builder.getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
+        if (!builder.get().getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + otherChain);
         }
 
-        int offset = builder.getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
-        builder.changePixels(p -> p.remove(builder.getPixels().size() - 1)); // need to remove the last pixel as it will be duplicated on the other chain;
-        builder.changePixels(p -> p.addAll(otherChain.getPixels()));
+        int offset = builder.get().getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
+        builder.update(b -> b.changePixels(p -> p.remove(builder.get().getPixels().size() - 1))); // need to remove the last pixel as it will be duplicated on the other chain;
+        builder.update(b -> b.changePixels(p -> p.addAll(otherChain.getPixels())));
         mLogger.fine(() -> String.format("offset = %s", offset));
 
         otherChain.getSegments().forEach(segment -> {
-            IVertex end = vertexService.createVertex(pPixelMap, builder.build(), builder.getVertexes().size(), segment.getEndIndex(otherChain) + offset);
-            builder.changeVertexes(v -> v.add(end));
-            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pPixelMap, builder.build(), builder.getSegments().size());
-            builder.changeSegments(s -> s.add(newSegment));
+            IVertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
+            builder.update(b -> b.changeVertexes(v -> v.add(end)));
+            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder.get(), builder.get().getSegments().size());
+            builder.update(b -> b.changeSegments(s -> s.add(newSegment)));
         });
 
-        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.getPixels().size()));
-        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.getPixels().size()));
+        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.get().getPixels().size()));
+        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.get().getPixels().size()));
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
         thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
         // TODO should recalculate thickness from source values
         var thickness = thisChain.getPixelCount() > otherChain.getPixelCount() ? thisChain.getThickness() : otherChain.getThickness();
-        builder.setThickness(thickness);
-        return builder.build();
+        return builder.get().setThickness(thickness);
     }
 
-    public void validate(@NotNull  PixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
+    public void validate(@NotNull IPixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
         try {
             if (getStartVertex(pixelChain).getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
@@ -420,15 +415,14 @@ public class PixelChainService {
             @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain, boolean add) {
         var result = StrongReference.of(pixelMap);
         if (add) {
-            var builder = builder(pixelChain);
-            double[] startPosition = {0.0d};
+            StrongReference<IPixelChain> builder = StrongReference.of(pixelChain);
+            StrongReference<Double> startPosition = StrongReference.of(0.0d);
             pixelChain.getSegments().forEach(segment -> {
-                ISegment segmentClone = segment.withStartPosition(startPosition[0]);
-                builder.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone));
-                startPosition[0] += segment.getLength(pixelMap, builder);
+                ISegment segmentClone = segment.withStartPosition(startPosition.get());
+                builder.update(b ->b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
+                startPosition.update(s -> s += segment.getLength(pixelMap, builder.get()));
             });
-            builder.setLength(startPosition[0]);
-            var newPixelChain = builder.build();
+            var newPixelChain = builder.get().setLength(startPosition.get());
             newPixelChain.streamSegments().forEach(segment -> {
                 result.update(r -> index(r, newPixelChain, segment, true));
             });
@@ -533,12 +527,12 @@ public class PixelChainService {
             return pixelChain;
         }
 
-        var builder = new PixelChainBuilder(pixelChain);
-        builder.changeSegments(ImmutableVectorClone::clear);
-        builder.changeVertexes(ImmutableVectorClone::clear);
+        IPixelChain builder = new PixelChainBuilder(pixelChain);
+        builder = builder.changeSegments(ImmutableVectorClone::clear);
+        builder = builder.changeVertexes(ImmutableVectorClone::clear);
 
         var startVertex = vertexService.createVertex(pixelMap, pixelChain, 0, 0);
-        builder.changeVertexes(v -> v.add(startVertex));
+        builder = builder.changeVertexes(v -> v.add(startVertex));
 
         int maxIndex = 0;
         IVertex maxVertex = null;
@@ -548,15 +542,15 @@ public class PixelChainService {
 
         while (endIndex < builder.getPixelCount()) {
             var vertexIndex = builder.getVertexCount();
-            builder.changeVertexes(v -> v.add(null));
+            builder = builder.changeVertexes(v -> v.add(null));
             var segmentIndex = builder.getSegmentCount();
-            builder. changeSegments(s -> s.add(null));
+            builder = builder.changeSegments(s -> s.add(null));
 
             for (int index = endIndex; index < builder.getPixelCount(); index++) {
                 var candidateVertex = vertexService.createVertex(pixelMap, builder, vertexIndex, index);
-                builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
+                builder = builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
                 var candidateSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder, segmentIndex);
-                builder. changeSegments(s -> s.set(segmentIndex, candidateSegment));
+                builder = builder. changeSegments(s -> s.set(segmentIndex, candidateSegment));
 
                 if (candidateSegment.noPixelFurtherThan(pixelMap, builder, tolerance)) {
                     maxIndex = index;
@@ -567,10 +561,10 @@ public class PixelChainService {
                 break;
             }
 
-            builder.setVertex(maxVertex);
-            builder.setSegment(maxSegment);
+            builder = builder.setVertex(maxVertex);
+            builder = builder.setSegment(maxSegment);
             endIndex = maxIndex + 1;
         }
-        return builder.build();
+        return PixelChain.of(builder);
     }
 }

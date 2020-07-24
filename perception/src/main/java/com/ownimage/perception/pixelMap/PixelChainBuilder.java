@@ -67,32 +67,7 @@ public class PixelChainBuilder implements IPixelChain {
         mThickness = pixelChain.getThickness();
     }
 
-    public PixelChainBuilder changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> pFn) {
-        mPixels = pFn.apply(mPixels);
-        return this;
-    }
-
-    public PixelChainBuilder changeVertexes(Function<ImmutableVectorClone<IVertex>, ImmutableVectorClone<IVertex>> pFn) {
-        mVertexes = pFn.apply(mVertexes);
-        return this;
-    }
-
-    public PixelChainBuilder changeSegments(Function<ImmutableVectorClone<ISegment>, ImmutableVectorClone<ISegment>> pFn) {
-        mSegments = pFn.apply(mSegments);
-        return this;
-    }
-
-    public PixelChainBuilder setLength(double pLength) {
-        mLength = pLength;
-        return this;
-    }
-
-    public PixelChainBuilder setThickness(@NonNull Thickness pThickness) {
-        mThickness = pThickness;
-        return this;
-    }
-
-    public PixelChain build() {
+     public PixelChain build() {
         return new PixelChain(
                 mPixels,
                 mSegments,
@@ -100,15 +75,6 @@ public class PixelChainBuilder implements IPixelChain {
                 mLength,
                 mThickness
         );
-    }
-
-
-    public void setVertex(IVertex pVertex) {
-        changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
-    }
-
-    public void setSegment(ISegment pSegment) {
-        changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 
 
@@ -162,16 +128,16 @@ public class PixelChainBuilder implements IPixelChain {
             var length = pCurrentSegment.getLength(pPixelMap, this) / originalNextSegment.getLength(pPixelMap, this);
             controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
             for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
-                changeVertexes(v -> v.set(originalEndVertex.getVertexIndex(), originalEndVertex));
+                setValuesFrom(changeVertexes(v -> v.set(originalEndVertex.getVertexIndex(), originalEndVertex)));
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
                 var candidateVertex = services.getVertexService().createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
-                changeVertexes(v -> v.set(candidateVertex.getVertexIndex(), candidateVertex));
+                setValuesFrom(changeVertexes(v -> v.set(candidateVertex.getVertexIndex(), candidateVertex)));
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 for (var controlPoint : controlPoints) {
                     var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
                     if (candidateSegment != null) {
-                        setSegment(candidateSegment);
+                        setValuesFrom(setSegment(candidateSegment));
                         var candidateError = candidateSegment.calcError(pPixelMap, this);
 
                         if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
@@ -186,8 +152,8 @@ public class PixelChainBuilder implements IPixelChain {
             if (bestCandidateSegment != pCurrentSegment) {
                 getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
-            setVertex(bestCandidateVertex);
-            setSegment(bestCandidateSegment);
+            setValuesFrom(setVertex(bestCandidateVertex));
+            setValuesFrom(setSegment(bestCandidateSegment));
             // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
         }
     }
@@ -224,17 +190,17 @@ public class PixelChainBuilder implements IPixelChain {
             var length = pCurrentSegment.getLength(pPixelMap, this) / originalPrevSegment.getLength(pPixelMap, this);
             controlPointEnd = originalPrevSegment.getPointFromLambda(pPixelMap, this, 1.0d + length);
             for (int i = (prevSegmentPixelLength / 2) - 1; i >= 0; i--) {
-                setVertex(originalStartVertex);
+                setValuesFrom(setVertex(originalStartVertex));
                 var lambda = 1.0d - (double) i / prevSegmentPixelLength; // TODO
                 var controlPointStart = originalPrevSegment.getPointFromLambda(pPixelMap, this, lambda);
                 var candidateVertex = services.getVertexService().createVertex(this, originalStartVertex.getVertexIndex(), originalStartVertex.getPixelIndex() - i, controlPointStart);
-                setVertex(candidateVertex);
+                setValuesFrom(setVertex(candidateVertex));
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 // TODO below should refactor this
                 for (var controlPoint : controlPoints) {
                     var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
                     if (candidateSegment != null) {
-                        setSegment(candidateSegment);
+                        setValuesFrom(setSegment(candidateSegment));
                         var candidateError = candidateSegment.calcError(pPixelMap, this);
 
                         if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
@@ -249,8 +215,8 @@ public class PixelChainBuilder implements IPixelChain {
             if (bestCandidateSegment != pCurrentSegment) {
                 getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
-            setVertex(bestCandidateVertex);
-            setSegment(bestCandidateSegment);
+            setValuesFrom(setVertex(bestCandidateVertex));
+            setValuesFrom(setSegment(bestCandidateSegment));
             // TODO System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this));
         }
     }
@@ -283,9 +249,9 @@ public class PixelChainBuilder implements IPixelChain {
             var length = pCurrentSegment.getLength(pPixelMap, this) / originalNextSegment.getLength(pPixelMap, this);
             controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
             for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
-                setVertex(originalEndVertex);
-                setSegment(pCurrentSegment);
-                setSegment(originalNextSegment);
+                setValuesFrom(setVertex(originalEndVertex));
+                setValuesFrom(setSegment(pCurrentSegment));
+                setValuesFrom(setSegment(originalNextSegment));
                 var lowestErrorPerPixel = calcError(
                         pPixelMap,
                         pCurrentSegment.getStartIndex(this),
@@ -297,12 +263,12 @@ public class PixelChainBuilder implements IPixelChain {
                 var lambda = (double) i / nextSegmentPixelLength;
                 var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
                 var candidateVertex = services.getVertexService().createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
-                setVertex(candidateVertex);
+                setValuesFrom(setVertex(candidateVertex));
                 var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
                 for (var controlPoint : controlPoints) {
                     var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
                     if (candidateSegment != null) {
-                        setSegment(candidateSegment);
+                        setValuesFrom(setSegment(candidateSegment));
                         var candidateErrorPerPixel = calcError(
                                 pPixelMap,
                                 pCurrentSegment.getStartIndex(this),
@@ -322,8 +288,8 @@ public class PixelChainBuilder implements IPixelChain {
             if (bestCandidateSegment != pCurrentSegment) {
                 getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
             }
-            setVertex(bestCandidateVertex);
-            setSegment(bestCandidateSegment);
+            setValuesFrom(setVertex(bestCandidateVertex));
+            setValuesFrom(setSegment(bestCandidateSegment));
             // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
         }
     }
@@ -414,8 +380,8 @@ public class PixelChainBuilder implements IPixelChain {
         if (getPixelCount() <= 4) {
             return;
         }
-        changeVertexes(ImmutableVectorClone::clear);
-        changeSegments(ImmutableVectorClone::clear);
+        setValuesFrom(changeVertexes(ImmutableVectorClone::clear));
+        setValuesFrom(changeSegments(ImmutableVectorClone::clear));
         approximateCurvesOnly_firstSegment(pPixelMap, pTolerance, pLineCurvePreference);
         while (getLastVertex().getPixelIndex() != getMaxPixelIndex()) {
             approximateCurvesOnly_subsequentSegments(pPixelMap, pTolerance, pLineCurvePreference);
@@ -434,8 +400,8 @@ public class PixelChainBuilder implements IPixelChain {
         val vertexIndex = getVertexCount();
         val segmentIndex = getSegmentCount();
         val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
-        changeVertexes(v -> v.add(null));
-        changeSegments(s -> s.add(null));
+        setValuesFrom(changeVertexes(v -> v.add(null)));
+        setValuesFrom(changeSegments(s -> s.add(null)));
         Tuple3<Integer, ISegment, IVertex> bestFit;
 
         for (int i = startPixelIndex; i < getPixelCount(); i++) {
@@ -445,7 +411,7 @@ public class PixelChainBuilder implements IPixelChain {
                 var startTangent = vertexService.getStartSegment( this, startVertex).getEndTangent(pixelMap, this);
                 var p = lt3.intersect(startTangent);
                 if (p != null) {
-                    setVertex(candidateVertex);
+                    setValuesFrom(setVertex(candidateVertex));
                     SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, this, segmentIndex, p)
                             .filter(s -> s.noPixelFurtherThan(pixelMap, this, tolerance * lineCurvePreference))
                             .filter(s -> segmentMidpointValid(pixelMap, s, tolerance * lineCurvePreference))
@@ -460,14 +426,14 @@ public class PixelChainBuilder implements IPixelChain {
             }
         }
         if (best.get() != null) {
-            setSegment(best.get()._1);
-            setVertex(best.get()._2);
+            setValuesFrom(setSegment(best.get()._1));
+            setValuesFrom(setVertex(best.get()._2));
             if (best.get()._1 == null || getPixelCount() - startPixelIndex == 1) {
-                setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex));
+                setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex)));
             }
         } else {
-            setVertex(vertexService.createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex()));
-            setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex));
+            setValuesFrom(setVertex(vertexService.createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex())));
+            setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex)));
         }
     }
 
@@ -483,12 +449,12 @@ public class PixelChainBuilder implements IPixelChain {
     ) {
         var vertexService = services.getVertexService();
 
-        changeVertexes(v -> v.add(services.getVertexService().createVertex(pixelMap, this, 0, 0)));
+        setValuesFrom(changeVertexes(v -> v.add(services.getVertexService().createVertex(pixelMap, this, 0, 0))));
         val vertexIndex = getVertexCount();
         val segmentIndex = getSegmentCount();
         val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
-        changeVertexes(v -> v.add(null));
-        changeSegments(s -> s.add(null));
+        setValuesFrom(changeVertexes(v -> v.add(null)));
+        setValuesFrom(changeSegments(s -> s.add(null)));
         Tuple3<Integer, ISegment, IVertex> bestFit;
 
         for (int i = 4; i < getPixelCount(); i++) {
@@ -505,7 +471,7 @@ public class PixelChainBuilder implements IPixelChain {
                 var pointE = lt3.intersect(lineN);
                 if (pointC != null && pointE != null) {
                     var lineCE = new Line(pointC, pointE);
-                    setVertex(candidateVertex);
+                    setValuesFrom(setVertex(candidateVertex));
                     lineCE.streamFromCenter(20)
                             .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, this, segmentIndex, p))
                             .filter(Optional::isPresent)
@@ -521,14 +487,14 @@ public class PixelChainBuilder implements IPixelChain {
             }
         }
         if (best.get() != null) {
-            setSegment(best.get()._1);
-            setVertex(best.get()._2);
+            setValuesFrom(setSegment(best.get()._1));
+            setValuesFrom(setVertex(best.get()._2));
             if (getSegment(0) == null) {
-                setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, 0));
+                setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, 0)));
             }
         } else {
-            setVertex(services.getVertexService().createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex()));
-            setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex));
+            setValuesFrom(setVertex(services.getVertexService().createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex())));
+            setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex)));
         }
     }
 
@@ -563,11 +529,11 @@ public class PixelChainBuilder implements IPixelChain {
                 var refined = false;
                 for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
                     joinVertex[0] = services.getVertexService().createVertex(pPixelMap, this, secondSegmentIndex, candidateIndex);
-                    setVertex(joinVertex[0]);
+                    setValuesFrom(setVertex(joinVertex[0]));
                     firstSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, this, firstSegmentIndex);
-                    setSegment(firstSegment[0]);
+                    setValuesFrom(setSegment(firstSegment[0]));
                     secondSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, this, secondSegmentIndex);
-                    setSegment(secondSegment[0]);
+                    setValuesFrom(setSegment(secondSegment[0]));
 
                     currentError = segment.calcError(pPixelMap, this) + secondSegment[0].calcError(pPixelMap, this);
 
@@ -585,9 +551,9 @@ public class PixelChainBuilder implements IPixelChain {
                     getPegCounter().increase(IPixelChain.PegCounters.RefineCornersSuccessful);
                 }
                 var finalBest = best;
-                setVertex(finalBest._3);
-                setSegment(finalBest._2);
-                setSegment(finalBest._4);
+                setValuesFrom(setVertex(finalBest._3));
+                setValuesFrom(setSegment(finalBest._2));
+                setValuesFrom(setSegment(finalBest._4));
             }
         }
     }
@@ -665,7 +631,7 @@ public class PixelChainBuilder implements IPixelChain {
         } catch (Exception pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            setSegment(bestSegment);
+            setValuesFrom(setSegment(bestSegment));
         }
     }
 
@@ -706,7 +672,7 @@ public class PixelChainBuilder implements IPixelChain {
         } catch (Exception pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            setSegment(bestSegment);
+            setValuesFrom(setSegment(bestSegment));
         }
     }
 
@@ -738,7 +704,7 @@ public class PixelChainBuilder implements IPixelChain {
                     if (candidateSegment == null) {
                         continue;
                     }
-                    setSegment(candidateSegment);
+                    setValuesFrom(setSegment(candidateSegment));
                     double candidateError = candidateSegment != null ? candidateSegment.calcError(pixelMap, this) : 0.0d;
 
                     if (isValid(pixelMap, candidateSegment) && candidateError < lowestError) {
@@ -756,7 +722,7 @@ public class PixelChainBuilder implements IPixelChain {
         } catch (Exception pT) {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         } finally {
-            setSegment(bestSegment);
+            setValuesFrom(setSegment(bestSegment));
         }
     }
 

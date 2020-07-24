@@ -5,53 +5,23 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-/**
- * The Class PixelChain. The following shows how a PixelChain would be constructed, populated with Pixels and ISegments
- * <p>
- * <code>
- * <br/>PixelChain chain = new PixelChain(this, pStartNode);
- * <br/>
- * <br/>for (Pixel pixel : ...) {
- * <br/>	chain.add(pixel);
- * <br/>}
- * <br/>
- * <br/>// then at the end
- * <br/>chain.setEndNode(getNode(endPixel));
- * <br/>
- * <br/>// then set up the segments
- * <br/>
- * <br/>mSegments = new Vector<ISegment>(); // mSegments is a private member of PixelChain
- * <br/>for each segment
- * <br/>// note that the first segment needs to be attached to getStartVertex()
- * <br/>// then each segment needs to be attached to the previous endVertex
- * <br/>{
- * <br/>    segment.attachToVertexes(false);
- * <br/>	mSegments.add(segment);
- * <br/>}
- * </code>
- */
 public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
-    private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 2L;
-    static private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+    private final static VertexService vertexService = Services.getDefaultServices().getVertexService();
 
     @Getter
     private final ImmutableVectorClone<Pixel> mPixels;
@@ -63,28 +33,16 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     private final ImmutableVectorClone<IVertex> mVertexes;
 
     @Getter
-    transient private double mLength;
+    private final double mLength;
 
     @Getter
     private Thickness mThickness;
 
-
-    @Setter
-    transient private @NotNull VertexService vertexService = Services.getDefaultServices().getVertexService();
-
-    /**
-     * Instantiates a new pixel chain.
-     *
-     * @param pPixelMap
-     * @param pStartNode the start node
-     */
-    public PixelChain(PixelMapData pPixelMap, Node pStartNode) {
-        if (pStartNode == null) {
-            throw new IllegalArgumentException("pStartNode must not be null");
-        }
+    public PixelChain(@NotNull PixelMapData pPixelMap, @NotNull Node pStartNode) {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
         mVertexes = new ImmutableVectorClone<IVertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
+        mLength = 0.0d;
         mThickness = IPixelChain.Thickness.Normal;
     }
 
@@ -100,10 +58,22 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mVertexes = pVertexes;
         mLength = pLength;
         mThickness = pThickness;
-
-//        validate(pPixelMap, false, "PixelChain");
     }
 
+    public PixelChain(@NonNull IPixelChain pixelChain) {
+        mPixels = pixelChain.getPixels();
+        mSegments = pixelChain.getSegments();
+        mVertexes = pixelChain.getVertexes();
+        mLength = pixelChain.getLength();
+        mThickness = pixelChain.getThickness();
+    }
+
+    public static PixelChain of(@NonNull IPixelChain pixelChain) {
+        if (pixelChain instanceof PixelChain) {
+            return  (PixelChain) pixelChain;
+        }
+        return new PixelChain(pixelChain);
+    }
 
     @Override
     public boolean equals(Object pO) {
@@ -118,6 +88,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
                 mPixels.equals(that.mPixels) &&
                 mSegments.equals(that.mSegments) &&
                 mVertexes.equals(that.mVertexes) &&
+                mLength == that.mLength &&
                 mThickness == that.mThickness;
     }
 
@@ -127,17 +98,14 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     }
 
 
-    @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("PixelChain[ ");
         sb.append(mPixels.stream().map(Pixel::toString).collect(Collectors.joining(", ")));
         sb.append(" ]\n");
-
         return sb.toString();
     }
-
 
 }
 

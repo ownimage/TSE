@@ -2,13 +2,15 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
-import com.ownimage.framework.util.immutable.IImmutableVector;
+import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import lombok.NonNull;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface IPixelChain {
@@ -17,11 +19,11 @@ public interface IPixelChain {
         return Services.getServices().getPegCounter();
     }
 
-    IImmutableVector<Pixel> getPixels();
+    ImmutableVectorClone<Pixel> getPixels();
 
-    IImmutableVector<ISegment> getSegments();
+    ImmutableVectorClone<ISegment> getSegments();
 
-    IImmutableVector<IVertex> getVertexes();
+    ImmutableVectorClone<IVertex> getVertexes();
 
     default Stream<Pixel> streamPixels() {
         return getPixels().stream();
@@ -202,5 +204,64 @@ public interface IPixelChain {
         MidSegmentEatForwardSuccessful,
         refine01FirstSegmentAttempted,
         refine01FirstSegmentSuccessful
+    }
+
+    default PixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
+        return new PixelChain(
+                fn.apply(getPixels()),
+                getSegments(),
+                getVertexes(),
+                getLength(),
+                getThickness()
+        );
+    }
+
+    default PixelChain changeSegments(Function<ImmutableVectorClone<ISegment>, ImmutableVectorClone<ISegment>> fn) {
+        return new PixelChain(
+                getPixels(),
+                fn.apply(getSegments()),
+                getVertexes(),
+                getLength(),
+                getThickness()
+        );
+    }
+
+
+    default PixelChain changeVertexes(Function<ImmutableVectorClone<IVertex>, ImmutableVectorClone<IVertex>> fn) {
+        return new PixelChain(
+                getPixels(),
+                getSegments(),
+                fn.apply(getVertexes()),
+                getLength(),
+                getThickness()
+        );
+    }
+
+    default PixelChain setLength(double length) {
+        return new PixelChain(
+                getPixels(),
+                getSegments(),
+                getVertexes(),
+                length,
+                getThickness()
+        );
+    }
+
+    default PixelChain setThickness(@NonNull Thickness thickness) {
+        return new PixelChain(
+                getPixels(),
+                getSegments(),
+                getVertexes(),
+                getLength(),
+                thickness
+        );
+    }
+
+    default PixelChain setVertex(IVertex pVertex) {
+        return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
+    }
+
+    default PixelChain setSegment(ISegment pSegment) {
+        return changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 }
