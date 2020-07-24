@@ -12,6 +12,7 @@ import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
@@ -30,6 +31,8 @@ import java.util.stream.Collectors;
 public class PixelChainBuilder implements IPixelChain {
 
     private final static Logger mLogger = Framework.getLogger();
+    private static Services services = Services.getDefaultServices();
+    private static PixelChainService pixelChainService = services.getPixelChainService();
 
     @Getter
     private ImmutableVectorClone<Pixel> mPixels;
@@ -41,8 +44,6 @@ public class PixelChainBuilder implements IPixelChain {
     private double mLength;
     @Getter
     private Thickness mThickness;
-
-    private Services services = Services.getDefaultServices();
 
     public PixelChainBuilder(
             Collection<Pixel> pPixels,
@@ -93,20 +94,20 @@ public class PixelChainBuilder implements IPixelChain {
 
     public PixelChain build() {
         return new PixelChain(
-                new ImmutableVectorClone<Pixel>().addAll(mPixels.toVector()),
-                new ImmutableVectorClone<ISegment>().addAll(mSegments.toVector()),
-                new ImmutableVectorClone<IVertex>().addAll(mVertexes.toVector()),
+                mPixels,
+                mSegments,
+                mVertexes,
                 mLength,
                 mThickness
         );
     }
 
 
-    private void setVertex(IVertex pVertex) {
+    public void setVertex(IVertex pVertex) {
         changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 
-    private void setSegment(ISegment pSegment) {
+    public void setSegment(ISegment pSegment) {
         changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 
@@ -393,8 +394,16 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
     public void approximate(PixelMapData pPixelMap, double pTolerance) {
-        approximate01_straightLines(pPixelMap, pTolerance);
+        setValuesFrom(pixelChainService.approximate01_straightLines(pPixelMap, build(), pTolerance));
         approximate02_refineCorners(pPixelMap);
+    }
+
+    private void setValuesFrom(PixelChain pixelChain) {
+        mPixels = pixelChain.getPixels();
+        mSegments = pixelChain.getSegments();
+        mVertexes = pixelChain.getVertexes();
+        mLength = pixelChain.getLength();
+        mThickness = pixelChain.getThickness();
     }
 
     public void approximateCurvesOnly(
@@ -520,52 +529,6 @@ public class PixelChainBuilder implements IPixelChain {
         } else {
             setVertex(services.getVertexService().createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex()));
             setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex));
-        }
-    }
-
-    private void approximate01_straightLines(PixelMapData pPixelMap, double pTolerance) {
-        // note that this is version will find the longest line that is close to all pixels.
-        // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
-        if (getPixelCount() <= 1) {
-            return;
-        }
-
-        changeSegments(ImmutableVectorClone::clear);
-        changeVertexes(ImmutableVectorClone::clear);
-
-        var startVertex = services.getVertexService().createVertex(pPixelMap, this, 0, 0);
-        changeVertexes(v -> v.add(startVertex));
-
-        int maxIndex = 0;
-        IVertex maxVertex = null;
-        ISegment maxSegment = null;
-
-        int endIndex = 1;
-
-        while (endIndex < getPixelCount()) {
-            var vertexIndex = getVertexCount();
-            changeVertexes(v -> v.add(null));
-            var segmentIndex = getSegmentCount();
-            changeSegments(s -> s.add(null));
-
-            for (int index = endIndex; index < getPixelCount(); index++) {
-                var candidateVertex = services.getVertexService().createVertex(pPixelMap, this, vertexIndex, index);
-                changeVertexes(v -> v.set(vertexIndex, candidateVertex));
-                var candidateSegment = SegmentFactory.createTempStraightSegment(pPixelMap, this, segmentIndex);
-                changeSegments(s -> s.set(segmentIndex, candidateSegment));
-
-                if (candidateSegment.noPixelFurtherThan(pPixelMap, this, pTolerance)) {
-                    maxIndex = index;
-                    maxVertex = candidateVertex;
-                    maxSegment = candidateSegment;
-                    continue;
-                }
-                break;
-            }
-
-            setVertex(maxVertex);
-            setSegment(maxSegment);
-            endIndex = maxIndex + 1;
         }
     }
 

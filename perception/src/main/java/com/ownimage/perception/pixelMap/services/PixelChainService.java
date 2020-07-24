@@ -524,4 +524,53 @@ public class PixelChainService {
 
         return merge(pPixelMap, thisChain, otherChain);
     }
+
+    public PixelChain approximate01_straightLines(
+            @NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+        // note that this is version will find the longest line that is close to all pixels.
+        // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
+        if (pixelChain.getPixelCount() <= 1) {
+            return pixelChain;
+        }
+
+        var builder = new PixelChainBuilder(pixelChain);
+        builder.changeSegments(ImmutableVectorClone::clear);
+        builder.changeVertexes(ImmutableVectorClone::clear);
+
+        var startVertex = vertexService.createVertex(pixelMap, pixelChain, 0, 0);
+        builder.changeVertexes(v -> v.add(startVertex));
+
+        int maxIndex = 0;
+        IVertex maxVertex = null;
+        ISegment maxSegment = null;
+
+        int endIndex = 1;
+
+        while (endIndex < builder.getPixelCount()) {
+            var vertexIndex = builder.getVertexCount();
+            builder.changeVertexes(v -> v.add(null));
+            var segmentIndex = builder.getSegmentCount();
+            builder. changeSegments(s -> s.add(null));
+
+            for (int index = endIndex; index < builder.getPixelCount(); index++) {
+                var candidateVertex = vertexService.createVertex(pixelMap, builder, vertexIndex, index);
+                builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
+                var candidateSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder, segmentIndex);
+                builder. changeSegments(s -> s.set(segmentIndex, candidateSegment));
+
+                if (candidateSegment.noPixelFurtherThan(pixelMap, builder, tolerance)) {
+                    maxIndex = index;
+                    maxVertex = candidateVertex;
+                    maxSegment = candidateSegment;
+                    continue;
+                }
+                break;
+            }
+
+            builder.setVertex(maxVertex);
+            builder.setSegment(maxSegment);
+            endIndex = maxIndex + 1;
+        }
+        return builder.build();
+    }
 }
