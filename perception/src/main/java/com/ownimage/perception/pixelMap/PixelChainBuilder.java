@@ -361,7 +361,7 @@ public class PixelChainBuilder implements IPixelChain {
 
     public void approximate(PixelMapData pPixelMap, double pTolerance) {
         setValuesFrom(pixelChainService.approximate01_straightLines(pPixelMap, build(), pTolerance));
-        approximate02_refineCorners(pPixelMap);
+        setValuesFrom(pixelChainService.approximate02_refineCorners(pPixelMap, build()));
     }
 
     private void setValuesFrom(PixelChain pixelChain) {
@@ -498,65 +498,7 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-    private void approximate02_refineCorners(PixelMapData pPixelMap) {
-        if (getSegmentCount() <= 1) {
-            return;
-        }
-        // the for loop means that I am processing the current state of the builder, not the 'old' stream state
-        // this is important as the builder is being mutated.
-        for (int i = 0; i < getSegmentCount() - 1; i++) { // do not process last segment
-            var segment = getSegment(i);
 
-            var firstSegmentIndex = segment.getSegmentIndex();
-            var secondSegmentIndex = firstSegmentIndex + 1;
-            var joinPixelIndex = segment.getEndIndex(this);
-
-
-            //TODO can probably remove these [] here as the lambdas have gone
-            IVertex[] joinVertex = new IVertex[]{getVertex(secondSegmentIndex)};
-            ISegment[] firstSegment = new ISegment[]{segment};
-            ISegment[] secondSegment = new ISegment[]{getSegment(secondSegmentIndex)};
-
-            var minPixelIndex = (segment.getStartVertex(this).getPixelIndex() + segment.getEndVertex(this).getPixelIndex()) / 2;
-            var maxPixelIndex = (secondSegment[0].getStartVertex(this).getPixelIndex() + secondSegment[0].getEndVertex(this).getPixelIndex()) / 2;
-
-            var currentError = segment.calcError(pPixelMap, this) + secondSegment[0].calcError(pPixelMap, this);
-            var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
-
-            getPegCounter().increase(IPixelChain.PegCounters.RefineCornersAttempted);
-            // the check below is needed as some segments may only be one index pixelLength so generating a midpoint might generate an invalid segment
-            if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
-                var refined = false;
-                for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
-                    joinVertex[0] = services.getVertexService().createVertex(pPixelMap, this, secondSegmentIndex, candidateIndex);
-                    setValuesFrom(setVertex(joinVertex[0]));
-                    firstSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, this, firstSegmentIndex);
-                    setValuesFrom(setSegment(firstSegment[0]));
-                    secondSegment[0] = SegmentFactory.createTempStraightSegment(pPixelMap, this, secondSegmentIndex);
-                    setValuesFrom(setSegment(secondSegment[0]));
-
-                    currentError = segment.calcError(pPixelMap, this) + secondSegment[0].calcError(pPixelMap, this);
-
-                    if (currentError < best._1) {
-                        best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
-                        refined = true;
-                    }
-                }
-                if (refined &&
-                        // TODO not sure why there is this extra check here
-                        best._2.getEndTangentVector(pPixelMap, this)
-                                .dot(best._4.getStartTangentVector(pPixelMap, this))
-                                < 0.5d
-                ) {
-                    getPegCounter().increase(IPixelChain.PegCounters.RefineCornersSuccessful);
-                }
-                var finalBest = best;
-                setValuesFrom(setVertex(finalBest._3));
-                setValuesFrom(setSegment(finalBest._2));
-                setValuesFrom(setSegment(finalBest._4));
-            }
-        }
-    }
 
     public void refine(
             @NotNull PixelMapData pixelMap,

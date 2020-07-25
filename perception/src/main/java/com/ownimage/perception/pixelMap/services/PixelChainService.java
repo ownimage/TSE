@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableSet;
@@ -18,6 +19,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import io.vavr.Tuple2;
+import io.vavr.Tuple4;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +37,8 @@ public class PixelChainService {
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelMapTransformService pixelMapTransformService = Services.getDefaultServices().getPixelMapTransformService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
+    private static PegCounter pegCounterService = com.ownimage.perception.app.Services.getServices().getPegCounter();
+
     private final static Logger mLogger = Framework.getLogger();
 
     public PixelChain fixNullPositionVertexes(int height, PixelChain pixelChain) {
@@ -566,5 +570,68 @@ public class PixelChainService {
             endIndex = maxIndex + 1;
         }
         return PixelChain.of(builder);
+    }
+
+    public PixelChain approximate02_refineCorners(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+        if (pixelChain.getSegmentCount() <= 1) {
+            return pixelChain;
+        }
+
+        PixelChain result = PixelChain.of(pixelChain);
+        // the for loop means that I am processing the current state of the builder, not the 'old' stream state
+        // this is important as the builder is being mutated.
+        for (int i = 0; i < pixelChain.getSegmentCount() - 1; i++) { // do not process last segment
+            var segment = pixelChain.getSegment(i);
+
+            var firstSegmentIndex = segment.getSegmentIndex();
+            var secondSegmentIndex = firstSegmentIndex + 1;
+            var joinPixelIndex = segment.getEndIndex(pixelChain);
+
+
+            //TODO can probably remove these [] here as the lambdas have gone
+            IVertex[] joinVertex = new IVertex[]{pixelChain.getVertex(secondSegmentIndex)};
+            ISegment[] firstSegment = new ISegment[]{segment};
+            ISegment[] secondSegment = new ISegment[]{pixelChain.getSegment(secondSegmentIndex)};
+
+            var minPixelIndex = (segment.getStartVertex(pixelChain).getPixelIndex() + segment.getEndVertex(pixelChain).getPixelIndex()) / 2;
+            var maxPixelIndex = (secondSegment[0].getStartVertex(pixelChain).getPixelIndex() + secondSegment[0].getEndVertex(pixelChain).getPixelIndex()) / 2;
+
+            var currentError = segment.calcError(pixelMap, pixelChain) + secondSegment[0].calcError(pixelMap, pixelChain);
+            var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
+
+            pixelChain.getPegCounter().increase(IPixelChain.PegCounters.RefineCornersAttempted);
+            // the check below is needed as some segments may only be one index pixelLength so generating a midpoint might generate an invalid segment
+            if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
+                var refined = false;
+                for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
+                    joinVertex[0] = vertexService.createVertex(pixelMap, pixelChain, secondSegmentIndex, candidateIndex);
+                    result = result.setVertex(joinVertex[0]);
+                    firstSegment[0] = SegmentFactory.createTempStraightSegment(pixelMap, result, firstSegmentIndex);
+                    result = result.setSegment(firstSegment[0]);
+                    secondSegment[0] = SegmentFactory.createTempStraightSegment(pixelMap, result, secondSegmentIndex);
+                    result = result.setSegment(secondSegment[0]);
+
+                    currentError = segment.calcError(pixelMap, result) + secondSegment[0].calcError(pixelMap, result);
+
+                    if (currentError < best._1) {
+                        best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
+                        refined = true;
+                    }
+                }
+                if (refined &&
+                        // TODO not sure why there is this extra check here
+                        best._2.getEndTangentVector(pixelMap, result)
+                                .dot(best._4.getStartTangentVector(pixelMap, result))
+                                < 0.5d
+                ) {
+                    pegCounterService.increase(IPixelChain.PegCounters.RefineCornersSuccessful);
+                }
+                var finalBest = best;
+                result = result.setVertex(finalBest._3);
+                result = result.setSegment(finalBest._2);
+                result = result.setSegment(finalBest._4);
+            }
+        }
+        return result;
     }
 }
