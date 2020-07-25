@@ -1,5 +1,8 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.math.Line;
+import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.PegCounter;
@@ -526,7 +529,7 @@ public class PixelChainService {
             return pixelChain;
         }
 
-        IPixelChain builder = new PixelChainBuilder(pixelChain);
+        var builder = PixelChain.of(pixelChain);
         builder = builder.changeSegments(ImmutableVectorClone::clear);
         builder = builder.changeVertexes(ImmutableVectorClone::clear);
 
@@ -628,5 +631,181 @@ public class PixelChainService {
             }
         }
         return result;
+    }
+
+    public PixelChain refine01_matchCurves(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference) {
+        if (pixelChain.getSegmentCount() == 1) {
+            return pixelChain;
+        }
+        var result = StrongReference.of(pixelChain);
+        pixelChain.streamSegments().forEach(segment -> {
+            if (segment == pixelChain.getFirstSegment()) {
+                result.update(r -> refine01FirstSegment(pixelMap, r, lineCurvePreference, segment));
+            } else if (segment == pixelChain.getLastSegment()) {
+                result.update(r -> refine01EndSegment(pixelMap, r, lineCurvePreference, segment));
+            } else {
+                result.update(r -> refine01MidSegment(pixelMap, r, lineCurvePreference, segment));
+            }
+        });
+        return result.get();
+    }
+
+    public PixelChain refine01MidSegment(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference,
+            ISegment currentSegment
+    ) {
+        var result = pixelChain;
+        // get tangent at start and end
+        // calculate intersection
+        // what if they are parallel ? -- ignore as the initial estimate is not good enough
+        // see if it is closer than the line
+        // // method 1 - looking at blending the gradients
+        var bestSegment = currentSegment;
+        try {
+            double lowestError = currentSegment.calcError(pixelMap, result);
+            lowestError *= lineCurvePreference;
+            Line startTangent = vertexService.calcTangent(pixelMap, result, currentSegment.getStartVertex(result));
+            Line endTangent = vertexService.calcTangent(pixelMap, result, currentSegment.getEndVertex(result));
+
+            if (startTangent != null && endTangent != null) {
+                Point p1 = startTangent.intersect(endTangent);
+                if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
+                    Line newStartTangent = new Line(p1, currentSegment.getStartVertex(result).getPosition());
+                    Line newEndTangent = new Line(p1, currentSegment.getEndVertex(result).getPosition());
+                    p1 = newStartTangent.intersect(newEndTangent);
+                    // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
+                    ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    double candidateError = candidateSegment.calcError(pixelMap, result);
+
+                    if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
+                        lowestError = candidateError;
+                        bestSegment = candidateSegment;
+                    }
+                }
+
+            }
+        } catch (Exception pT) {
+            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+        }
+        return result.setSegment(bestSegment);
+    }
+
+    // need to make sure that not only the pixels are close to the line but the line is close to the pixels
+    public boolean isValid(@NotNull PixelMapData pixelMap,
+                           @NotNull PixelChain pixelChain,
+                           @NotNull ISegment segment) {
+        if (segment == null) {
+            return false;
+        }
+        if (segment.getPixelLength(pixelChain) < 4) {
+            return true;
+        }
+
+        int startIndexPlus = segment.getStartIndex(pixelChain) + 1;
+        Point startPointPlus = pixelChain.getPixel(startIndexPlus).getUHVWMidPoint(pixelMap.height());
+        double startPlusLambda = segment.closestLambda(pixelMap, pixelChain, startPointPlus);
+
+        int endIndexMinus = segment.getEndIndex(pixelChain) - 1;
+        Point endPointMinus = pixelChain.getPixel(endIndexMinus).getUHVWMidPoint(pixelMap.width());
+        double endMinusLambda = segment.closestLambda(pixelMap, pixelChain, endPointMinus);
+
+        return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
+    }
+
+    public PixelChain refine01EndSegment(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference,
+            @NotNull ISegment currentSegment
+    ) {
+        var result = pixelChain;
+        var bestSegment = currentSegment;
+
+        try {
+            double lowestError = currentSegment.calcError(pixelMap, result);
+            lowestError *= lineCurvePreference;
+            // calculate start tangent
+            Line tangent = vertexService.calcTangent(pixelMap, result, currentSegment.getStartVertex(result));
+            Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(pixelMap, result));
+            // divide this line (tangentRuler) into the number of pixels in the segment
+            // for each of the points on the division find the lowest error
+            Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(pixelMap, result), closest);
+            for (int i = 1; i < currentSegment.getPixelLength(result); i++) { // first and last pixel will throw an error and are equivalent to the straight line
+                try {
+                    double lambda = (double) i / currentSegment.getPixelLength(result);
+                    Point p1 = tangentRuler.getPoint(lambda);
+                    ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    if (candidateSegment != null) {
+                        double candidateError = candidateSegment.calcError(pixelMap, result);
+
+                        if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
+                            lowestError = candidateError;
+                            bestSegment = candidateSegment;
+                        }
+                    }
+                } catch (Exception pT) {
+                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                }
+            }
+        } catch (Exception pT) {
+            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+        }
+        return result.setSegment(bestSegment);
+    }
+
+    public PixelChain refine01FirstSegment(
+            PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double lineCurvePreference,
+            ISegment segment
+    ) {
+        var result = pixelChain;
+        var bestSegment = segment;
+        pegCounterService.increase(IPixelChain.PegCounters.refine01FirstSegmentAttempted);
+        try {
+            // get error values from straight line to start the compare
+            double lowestError = segment.calcError(pixelMap, result);
+            lowestError *= lineCurvePreference;
+            // calculate end tangent
+            Line tangent = vertexService.calcTangent(pixelMap, result, segment.getEndVertex(result));
+
+
+            // find closest point between start point and tangent line
+            Point closest = tangent.closestPoint(segment.getStartUHVWPoint(pixelMap, result));
+            // divide this line (tangentRuler) into the number of pixels in the segment
+            // for each of the points on the division find the lowest error
+            LineSegment tangentRuler = new LineSegment(closest, segment.getEndUHVWPoint(pixelMap, result));
+            for (int i = 1; i < segment.getPixelLength(result); i++) { // first and last pixel will throw an error and are equivalent to the straight line
+                try {
+                    double lambda = (double) i / segment.getPixelLength(result);
+                    Point p1 = tangentRuler.getPoint(lambda);
+                    ISegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, segment.getSegmentIndex(), p1);
+                    if (candidateSegment == null) {
+                        continue;
+                    }
+                    result = result.setSegment(candidateSegment);
+                    double candidateError = candidateSegment != null ? candidateSegment.calcError(pixelMap, result) : 0.0d;
+
+                    if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
+                        lowestError = candidateError;
+                        bestSegment = candidateSegment;
+                    }
+
+                } catch (Exception pT) {
+                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                }
+            }
+            if (bestSegment != segment) {
+                pegCounterService.increase(IPixelChain.PegCounters.refine01FirstSegmentSuccessful);
+            }
+        } catch (Exception pT) {
+            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+        }
+        return result.setSegment(bestSegment);
     }
 }

@@ -965,7 +965,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     synchronized private boolean actionPixelChainApproximateCurvesOnly(@NonNull Pixel pPixel) {
         ImmutablePixelMapData undo = getPixelMap();
-        setPixelMap(pixelMapActionService.actionPixelChainApproximateCurvesOnly(getPixelMap(), mCannyEdgeTransform, pPixel));
+//        setPixelMap(pixelMapActionService.actionPixelChainApproximateCurvesOnly(getPixelMap(), mCannyEdgeTransform, pPixel));
+        setPixelMap(pixelMapActionService.actionRerefine(getPixelMap(), mCannyEdgeTransform));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Approximate Curves Only PixelChain", undo, getPixelMap());
             return true;
