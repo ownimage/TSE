@@ -359,10 +359,7 @@ public class PixelChainBuilder implements IPixelChain {
         return error;
     }
 
-    public void approximate(PixelMapData pPixelMap, double pTolerance) {
-        setValuesFrom(pixelChainService.approximate01_straightLines(pPixelMap, build(), pTolerance));
-        setValuesFrom(pixelChainService.approximate02_refineCorners(pPixelMap, build()));
-    }
+
 
     private void setValuesFrom(PixelChain pixelChain) {
         mPixels = pixelChain.getPixels();

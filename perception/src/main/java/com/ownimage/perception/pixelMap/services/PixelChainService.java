@@ -70,17 +70,6 @@ public class PixelChainService {
         return pixelChain.changePixels(p -> p.add(pPixel));
     }
 
-
-    public PixelChain approximate(
-            @NotNull PixelMapData pixelMap,
-            @NotNull PixelChain pixelChain,
-            double tolerance
-    ) {
-        val builder = builder(pixelChain);
-        builder.approximate(pixelMap, tolerance);
-        return builder.build();
-    }
-
     public PixelChain approximateCurvesOnly(
             @NotNull PixelMapData pixelMap,
             @NotNull PixelChain pixelChain,
@@ -521,6 +510,12 @@ public class PixelChainService {
 //        }
 
         return merge(pPixelMap, thisChain, otherChain);
+    }
+
+    public PixelChain approximate( @NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+        var result = approximate01_straightLines(pixelMap, pixelChain, tolerance);
+        result = approximate02_refineCorners(pixelMap, result);
+        return result;
     }
 
     public PixelChain approximate01_straightLines(
