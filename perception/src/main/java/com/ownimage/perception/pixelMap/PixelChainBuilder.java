@@ -1,8 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Line;
-import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
@@ -11,20 +9,16 @@ import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
-import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.Services;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
-import io.vavr.Tuple4;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -83,12 +77,11 @@ public class PixelChainBuilder implements IPixelChain {
         if (getSegmentCount() == 1) {
             return;
         }
-
         streamSegments().forEach(currentSegment -> {
             if (currentSegment == getFirstSegment()) {
-                pixelChainService.refine03FirstSegment(pPixelMap, this.build(), lineCurvePreference, currentSegment);
+                setValuesFrom(pixelChainService.refine03FirstSegment(pPixelMap, this, lineCurvePreference, currentSegment));
             } else if (currentSegment == getLastSegment()) {
-                refine03LastSegment(pPixelMap, lineCurvePreference, currentSegment);
+                setValuesFrom(pixelChainService.refine03LastSegment(pPixelMap, this, lineCurvePreference, currentSegment));
             } else {
                 refine03MidSegment(pPixelMap, pPixelChain, lineCurvePreference, currentSegment);
             }
@@ -96,68 +89,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
 
-    private void refine03LastSegment(
-            PixelMapData pPixelMap,
-            double lineCurvePreference,
-            ISegment pCurrentSegment
-    ) {
-        var bestCandidateSegment = pCurrentSegment;
-        var bestCandidateVertex = pCurrentSegment.getEndVertex(this);
-        var originalPrevSegment = pCurrentSegment.getPreviousSegment(this);
-        var originalStartVertex = pCurrentSegment.getStartVertex(this);
 
-        // this only works if this or the previous segment are straight
-        if (!(
-                (pCurrentSegment instanceof StraightSegment) || (originalPrevSegment instanceof StraightSegment)
-        )) {
-            return;
-        }
-
-        try {
-            getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
-            var lowestError = pCurrentSegment.calcError(pPixelMap, this) * 1000 * lineCurvePreference; // TODO
-            var prevSegmentPixelLength = originalPrevSegment.getPixelLength(this);
-            var controlPointEnd = originalStartVertex.getPosition()
-                    .add(
-                            originalPrevSegment.getEndTangent(pPixelMap, this)
-                                    .getAB()
-                                    .normalize()
-                                    .multiply(pCurrentSegment.getLength(pPixelMap, this)
-                                    )
-                    );
-            var length = pCurrentSegment.getLength(pPixelMap, this) / originalPrevSegment.getLength(pPixelMap, this);
-            controlPointEnd = originalPrevSegment.getPointFromLambda(pPixelMap, this, 1.0d + length);
-            for (int i = (prevSegmentPixelLength / 2) - 1; i >= 0; i--) {
-                setValuesFrom(setVertex(originalStartVertex));
-                var lambda = 1.0d - (double) i / prevSegmentPixelLength; // TODO
-                var controlPointStart = originalPrevSegment.getPointFromLambda(pPixelMap, this, lambda);
-                var candidateVertex = services.getVertexService().createVertex(this, originalStartVertex.getVertexIndex(), originalStartVertex.getPixelIndex() - i, controlPointStart);
-                setValuesFrom(setVertex(candidateVertex));
-                var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
-                // TODO below should refactor this
-                for (var controlPoint : controlPoints) {
-                    var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
-                    if (candidateSegment != null) {
-                        setValuesFrom(setSegment(candidateSegment));
-                        var candidateError = candidateSegment.calcError(pPixelMap, this);
-
-                        if (isValid(pPixelMap, candidateSegment) && candidateError < lowestError) {
-                            lowestError = candidateError;
-                            bestCandidateSegment = candidateSegment;
-                            bestCandidateVertex = candidateVertex;
-                        }
-                    }
-                }
-            }
-        } finally {
-            if (bestCandidateSegment != pCurrentSegment) {
-                getPegCounter().increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
-            }
-            setValuesFrom(setVertex(bestCandidateVertex));
-            setValuesFrom(setSegment(bestCandidateSegment));
-            // TODO System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this));
-        }
-    }
 
     private void refine03MidSegmentEatForward(
             PixelMapData pPixelMap,
