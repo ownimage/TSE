@@ -131,9 +131,7 @@ public class PixelChainService {
             double tolerance,
             double lineCurvePreference) {
         var result = refine01_matchCurves(pixelMap, pixelChain, lineCurvePreference);
-        var pcb = new PixelChainBuilder(result);
-        pcb.refine03_matchCurves(pixelMap, pixelChain, tolerance, lineCurvePreference);
-        return PixelChain.of(pcb);
+        return refine03_matchCurves(pixelMap, result, tolerance, lineCurvePreference);
     }
 
     public PixelChain refine03FirstSegment(
@@ -196,6 +194,29 @@ public class PixelChainService {
             result = result.setSegment(bestCandidateSegment);
         }
         return result;
+    }
+
+    public PixelChain refine03_matchCurves(
+            @NotNull PixelMapData pPixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference) {
+
+        if (pixelChain.getSegmentCount() == 1) {
+            return PixelChain.of(pixelChain);
+        }
+
+        var result = StrongReference.of(PixelChain.of(pixelChain));
+        result.get().streamSegments().forEach(currentSegment -> {
+            if (currentSegment == result.get().getFirstSegment()) {
+                result.update(r -> refine03FirstSegment(pPixelMap, r, lineCurvePreference, currentSegment));
+            } else if (currentSegment == result.get().getLastSegment()) {
+                result.update(r -> refine03LastSegment(pPixelMap, r, lineCurvePreference, currentSegment));
+            } else {
+                result.update(r-> refine03MidSegment(pPixelMap, r, lineCurvePreference, currentSegment));
+            }
+        });
+        return result.get();
     }
 
     public PixelChain refine03LastSegment(

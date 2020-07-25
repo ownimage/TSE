@@ -70,22 +70,6 @@ public class PixelChainBuilder implements IPixelChain {
         );
     }
 
-    public void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, double tolerance, double lineCurvePreference) {
-
-        if (getSegmentCount() == 1) {
-            return;
-        }
-        streamSegments().forEach(currentSegment -> {
-            if (currentSegment == getFirstSegment()) {
-                setValuesFrom(pixelChainService.refine03FirstSegment(pPixelMap, this, lineCurvePreference, currentSegment));
-            } else if (currentSegment == getLastSegment()) {
-                setValuesFrom(pixelChainService.refine03LastSegment(pPixelMap, this, lineCurvePreference, currentSegment));
-            } else {
-                setValuesFrom(pixelChainService.refine03MidSegment(pPixelMap, this, lineCurvePreference, currentSegment));
-            }
-        });
-    }
-
     private void setValuesFrom(PixelChain pixelChain) {
         mPixels = pixelChain.getPixels();
         mSegments = pixelChain.getSegments();
