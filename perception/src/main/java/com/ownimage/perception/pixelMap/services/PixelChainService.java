@@ -43,7 +43,7 @@ public class PixelChainService {
     private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
     private static PixelMapTransformService pixelMapTransformService = Services.getDefaultServices().getPixelMapTransformService();
     private static VertexService vertexService = Services.getDefaultServices().getVertexService();
-    private static PegCounter pegCounterService = com.ownimage.perception.app.Services.getServices().getPegCounter();
+    private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
 
     public PixelChain fixNullPositionVertexes(int height, PixelChain pixelChain) {
         var mappedVertexes = pixelChain.getVertexes().stream()
@@ -72,28 +72,6 @@ public class PixelChainService {
 
     public PixelChain add(IPixelChain pixelChain, Pixel pPixel) {
         return pixelChain.changePixels(p -> p.add(pPixel));
-    }
-
-    public PixelChain approximateCurvesOnly(
-            @NotNull PixelMapData pixelMap,
-            @NotNull PixelChain pixelChain,
-            double tolerance,
-            double lineCurvePreference
-    ) {
-        if (pixelChain.getPixelCount() <= 4) {
-            return pixelChain;
-        }
-
-        var result = pixelChain;
-        result = result.changeVertexes(ImmutableVectorClone::clear);
-        result = result.changeSegments(ImmutableVectorClone::clear);
-        var builder = builder(result);
-        builder.approximateCurvesOnly_firstSegment(pixelMap, tolerance, lineCurvePreference);
-        result = builder.build();
-        while (result.getLastVertex().getPixelIndex() != result.getMaxPixelIndex()) {
-            result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference);
-        }
-        return result;
     }
 
     /**
@@ -1151,4 +1129,84 @@ public class PixelChainService {
         return pixelChain.getPixels().stream()
                 .anyMatch(p -> p.getUHVWMidPoint(pixelMap.height()).distance(curveMidPoint) < distance);
     }
+
+
+    public PixelChain approximateCurvesOnly(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference
+    ) {
+        if (pixelChain.getPixelCount() <= 4) {
+            return pixelChain;
+        }
+
+        var result = pixelChain;
+        result = result.changeVertexes(ImmutableVectorClone::clear);
+        result = result.changeSegments(ImmutableVectorClone::clear);
+        result = approximateCurvesOnly_firstSegment(pixelMap, result, tolerance, lineCurvePreference);
+        while (result.getLastVertex().getPixelIndex() != result.getMaxPixelIndex()) {
+            result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference);
+        }
+        return result;
+    }
+
+    public PixelChain approximateCurvesOnly_firstSegment(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference
+    ) {
+        var result = StrongReference.of(pixelChain);
+        result.update(r -> r.changeVertexes(v -> v.add(vertexService.createVertex(pixelMap, r, 0, 0))));
+        var vertexIndex = result.get().getVertexCount();
+        var segmentIndex = result.get().getSegmentCount();
+        var best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+        result.update(r -> r.changeVertexes(v -> v.add(null)));
+        result.update(r -> r.changeSegments(s -> s.add(null)));
+        Tuple3<Integer, ISegment, IVertex> bestFit;
+
+        for (int i = 4; i < result.get().getPixelCount(); i++) {
+            try {
+                var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
+                var lineAB = new Line(result.get().getUHVWPoint(pixelMap, 0), result.get().getUHVWPoint(pixelMap, i));
+                var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
+                var pointL = lineAB.getPoint(0.25d);
+                var pointN = lineAB.getPoint(0.75d);
+                var normal = lineAB.getANormal();
+                var lineL = new Line(pointL, pointL.add(normal));
+                var lineN = new Line(pointN, pointN.add(normal));
+                var pointC = lt3.intersect(lineL);
+                var pointE = lt3.intersect(lineN);
+                if (pointC != null && pointE != null) {
+                    var lineCE = new Line(pointC, pointE);
+                    result.update(r -> r.setVertex(candidateVertex));
+                    lineCE.streamFromCenter(20)
+                            .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, result.get(), segmentIndex, p))
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .filter(s -> s.noPixelFurtherThan(pixelMap, result.get(), tolerance * lineCurvePreference))
+                            .findFirst()
+                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
+                }
+            } catch (Exception pT) {
+            }
+            if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) {
+                break;
+            }
+        }
+        if (best.get() != null) {
+            result.update(r -> r.setSegment(best.get()._1));
+            result.update(r -> r.setVertex(best.get()._2));
+            if (result.get().getSegment(0) == null) {
+                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, 0)));
+            }
+        } else {
+            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
+            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, segmentIndex)));
+        }
+
+        return result.get();
+    }
+
 }
