@@ -136,6 +136,69 @@ public class PixelChainService {
         return PixelChain.of(pcb);
     }
 
+    public PixelChain refine03FirstSegment(
+            PixelMapData pixelMap,
+            PixelChain pixelChain,
+            double lineCurvePreference,
+            ISegment currentSegment
+    ) {
+        // this only works if this or the next segment are straight
+        var originalNextSegment = currentSegment.getNextSegment(pixelChain);
+        if (!((currentSegment instanceof StraightSegment) || (originalNextSegment instanceof StraightSegment))) {
+            return pixelChain;
+        }
+
+        var bestCandidateSegment = currentSegment;
+        var bestCandidateVertex = currentSegment.getEndVertex(pixelChain);
+        var originalEndVertex = currentSegment.getEndVertex(pixelChain);
+        var result = pixelChain;
+
+        try {
+            pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
+            var lowestError = currentSegment.calcError(pixelMap, result) * 1000 * lineCurvePreference; // TODO
+            var nextSegmentPixelLength = originalNextSegment.getPixelLength(result);
+            var controlPointEnd = originalEndVertex.getPosition()
+                    .add(
+                            originalNextSegment.getStartTangent(pixelMap, result)
+                                    .getAB()
+                                    .normalize()
+                                    .multiply(currentSegment.getLength(pixelMap, result)
+                                    )
+                    );
+            var length = currentSegment.getLength(pixelMap, result) / originalNextSegment.getLength(pixelMap, result);
+            controlPointEnd = originalNextSegment.getPointFromLambda(pixelMap, result, -length);
+            for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
+                result = result.changeVertexes(v -> v.set(originalEndVertex.getVertexIndex(), originalEndVertex));
+                var lambda = (double) i / nextSegmentPixelLength;
+                var controlPointStart = originalNextSegment.getPointFromLambda(pixelMap, result, lambda);
+                var candidateVertex = vertexService.createVertex(result, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
+                result = result.changeVertexes(v -> v.set(candidateVertex.getVertexIndex(), candidateVertex));
+                var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
+                for (var controlPoint : controlPoints) {
+                    var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), controlPoint);
+                    if (candidateSegment != null) {
+                        result = result.setSegment(candidateSegment);
+                        var candidateError = candidateSegment.calcError(pixelMap, result);
+
+                        if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
+                            lowestError = candidateError;
+                            bestCandidateSegment = candidateSegment;
+                            bestCandidateVertex = candidateVertex;
+                        }
+                    }
+                }
+            }
+        } finally {
+            if (bestCandidateSegment != currentSegment) {
+                pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
+            }
+            result = result.setVertex(bestCandidateVertex);
+            result = result.setSegment(bestCandidateSegment);
+        }
+        return result;
+    }
+
+
     /**
      * @deprecated TODO: explain
      */
