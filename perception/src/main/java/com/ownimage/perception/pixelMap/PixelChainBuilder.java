@@ -78,23 +78,7 @@ public class PixelChainBuilder implements IPixelChain {
         mThickness = pixelChain.getThickness();
     }
 
-    public void approximateCurvesOnly(
-            PixelMapData pPixelMap,
-            double pTolerance,
-            double pLineCurvePreference
-    ) {
-        if (getPixelCount() <= 4) {
-            return;
-        }
-        setValuesFrom(changeVertexes(ImmutableVectorClone::clear));
-        setValuesFrom(changeSegments(ImmutableVectorClone::clear));
-        approximateCurvesOnly_firstSegment(pPixelMap, pTolerance, pLineCurvePreference);
-        while (getLastVertex().getPixelIndex() != getMaxPixelIndex()) {
-            approximateCurvesOnly_subsequentSegments(pPixelMap, pTolerance, pLineCurvePreference);
-        }
-    }
-
-    private void approximateCurvesOnly_subsequentSegments(
+    public void approximateCurvesOnly_subsequentSegments(
             PixelMapData pixelMap,
             double tolerance,
             double lineCurvePreference
@@ -148,7 +132,7 @@ public class PixelChainBuilder implements IPixelChain {
         return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap.height()).distance(curveMidPoint) < pDistance);
     }
 
-    private void approximateCurvesOnly_firstSegment(
+    public void approximateCurvesOnly_firstSegment(
             PixelMapData pixelMap,
             double tolerance,
             double lineCurvePreference

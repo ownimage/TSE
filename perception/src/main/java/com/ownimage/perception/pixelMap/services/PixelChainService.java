@@ -79,8 +79,18 @@ public class PixelChainService {
             double tolerance,
             double lineCurvePreference
     ) {
-        val builder = builder(pixelChain);
-        builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
+        if (pixelChain.getPixelCount() <= 4) {
+            return pixelChain;
+        }
+
+        var result = pixelChain;
+        result = result.changeVertexes(ImmutableVectorClone::clear);
+        result = result.changeSegments(ImmutableVectorClone::clear);
+        var builder = builder(result);
+        builder.approximateCurvesOnly_firstSegment(pixelMap, tolerance, lineCurvePreference);
+        while (builder.getLastVertex().getPixelIndex() != builder.getMaxPixelIndex()) {
+            builder.approximateCurvesOnly_subsequentSegments(pixelMap, tolerance, lineCurvePreference);
+        }
         return builder.build();
     }
 
