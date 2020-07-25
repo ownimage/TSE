@@ -78,7 +78,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
 
-    private void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, double tolerance, double lineCurvePreference) {
+    public void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, double tolerance, double lineCurvePreference) {
 
         if (getSegmentCount() == 1) {
             return;
@@ -495,21 +495,4 @@ public class PixelChainBuilder implements IPixelChain {
         }
     }
 
-
-
-    public void refine(
-            @NotNull PixelMapData pixelMap,
-            PixelChain pixelChain,
-            double tolerance,
-            double lineCurvePreference) {
-        // TODO dont really want to have to pass a IMPTS in here
-        setValuesFrom(pixelChainService.refine01_matchCurves(pixelMap, this.build(), lineCurvePreference));
-        refine03_matchCurves(pixelMap, pixelChain, tolerance, lineCurvePreference);
-//        var tolerance = pTransformSource.getLineTolerance() / pTransformSource.getHeight();
-//        var lineCurvePreference = pTransformSource.getLineCurvePreference();
-//        approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
-    }
-
-
 }
-

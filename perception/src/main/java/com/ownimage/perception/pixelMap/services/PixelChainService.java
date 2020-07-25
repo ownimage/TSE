@@ -130,10 +130,10 @@ public class PixelChainService {
             @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference) {
-        var builder = builder(pixelChain);
-        builder.refine(pixelMap, null, tolerance, lineCurvePreference);
-        //builder.approximateCurvesOnly(pixelMap, tolerance, lineCurvePreference);
-        return builder.build();
+        var result = refine01_matchCurves(pixelMap, pixelChain, lineCurvePreference);
+        var pcb = new PixelChainBuilder(result);
+        pcb.refine03_matchCurves(pixelMap, pixelChain, tolerance, lineCurvePreference);
+        return PixelChain.of(pcb);
     }
 
     /**
