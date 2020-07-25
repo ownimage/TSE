@@ -53,7 +53,7 @@ public class PixelChainBuilder implements IPixelChain {
         mThickness = pThickness;
     }
 
-    public PixelChainBuilder(@NotNull PixelChain pixelChain) {
+    public PixelChainBuilder(@NotNull IPixelChain pixelChain) {
         mPixels = pixelChain.getPixels();
         mVertexes = pixelChain.getVertexes();
         mSegments = pixelChain.getSegments();
@@ -83,7 +83,7 @@ public class PixelChainBuilder implements IPixelChain {
             } else if (currentSegment == getLastSegment()) {
                 setValuesFrom(pixelChainService.refine03LastSegment(pPixelMap, this, lineCurvePreference, currentSegment));
             } else {
-                refine03MidSegment(pPixelMap, pPixelChain, lineCurvePreference, currentSegment);
+                setValuesFrom(pixelChainService.refine03MidSegment(pPixelMap, this, lineCurvePreference, currentSegment));
             }
         });
     }
@@ -91,7 +91,7 @@ public class PixelChainBuilder implements IPixelChain {
 
 
 
-    private void refine03MidSegmentEatForward(
+    public void refine03MidSegmentEatForward(
             PixelMapData pPixelMap,
             IPixelChain pPixelChain, double lineCurvePreference,
             ISegment pCurrentSegment
@@ -165,27 +165,7 @@ public class PixelChainBuilder implements IPixelChain {
     }
 
 
-    private void refine03MidSegment(
-            PixelMapData pPixelMap,
-            IPixelChain pixelChain,
-            double lineCurvePreference,
-            ISegment pCurrentSegment
-    ) {
-        // instrument
-        // Assumption that we are only going to smooth forward
-        // i.e. we are not going to move the start point - not sure that this will remain true forever
-        // and we will match the final gradient of the last segment
-        //
-        // If the next segment is a straight line then we can eat half of it
-        refine03MidSegmentEatForward(pPixelMap, pixelChain, lineCurvePreference, pCurrentSegment);
-        //
-        // If the next segment is a curve then
-        //  1) try matching with a curve
-        //  2) try eating it up to half
-        //  2) try matching with a double curve
-        //
-        // Question 1 what are we going to do with fixed points
-    }
+
 
     private boolean isValid(PixelMapData pPixelMap, ISegment pSegment) { // need to make sure that not only the pixels are close to the line but the line is close to the pixels
         if (pSegment == null) {

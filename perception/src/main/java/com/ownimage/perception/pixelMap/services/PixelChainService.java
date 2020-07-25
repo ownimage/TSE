@@ -820,6 +820,31 @@ public class PixelChainService {
         return result.setSegment(bestSegment);
     }
 
+    public PixelChain refine03MidSegment(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelChain pixelChain,
+            double lineCurvePreference,
+            ISegment currentSegment
+    ) {
+        // instrument
+        // Assumption that we are only going to smooth forward
+        // i.e. we are not going to move the start point - not sure that this will remain true forever
+        // and we will match the final gradient of the last segment
+        //
+        // If the next segment is a straight line then we can eat half of it
+        var pcb = new PixelChainBuilder(pixelChain);
+        pcb.refine03MidSegmentEatForward(pixelMap, pixelChain, lineCurvePreference, currentSegment);
+        return pcb.build();
+        //
+        // If the next segment is a curve then
+        //  1) try matching with a curve
+        //  2) try eating it up to half
+        //  2) try matching with a double curve
+        //
+        // Question 1 what are we going to do with fixed points
+    }
+
+
     // need to make sure that not only the pixels are close to the line but the line is close to the pixels
     public boolean isValid(@NotNull PixelMapData pixelMap,
                            @NotNull PixelChain pixelChain,
