@@ -15,7 +15,6 @@ import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.PixelChainBuilder;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
@@ -60,16 +59,6 @@ public class PixelChainService {
         return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.getLength(), pixelChain.getThickness());
     }
 
-    private PixelChainBuilder builder(PixelChain pixelChain) {
-        return new PixelChainBuilder(
-                pixelChain.getPixels().toVector(),
-                pixelChain.getVertexes().toVector(),
-                pixelChain.getSegments().toVector(),
-                pixelChain.getLength(),
-                pixelChain.getThickness()
-        );
-    }
-
     public PixelChain add(IPixelChain pixelChain, Pixel pPixel) {
         return pixelChain.changePixels(p -> p.add(pPixel));
     }
@@ -84,35 +73,35 @@ public class PixelChainService {
      * @param pixelMap the PixelMap this chain belongs to
      * @return a new PixelChain with the elements reversed
      */
-    public PixelChain reverse(PixelMapData pixelMap, PixelChain pixelChain) {
+    public PixelChain reverse(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
         // note that this uses direct access to the data members as the public setters have other side effects
         //validate("reverse");
-        IPixelChain builder = builder(pixelChain);
+        var result = pixelChain;
 
         // reverse pixels
-        Vector<Pixel> pixels = builder.getPixels().toVector();
+        Vector<Pixel> pixels = result.getPixels().toVector();
         Collections.reverse(pixels);
-        builder = builder.changePixels(p -> p.clear().addAll(pixels));
+        result = result.changePixels(p -> p.clear().addAll(pixels));
 
         // reverse vertexes
-        int maxPixelIndex = builder.getPixels().size() - 1;
+        int maxPixelIndex = result.getPixels().size() - 1;
         Vector<IVertex> vertexes = new Vector<>();
-        for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
-            IVertex vertex = builder.getVertexes().get(i);
-            IVertex v = vertexService.createVertex(pixelMap, builder, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+        for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
+            IVertex vertex = result.getVertexes().get(i);
+            IVertex v = vertexService.createVertex(pixelMap, result, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
-        builder = builder.changeVertexes(v -> v.clear().addAll(vertexes));
+        result = result.changeVertexes(v -> v.clear().addAll(vertexes));
 
         // reverse segments
         Vector<ISegment> segments = new Vector<>();
-        for (int i = builder.getVertexes().size() - 1; i >= 0; i--) {
+        for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
             if (i != pixelChain.getVertexes().size() - 1) {
-                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder, segments.size());
+                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, result, segments.size());
                 segments.add(newSegment);
             }
         }
-        return builder.changeSegments(s -> s.clear().addAll(segments));
+        return result.changeSegments(s -> s.clear().addAll(segments));
     }
 
     public PixelChain refine(
