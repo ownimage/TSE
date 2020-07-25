@@ -22,10 +22,10 @@ public class Immutable2DArray<E> {
         this(pWidth, pHeight, 5);
     }
 
-    public Immutable2DArray(int pWidth, int pHeight, int pFactor) {
-        Framework.checkParameterGreaterThanEqual(mLogger, pFactor, 0, "pFactor");
-        mShift = pFactor;
-        mSize = 1 << pFactor;
+    public Immutable2DArray(int pWidth, int pHeight, int pShift) {
+        Framework.checkParameterGreaterThanEqual(mLogger, pShift, 0, "pShift");
+        mShift = pShift;
+        mSize = 1 << pShift;
         mAnd = mSize - 1;
         mWidth = pWidth;
         mHeight = pHeight;
@@ -71,7 +71,7 @@ public class Immutable2DArray<E> {
     }
 
     public Immutable2DArray<E> clear() {
-        return new Immutable2DArray<>(mWidth, mHeight);
+        return new Immutable2DArray<>(mWidth, mHeight, mShift);
     }
 
     private int hash(int pX, int pY) {
@@ -113,12 +113,12 @@ public class Immutable2DArray<E> {
         }
 
         public E get(int pHash) {
-            val index = pHash & mAnd;
-            val rest = pHash >> mShift;
+            int index = pHash & mAnd;
+            int rest = pHash >> mShift;
             if (rest == 0) {
                 return mValues[index];
             }
-            var node = mNodes[index];
+            Node<E> node = mNodes[index];
             if (node != null) {
                 return node.get(rest);
             }

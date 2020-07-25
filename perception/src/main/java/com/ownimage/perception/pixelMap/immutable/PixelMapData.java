@@ -47,7 +47,7 @@ public interface PixelMapData {
 
     @Value.Default
     default Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex() {
-        return new Immutable2DArray<>(width(), height(), 20);
+        return new Immutable2DArray<>(width(), height(), 10);
     }
 
     @Value.Default

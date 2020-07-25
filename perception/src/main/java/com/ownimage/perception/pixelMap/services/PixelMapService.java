@@ -713,7 +713,7 @@ public class PixelMapService {
 
     public ImmutablePixelMapData clearSegmentIndex(@NotNull ImmutablePixelMapData pixelMap) {
         return pixelMap
-                .withSegmentIndex(new Immutable2DArray<>(pixelMap.width(), pixelMap.height(), 20))
+                .withSegmentIndex(pixelMap.segmentIndex().clear())
                 .withSegmentCount(0);
     }
 
