@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class PixelChainBuilder implements IPixelChain {
 
@@ -71,7 +70,6 @@ public class PixelChainBuilder implements IPixelChain {
         );
     }
 
-
     public void refine03_matchCurves(PixelMapData pPixelMap, PixelChain pPixelChain, double tolerance, double lineCurvePreference) {
 
         if (getSegmentCount() == 1) {
@@ -87,129 +85,6 @@ public class PixelChainBuilder implements IPixelChain {
             }
         });
     }
-
-
-
-
-    public void refine03MidSegmentEatForward(
-            PixelMapData pPixelMap,
-            IPixelChain pPixelChain, double lineCurvePreference,
-            ISegment pCurrentSegment
-    ) {
-        var bestCandidateSegment = pCurrentSegment;
-        var bestCandidateVertex = pCurrentSegment.getEndVertex(this);
-        var originalNextSegment = pCurrentSegment.getNextSegment(this);
-        var originalEndVertex = pCurrentSegment.getEndVertex(this);
-
-        if (pCurrentSegment instanceof CurveSegment && originalNextSegment instanceof CurveSegment) {
-            return;
-        }
-
-        try {
-            getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardAttempted);
-            var nextSegmentPixelLength = originalNextSegment.getPixelLength(this);
-            var controlPointEnd = originalEndVertex.getPosition()
-                    .add(
-                            originalNextSegment.getStartTangent(pPixelMap, this)
-                                    .getAB()
-                                    .normalize()
-                                    .multiply(pCurrentSegment.getLength(pPixelMap, this)
-                                    )
-                    );
-            var length = pCurrentSegment.getLength(pPixelMap, this) / originalNextSegment.getLength(pPixelMap, this);
-            controlPointEnd = originalNextSegment.getPointFromLambda(pPixelMap, this, -length);
-            for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
-                setValuesFrom(setVertex(originalEndVertex));
-                setValuesFrom(setSegment(pCurrentSegment));
-                setValuesFrom(setSegment(originalNextSegment));
-                var lowestErrorPerPixel = calcError(
-                        pPixelMap,
-                        pCurrentSegment.getStartIndex(this),
-                        pCurrentSegment.getEndIndex(this) + i,
-                        pCurrentSegment,
-                        originalNextSegment
-                );
-
-                var lambda = (double) i / nextSegmentPixelLength;
-                var controlPointStart = originalNextSegment.getPointFromLambda(pPixelMap, this, lambda);
-                var candidateVertex = services.getVertexService().createVertex(this, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
-                setValuesFrom(setVertex(candidateVertex));
-                var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
-                for (var controlPoint : controlPoints) {
-                    var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pPixelMap, this, pCurrentSegment.getSegmentIndex(), controlPoint);
-                    if (candidateSegment != null) {
-                        setValuesFrom(setSegment(candidateSegment));
-                        var candidateErrorPerPixel = calcError(
-                                pPixelMap,
-                                pCurrentSegment.getStartIndex(this),
-                                pCurrentSegment.getEndIndex(this) + i,
-                                candidateSegment,
-                                originalNextSegment
-                        );
-                        if (isValid(pPixelMap, candidateSegment) && candidateErrorPerPixel < lowestErrorPerPixel) {
-                            lowestErrorPerPixel = candidateErrorPerPixel;
-                            bestCandidateSegment = candidateSegment;
-                            bestCandidateVertex = candidateVertex;
-                        }
-                    }
-                }
-            }
-        } finally {
-            if (bestCandidateSegment != pCurrentSegment) {
-                getPegCounter().increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
-            }
-            setValuesFrom(setVertex(bestCandidateVertex));
-            setValuesFrom(setSegment(bestCandidateSegment));
-            // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
-        }
-    }
-
-
-
-
-    private boolean isValid(PixelMapData pPixelMap, ISegment pSegment) { // need to make sure that not only the pixels are close to the line but the line is close to the pixels
-        if (pSegment == null) {
-            return false;
-        }
-        if (pSegment.getPixelLength(this) < 4) {
-            return true;
-        }
-
-        int startIndexPlus = pSegment.getStartIndex(this) + 1;
-        Point startPointPlus = getPixel(startIndexPlus).getUHVWMidPoint(pPixelMap.height());
-        double startPlusLambda = pSegment.closestLambda(pPixelMap, this, startPointPlus);
-
-        int endIndexMinus = pSegment.getEndIndex(this) - 1;
-        Point endPointMinus = getPixel(endIndexMinus).getUHVWMidPoint(pPixelMap.width());
-        double endMinusLambda = pSegment.closestLambda(pPixelMap, this, endPointMinus);
-
-        return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
-    }
-
-    private double calcError(
-            PixelMapData pPixelMap,
-            int pStartPixelIndex,
-            int pEndPixelIndex,
-            ISegment pStartSegment,
-            ISegment pEndSegment
-    ) {
-        var error = 0d;
-        for (var i = pStartPixelIndex; i <= pEndPixelIndex; i++) {
-            var p = this.getPixel(i);
-            if (pStartSegment.containsPixelIndex(this, i)) {
-                var d = pStartSegment.calcError(pPixelMap, this, p);
-                error += d * d;
-            } else if (pEndSegment.containsPixelIndex(this, i)) {
-                var d = pEndSegment.calcError(pPixelMap, this, p);
-                error += d * d;
-            } else {
-                throw new IllegalArgumentException("Not in Range");
-            }
-        }
-        return error;
-    }
-
-
 
     private void setValuesFrom(PixelChain pixelChain) {
         mPixels = pixelChain.getPixels();

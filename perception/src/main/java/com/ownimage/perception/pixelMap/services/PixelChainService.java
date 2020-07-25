@@ -18,6 +18,7 @@ import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.PixelChainBuilder;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
@@ -832,9 +833,7 @@ public class PixelChainService {
         // and we will match the final gradient of the last segment
         //
         // If the next segment is a straight line then we can eat half of it
-        var pcb = new PixelChainBuilder(pixelChain);
-        pcb.refine03MidSegmentEatForward(pixelMap, pixelChain, lineCurvePreference, currentSegment);
-        return pcb.build();
+        return refine03MidSegmentEatForward(pixelMap, pixelChain, lineCurvePreference, currentSegment);
         //
         // If the next segment is a curve then
         //  1) try matching with a curve
@@ -844,6 +843,106 @@ public class PixelChainService {
         // Question 1 what are we going to do with fixed points
     }
 
+    public PixelChain refine03MidSegmentEatForward(
+            @NotNull PixelMapData pixelMap,
+            @NotNull IPixelChain pixelChain,
+            double lineCurvePreference,
+            ISegment currentSegment
+    ) {
+        var originalNextSegment = currentSegment.getNextSegment(pixelChain);
+        if (currentSegment instanceof CurveSegment && originalNextSegment instanceof CurveSegment) {
+            return PixelChain.of(pixelChain);
+        }
+        var bestCandidateSegment = currentSegment;
+        var bestCandidateVertex = currentSegment.getEndVertex(pixelChain);
+        var originalEndVertex = currentSegment.getEndVertex(pixelChain);
+        var result = PixelChain.of(pixelChain);
+
+        try {
+            pegCounterService.increase(IPixelChain.PegCounters.MidSegmentEatForwardAttempted);
+            var nextSegmentPixelLength = originalNextSegment.getPixelLength(result);
+            var controlPointEnd = originalEndVertex.getPosition()
+                    .add(
+                            originalNextSegment.getStartTangent(pixelMap, result)
+                                    .getAB()
+                                    .normalize()
+                                    .multiply(currentSegment.getLength(pixelMap, result)
+                                    )
+                    );
+            var length = currentSegment.getLength(pixelMap, result) / originalNextSegment.getLength(pixelMap, result);
+            controlPointEnd = originalNextSegment.getPointFromLambda(pixelMap, result, -length);
+            for (int i = nextSegmentPixelLength / 2; i >= 0; i--) {
+                result = result.setVertex(originalEndVertex);
+                result = result.setSegment(currentSegment);
+                result = result.setSegment(originalNextSegment);
+                var lowestErrorPerPixel = calcError(
+                        pixelMap,
+                        result,
+                        currentSegment.getStartIndex(result),
+                        currentSegment.getEndIndex(result) + i,
+                        currentSegment,
+                        originalNextSegment
+                );
+
+                var lambda = (double) i / nextSegmentPixelLength;
+                var controlPointStart = originalNextSegment.getPointFromLambda(pixelMap, result, lambda);
+                var candidateVertex = vertexService.createVertex(result, originalEndVertex.getVertexIndex(), originalEndVertex.getPixelIndex() + i, controlPointStart);
+                result = result.setVertex(candidateVertex);
+                var controlPoints = new Line(controlPointEnd, controlPointStart).stream(100).collect(Collectors.toList()); // TODO
+                for (var controlPoint : controlPoints) {
+                    var candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), controlPoint);
+                    if (candidateSegment != null) {
+                        result = result.setSegment(candidateSegment);
+                        var candidateErrorPerPixel = calcError(
+                                pixelMap,
+                                result,
+                                currentSegment.getStartIndex(result),
+                                currentSegment.getEndIndex(result) + i,
+                                candidateSegment,
+                                originalNextSegment
+                        );
+                        if (isValid(pixelMap, result, candidateSegment) && candidateErrorPerPixel < lowestErrorPerPixel) {
+                            lowestErrorPerPixel = candidateErrorPerPixel;
+                            bestCandidateSegment = candidateSegment;
+                            bestCandidateVertex = candidateVertex;
+                        }
+                    }
+                }
+            }
+        } finally {
+            if (bestCandidateSegment != currentSegment) {
+                pegCounterService.increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
+            }
+            result = result.setVertex(bestCandidateVertex);
+            result = result.setSegment(bestCandidateSegment);
+            // System.out.println("Pixel for curve: " + bestCandidateVertex.getPixel(this)); // TODO
+        }
+        return result;
+    }
+
+    public double calcError(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            int startPixelIndex,
+            int endPixelIndex,
+            @NotNull ISegment startSegment,
+            @NotNull ISegment endSegment
+    ) {
+        var error = 0d;
+        for (var i = startPixelIndex; i <= endPixelIndex; i++) {
+            var p = pixelChain.getPixel(i);
+            if (startSegment.containsPixelIndex(pixelChain, i)) {
+                var d = startSegment.calcError(pixelMap, pixelChain, p);
+                error += d * d;
+            } else if (endSegment.containsPixelIndex(pixelChain, i)) {
+                var d = endSegment.calcError(pixelMap, pixelChain, p);
+                error += d * d;
+            } else {
+                throw new IllegalArgumentException("Not in Range");
+            }
+        }
+        return error;
+    }
 
     // need to make sure that not only the pixels are close to the line but the line is close to the pixels
     public boolean isValid(@NotNull PixelMapData pixelMap,
