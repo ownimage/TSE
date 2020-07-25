@@ -23,6 +23,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
 import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import io.vavr.Tuple4;
 import lombok.NonNull;
 import lombok.val;
@@ -88,10 +89,11 @@ public class PixelChainService {
         result = result.changeSegments(ImmutableVectorClone::clear);
         var builder = builder(result);
         builder.approximateCurvesOnly_firstSegment(pixelMap, tolerance, lineCurvePreference);
-        while (builder.getLastVertex().getPixelIndex() != builder.getMaxPixelIndex()) {
-            builder.approximateCurvesOnly_subsequentSegments(pixelMap, tolerance, lineCurvePreference);
+        result = builder.build();
+        while (result.getLastVertex().getPixelIndex() != result.getMaxPixelIndex()) {
+            result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference);
         }
-        return builder.build();
+        return result;
     }
 
     /**
@@ -1087,5 +1089,66 @@ public class PixelChainService {
             mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
         return result.setSegment(bestSegment);
+    }
+
+    public PixelChain approximateCurvesOnly_subsequentSegments(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference
+    ) {
+        var startVertex = pixelChain.getLastVertex();
+        var startPixelIndex = pixelChain.getLastVertex().getPixelIndex() + 1;
+        var vertexIndex = pixelChain.getVertexCount();
+        var segmentIndex = pixelChain.getSegmentCount();
+        var best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+        var result = StrongReference.of(pixelChain);
+        result.update(r -> r.changeVertexes(v -> v.add(null)));
+        result.update(r -> r.changeSegments(s -> s.add(null)));
+        Tuple3<Integer, ISegment, IVertex> bestFit;
+
+        for (int i = startPixelIndex; i < result.get().getPixelCount(); i++) {
+            try {
+                var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
+                var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
+                var startTangent = vertexService.getStartSegment( result.get(), startVertex).getEndTangent(pixelMap, result.get());
+                var p = lt3.intersect(startTangent);
+                if (p != null) {
+                    result.update(r -> r.setVertex(candidateVertex));
+                    SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, result.get(), segmentIndex, p)
+                            .filter(s -> s.noPixelFurtherThan(pixelMap, result.get(), tolerance * lineCurvePreference))
+                            .filter(s -> segmentMidpointValid(pixelMap, result.get(), s, tolerance * lineCurvePreference))
+                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
+                }
+            } catch (Exception pT) {
+                mLogger.info(pT::getMessage);
+                mLogger.info(pT::toString);
+            }
+            if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) {
+                break;
+            }
+        }
+        if (best.get() != null) {
+            result.update(r -> r.setSegment(best.get()._1));
+            result.update(r -> r.setVertex(best.get()._2));
+            if (best.get()._1 == null || result.get().getPixelCount() - startPixelIndex == 1) {
+                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, result.get(), segmentIndex)));
+            }
+        } else {
+            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
+            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, segmentIndex)));
+        }
+        return result.get();
+    }
+
+
+    public boolean segmentMidpointValid(
+            @NotNull PixelMapData pixelMap,
+            @NotNull PixelChain pixelChain,
+            @NotNull CurveSegment segment,
+            double distance) {
+        Point curveMidPoint = segment.getPointFromLambda(pixelMap, pixelChain, 0.5d);
+        return pixelChain.getPixels().stream()
+                .anyMatch(p -> p.getUHVWMidPoint(pixelMap.height()).distance(curveMidPoint) < distance);
     }
 }

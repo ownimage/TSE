@@ -78,59 +78,8 @@ public class PixelChainBuilder implements IPixelChain {
         mThickness = pixelChain.getThickness();
     }
 
-    public void approximateCurvesOnly_subsequentSegments(
-            PixelMapData pixelMap,
-            double tolerance,
-            double lineCurvePreference
-    ) {
-        var vertexService = services.getVertexService();
 
-        val startVertex = getLastVertex();
-        val startPixelIndex = getLastVertex().getPixelIndex() + 1;
-        val vertexIndex = getVertexCount();
-        val segmentIndex = getSegmentCount();
-        val best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
-        setValuesFrom(changeVertexes(v -> v.add(null)));
-        setValuesFrom(changeSegments(s -> s.add(null)));
-        Tuple3<Integer, ISegment, IVertex> bestFit;
 
-        for (int i = startPixelIndex; i < getPixelCount(); i++) {
-            try {
-                var candidateVertex = services.getVertexService().createVertex(pixelMap, this, vertexIndex, i);
-                var lt3 = vertexService.calcLocalTangent(pixelMap, this, candidateVertex, 3);
-                var startTangent = vertexService.getStartSegment( this, startVertex).getEndTangent(pixelMap, this);
-                var p = lt3.intersect(startTangent);
-                if (p != null) {
-                    setValuesFrom(setVertex(candidateVertex));
-                    SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, this, segmentIndex, p)
-                            .filter(s -> s.noPixelFurtherThan(pixelMap, this, tolerance * lineCurvePreference))
-                            .filter(s -> segmentMidpointValid(pixelMap, s, tolerance * lineCurvePreference))
-                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
-                }
-            } catch (Exception pT) {
-                mLogger.info(pT::getMessage);
-                mLogger.info(pT::toString);
-            }
-            if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) {
-                break;
-            }
-        }
-        if (best.get() != null) {
-            setValuesFrom(setSegment(best.get()._1));
-            setValuesFrom(setVertex(best.get()._2));
-            if (best.get()._1 == null || getPixelCount() - startPixelIndex == 1) {
-                setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex)));
-            }
-        } else {
-            setValuesFrom(setVertex(vertexService.createVertex(pixelMap, this, vertexIndex, getMaxPixelIndex())));
-            setValuesFrom(setSegment(SegmentFactory.createTempStraightSegment(pixelMap, this, segmentIndex)));
-        }
-    }
-
-    private boolean segmentMidpointValid(PixelMapData pPixelMap, CurveSegment pSegment, double pDistance) {
-        Point curveMidPoint = pSegment.getPointFromLambda(pPixelMap, this, 0.5d);
-        return mPixels.stream().anyMatch(p -> p.getUHVWMidPoint(pPixelMap.height()).distance(curveMidPoint) < pDistance);
-    }
 
     public void approximateCurvesOnly_firstSegment(
             PixelMapData pixelMap,
