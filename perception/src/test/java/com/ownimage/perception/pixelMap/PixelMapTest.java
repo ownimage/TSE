@@ -4,11 +4,11 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.Services;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +18,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -51,10 +53,11 @@ public class PixelMapTest {
             new Pixel(3, 3)
     );
 
-    private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private PixelMapActionService pixelMapActionService = Services.getDefaultServices().getPixelMapActionService();
-    private PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
-    private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private PixelMapActionService pixelMapActionService = context.getBean(PixelMapActionService.class);
+    private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
+    private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -372,7 +375,7 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input);
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length),null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
     }
@@ -487,8 +490,8 @@ public class PixelMapTest {
     }
 
     public ImmutablePixelMapData addChain(@NonNull ImmutablePixelMapData pixelMap, @NotNull IPixelMapTransformSource ts, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
-        var pixelMapRef =  StrongReference.of(pixelMap);
-        pChain.forEach(pixel -> pixelMapRef.update(pm ->pixelMapActionService.actionPixelOn(pm, ts, List.of(pStart.add(pixel)))));
+        var pixelMapRef = StrongReference.of(pixelMap);
+        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapActionService.actionPixelOn(pm, ts, List.of(pStart.add(pixel)))));
         return pixelMapRef.get();
     }
 
@@ -502,41 +505,41 @@ public class PixelMapTest {
         var height = 14 + 2 * yMargin;
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(height), null);
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 11).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 11).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 12).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 13).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 13).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 13).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 12).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 11).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 10).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 9).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 8).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 7).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 6).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 5).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 4).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 3).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 2).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 1).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 0).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 0).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 0).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 0).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 0).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 1).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 2).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 3).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 4).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 5).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 6).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 7).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 8).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 9).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 10).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 11).add(offset));
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 11).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 11).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 11).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 12).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 13).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 13).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 13).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 12).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 11).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 10).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 9).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 8).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 7).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 6).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 5).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 4).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 3).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 2).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 1).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 0).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 0).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 0).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 0).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 0).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 1).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 2).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 3).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 4).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 5).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 6).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 7).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 8).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 9).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 10).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 11).add(offset));
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 11).add(offset));
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -587,7 +590,7 @@ public class PixelMapTest {
                 new Pixel(1, 11).add(offset),
                 new Pixel(2, 11).add(offset)
         );
-        var actual =pixelMapActionService.actionPixelOn(underTest, ts, pixels);
+        var actual = pixelMapActionService.actionPixelOn(underTest, ts, pixels);
         assertEquals(1, actual.pixelChains().size());
     }
 
@@ -613,7 +616,7 @@ public class PixelMapTest {
                 new Pixel(6, 7),
                 new Pixel(6, 8)
         );
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -640,7 +643,7 @@ public class PixelMapTest {
                 new Pixel(6, 8),
                 new Pixel(6, 9)
         );
-        pixelMap =pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -664,7 +667,7 @@ public class PixelMapTest {
         var pixelMap = StrongReference.of(Utility.createMap(20, 20));
         var source = Utility.getDefaultTransformSource(20);
         pixelMap.update(pm -> addChain(pm, source, start1, chainS1));
-        pixelMap.update(pm ->  addChain(pm, source, start2, chainNE));
+        pixelMap.update(pm -> addChain(pm, source, start2, chainNE));
         BiConsumer<ImmutablePixelMapData, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
             assertEquals(2, pPixelMap.pixelChains().size());
             List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
@@ -694,11 +697,11 @@ public class PixelMapTest {
     public void setPixelOnOff() {
         var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
-        underTest =pixelMapService.setEdge(underTest, null, pixel, true);
-        assertTrue(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        underTest = pixelMapService.setEdge(underTest, null, pixel, true);
+        assertTrue(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
         underTest = pixelMapService.setEdge(underTest, null, pixel, false);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
     }
 
     @Test
@@ -706,13 +709,13 @@ public class PixelMapTest {
         var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(10);
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
-        var resultOn =pixelMapActionService.actionPixelOn(underTest, transformSource, pixel);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
-        assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
-        var resultOff =pixelMapActionService.actionPixelOff(underTest, transformSource, pixel, 1);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest,5, 5).get().isEdge(underTest));
-        assertTrue(pixelMapService.getOptionalPixelAt(resultOn,5, 5).get().isEdge(resultOn));
-        assertFalse(pixelMapService.getOptionalPixelAt(resultOff,5, 5).get().isEdge(resultOff));
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        var resultOn = pixelMapActionService.actionPixelOn(underTest, transformSource, pixel);
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
+        var resultOff = pixelMapActionService.actionPixelOff(underTest, transformSource, pixel, 1);
+        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
+        assertFalse(pixelMapService.getOptionalPixelAt(resultOff, 5, 5).get().isEdge(resultOff));
     }
 }

@@ -32,11 +32,14 @@ import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 import java.util.logging.Logger;
@@ -48,11 +51,11 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
  */
 public class GenerateEdgesDialog extends Container implements IUIEventListener, IControlValidator {
 
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
-    private static PixelMapService pixelMapService =
-            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
 
     private static final int DEFAULT_SIZE = 800;
 

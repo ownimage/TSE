@@ -27,6 +27,8 @@ import io.vavr.Tuple4;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,13 +38,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Service
 public class PixelChainService {
 
-    private final static Logger mLogger = Framework.getLogger();
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelMapTransformService pixelMapTransformService = Services.getDefaultServices().getPixelMapTransformService();
-    private static VertexService vertexService = Services.getDefaultServices().getVertexService();
+    private PixelMapService pixelMapService;
+    private PixelMapTransformService pixelMapTransformService;
+    private VertexService vertexService;
+
     private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
+
+    private final static Logger mLogger = Framework.getLogger();
+
+    @Autowired
+    public void setPixelMapService(PixelMapService pixelMapService) {
+        this.pixelMapService = pixelMapService;
+    }
+
+    @Autowired
+    public void setPixelMapTransformService(PixelMapTransformService pixelMapTransformService) {
+        this.pixelMapTransformService = pixelMapTransformService;
+    }
+
+    @Autowired
+    public void setVertexService(VertexService vertexService) {
+        this.vertexService = vertexService;
+    }
 
     public PixelChain fixNullPositionVertexes(int height, PixelChain pixelChain) {
         var mappedVertexes = pixelChain.getVertexes().stream()

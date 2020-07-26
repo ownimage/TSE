@@ -11,7 +11,9 @@ import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import lombok.val;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VertexService {
 
     public IVertex createVertex(PixelMapData pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {

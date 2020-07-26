@@ -1,12 +1,11 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.Services;
 import lombok.val;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Optional;
 
@@ -25,9 +26,10 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class PixelChainTest {
 
-    private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
-    private PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
+    private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @Mock
     PixelMapData pixelMap;

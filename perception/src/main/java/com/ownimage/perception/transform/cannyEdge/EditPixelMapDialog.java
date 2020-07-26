@@ -46,15 +46,20 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -75,14 +80,13 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 public class EditPixelMapDialog extends Container implements IUIEventListener, IControlValidator, IGrafitti {
     public final static long serialVersionUID = 1L;
     private final static Logger mLogger = Framework.getLogger();
-    private final static PixelMapActionService pixelMapActionService
-            = com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapActionService();
-    private final static PixelMapService pixelMapService =
-            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
-    private final static PixelService pixelService =
-            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelService();
-    private final static PixelChainService pixelChainService =
-            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelChainService();
+
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelService pixelService = context.getBean(PixelService.class);
+    private static PixelMapActionService pixelMapActionService = context.getBean(PixelMapActionService.class);
+    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
+
     private final ActionControl mOkAction;
     private final ActionControl mCancelAction;
     private final CannyEdgeTransform mCannyEdgeTransform;

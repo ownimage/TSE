@@ -7,7 +7,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.MyBase64;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.IPixelChain;
@@ -22,6 +21,8 @@ import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,17 +57,37 @@ import static com.ownimage.perception.pixelMap.PixelConstants.SW;
 import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
 import static com.ownimage.perception.pixelMap.PixelConstants.W;
 
+@Service
 public class PixelMapService {
+
+    private  PixelMapChainGenerationService pixelMapChainGenerationService;
+    private  PixelMapApproximationService pixelMapApproximationService;
+    private  PixelChainService pixelChainService;
+    private  PixelService pixelService;
 
     private final static Logger logger = Framework.getLogger();
 
-    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().getPixelMapGenerationService();
-    private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
-    private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
-    private static PixelService pixelService = Services.getDefaultServices().getPixelService();
-
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
 
+    @Autowired
+    public void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
+        this.pixelMapChainGenerationService = pixelMapChainGenerationService;
+    }
+
+    @Autowired
+    public void setPixelMapApproximationService(PixelMapApproximationService pixelMapApproximationService) {
+        this.pixelMapApproximationService = pixelMapApproximationService;
+    }
+
+    @Autowired
+    public void setPixelChainService(PixelChainService pixelChainService) {
+        this.pixelChainService = pixelChainService;
+    }
+
+    @Autowired
+    public void setPixelService(PixelService pixelService) {
+        this.pixelService = pixelService;
+    }
 
     public boolean canRead(IPersistDB pDB, String pId) {
         String pixelString = pDB.read(pId + ".data");

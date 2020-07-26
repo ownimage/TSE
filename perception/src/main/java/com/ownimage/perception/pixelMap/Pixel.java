@@ -10,9 +10,14 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapActionService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
-import com.ownimage.perception.pixelMap.services.Services;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,8 +38,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
 
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelService pixelService = Services.getDefaultServices().getPixelService();
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelService pixelService = context.getBean(PixelService.class);
 
     private static final IntegerPoint[] mNeighbours = { //
             //
@@ -43,6 +49,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
             new IntegerPoint(-1, 1), new IntegerPoint(0, 1), new IntegerPoint(1, 1) //
     };
     private static final int[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
+
     private Point mUHVW = null;
 
     private Pixel(Pixel pPixel) {

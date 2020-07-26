@@ -8,11 +8,14 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,7 +24,8 @@ import java.util.stream.Collectors;
 public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     private final static long serialVersionUID = 2L;
-    private final static VertexService vertexService = Services.getDefaultServices().getVertexService();
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static VertexService vertexService = context.getBean(VertexService.class);
 
     @Getter
     private final ImmutableVectorClone<Pixel> mPixels;
@@ -36,7 +40,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     private final double mLength;
 
     @Getter
-    private Thickness mThickness;
+    private final Thickness mThickness;
 
     public PixelChain(@NotNull PixelMapData pPixelMap, @NotNull Node pStartNode) {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);

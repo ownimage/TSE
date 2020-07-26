@@ -13,13 +13,19 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.IVertex;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
-import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.val;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 import java.util.logging.Logger;
 
 public abstract class SegmentBase implements ISegment {
+
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    public static VertexService vertexService = context.getBean(VertexService.class);
 
     private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
@@ -180,14 +186,12 @@ public abstract class SegmentBase implements ISegment {
 
     @Override
     public ISegment getNextSegment(IPixelChain pixelChain) {
-        var services = Services.getDefaultServices();
-        return services.getVertexService().getEndSegment(pixelChain, getEndVertex(pixelChain));
+        return vertexService.getEndSegment(pixelChain, getEndVertex(pixelChain));
     }
 
     @Override
     public ISegment getPreviousSegment(IPixelChain pixelChain) {
-        var services = Services.getDefaultServices();
-        return services.getVertexService().getStartSegment(pixelChain, getEndVertex(pixelChain));
+        return vertexService.getStartSegment(pixelChain, getEndVertex(pixelChain));
     }
 
     @Override

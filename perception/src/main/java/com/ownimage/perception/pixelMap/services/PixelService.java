@@ -5,7 +5,9 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PixelService {
 
     private static final IntegerPoint[] mNeighbours = { //

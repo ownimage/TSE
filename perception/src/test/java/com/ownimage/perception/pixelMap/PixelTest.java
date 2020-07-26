@@ -1,10 +1,12 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
-import com.ownimage.perception.pixelMap.services.Services;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,8 +15,9 @@ import static org.junit.Assert.assertTrue;
 
 public class PixelTest {
 
-    private PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private PixelService pixelService = Services.getDefaultServices().getPixelService();
+    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private PixelService pixelService = context.getBean(PixelService.class);
 
 //    @BeforeClass
 //    public static void setUpBeforeClass() throws Exception {

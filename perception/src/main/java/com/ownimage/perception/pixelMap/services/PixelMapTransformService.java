@@ -16,18 +16,31 @@ import io.vavr.Tuple2;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+@Service
 public class PixelMapTransformService {
 
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelService pixelService = Services.getDefaultServices().getPixelService();
+    private  PixelMapService pixelMapService;
+    private  PixelService pixelService;
 
     private final static Logger mLogger = Framework.getLogger();
+
+    @Autowired
+    public void setPixelMapService(PixelMapService pixelMapService) {
+        this.pixelMapService = pixelMapService;
+    }
+
+    @Autowired
+    public void setPixelService(PixelService pixelService) {
+        this.pixelService = pixelService;
+    }
 
     public void transform(
             @NotNull ImmutablePixelMapData pixelMap,

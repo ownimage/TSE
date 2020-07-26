@@ -12,6 +12,7 @@ import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Services;
 import javafx.scene.image.Image;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ import static java.lang.String.format;
 
 // need to add the following to VM Options in IntelliJ
 // --module-path C:\Users\User\Downloads\openjfx-11.0.2_windows-x64_bin-sdk\javafx-sdk-11.0.2\lib --add-modules=javafx.controls
+
 
 public class FXPerception extends AppControlView {
 

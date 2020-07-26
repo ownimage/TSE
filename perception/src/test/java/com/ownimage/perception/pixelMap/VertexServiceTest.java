@@ -4,14 +4,14 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
-import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -21,11 +21,11 @@ import static org.mockito.Mockito.when;
 
 public class VertexServiceTest {
 
-//    @Mock
+    //    @Mock
     PixelMapData pixelMap;
+    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private VertexService vertexService = context.getBean(VertexService.class);
 
-    private Services services = Services.getDefaultServices();
-    
     @Before
     public void before() {
         pixelMap = mock(PixelMapData.class);
@@ -224,9 +224,8 @@ public class VertexServiceTest {
                 .with_getSegment_returns(endSegmentIndex, null)
                 .build();
         var mockPixelMap = new MockPixelMapBuilder().build();
-        IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        IVertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
-        var services = Services.getDefaultServices();
         // WHEN THEN
         var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
         assertEquals(null, actual);
@@ -253,9 +252,8 @@ public class VertexServiceTest {
         Line expected = mock(Line.class);
         when(mockStartSegment.getEndTangent(pixelMap, mockPixelChain)).thenReturn(expected);
 
-        IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        IVertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
-        var services = Services.getDefaultServices();
         // WHEN THEN
         var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
         assertEquals(expected, actual);
@@ -285,7 +283,7 @@ public class VertexServiceTest {
         when(tangent.getReverse()).thenReturn(expected);
         when(mockEndSegment.getStartTangent(mockPixelMap, mockPixelChain)).thenReturn(tangent);
 
-        IVertex vertex = services.getVertexService().createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        IVertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
         var actual = underTest.calcTangent(mockPixelMap, mockPixelChain, vertex);

@@ -28,6 +28,8 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -39,6 +41,8 @@ import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
 import lombok.NonNull;
 import lombok.val;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 import java.io.IOException;
@@ -50,11 +54,11 @@ import static com.ownimage.framework.control.container.NullContainer.NullContain
 
 public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransformSource {
 
-    private static com.ownimage.perception.pixelMap.services.Services defaultServices = com.ownimage.perception.pixelMap.services.Services.getDefaultServices();
-    private PixelMapService pixelMapService = defaultServices.getPixelMapService();
-    private PixelMapActionService pixelMapActionService = defaultServices.getPixelMapActionService();
-    private PixelMapApproximationService pixelMapApproximationService = defaultServices.getPixelMapApproximationService();
-    private PixelMapTransformService pixelMapTransformService = defaultServices.getPixelMapTransformService();
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
+    private static PixelMapActionService pixelMapActionService = context.getBean(PixelMapActionService.class);
+    private static PixelMapTransformService pixelMapTransformService = context.getBean(PixelMapTransformService.class);
 
     public enum LineEndLengthType {
         Percent, Pixels

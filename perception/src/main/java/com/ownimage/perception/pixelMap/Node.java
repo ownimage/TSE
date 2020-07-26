@@ -8,9 +8,12 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.Services;
+import com.ownimage.perception.pixelMap.services.VertexService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Vector;
 
@@ -27,13 +30,14 @@ public class Node extends Pixel {
      */
     private static final long serialVersionUID = 1L;
 
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     /**
      * The m pixel chains.
      */
-    private Vector<PixelChain> mPixelChains = new Vector<>();
+    private final Vector<PixelChain> mPixelChains = new Vector<>();
 
     /**
      * Instantiates a new node.

@@ -14,6 +14,9 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,15 +37,37 @@ import static com.ownimage.perception.pixelMap.PixelConstants.SE;
 import static com.ownimage.perception.pixelMap.PixelConstants.SW;
 import static com.ownimage.perception.pixelMap.PixelConstants.W;
 
+@Service
 public class PixelMapApproximationService {
+
+    private  PixelMapChainGenerationService pixelMapChainGenerationService;
+    private  PixelChainService pixelChainService;
+    private  PixelService pixelService;
+    private  PixelMapService pixelMapService;
 
     private final static Logger logger = Framework.getLogger();
 
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
-    private static PixelMapChainGenerationService pixelMapChainGenerationService = Services.getDefaultServices().getPixelMapGenerationService();
-    private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
-    private static PixelService pixelService = Services.getDefaultServices().getPixelService();
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+
+    @Autowired
+    public  void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
+        this.pixelMapChainGenerationService = pixelMapChainGenerationService;
+    }
+
+    @Autowired
+    public  void setPixelChainService(PixelChainService pixelChainService) {
+        this.pixelChainService = pixelChainService;
+    }
+
+    @Autowired
+    public  void setPixelService(PixelService pixelService) {
+        this.pixelService = pixelService;
+    }
+
+    @Autowired
+    public  void setPixelMapService(PixelMapService pixelMapService) {
+        this.pixelMapService = pixelMapService;
+    }
 
     public ImmutablePixelMapData actionProcess(
             @NotNull ImmutablePixelMapData pixelMap,

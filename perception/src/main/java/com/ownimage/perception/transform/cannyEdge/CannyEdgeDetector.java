@@ -10,8 +10,14 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
+import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -66,8 +72,9 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 
     @SuppressWarnings("unused")
     private final static Logger mLogger = Framework.getLogger();
-    private static PixelMapService pixelMapService =
-            com.ownimage.perception.pixelMap.services.Services.getDefaultServices().getPixelMapService();
+
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
 
     private final static float GAUSSIAN_CUT_OFF = 0.005f;
     private final static float MAGNITUDE_SCALE = 100F;

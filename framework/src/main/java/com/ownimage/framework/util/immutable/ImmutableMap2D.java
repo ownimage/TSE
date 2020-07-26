@@ -6,6 +6,7 @@ import lombok.val;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -39,6 +40,12 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
     public int height() {
         synchronized (getSynchronisationObject()) {
             return getMaster().height();
+        }
+    }
+
+    public Optional<E> getOptional(int pX, int pY) {
+        synchronized (getSynchronisationObject()) {
+            return Optional.ofNullable(getMaster().get(pX, pY));
         }
     }
 

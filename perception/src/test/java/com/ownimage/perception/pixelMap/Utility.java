@@ -2,10 +2,12 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.Services;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 
@@ -14,8 +16,9 @@ import static org.junit.Assert.fail;
 
 class Utility {
 
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
-    private static PixelMapApproximationService pixelMapApproximationService = Services.getDefaultServices().getPixelMapApproximationService();
+    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
 
     static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
         return new IPixelMapTransformSource() {

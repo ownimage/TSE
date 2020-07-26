@@ -9,6 +9,8 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,14 +18,23 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Service
 public class PixelMapChainGenerationService {
+
+    private PixelChainService pixelChainService;
+    private PixelMapService pixelMapService;
 
     private final static Logger logger = Framework.getLogger();
 
-    private static PixelChainService pixelChainService = Services.getDefaultServices().getPixelChainService();
-    private static PixelMapService pixelMapService = Services.getDefaultServices().getPixelMapService();
+    @Autowired
+    public void setPixelChainService(PixelChainService pixelChainService) {
+        this.pixelChainService = pixelChainService;
+    }
 
-
+    @Autowired
+    public void setPixelMapService(PixelMapService pixelMapService) {
+        this.pixelMapService = pixelMapService;
+    }
 
     public Tuple2<ImmutablePixelMapData, PixelChain> generateChain(
             @NotNull ImmutablePixelMapData pixelMap,
