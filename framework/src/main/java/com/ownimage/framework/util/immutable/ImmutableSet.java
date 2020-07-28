@@ -28,7 +28,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
         }
     }
 
-    public ImmutableSet remove(final E pElement) {
+    public ImmutableSet<E> remove(final E pElement) {
         synchronized (getSynchronisationObject()) {
             if (!getMaster().contains(pElement)) {
                 return this;
@@ -39,7 +39,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
         }
     }
 
-    public ImmutableSet addAll(Collection<E> pAll) {
+    public ImmutableSet<E> addAll(Collection<E> pAll) {
         synchronized (getSynchronisationObject()) {
             HashSet<E> master = getMaster();
             HashSet<E> all = new HashSet<>(pAll);
@@ -50,7 +50,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
         }
     }
 
-    public ImmutableSet removeAll(Collection<E> pAll) {
+    public ImmutableSet<E> removeAll(Collection<E> pAll) {
         synchronized (getSynchronisationObject()) {
             HashSet<E> master = getMaster();
             ArrayList<E> remove = pAll.stream().filter(e -> master.contains(e)).collect(Collectors.toCollection(ArrayList::new));

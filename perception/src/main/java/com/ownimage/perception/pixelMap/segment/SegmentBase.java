@@ -142,7 +142,8 @@ public abstract class SegmentBase implements ISegment {
         return pPixelChain.getVertex(mSegmentIndex).getPixelIndex();
     }
 
-    double getStartPosition() {
+    @Override
+    public double getStartPosition() {
         return mStartPosition;
     }
 

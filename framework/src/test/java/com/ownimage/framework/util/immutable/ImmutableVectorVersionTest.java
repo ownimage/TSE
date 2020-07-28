@@ -500,4 +500,28 @@ public class ImmutableVectorVersionTest {
         assertEquals(List.of("World"), otherVersion);
     }
 
+    @Test
+    public void indexOf_01() {
+        // GIVEN
+        var all = List.of(s1, s2, s3, s4);
+        var underTest = new ImmutableVectorClone<String>().addAll(all);
+        // WHEN
+        var actual = underTest.indexOf(s5);
+        // THEN
+        Assert.assertEquals(-1, actual);
+    }
+
+    @Test
+    public void indexOf_02() {
+        // GIVEN
+        var all = List.of(s1, s2, s3, s4);
+        var underTest = new ImmutableVectorClone<String>().addAll(all);
+        var three = new StringBuilder("thr").append("ee").toString();
+        // WHEN
+        var actual = underTest.indexOf(three);
+        // THEN
+        Assert.assertEquals(2, actual);
+        Assert.assertFalse(s3 == three);
+    }
+
 }

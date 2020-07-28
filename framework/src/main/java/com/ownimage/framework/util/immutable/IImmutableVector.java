@@ -30,6 +30,8 @@ public interface IImmutableVector<E> {
 
     Optional<E> firstElement();
 
+    int indexOf(E e);
+
     Optional<E> lastElement();
 
     IImmutableVector removeAll(Collection<E> pAll);

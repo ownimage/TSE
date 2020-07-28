@@ -218,7 +218,7 @@ public class CurveSegment extends SegmentBase {
         var c = Color.WHITE;
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP1(), c);
         pGraphics.graffitiLine(getP1(), getP2(pPixelMap, pPixelChain), c);
-        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), Color.BLACK);
+        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), Color.RED);
         //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }
@@ -237,5 +237,14 @@ public class CurveSegment extends SegmentBase {
             return this;
         }
         return new CurveSegment(getSegmentIndex(), mP1, mA, mB, pStartPosition);
+    }
+
+    @Override
+    public CurveSegment withSegmentIndex(int segmentIndex) {
+        //noinspection FloatingPointEquality
+        if (getSegmentIndex() == segmentIndex) {
+            return this;
+        }
+        return new CurveSegment(segmentIndex, mP1, mA, mB, getStartPosition());
     }
 }

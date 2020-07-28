@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
@@ -34,6 +35,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -47,7 +49,7 @@ public class PixelChainService {
 
     private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
 
-    private final static Logger mLogger = Framework.getLogger();
+    private final static Logger logger = Framework.getLogger();
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
@@ -127,10 +129,9 @@ public class PixelChainService {
     public PixelChain refine(
             @NotNull PixelMapData pixelMap,
             @NotNull PixelChain pixelChain,
-            double tolerance,
             double lineCurvePreference) {
         var result = refine01_matchCurves(pixelMap, pixelChain, lineCurvePreference);
-        return refine03_matchCurves(pixelMap, result, tolerance, lineCurvePreference);
+        return refine03_matchCurves(pixelMap, result, lineCurvePreference);
     }
 
     public PixelChain refine03FirstSegment(
@@ -198,7 +199,6 @@ public class PixelChainService {
     public PixelChain refine03_matchCurves(
             @NotNull PixelMapData pPixelMap,
             @NotNull PixelChain pixelChain,
-            double tolerance,
             double lineCurvePreference) {
 
         if (pixelChain.getSegmentCount() == 1) {
@@ -367,15 +367,15 @@ public class PixelChainService {
         StrongReference<IPixelChain> builder = StrongReference.of(thisChain);
 
         validate(thisChain, false, "add otherChain");
-        mLogger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().getPixels().size()));
-        mLogger.fine(() -> String.format("pixelLength(otherChain) = %s", pixelLength(otherChain)));
-        mLogger.fine(() -> String.format("this.mSegments.size() = %s", builder.get().getSegments().size()));
-        mLogger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
-        if (mLogger.isLoggable(Level.FINE)) {
-            builder.get().streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
-            builder.get().streamSegments().forEach(s -> mLogger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
-            otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
-            otherChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
+        logger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().getPixels().size()));
+        logger.fine(() -> String.format("pixelLength(otherChain) = %s", pixelLength(otherChain)));
+        logger.fine(() -> String.format("this.mSegments.size() = %s", builder.get().getSegments().size()));
+        logger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
+        if (logger.isLoggable(Level.FINE)) {
+            builder.get().streamSegments().forEach(s -> logger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+            builder.get().streamSegments().forEach(s -> logger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+            otherChain.getSegments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
+            otherChain.getSegments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
         }
 
         validate(builder.get(), false, "merge");
@@ -389,7 +389,7 @@ public class PixelChainService {
         int offset = builder.get().getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
         builder.update(b -> b.changePixels(p -> p.remove(builder.get().getPixels().size() - 1))); // need to remove the last pixel as it will be duplicated on the other chain;
         builder.update(b -> b.changePixels(p -> p.addAll(otherChain.getPixels())));
-        mLogger.fine(() -> String.format("offset = %s", offset));
+        logger.fine(() -> String.format("offset = %s", offset));
 
         otherChain.getSegments().forEach(segment -> {
             IVertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
@@ -398,10 +398,10 @@ public class PixelChainService {
             builder.update(b -> b.changeSegments(s -> s.add(newSegment)));
         });
 
-        mLogger.fine(() -> String.format("copy.mPixels.size() = %s", builder.get().getPixels().size()));
-        mLogger.fine(() -> String.format("copy.mSegments.size() = %s", builder.get().getPixels().size()));
-        thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
-        thisChain.getSegments().forEach(s -> mLogger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+        logger.fine(() -> String.format("copy.mPixels.size() = %s", builder.get().getPixels().size()));
+        logger.fine(() -> String.format("copy.mSegments.size() = %s", builder.get().getPixels().size()));
+        thisChain.getSegments().forEach(s -> logger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+        thisChain.getSegments().forEach(s -> logger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
         // TODO should recalculate thickness from source values
         var thickness = thisChain.getPixelCount() > otherChain.getPixelCount() ? thisChain.getThickness() : otherChain.getThickness();
         return builder.get().setThickness(thickness);
@@ -643,7 +643,7 @@ public class PixelChainService {
      * @param pNode      the node
      */
     public PixelChain merge(ImmutablePixelMapData pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
-        mLogger.fine("merge");
+        logger.fine("merge");
 //        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
 //            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
 //        }
@@ -836,7 +836,7 @@ public class PixelChainService {
                 }
             }
         } catch (Exception pT) {
-            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+            logger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
         return result.setSegment(bestSegment);
     }
@@ -1018,11 +1018,11 @@ public class PixelChainService {
                         }
                     }
                 } catch (Exception pT) {
-                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                    logger.severe(() -> FrameworkLogger.throwableToString(pT));
                 }
             }
         } catch (Exception pT) {
-            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+            logger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
         return result.setSegment(bestSegment);
     }
@@ -1066,14 +1066,14 @@ public class PixelChainService {
                     }
 
                 } catch (Exception pT) {
-                    mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+                    logger.severe(() -> FrameworkLogger.throwableToString(pT));
                 }
             }
             if (bestSegment != segment) {
                 pegCounterService.increase(IPixelChain.PegCounters.refine01FirstSegmentSuccessful);
             }
         } catch (Exception pT) {
-            mLogger.severe(() -> FrameworkLogger.throwableToString(pT));
+            logger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
         return result.setSegment(bestSegment);
     }
@@ -1108,8 +1108,8 @@ public class PixelChainService {
                             .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
                 }
             } catch (Exception pT) {
-                mLogger.info(pT::getMessage);
-                mLogger.info(pT::toString);
+                logger.info(pT::getMessage);
+                logger.info(pT::toString);
             }
             if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) {
                 break;
@@ -1216,6 +1216,27 @@ public class PixelChainService {
         }
 
         return result.get();
+    }
+
+    public PixelChain resequence(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+        if (pixelChain.getSegments().size() + 1 != pixelChain.getVertexes().size()) {
+            logger.severe(String.format("PixelChainService::resequence segment/vertex mismatch, vertexSize = %s, segmentSize = %s", pixelChain.getVertexes().size(), pixelChain.getSegments().size()));
+        }
+        // sequence segments
+        var segmentIndex = new AtomicInteger();
+        var startPosition = new AtomicDouble();
+        var segments = StrongReference.of(new ImmutableVectorClone<ISegment>());
+        pixelChain.getSegments().stream()
+                .map(s -> s.withSegmentIndex(segmentIndex.getAndIncrement()))
+                .map(s -> s.withStartPosition(startPosition.getAndAdd(s.getLength(pixelMap, pixelChain))))
+                .forEach(seg -> segments.update(segs -> segs.add(seg)));
+        // sequence vertexes
+        var vertexIndex = new AtomicInteger();
+        var vertexes = StrongReference.of(new ImmutableVectorClone<IVertex>());
+        pixelChain.getVertexes().stream()
+                .map(v -> v.withVertexIndex(vertexIndex.getAndIncrement()))
+                .forEach(v -> vertexes.update(vs -> vs.add(v)));
+        return pixelChain.changeVertexes(v -> vertexes.get()).changeSegments(s -> segments.get());
     }
 
 }

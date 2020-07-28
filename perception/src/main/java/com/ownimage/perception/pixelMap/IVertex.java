@@ -24,4 +24,6 @@ public interface IVertex extends Serializable {
 
     Point getPosition();
 
+    IVertex withVertexIndex(int vertexIndex);
+
 }

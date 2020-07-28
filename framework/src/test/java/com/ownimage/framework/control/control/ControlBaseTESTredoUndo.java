@@ -84,8 +84,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());
@@ -98,8 +98,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(1), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(1), mInteger1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -115,8 +115,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -129,8 +129,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Integer(4), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(4), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());
@@ -151,8 +151,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());
@@ -165,8 +165,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(1), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(1), mInteger1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -182,8 +182,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Integer(2), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(2), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -196,8 +196,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Integer(4), mInteger2.getValue());
-        assertEquals("i1 newval", new Integer(3), mInteger1.getValue());
+        assertEquals("i2 reset", Integer.valueOf(4), mInteger2.getValue());
+        assertEquals("i1 newval", Integer.valueOf(3), mInteger1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());
@@ -218,8 +218,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Double(2), mDouble2.getValue());
-        assertEquals("i1 newval", new Double(3), mDouble1.getValue());
+        assertEquals("i2 reset", Double.valueOf(2), mDouble2.getValue());
+        assertEquals("i1 newval", Double.valueOf(3), mDouble1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());
@@ -232,8 +232,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.undo());
 
-        assertEquals("i2 reset", new Double(2), mDouble2.getValue());
-        assertEquals("i1 newval", new Double(1), mDouble1.getValue());
+        assertEquals("i2 reset", Double.valueOf(2), mDouble2.getValue());
+        assertEquals("i1 newval", Double.valueOf(1), mDouble1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -249,8 +249,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Double(2), mDouble2.getValue());
-        assertEquals("i1 newval", new Double(3), mDouble1.getValue());
+        assertEquals("i2 reset", Double.valueOf(2), mDouble2.getValue());
+        assertEquals("i1 newval", Double.valueOf(3), mDouble1.getValue());
 
         assertTrue("listerner 1", mListener1.getHasFired());
         assertFalse("listerner 2", mListener2.getHasFired());
@@ -263,8 +263,8 @@ public class ControlBaseTESTredoUndo {
         resetListeners();
         assertTrue("null", mUndoRedoBuffer.redo());
 
-        assertEquals("i2 reset", new Double(4), mDouble2.getValue());
-        assertEquals("i1 newval", new Double(3), mDouble1.getValue());
+        assertEquals("i2 reset", Double.valueOf(4), mDouble2.getValue());
+        assertEquals("i1 newval", Double.valueOf(3), mDouble1.getValue());
 
         assertFalse("listerner 1", mListener1.getHasFired());
         assertTrue("listerner 2", mListener2.getHasFired());

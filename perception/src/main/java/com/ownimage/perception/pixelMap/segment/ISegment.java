@@ -130,6 +130,10 @@ public interface ISegment extends Serializable, Cloneable {
 
     ISegment withStartPosition(double pStartPosition);
 
+    double getStartPosition();
+
+    ISegment withSegmentIndex(int segmentIndex);
+
     ISegment getNextSegment(IPixelChain pPixelChain);
 
     ISegment getPreviousSegment(IPixelChain pPixelChain);

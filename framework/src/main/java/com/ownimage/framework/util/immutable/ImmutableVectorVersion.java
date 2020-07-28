@@ -122,6 +122,13 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
+    public int indexOf(E e) {
+        synchronized (getSynchronisationObject()) {
+            return getMaster().indexOf(e);
+        }
+    }
+
+    @Override
     public Optional<E> lastElement() {
         synchronized (getSynchronisationObject()) {
             if (getMaster().isEmpty()) {

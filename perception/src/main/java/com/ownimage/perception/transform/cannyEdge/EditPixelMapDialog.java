@@ -49,9 +49,7 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
-import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
@@ -516,6 +514,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 if (isPixelActionChainThickness()) {
                     change |= mouseClickEventPixelViewPixelChainThickness(pPixel);
                 }
+                if (isPixelActionVertex()) {
+                    change |= mouseClickEventPixelViewVertex(pPixel, !pEvent.isShift());
+                }
                 if (isPixelActionCopyToClipboard()) {
                     actionCopyToClipboard(pPixel);
                 }
@@ -556,6 +557,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mWorkingPixelsArray.clear();
         addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
         return actionPixelChainThickness(mWorkingPixelsArray);
+    }
+
+    private boolean mouseClickEventPixelViewVertex(@NonNull Pixel pixel, boolean add) {
+        return actionPixelChainVertex(pixel, add);
     }
 
     private void actionCopyToClipboard(Pixel pPixel) {
@@ -624,6 +629,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean isPixelActionChainApproximateCurvesOnly() {
         return mPixelAction.getValue() == PixelAction.ApproximateCurvesOnly;
+    }
+
+    private boolean isPixelActionVertex() {
+        return mPixelAction.getValue() == PixelAction.Vertex;
     }
 
     private boolean isPixelActionChainDeleteAllButThis() {
@@ -912,6 +921,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return false;
     }
 
+    private boolean actionPixelChainVertex(@NonNull Pixel pixel, boolean add) {
+        ImmutablePixelMapData undo = getPixelMap();
+        setPixelMap(pixelMapActionService.actionVertex(getPixelMap(), pixel, add, mCannyEdgeTransform.getLineCurvePreference()));
+        if (undo != getPixelMap()) {
+            addUndoRedoEntry("Vertex action", undo, getPixelMap());
+            return true;
+        }
+        return false;
+    }
+
     private boolean actionPixelChainThickness(@NonNull Collection<Pixel> pPixels) {
         if (pPixels.isEmpty()) {
             return false;
@@ -1103,6 +1122,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         PixelChainThickness("Thickness", 2),
         PixelChainThicknessWide("Thickness Wide", 15),
         PixelChainThicknessVeryWide("Thickness Very Wide", 45),
+        Vertex("Change Vertex", 1),
         CopyToClipboard("Copy To Clipboard", 1),
         ApproximateCurvesOnly("Approximate Curves Only", 1),
         DeleteAllButThisPixelChain("Delete all but this PixelChain", 1);

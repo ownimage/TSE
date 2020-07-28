@@ -141,4 +141,12 @@ public class StraightSegment extends SegmentBase {
         return new StraightSegment(getSegmentIndex(), pStartPosition, mLineSegment);
     }
 
+    @Override
+    public StraightSegment withSegmentIndex(int segmentIndex) {
+        if (getSegmentIndex() == segmentIndex) {
+            return this;
+        }
+        return new StraightSegment(segmentIndex, getStartPosition(), mLineSegment);
+    }
+
 }

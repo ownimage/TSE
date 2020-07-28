@@ -49,6 +49,11 @@ public class Vertex implements IVertex {
     }
 
     @Override
+    public IVertex withVertexIndex(int vertexIndex) {
+        return new Vertex(vertexIndex, mPixelIndex, mPosition);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

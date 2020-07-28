@@ -68,14 +68,14 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
     }
 
     @Override
-    public ImmutableVectorClone remove(E pElement) {
+    public ImmutableVectorClone<E> remove(E pElement) {
         var clone = clone();
         clone.mVector.remove(pElement);
         return clone;
     }
 
     @Override
-    public ImmutableVectorClone remove(int pIndex) {
+    public ImmutableVectorClone<E> remove(int pIndex) {
         if (pIndex < 0 || pIndex >= mVector.size()) {
             throw new IllegalArgumentException();
         }
@@ -90,6 +90,11 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
             return Optional.empty();
         }
         return Optional.ofNullable(mVector.firstElement());
+    }
+
+    @Override
+    public int indexOf(E e) {
+        return mVector.indexOf(e);
     }
 
     @Override
