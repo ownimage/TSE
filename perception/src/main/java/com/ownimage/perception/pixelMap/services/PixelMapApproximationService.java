@@ -365,7 +365,7 @@ public class PixelMapApproximationService {
         double lineCurvePreference = transformSource.getLineCurvePreference();
         var result = StrongReference.of(pixelMap);
         pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
-            result.update(r -> pixelMapService.pixelChainRemove(r, pc));
+            result.update(r -> pixelMapService.removePixelChain(r, pc));
             pc.getPixels().stream().forEach(p -> {
                 result.update(r -> pixelMapService.setInChain(r, p, false));
                 result.update(r -> pixelMapService.setVisited(r, p, false));

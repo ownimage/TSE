@@ -383,7 +383,7 @@ public class PixelChainService {
 
         // TODO this should be a pixelChainService mergable
         if (!builder.get().getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
-            throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + otherChain);
+            throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + thisChain + " must be first pixel of other: " + otherChain);
         }
 
         int offset = builder.get().getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed

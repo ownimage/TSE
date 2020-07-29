@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import java.util.function.BiConsumer;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
@@ -159,6 +160,49 @@ public class PixelMapTest {
         String[] actual = Utility.getMap(pixelMap);
         assertArrayEquals(expected, actual);
     }
+
+    @Test
+    public void process02_thin_02() {
+        // GIVEN
+        String[] input = {
+                "E    EEE",
+                " EEEE   ",
+                " E      "
+        };
+        String[] expected = {
+                "E    EEE",
+                " EEEE   ",
+                " E      "
+        };
+        var pixelMap = Utility.createMap(input);
+        // WHEN
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        // THEN
+        String[] actual = Utility.getMap(pixelMap);
+        assertEquals(String.join("\n",expected), String.join("\n", actual));
+    }
+
+    @Test
+    public void process03_thin_02() {
+        // GIVEN
+        String[] input = {
+                "E    EEE",
+                " EEEE   ",
+                " E      "
+        };
+        String[] expected = {
+                "E    EEE",
+                " EEEE   ",
+                " E      "
+        };
+        var pixelMap = Utility.createMap(input);
+        // WHEN
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        // THEN
+        String[] actual = Utility.getMap(pixelMap);
+        assertEquals(String.join("\n",expected), String.join("\n", actual));
+    }
+
 
     @Test
     public void process04a_removeLoneNodes_01() {

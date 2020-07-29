@@ -357,7 +357,22 @@ public class PixelMapService {
         Framework.logExit(logger);
     }
 
-
+    public String localAreaToString(@NotNull ImmutablePixelMapData pixelMap, @NotNull Pixel center, int size) {
+        var sb = new StringBuilder();
+        sb.append(center).append(" ").append(size).append("\n");
+        for (int y = center.getY() + size; y >= center.getY() - size; y--) {
+            for (int x = center.getX() - size; x <= center.getX() + size; x++) {
+                sb.append(x + "," + y + "  ");
+                sb.append(pixelService.isEdge(pixelMap, x, y) ? "E" : " ");
+                sb.append(pixelService.isNode(pixelMap, x, y) ? "N" : " ");
+                sb.append(pixelService.isVisited(pixelMap, x, y) ? "V" : " ");
+                sb.append(pixelService.isInChain(pixelMap, x, y) ? "C" : " ");
+                sb.append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
     public ImmutablePixelMapData indexSegments(
             @NotNull ImmutablePixelMapData pixelMap,
@@ -422,24 +437,6 @@ public class PixelMapService {
                 .withPixelChains(pixelMap.pixelChains().clear())
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
-
-    public ImmutablePixelMapData pixelChainRemove(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain chain) {
-        val result = StrongReference.of(pixelMap);
-        result.update(r -> indexSegments(r, chain, false)
-                .withPixelChains(r.pixelChains().remove(chain)));
-        chain.getPixels()
-                .firstElement()
-                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
-                .map(pixelService::pixelToIntegerPoint)
-                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
-        chain.getPixels()
-                .lastElement()
-                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
-                .map(pixelService::pixelToIntegerPoint)
-                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
-        return result.get();
-    }
-
 
     public Vector<PixelChain> getPixelChainsSortedByLength(ImmutablePixelMapData pixelMap) {
         var chains = new Vector<>(pixelMap.pixelChains().toCollection());
@@ -609,8 +606,21 @@ public class PixelMapService {
      *
      * @param pixelChain
      */
-    public ImmutablePixelMapData removePixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
-        var result = StrongReference.of(pixelChainRemove(pixelMap,  pixelChain));
+    public ImmutablePixelMapData removePixelChain(
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+        var result = StrongReference.of(pixelMap);
+        result.update(r -> indexSegments(r, pixelChain, false)
+                .withPixelChains(r.pixelChains().remove(pixelChain)));
+        pixelChain.getPixels()
+                .firstElement()
+                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
+                .map(pixelService::pixelToIntegerPoint)
+                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
+        pixelChain.getPixels()
+                .lastElement()
+                .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
+                .map(pixelService::pixelToIntegerPoint)
+                .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
         pixelChainService.getStartNode(result.get(), pixelChain)
                 .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
         pixelChainService.getEndNode(result.get(), pixelChain)
@@ -619,8 +629,14 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMapData addPixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
-        var result = pixelChainAdd(pixelMap, pixelChain);
+        var is = pixelChainService.indexSegments(pixelMap, pixelChain, true);
+        var result = pixelMap
+                .withPixelChains(pixelMap.pixelChains().add(is._2))
+                .withSegmentIndex(is._1.segmentIndex());
         result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
+        if (pixelChainService.getEndNode(result, pixelChain).isEmpty()) {
+            System.out.println("Help Me");
+        }
         result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
         return result;
     }
@@ -633,21 +649,17 @@ public class PixelMapService {
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Collection<PixelChain> pixelChains) {
         var result = StrongReference.of(pixelMap);
-        pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
+        pixelChains.forEach(pc -> result.update(r -> addPixelChain(r, pc)));
         return result.get();
     }
 
-    public ImmutablePixelMapData pixelChainAdd(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pChain) {
-        var is = pixelChainService.indexSegments(pixelMap, pChain, true);
-        return pixelMap
-                .withPixelChains(pixelMap.pixelChains().add(is._2))
-                .withSegmentIndex(is._1.segmentIndex());
-    }
-
     public ImmutablePixelMapData pixelChainsClear(@NotNull ImmutablePixelMapData pixelMap) {
+        var nodes = pixelMap.nodes().clear();
+        pixelMap.nodes().values().stream().map(n -> n.toIntegerPoint()).forEach(ip -> nodes.put(ip, new Node(ip)));
         return pixelMap
                 .withPixelChains(pixelMap.pixelChains().clear())
-                .withSegmentIndex(pixelMap.segmentIndex().clear());
+                .withSegmentIndex(pixelMap.segmentIndex().clear())
+                .withNodes(nodes);
     }
 
     public ImmutablePixelMapData addPixelChains(@NotNull ImmutablePixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {

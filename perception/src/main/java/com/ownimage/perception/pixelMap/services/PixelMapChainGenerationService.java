@@ -50,6 +50,7 @@ public class PixelMapChainGenerationService {
             }
             Optional<Node> node = pixelMapService.getNode(pixelMap, pixel);
             if (node.isPresent()) {
+                System.out.println("return 1");
                 return pixelChainService.setEndNode(pixelMap, pixelChain, node.get());
             }
 
@@ -73,6 +74,7 @@ public class PixelMapChainGenerationService {
                 // !nodalNeighbour.isNeighbour(pChain.firstPixel()))) {
                 if ((nodalNeighbour.isUnVisitedEdge(pixelMapResult) || nodalNeighbour.isNode(pixelMapResult)) && !(copy.getPixelCount() == 2 &&
                         nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
+                    System.out.println("return 2");
                     return  generateChain(pixelMapResult, startNode, nodalNeighbour, copy);
                 }
             }
@@ -85,8 +87,13 @@ public class PixelMapChainGenerationService {
                 if ((neighbour.isUnVisitedEdge(pixelMapResult) || neighbour.isNode(pixelMapResult))
                         && !(copy.getPixelCount() == 2 && pixelChainService.getStartNode(pixelMapResult, copy).isPresent()
                         && neighbour.samePosition(pixelChainService.getStartNode(pixelMapResult, copy).get()))) {
+                    System.out.println("return 3");
                     return  generateChain(pixelMapResult, startNode, neighbour, copy);
                 }
+            }
+            System.out.println("return 4");
+            if (pixelChainService.getEndNode(pixelMapResult, pixelChain).isEmpty()) {
+                System.out.println("Help Me\n" + pixelMapService.localAreaToString(pixelMapResult, pixel, 3));
             }
             return new Tuple2<>(pixelMapResult, copy);
         } catch (StackOverflowError soe) {
@@ -115,6 +122,11 @@ public class PixelMapChainGenerationService {
                 }
             }
         });
+
+        if (chains.stream().filter(pc -> pixelChainService.getEndNode(pixelMapResult.get(), pc).isEmpty()).findFirst().isPresent()){
+            System.out.println("Help me again");
+        }
+
         return new Tuple2<>(pixelMapResult.get(), chains);
     }
 }

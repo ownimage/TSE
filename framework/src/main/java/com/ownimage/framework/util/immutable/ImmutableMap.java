@@ -20,11 +20,11 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         super(pPrevious, pRedo, pUndo);
     }
 
-    public ImmutableMap clear() {
+    public ImmutableMap<K, V> clear() {
         return new ImmutableMap();
     }
 
-    public ImmutableMap put(K pKey, V pValue) {
+    public ImmutableMap<K, V> put(K pKey, V pValue) {
         synchronized (getSynchronisationObject()) {
             val master = getMaster();
             val currentValue = master.get(pKey);
@@ -43,7 +43,7 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         }
     }
 
-    public ImmutableMap remove(K pKey) {
+    public ImmutableMap<K, V> remove(K pKey) {
         synchronized (getSynchronisationObject()) {
             val master = getMaster();
             if (!master.containsKey(pKey)) {
