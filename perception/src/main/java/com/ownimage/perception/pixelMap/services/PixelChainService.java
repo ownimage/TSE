@@ -281,10 +281,6 @@ public class PixelChainService {
         return result;
     }
 
-    /**
-     * @deprecated TODO: explain
-     */
-    @Deprecated
     public Pixel firstPixel(PixelChain pixelChain) {
         return pixelChain.getPixels().firstElement().orElseThrow();
     }

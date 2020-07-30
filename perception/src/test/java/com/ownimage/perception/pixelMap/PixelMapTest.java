@@ -134,7 +134,7 @@ public class PixelMapTest {
         // WHEN
         var pixelMap = Utility.createMap(input);
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(actual, input);
     }
 
@@ -156,7 +156,7 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
@@ -179,7 +179,7 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -201,7 +201,7 @@ public class PixelMapTest {
         pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
@@ -227,7 +227,7 @@ public class PixelMapTest {
         pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -249,7 +249,7 @@ public class PixelMapTest {
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
@@ -272,7 +272,7 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
     }
 
@@ -299,7 +299,7 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -327,7 +327,7 @@ public class PixelMapTest {
         pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
 
         // THEN
-        String[] actual = Utility.getMap(pixelMap);
+        String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -357,7 +357,7 @@ public class PixelMapTest {
         var result = pixelMapActionService.actionDeletePixelChain(immputablePixelMap, Utility.getTransformSource(input), deletePixels);
         // THEN
         assertEquals(2, result.pixelChains().size());
-        String[] actual = Utility.getMap(result);
+        String[] actual = Utility.toStrings(result);
         Utility.assertMapEquals(expected, actual);
     }
 
@@ -394,6 +394,9 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
         // THEN
+        for (var s : Utility.toStrings(pixelMap)) {
+            System.out.println(s);
+        }
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));

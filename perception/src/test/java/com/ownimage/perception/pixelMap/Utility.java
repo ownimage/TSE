@@ -153,7 +153,7 @@ class Utility {
         return setMap(pixelMap, map);
     }
 
-    static String[] getMap(final ImmutablePixelMapData pPixelMap) {
+    static String[] toStrings(final ImmutablePixelMapData pPixelMap) {
         final String[] map = new String[pPixelMap.height()];
         for (int y = 0; y < pPixelMap.height(); y++) {
             final StringBuffer row = new StringBuffer();

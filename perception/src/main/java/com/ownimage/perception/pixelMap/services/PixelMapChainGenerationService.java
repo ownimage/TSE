@@ -63,12 +63,8 @@ public class PixelMapChainGenerationService {
         }
         // otherwise go to the next pixel normally
         for (Pixel neighbour : pixel.getNeighbours()) {
-            // !neighbour.isNeighbour(pChain.firstElement() means you can only go back to a node if you are not IMMEDIATELY
-            // going back to the staring node.
-            // if ((neighbour.isUnVisitedEdge() || neighbour.isNode()) && (pChain.count() != 2 ||
-            // !neighbour.isNeighbour(pChain.firstPixel()))) {
-            if (!neighbour.isNode(result) && neighbour.isUnVisitedEdge(result)
-                    && !(copy.getPixelCount() == 2 && neighbour.samePosition(copy.getPixels().firstElement().orElseThrow()))) {
+            if (!neighbour.isNode(result) && neighbour.isEdge(result) && !copy.getPixels().contains(neighbour)
+                    && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 return generateChain(result, copy, neighbour);
             }
         }
