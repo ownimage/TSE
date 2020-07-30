@@ -15,7 +15,6 @@ import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -98,7 +97,6 @@ public class PixelMapApproximationService {
                 .withNodes(pixelMap.nodes().clear())
                 .withPixelChains(pixelMap.pixelChains().clear())
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
-        logger.info("############## resetting done");
         return result;
     }
 
@@ -308,7 +306,6 @@ public class PixelMapApproximationService {
             result = setEdge(result, transformSource, pixel, false);
             result = pixelMapService.nodeRemove(result, pixel);
         }
-        logger.info("############## thinning done");
         return result;
     }
 
