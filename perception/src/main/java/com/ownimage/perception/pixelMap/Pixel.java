@@ -11,9 +11,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapActionService;
-import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import org.springframework.context.ApplicationContext;
@@ -185,38 +182,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     public Optional<Node> getNode(ImmutablePixelMapData pPixelMap) {
         return pixelMapService.getNode(pPixelMap, this);
     }
-
-    public boolean isUnVisitedEdge(PixelMapData pPixelMap) {
-        return isEdge(pPixelMap) && !isVisited(pPixelMap);
-    }
-
-    public boolean isVisited(PixelMapData pPixelMap) {
-        return pixelService.isVisited(pPixelMap, this.toIntegerPoint());
-    }
-
-//    public void printNeighbours(final int pSize) {
-//        for (int dy = -pSize; dy <= pSize; dy++) {
-//            for (int dx = -pSize; dx <= pSize; dx++) {
-//                final int x = getX() + dx;
-//                final int y = getY() - dy;
-//                final Pixel pixel = new Pixel(getPixelMap(), x, y);
-//                // mLogger System.out.print(pixel.getPixelMap().getValue(pixel) + "(" + x + "," + y + ")\t");
-//                // mLogger System.out.print(pixel.getPixelMap().getValue(pixel) + "\t");
-//                // if (pixel.isNode())
-//                // mLogger System.out.print("O");
-//                // else if (pixel.isEdge())
-//                // mLogger System.out.print("#");
-//                // else
-//                // mLogger System.out.print(".");
-//            }
-//            mLogger.info(() -> );
-//        }
-//    }
-//
-//    public boolean thin() {
-//        // return getPixelMap().thin(this);
-//        return true;
-//    }
 
     @Override
     public String toString() {

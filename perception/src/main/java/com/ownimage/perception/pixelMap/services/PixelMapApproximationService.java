@@ -39,32 +39,30 @@ import static com.ownimage.perception.pixelMap.PixelConstants.W;
 @Service
 public class PixelMapApproximationService {
 
-    private  PixelMapChainGenerationService pixelMapChainGenerationService;
-    private  PixelChainService pixelChainService;
-    private  PixelService pixelService;
-    private  PixelMapService pixelMapService;
-
     private final static Logger logger = Framework.getLogger();
-
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+    private PixelMapChainGenerationService pixelMapChainGenerationService;
+    private PixelChainService pixelChainService;
+    private PixelService pixelService;
+    private PixelMapService pixelMapService;
 
     @Autowired
-    public  void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
+    public void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
         this.pixelMapChainGenerationService = pixelMapChainGenerationService;
     }
 
     @Autowired
-    public  void setPixelChainService(PixelChainService pixelChainService) {
+    public void setPixelChainService(PixelChainService pixelChainService) {
         this.pixelChainService = pixelChainService;
     }
 
     @Autowired
-    public  void setPixelService(PixelService pixelService) {
+    public void setPixelService(PixelService pixelService) {
         this.pixelService = pixelService;
     }
 
     @Autowired
-    public  void setPixelMapService(PixelMapService pixelMapService) {
+    public void setPixelMapService(PixelMapService pixelMapService) {
         this.pixelMapService = pixelMapService;
     }
 
@@ -144,7 +142,6 @@ public class PixelMapApproximationService {
                 if (node.countEdgeNeighbours(result.get()) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
-                    result.update(r -> pixelMapService.setVisited(r, pixel, false));
                 }
             }
         });
@@ -184,18 +181,11 @@ public class PixelMapApproximationService {
     public ImmutablePixelMapData process05_generateChains(
             @NotNull ImmutablePixelMapData pixelMap,
             IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Generating chains ...", 0);
         var result = StrongReference.of(pixelMap);
         pixelMap.nodes().values().forEach(node -> {
             var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
             result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-        });
-        pixelMapService.forEachPixel(result.get(), pixel -> {
-            if (pixel.isUnVisitedEdge(result.get())) {
-                pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
-                    var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                    result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-                });
-            }
         });
         logger.info(() -> "Number of chains: " + result.get().pixelChains().size());
         return result.get();
@@ -203,6 +193,7 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process05a_findLoops(
             @NotNull ImmutablePixelMapData pixelMap, IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Finding loops ...", 0);
         var result = StrongReference.of(pixelMap);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isEdge(result.get(), pixel) && !pixelService.isInChain(result.get(), pixel)) {
@@ -217,7 +208,7 @@ public class PixelMapApproximationService {
     }
 
 
-    public ImmutablePixelMapData  process06_straightLinesRefineCorners(
+    public ImmutablePixelMapData process06_straightLinesRefineCorners(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             IProgressObserver pProgressObserver
@@ -365,7 +356,6 @@ public class PixelMapApproximationService {
             result.update(r -> pixelMapService.pixelChainRemove(r, pc));
             pc.getPixels().stream().forEach(p -> {
                 result.update(r -> pixelMapService.setInChain(r, p, false));
-                result.update(r -> pixelMapService.setVisited(r, p, false));
             });
             pc.streamPixels()
                     .filter(pPixel1 -> pixelService.isNode(result.get(), pPixel1))
@@ -393,7 +383,6 @@ public class PixelMapApproximationService {
         }
 
         var result = StrongReference.of(pixelMapService.resetInChain(pixelMap));
-        result.update(r -> pixelMapService.resetVisited(r));
 
         var nodes = new HashSet<Node>();
         pixels.forEach(pixel -> {
@@ -433,9 +422,9 @@ public class PixelMapApproximationService {
     }
 
 
-    public @NotNull ImmutablePixelMapData calcIsNode (
+    public @NotNull ImmutablePixelMapData calcIsNode(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NonNull Pixel pixel){
+            @NonNull Pixel pixel) {
         boolean shouldBeNode = false;
         if (pixelService.isEdge(pixelMap, pixel)) {
             // here we use transitions to eliminate double counting connected neighbours

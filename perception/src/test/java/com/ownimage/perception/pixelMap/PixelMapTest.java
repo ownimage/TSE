@@ -31,7 +31,6 @@ import java.util.function.BiConsumer;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.IN_CHAIN;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
-import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -73,7 +72,7 @@ public class PixelMapTest {
     public void process01_reset_01() {
         // GIVEN
         var underTest = Utility.createMap(2000, 1500);
-        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE));
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) ( IN_CHAIN | NODE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(underTest, null);
@@ -89,7 +88,7 @@ public class PixelMapTest {
     public void process01_reset_02() {
         // GIVEN
         var underTest = Utility.createMap(2000, 1500);
-        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (VISITED | IN_CHAIN | NODE | EDGE));
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) ( IN_CHAIN | NODE | EDGE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(underTest, null);

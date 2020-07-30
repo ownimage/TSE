@@ -54,7 +54,6 @@ import static com.ownimage.perception.pixelMap.PixelConstants.NW;
 import static com.ownimage.perception.pixelMap.PixelConstants.S;
 import static com.ownimage.perception.pixelMap.PixelConstants.SE;
 import static com.ownimage.perception.pixelMap.PixelConstants.SW;
-import static com.ownimage.perception.pixelMap.PixelConstants.VISITED;
 import static com.ownimage.perception.pixelMap.PixelConstants.W;
 
 @Service
@@ -173,15 +172,6 @@ public class PixelMapService {
     private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
         // this is because pIntegerPoint might be a Node or Pixel
         return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
-    }
-
-    public @NotNull ImmutablePixelMapData setVisited(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel,
-            @NotNull boolean isVisited) {
-        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
-        var newValue = (byte) (isVisited ? oldValue | VISITED : oldValue & (ALL ^ VISITED));
-        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
     }
 
     public @NotNull ImmutablePixelMapData setInChain(
@@ -454,7 +444,6 @@ public class PixelMapService {
         var result = StrongReference.of(pixelMapData);
         pixelChain.getPixels().forEach(p -> {
             result.update(r -> setInChain(r, p, false));
-            result.update(r -> setVisited(r, p, false));
         });
         pixelChain.getPixels().stream()
                 .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
@@ -554,11 +543,6 @@ public class PixelMapService {
                 .map(pc -> pixelChainService.approximate(pixelMap, pc, tolerance))
                 .map(pc -> pixelChainService.approximateCurvesOnly(pixelMap, pc, tolerance, lineCurvePreference));
         return new Tuple2<>(result._1, stream);
-    }
-
-    public ImmutablePixelMapData resetVisited(@NotNull ImmutablePixelMapData pixelMap) {
-        var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ VISITED)));
-        return pixelMap.withData(data);
     }
 
     public ImmutablePixelMapData resetNode(@NotNull ImmutablePixelMapData pixelMap) {

@@ -322,7 +322,6 @@ public class PixelChainService {
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
         if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
-            pixelMapResult = pixelMapService.setVisited(pixelMapResult, builder.getPixel(index), false);
             builder = builder.changePixels(p -> p.remove(index));
         }
         return new Tuple2(pixelMapResult, builder);

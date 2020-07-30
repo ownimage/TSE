@@ -22,7 +22,6 @@ public interface PixelConstants {
 
     byte ALL = (byte) 127;
     byte EDGE = (byte) 64;
-    byte VISITED = (byte) 32;
     byte IN_CHAIN = (byte) 16;
     byte NODE = (byte) 8;
     byte NONE = (byte) 0;
