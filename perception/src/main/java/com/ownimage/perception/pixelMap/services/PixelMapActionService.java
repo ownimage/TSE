@@ -267,19 +267,17 @@ public class PixelMapActionService {
         return result;
     }
 
-    public ImmutablePixelMapData actionVertex(
+    public ImmutablePixelMapData actionVertexAdd(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Pixel pixel,
-            boolean add,
             double lineCurvePreference) {
         var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
         if (pixelChains.size() != 1)
             return pixelMap;
         var pixelChain = pixelChains.get(0);
-        if (add) {
-            var pixelIndex = pixelChain.getPixels().indexOf(pixel);
-            var optionalNextVertex = pixelChain.getVertexes().stream()
-                    .filter(v -> v.getPixelIndex() >= pixelIndex)
+        var pixelIndex = pixelChain.getPixels().indexOf(pixel);
+        var optionalNextVertex = pixelChain.getVertexes().stream()
+                .filter(v -> v.getPixelIndex() >= pixelIndex)
                     .findFirst();
             if (optionalNextVertex.isEmpty() || optionalNextVertex.get().getPixelIndex() == pixelIndex) {
                 return pixelMap;
@@ -290,40 +288,48 @@ public class PixelMapActionService {
             var updatedPixelChain = StrongReference.of(pixelChain.changeVertexes(v -> v.add(optionalNextVertex.get().getVertexIndex(), newVertex)));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set( vertexIndex- 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.add( vertexIndex, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex))));
-            updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
-            updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
+        updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
+        updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
 
 
-            var result = StrongReference.of(pixelMap);
-            result.update(r -> pixelMapService.removePixelChain(r, pixelChain));
-            result.update(r -> pixelMapService.addPixelChain(r, updatedPixelChain.get()));
-            return result.get();
-        } else {
-            var optionalVertex = pixelChain.getVertexes().stream()
-                    .filter(v -> pixelChain.getPixels().get(v.getPixelIndex()).equals(pixel))
-                    .findFirst();
-            if (optionalVertex.isEmpty()) {
-                return pixelMap;
-            }
+        var result = StrongReference.of(pixelMap);
+        result.update(r -> pixelMapService.removePixelChain(r, pixelChain));
+        result.update(r -> pixelMapService.addPixelChain(r, updatedPixelChain.get()));
+        return result.get();
+    }
 
-            var vertex = optionalVertex.get();
-            int vertexIndex = vertex.getVertexIndex();
-            if (vertexIndex == 0 || vertexIndex == pixelChain.getVertexCount()) {
-                return pixelMap;
-            }
-
-            var updatedPixelChain = StrongReference.of(pixelChain
-                    .changeSegments(s -> s.remove(vertexIndex))
-                    .changeVertexes(v -> v.remove(vertexIndex)));
-            updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set(vertexIndex - 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
-            updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
-            updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
-
-            var result = StrongReference.of(pixelMap);
-            result.update(r -> pixelMapService.removePixelChain(r, pixelChain));
-            result.update(r -> pixelMapService.addPixelChain(r, updatedPixelChain.get()));
-            return result.get();
+    public ImmutablePixelMapData actionVertexRemove(
+            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull Pixel pixel,
+            double lineCurvePreference) {
+        var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
+        if (pixelChains.size() != 1)
+            return pixelMap;
+        var pixelChain = pixelChains.get(0);
+        var optionalVertex = pixelChain.getVertexes().stream()
+                .filter(v -> pixelChain.getPixels().get(v.getPixelIndex()).equals(pixel))
+                .findFirst();
+        if (optionalVertex.isEmpty()) {
+            return pixelMap;
         }
+
+        var vertex = optionalVertex.get();
+        int vertexIndex = vertex.getVertexIndex();
+        if (vertexIndex == 0 || vertexIndex == pixelChain.getVertexCount()) {
+            return pixelMap;
+        }
+
+        var updatedPixelChain = StrongReference.of(pixelChain
+                .changeSegments(s -> s.remove(vertexIndex))
+                .changeVertexes(v -> v.remove(vertexIndex)));
+        updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set(vertexIndex - 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
+        updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
+        updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
+
+        var result = StrongReference.of(pixelMap);
+        result.update(r -> pixelMapService.removePixelChain(r, pixelChain));
+        result.update(r -> pixelMapService.addPixelChain(r, updatedPixelChain.get()));
+        return result.get();
     }
 
 }

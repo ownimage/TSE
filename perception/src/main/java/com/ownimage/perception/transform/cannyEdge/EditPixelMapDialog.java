@@ -923,7 +923,11 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean actionPixelChainVertex(@NonNull Pixel pixel, boolean add) {
         ImmutablePixelMapData undo = getPixelMap();
-        setPixelMap(pixelMapActionService.actionVertex(getPixelMap(), pixel, add, mCannyEdgeTransform.getLineCurvePreference()));
+        if (add) {
+            setPixelMap(pixelMapActionService.actionVertexAdd(getPixelMap(), pixel, mCannyEdgeTransform.getLineCurvePreference()));
+        } else {
+            setPixelMap(pixelMapActionService.actionVertexRemove(getPixelMap(), pixel, mCannyEdgeTransform.getLineCurvePreference()));
+        }
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Vertex action", undo, getPixelMap());
             return true;
