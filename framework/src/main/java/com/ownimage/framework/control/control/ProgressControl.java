@@ -117,7 +117,7 @@ public class ProgressControl extends ControlBase<ProgressControl, IntegerType, I
             mLogger.fine(FrameworkLogger.throwableToString(new RuntimeException("stacktrace")));
             percent = 100;
         }
-        if (percent >= getValue()) {
+        if (percent >= getValue() || pProgressString != mProgressString) {
             mLogger.fine("updating");
             setValue(pPercent);
             mProgressString = pProgressString;

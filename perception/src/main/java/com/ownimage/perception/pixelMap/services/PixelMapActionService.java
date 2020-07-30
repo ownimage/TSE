@@ -110,7 +110,7 @@ public class PixelMapActionService {
                 .forEach(p -> pixelMapService.getPixelChains(clone.get(), p)
                         .forEach(pc -> {
                             // TODO in the implementation of the method below make the parameter immutable
-                            clone.update(c -> pixelMapService.clearInChainAndVisitedThenSetEdge(c, transformSource, pc));
+                            clone.update(c -> pixelMapService.setEdge(c, transformSource, pc));
                             pixelChainService.getStartNode(clone.get(), pc)
                                     .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n)));
                             pixelChainService.getEndNode(clone.get(), pc)

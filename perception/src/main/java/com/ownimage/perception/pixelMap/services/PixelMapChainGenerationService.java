@@ -52,7 +52,6 @@ public class PixelMapChainGenerationService {
 
         var result = pixelMap;
         PixelChain copy = pixelChainService.add(pixelChain, pixel);
-        result = pixelMapService.setInChain(result, pixel, true);
         // try to end quickly at a node
         for (Pixel nodalNeighbour : pixel.getNodeNeighbours(result)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
@@ -75,7 +74,6 @@ public class PixelMapChainGenerationService {
         var result = StrongReference.of(pixelMap);
 
         Vector<PixelChain> chains = new Vector<>();
-        result.update(r -> pixelMapService.setInChain(r, pStartNode, true));
         pStartNode.getNeighbours().forEach(neighbour -> {
             if (neighbour.isNode(result.get())
                     || neighbour.isEdge(result.get())

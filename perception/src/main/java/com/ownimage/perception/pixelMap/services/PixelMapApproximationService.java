@@ -183,7 +183,10 @@ public class PixelMapApproximationService {
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating chains ...", 0);
         var result = StrongReference.of(pixelMap);
+        var counter = Counter.createMaxCounter(pixelMap.nodes().size() + 1);
         pixelMap.nodes().values().forEach(node -> {
+            counter.increase();
+            reportProgress(pProgressObserver, "Generating chains ...", counter.getPercentInt());
             var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
             result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
         });
@@ -195,15 +198,24 @@ public class PixelMapApproximationService {
             @NotNull ImmutablePixelMapData pixelMap, IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Finding loops ...", 0);
         var result = StrongReference.of(pixelMap);
-        pixelMapService.forEachPixel(result.get(), pixel -> {
-            if (pixelService.isEdge(result.get(), pixel) && !pixelService.isInChain(result.get(), pixel)) {
-                result.update(r -> pixelMapService.setNode(r, pixel, true));
-                pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
-                    var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                    result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-                });
+        var pixelsInChains = Collections.synchronizedSet(new HashSet<Pixel>());
+        result.get().pixelChains().stream().parallel().forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
+        var counter = Counter.createMaxCounter(pixelMap.width());
+        for (int x = 0; x < pixelMap.height(); x++) {
+            counter.increase();
+            reportProgress(pProgressObserver, "Finding loops ...", counter.getPercentInt());
+            for (int y = 0; y < pixelMap.height(); y++) {
+                var pixel = new Pixel(x, y);
+                if (pixelService.isEdge(result.get(), pixel) && !pixelsInChains.contains(pixel)) {
+                    result.update(r -> pixelMapService.setNode(r, pixel, true));
+                    pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
+                        var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
+                        result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+                        chains._2.forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
+                    });
+                }
             }
-        });
+        }
         return result.get();
     }
 
@@ -354,9 +366,6 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
             result.update(r -> pixelMapService.pixelChainRemove(r, pc));
-            pc.getPixels().stream().forEach(p -> {
-                result.update(r -> pixelMapService.setInChain(r, p, false));
-            });
             pc.streamPixels()
                     .filter(pPixel1 -> pixelService.isNode(result.get(), pPixel1))
                     .forEach(chainPixel -> pixelMapService.getNode(result.get(), chainPixel)
@@ -382,7 +391,7 @@ public class PixelMapApproximationService {
             return pixelMap;
         }
 
-        var result = StrongReference.of(pixelMapService.resetInChain(pixelMap));
+        var result = StrongReference.of(pixelMap);
 
         var nodes = new HashSet<Node>();
         pixels.forEach(pixel -> {

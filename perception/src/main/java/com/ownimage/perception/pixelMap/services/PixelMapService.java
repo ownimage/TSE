@@ -46,7 +46,6 @@ import java.util.stream.Stream;
 import static com.ownimage.perception.pixelMap.PixelConstants.ALL;
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
-import static com.ownimage.perception.pixelMap.PixelConstants.IN_CHAIN;
 import static com.ownimage.perception.pixelMap.PixelConstants.N;
 import static com.ownimage.perception.pixelMap.PixelConstants.NE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
@@ -172,15 +171,6 @@ public class PixelMapService {
     private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
         // this is because pIntegerPoint might be a Node or Pixel
         return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
-    }
-
-    public @NotNull ImmutablePixelMapData setInChain(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel,
-            @NotNull boolean isInChain) {
-        var oldValue = pixelMap.data().get(pixel.getX(), pixel.getY());
-        var newValue = (byte) (isInChain ? oldValue | IN_CHAIN : oldValue & (ALL ^ IN_CHAIN));
-        return pixelMap.withData(pixelMap.data().set(pixel.getX(), pixel.getY(), newValue));
     }
 
     public @NotNull ImmutablePixelMapData setNode(
@@ -437,14 +427,11 @@ public class PixelMapService {
         return chains;
     }
 
-    public ImmutablePixelMapData clearInChainAndVisitedThenSetEdge(
+    public ImmutablePixelMapData setEdge(
             @NotNull ImmutablePixelMapData pixelMapData,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull PixelChain pixelChain) {
         var result = StrongReference.of(pixelMapData);
-        pixelChain.getPixels().forEach(p -> {
-            result.update(r -> setInChain(r, p, false));
-        });
         pixelChain.getPixels().stream()
                 .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
                 .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
@@ -547,11 +534,6 @@ public class PixelMapService {
 
     public ImmutablePixelMapData resetNode(@NotNull ImmutablePixelMapData pixelMap) {
         var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ NODE)));
-        return pixelMap.withData(data);
-    }
-
-    public ImmutablePixelMapData resetInChain(@NotNull ImmutablePixelMapData pixelMap) {
-        var data = pixelMap.data().forEach(v -> (byte) (v & (ALL ^ IN_CHAIN)));
         return pixelMap.withData(data);
     }
 
