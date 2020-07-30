@@ -53,7 +53,6 @@ public class PixelMapChainGenerationService {
         var result = pixelMap;
         PixelChain copy = pixelChainService.add(pixelChain, pixel);
         result = pixelMapService.setInChain(result, pixel, true);
-        result = pixelMapService.setVisited(result, pixel, true);
         // try to end quickly at a node
         for (Pixel nodalNeighbour : pixel.getNodeNeighbours(result)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
@@ -73,24 +72,26 @@ public class PixelMapChainGenerationService {
 
     public Tuple2<ImmutablePixelMapData, Collection<PixelChain>> generateChains(
             @NotNull ImmutablePixelMapData pixelMap, @NotNull Node pStartNode) {
-        var pixelMapResult = StrongReference.of(ImmutablePixelMapData.copyOf(pixelMap));
+        var result = StrongReference.of(ImmutablePixelMapData.copyOf(pixelMap));
 
         Vector<PixelChain> chains = new Vector<>();
-        pixelMapResult.update(pmr -> pixelMapService.setVisited(pmr, pStartNode, true));
-        pixelMapResult.update(pmr -> pixelMapService.setInChain(pmr, pStartNode, true));
+        result.update(r -> pixelMapService.setInChain(r, pStartNode, true));
         pStartNode.getNeighbours().forEach(neighbour -> {
-            if (neighbour.isNode(pixelMapResult.get())
-                    || neighbour.isEdge(pixelMapResult.get())
-                    && !neighbour.isVisited(pixelMapResult.get())) {
+            if (neighbour.isNode(result.get())
+                    || neighbour.isEdge(result.get())
+                    && (
+                    pixelMapService.getPixelChains(result.get(), neighbour).isEmpty()
+                            && chains.stream().filter(pc -> pc.getPixels().contains(neighbour)).findFirst().isEmpty())
+            ) {
                 PixelChain chain = new PixelChain(pixelMap, pStartNode);
                 var generatedChain = generateChain(pixelMap, chain, neighbour);
-                pixelMapResult.set(generatedChain._1);
+                result.set(generatedChain._1);
                 chain = generatedChain._2;
                 if (pixelChainService.pixelLength(chain) > 2) {
                     chains.add(chain);
                 }
             }
         });
-        return new Tuple2<>(pixelMapResult.get(), chains);
+        return new Tuple2<>(result.get(), chains);
     }
 }
