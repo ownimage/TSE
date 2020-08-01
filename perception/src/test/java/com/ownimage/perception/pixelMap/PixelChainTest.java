@@ -67,7 +67,7 @@ public class PixelChainTest {
         when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
         double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
 
-        var pixelMap = Utility.createMap(input, ipmts);
+        var pixelMap = Utility.createMap(input, ipmts, false);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN

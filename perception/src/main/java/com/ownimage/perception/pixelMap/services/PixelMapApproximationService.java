@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.control.control.IProgressObserver;
+import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
@@ -11,6 +12,7 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +27,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
@@ -81,9 +84,26 @@ public class PixelMapApproximationService {
         result = process06_straightLinesRefineCorners(result, transformSource, progress);
         result = process07_mergeChains(result, progress);
         result = process08_refine(result, transformSource, progress);
+        result = process09_connectNodes(result, progress);
         result = result.withAutoTrackChanges(true);
         pixelMapService.validate(pixelMap);
         return result;
+    }
+
+    public ImmutablePixelMapData process09_connectNodes(
+            @NotNull ImmutablePixelMapData pixelMap, IProgressObserver progress) {
+        var result = StrongReference.of(pixelMap);
+        pixelMap.pixelChains().stream()
+                .flatMap(pc -> Stream.of(
+                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
+                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
+                ))
+                .forEach(t2 -> result.update(r -> {
+                    var updatedNode = r.nodes().get(new IntegerPoint(t2._2))
+                            .addPixelChain(t2._1);
+                    return r.withNodes(r.nodes().put(updatedNode.toIntegerPoint(), updatedNode));
+                }));
+        return result.get();
     }
 
     public @NotNull ImmutablePixelMapData process01_reset(

@@ -14,7 +14,7 @@ import java.awt.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-class Utility {
+public class Utility {
 
     private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
@@ -134,23 +134,26 @@ class Utility {
         };
     }
 
-    static ImmutablePixelMapData createMap(final int pX, final int pY) {
+    public static ImmutablePixelMapData createMap(final int pX, final int pY) {
         var pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
         return pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(pY), null);
     }
 
-    static IPixelMapTransformSource getTransformSource(String[] map) {
+    public static IPixelMapTransformSource getTransformSource(String[] map) {
         return getDefaultTransformSource(map.length);
     }
 
-    static ImmutablePixelMapData createMap(final String[] map) {
-        return createMap(map, getDefaultTransformSource(map.length));
+    public static ImmutablePixelMapData createMap(final String[] map, boolean process) {
+        return createMap(map, getDefaultTransformSource(map.length), process);
     }
 
-    static ImmutablePixelMapData createMap(final String[] map, final IPixelMapTransformSource transformSource) {
-        final ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
+    public static ImmutablePixelMapData createMap(String[] map, IPixelMapTransformSource transformSource, boolean process) {
+        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
                 .width(map[0].length()).height(map.length).is360(true).build();
-        return setMap(pixelMap, map);
+        pixelMap = setMap(pixelMap, map);
+        return process
+                ? pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(map.length), null)
+                : pixelMap;
     }
 
     static String[] toStrings(final ImmutablePixelMapData pPixelMap) {

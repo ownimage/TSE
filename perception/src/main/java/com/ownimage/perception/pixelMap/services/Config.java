@@ -45,4 +45,10 @@ public class Config {
     public VertexService vertexService() {
         return new VertexService();
     }
+
+    @Bean
+    public PixelMapValidationService pixelMapValidationService() {
+        return new PixelMapValidationService();
+    }
+
 }

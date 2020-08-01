@@ -27,6 +27,11 @@ public class IntegerPoint implements Serializable, Comparable<IntegerPoint> {
 		mY = pY;
 	}
 
+	public IntegerPoint(IntegerPoint original) {
+		mX = original.mX;
+		mY = original.mY;
+	}
+
 	public IntegerPoint add(final int pDx, final int pDy) {
 		return new IntegerPoint(getX() + pDx, getY() + pDy);
 	}

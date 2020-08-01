@@ -33,7 +33,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -50,7 +50,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -67,7 +67,7 @@ public class PixelTest {
                 "   ",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 0);
 
         // WHEN
@@ -84,7 +84,7 @@ public class PixelTest {
                 "   ",
                 " E "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -101,7 +101,7 @@ public class PixelTest {
                 "   ",
                 " E "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, -1, 2);
 
         // WHEN
@@ -118,7 +118,7 @@ public class PixelTest {
                 " E ",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -135,7 +135,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -152,7 +152,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -169,7 +169,7 @@ public class PixelTest {
                 "    ",
                 "N N "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -187,7 +187,7 @@ public class PixelTest {
                 "EEE",
                 "   "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
 
         // WHEN
@@ -204,7 +204,7 @@ public class PixelTest {
                 "   ",
                 "EEE"
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 2);
 
         // WHEN
@@ -221,7 +221,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -238,7 +238,7 @@ public class PixelTest {
                 "E  ",
                 "EE "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -255,7 +255,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
@@ -276,7 +276,7 @@ public class PixelTest {
                 "   ",
                 "E  "
         };
-        var pixelMap = Utility.createMap(input);
+        var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
         StrongReference<Integer> count = new StrongReference<>(0);
 
