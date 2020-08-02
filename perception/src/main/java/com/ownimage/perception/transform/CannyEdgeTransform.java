@@ -29,7 +29,6 @@ import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -436,7 +435,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(getWidth()).height(getHeight()).build();
         if (pixelMapService.canRead(pDB, pId + "." + getPropertyName())) {
             //pixelMap.read(pDB, pId + "." + getPropertyName());
-            pixelMap = pixelMapService.read(pDB, pId + "." + getPropertyName(), this);
+            pixelMap = pixelMapService.read(pDB, pId + "." + getPropertyName());
             setPixelMap(pixelMap);
         }
 
@@ -543,7 +542,8 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             }
 
             if (pixelMap != null) {
-                pixelMap = pixelMapApproximationService.actionProcess(pixelMap, this, getProgressControl().reset());
+                double tolerance = getLineTolerance() / getHeight();
+                pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, getLineCurvePreference(), getProgressControl().reset());
                 setPixelMap(pixelMap);
             }
         } finally {

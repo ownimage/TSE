@@ -10,7 +10,6 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.IPixelChain;
-import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
@@ -20,7 +19,6 @@ import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,14 +56,12 @@ import static com.ownimage.perception.pixelMap.PixelConstants.W;
 @Service
 public class PixelMapService {
 
-    private  PixelMapChainGenerationService pixelMapChainGenerationService;
-    private  PixelMapApproximationService pixelMapApproximationService;
-    private  PixelChainService pixelChainService;
-    private  PixelService pixelService;
-
     private final static Logger logger = Framework.getLogger();
-
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
+    private PixelMapChainGenerationService pixelMapChainGenerationService;
+    private PixelMapApproximationService pixelMapApproximationService;
+    private PixelChainService pixelChainService;
+    private PixelService pixelService;
 
     @Autowired
     public void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
@@ -92,7 +88,7 @@ public class PixelMapService {
         return pixelString != null && !pixelString.isEmpty();
     }
 
-    public ImmutablePixelMapData read(IPersistDB db, String id, IPixelMapTransformSource transformSource) {
+    public ImmutablePixelMapData read(@NotNull IPersistDB db, @NotNull String id) {
         Framework.logEntry(logger);
 
         var width = Integer.parseInt(db.read(id + ".width"));
@@ -338,7 +334,6 @@ public class PixelMapService {
     }
 
 
-
     public ImmutablePixelMapData indexSegments(
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull PixelChain pixelChain,
@@ -429,17 +424,18 @@ public class PixelMapService {
 
     public ImmutablePixelMapData setEdge(
             @NotNull ImmutablePixelMapData pixelMapData,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull PixelChain pixelChain) {
+            @NotNull PixelChain pixelChain,
+            double tolerance,
+            double lineCurvePreference) {
         var result = StrongReference.of(pixelMapData);
         pixelChain.getPixels().stream()
                 .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
                 .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
-                .forEach(p -> result.update(r -> setEdge(r, transformSource, p, false)));
+                .forEach(p -> result.update(r -> setEdge(r, p, false, tolerance, lineCurvePreference)));
         pixelChain.getPixels().stream()
                 .filter(p -> pixelService.isNode(result.get(), p))
                 .filter(p -> p.countEdgeNeighbours(result.get()) < 2 || p.countNodeNeighbours(result.get()) == 2)
-                .forEach(p -> result.update(r -> setEdge(r, transformSource, p, false)));
+                .forEach(p -> result.update(r -> setEdge(r, p, false, tolerance, lineCurvePreference)));
         return result.get();
     }
 
@@ -520,11 +516,7 @@ public class PixelMapService {
     }
 
     public Tuple2<ImmutablePixelMapData, Stream<PixelChain>> generateChainsAndApproximate(
-            @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Node pNode) {
-        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        double lineCurvePreference = transformSource.getLineCurvePreference();
+            @NotNull ImmutablePixelMapData pixelMap, @NotNull Node pNode, double tolerance, double lineCurvePreference) {
         var result = pixelMapChainGenerationService.generateChains(pixelMap, pNode);
         var stream = result._2.parallelStream()
                 .map(pc -> pixelChainService.approximate(pixelMap, pc, tolerance))
@@ -576,7 +568,7 @@ public class PixelMapService {
      * @param pixelChain
      */
     public ImmutablePixelMapData removePixelChain(@NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain) {
-        var result = StrongReference.of(pixelChainRemove(pixelMap,  pixelChain));
+        var result = StrongReference.of(pixelChainRemove(pixelMap, pixelChain));
         pixelChainService.getStartNode(result.get(), pixelChain)
                 .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
         pixelChainService.getEndNode(result.get(), pixelChain)
@@ -618,7 +610,7 @@ public class PixelMapService {
 
     public ImmutablePixelMapData addPixelChains(@NotNull ImmutablePixelMapData pixelMap, @NotNull Collection<PixelChain> pixelChains) {
         var result = StrongReference.of(pixelMap);
-        pixelChains.forEach(pixelChain -> result.update(r-> addPixelChain(r, pixelChain)));
+        pixelChains.forEach(pixelChain -> result.update(r -> addPixelChain(r, pixelChain)));
         return result.get();
     }
 
@@ -649,24 +641,27 @@ public class PixelMapService {
      * false.
      *
      * @param pixel the pixel
+     * @param tolerance
+     * @param lineCurvePreference
      * @return true, if the Pixel was thinned.
      */
     public Tuple2<ImmutablePixelMapData, Boolean> thin(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
+            @NotNull Pixel pixel,
+            double tolerance,
+            double lineCurvePreference) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
             return new Tuple2<>(pixelMap, false);
         }
         var pixelMapResult = pixelMap;
         boolean canEliminate = false;
         for (int[] set : eliminate) {
-            canEliminate |= pixelService.isEdge(pixelMap,pixel.getNeighbour(set[0]))
+            canEliminate |= pixelService.isEdge(pixelMap, pixel.getNeighbour(set[0]))
                     && pixelService.isEdge(pixelMap, pixel.getNeighbour(set[1]))
                     && !pixelService.isEdge(pixelMap, pixel.getNeighbour(set[2]));
         }
         if (canEliminate) {
-            pixelMapResult = pixelMapApproximationService.setEdge(pixelMapResult, transformSource, pixel, false);
+            pixelMapResult = pixelMapApproximationService.setEdge(pixelMapResult, pixel, false, tolerance, lineCurvePreference);
             pixelMapResult = nodeRemove(pixelMapResult, pixel);
         }
         return new Tuple2<>(pixelMapResult, canEliminate);
@@ -707,9 +702,10 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMapData setEdge(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
-            @NotNull boolean isEdge) {
+            boolean isEdge,
+            double tolerance,
+            double lineCurvePreference) {
         val result = StrongReference.of(pixelMap);
         if (pixelService.isEdge(pixelMap, pixel) == isEdge) {
             return result.get();
@@ -720,15 +716,15 @@ public class PixelMapService {
         result.update(r -> setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel)._1);
         pixel.getNeighbours().forEach(p -> {
-            result.update(r -> thin(r, transformSource, p)._1);
+            result.update(r -> thin(r, p, tolerance, lineCurvePreference)._1);
             result.update(r -> calcIsNode(r, p)._1);
         });
-        result.update(r -> thin(r, transformSource, pixel)._1);
+        result.update(r -> thin(r, pixel, tolerance, lineCurvePreference)._1);
         if (result.get().autoTrackChanges()) {
             if (isEdge) { // turning pixel on
-                result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixel));
+                result.update(r -> pixelMapApproximationService.trackPixelOn(r, pixel, tolerance, lineCurvePreference));
             } else { // turning pixel off
-                result.update(r -> pixelMapApproximationService.trackPixelOff(r, transformSource, pixel));
+                result.update(r -> pixelMapApproximationService.trackPixelOff(r, pixel, tolerance, lineCurvePreference));
             }
         }
         return result.get();

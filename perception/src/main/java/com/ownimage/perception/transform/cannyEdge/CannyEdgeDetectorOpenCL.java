@@ -12,12 +12,8 @@ import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
@@ -610,12 +606,14 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
             mEdgeData = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
         }
 
+        double tolerance = mTransform.getLineTolerance() / mTransform.getHeight();
+        double lineCurvePreference = mTransform.getLineCurvePreference();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 final int index = x + y * width;
                 final boolean col = pixels[index] == -1;
                 var pixel = pixelMapService.getPixelAt(mEdgeData, x, y);
-                mEdgeData = pixelMapService.setEdge(mEdgeData, mTransform, pixel, col);
+                mEdgeData = pixelMapService.setEdge(mEdgeData, pixel, col, tolerance, lineCurvePreference);
             }
         }
 

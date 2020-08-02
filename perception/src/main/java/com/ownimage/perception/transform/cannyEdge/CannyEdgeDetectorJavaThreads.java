@@ -12,7 +12,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -829,7 +828,8 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
         // This may be easily remedied by providing alternative accessors.
         edgeData = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
 
-
+        double tolerance = mTransform.getLineTolerance() / mTransform.getHeight();
+        double lineCurvePreference = mTransform.getLineCurvePreference();
         for (int x = 0; x < width; x++) {
             if (!showProgressBar("Writing Edges ...", (float) x / width)) return;
             for (int y = 0; y < height; y++) {
@@ -837,7 +837,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
                 final boolean col = pixels[x][y] == -1;
                 // Color c = new Color(col);
                 var pixel = pixelMapService.getPixelAt(edgeData, x, y);
-                edgeData = pixelMapService.setEdge(edgeData, mTransform, pixel, col);
+                edgeData = pixelMapService.setEdge(edgeData, pixel, col, tolerance, lineCurvePreference);
             }
         }
 

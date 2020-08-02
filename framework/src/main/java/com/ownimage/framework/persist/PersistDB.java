@@ -5,6 +5,8 @@
  */
 package com.ownimage.framework.persist;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -15,6 +17,13 @@ import java.util.Vector;
 @SuppressWarnings("serial")
 public class PersistDB extends Properties implements IPersistDB {
 
+
+    public PersistDB() {
+    }
+
+    public PersistDB(InputStream is) throws IOException {
+        load(is);
+    }
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})

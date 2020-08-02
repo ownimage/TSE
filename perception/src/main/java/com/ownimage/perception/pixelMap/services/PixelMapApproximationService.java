@@ -7,7 +7,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.IPixelChain;
-import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
@@ -15,7 +14,6 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,19 +69,20 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData actionProcess(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
+            double tolerance,
+            double lineCurvePreference,
             IProgressObserver progress) {
         var result = pixelMap.withAutoTrackChanges(false);
         result = process01_reset(result, progress);
-        result = process02_thin(result, transformSource, progress);
+        result = process02_thin(result, progress, tolerance, lineCurvePreference);
         result = process03_generateNodes(result, progress);
-        result = process04b_removeBristles(result, transformSource, progress);
-        result = process04a_removeLoneNodes(result, transformSource, progress);
+        result = process04b_removeBristles(result, tolerance, lineCurvePreference, progress);
+        result = process04a_removeLoneNodes(result, progress, tolerance, lineCurvePreference);
         result = process05_generateChains(result, progress);
         result = process05a_findLoops(result, progress);
-        result = process06_straightLinesRefineCorners(result, transformSource, progress);
+        result = process06_straightLinesRefineCorners(result, lineCurvePreference, progress);
         result = process07_mergeChains(result, progress);
-        result = process08_refine(result, transformSource, progress);
+        result = process08_refine(result, tolerance, lineCurvePreference, progress);
         result = process09_connectNodes(result, progress);
         result = result.withAutoTrackChanges(true);
         pixelMapService.validate(pixelMap);
@@ -127,12 +126,13 @@ public class PixelMapApproximationService {
     // TODO need to work out how to have a progress bar
     public ImmutablePixelMapData process02_thin(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            IProgressObserver progress) {
+            IProgressObserver progress,
+            double tolerance,
+            double lineCurvePreference) {
         reportProgress(progress, "thinning ...", 0);
         var result = StrongReference.of(pixelMap);
         new Range2D(pixelMap.width(), pixelMap.height())
-                .forEach((x, y) -> result.update(r -> thin(r, transformSource, pixelMapService.getPixelOptionalAt(r, x, y).orElseThrow())));
+                .forEach((x, y) -> result.update(r -> thin(r, pixelMapService.getPixelOptionalAt(r, x, y).orElseThrow(), tolerance, lineCurvePreference)));
         return result.get();
     }
 
@@ -152,15 +152,16 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process04a_removeLoneNodes(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            IProgressObserver pProgressObserver) {
+            IProgressObserver pProgressObserver,
+            double tolerance,
+            double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
                 Node node = pixelMapService.getNode(result.get(), pixel).get();
                 if (node.countEdgeNeighbours(result.get()) == 0) {
-                    result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
+                    result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
                 }
             }
@@ -170,7 +171,8 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process04b_removeBristles(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
+            double tolerance,
+            double lineCurvePreference,
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         var toBeRemoved = new Vector<Pixel>();
@@ -191,7 +193,7 @@ public class PixelMapApproximationService {
         result.update(r -> pixelMapService.nodesRemoveAll(r, toBeRemoved));
         toBeRemoved
                 .forEach(pixel -> {
-                    result.update(r -> pixelMapService.setEdge(r, transformSource, pixel, false));
+                    result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     pixel.allEdgeNeighbours(result.get())
                             .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)._1));
                 });
@@ -242,9 +244,7 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process06_straightLinesRefineCorners(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            IProgressObserver pProgressObserver
-    ) {
+            double tolerance, IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating Straight Lines ...", 0);
         var pegs = new Object[]{
                 IPixelChain.PegCounters.RefineCornersAttempted,
@@ -252,7 +252,6 @@ public class PixelMapApproximationService {
         };
         var pegCounter = com.ownimage.perception.app.Services.getServices().getPegCounter();
         pegCounter.clear(pegs);
-        double tolerance = transformSource.getLineTolerance() / pixelMap.height();
         logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
         var result = StrongReference.of(pixelMap);
         var refined = new Vector<PixelChain>();
@@ -278,7 +277,8 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMapData process08_refine(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
+            double tolerance,
+            double lineCurvePreference,
             IProgressObserver pProgressObserver) {
         var result = StrongReference.of(pixelMap);
         var pegs = new Object[]{
@@ -297,8 +297,6 @@ public class PixelMapApproximationService {
             reportProgress(pProgressObserver, "Refining ...", 0);
             Vector<PixelChain> refined = new Vector<>();
             result.get().pixelChains().stream().parallel().forEach(pc -> {
-                var tolerance = transformSource.getLineTolerance() / result.get().height();
-                var lineCurvePreference = transformSource.getLineCurvePreference();
                 var refinedPC = pixelChainService.approximateCurvesOnly(result.get(), pc, tolerance, lineCurvePreference);
                 refined.add(refinedPC);
                 counter.increase();
@@ -313,8 +311,9 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMapData thin(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
+            @NotNull Pixel pixel,
+            double tolerance,
+            double lineCurvePreference) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
             return pixelMap;
         }
@@ -326,7 +325,7 @@ public class PixelMapApproximationService {
                     && !pixelService.isEdge(pixelMap, pixel.getNeighbour(set[2]));
         }
         if (canEliminate) {
-            result = setEdge(result, transformSource, pixel, false);
+            result = setEdge(result, pixel, false, tolerance, lineCurvePreference);
             result = pixelMapService.nodeRemove(result, pixel);
         }
         return result;
@@ -334,9 +333,10 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMapData setEdge(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
             @NonNull Pixel pixel,
-            boolean isEdge) {
+            boolean isEdge,
+            double tolerance,
+            double lineCurvePreference) {
         if (pixelService.isEdge(pixelMap, pixel) == isEdge) {
             return pixelMap;
         }
@@ -347,15 +347,15 @@ public class PixelMapApproximationService {
         result.update(r -> pixelMapService.setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel));
         pixel.getNeighbours().forEach(p -> {
-            result.update(r -> thin(r, transformSource, p));
+            result.update(r -> thin(r, p, tolerance, lineCurvePreference));
             result.update(r -> calcIsNode(r, p));
         });
-        result.update(r -> thin(r, transformSource, pixel));
+        result.update(r -> thin(r, pixel, tolerance, lineCurvePreference));
         if (result.get().autoTrackChanges()) {
             if (isEdge) { // turning pixel on
-                trackPixelOn(pixelMap, transformSource, pixel);
+                trackPixelOn(pixelMap, pixel, tolerance, lineCurvePreference);
             } else { // turning pixel off
-                trackPixelOff(pixelMap, transformSource, pixel);
+                trackPixelOff(pixelMap, pixel, tolerance, lineCurvePreference);
             }
         }
         return result.get();
@@ -363,26 +363,27 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMapData trackPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NonNull Pixel pPixel) {
+            @NonNull Pixel pPixel,
+            double tolerance,
+            double lineCurvePreference) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
-        return trackPixelOn(pixelMap, transformSource, pixels);
+        return trackPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOff(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NonNull Pixel pPixel) {
+            @NonNull Pixel pPixel,
+            double tolerance,
+            double lineCurvePreference) {
         List<Pixel> pixels = Collections.singletonList(pPixel);
-        return trackPixelOff(pixelMap, transformSource, pixels);
+        return trackPixelOff(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMapData trackPixelOff(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NonNull List<Pixel> pixels) {
-        double tolerance = transformSource.getLineTolerance() / pixelMap.height();
-        double lineCurvePreference = transformSource.getLineCurvePreference();
+            @NonNull List<Pixel> pixels,
+            double tolerance,
+            double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
         pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
             result.update(r -> pixelMapService.pixelChainRemove(r, pc));
@@ -405,8 +406,9 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMapData trackPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
-            @NonNull Collection<Pixel> pixels) {
+            @NonNull Collection<Pixel> pixels,
+            double tolerance,
+            double lineCurvePreference) {
         if (pixels.isEmpty()) {
             return pixelMap;
         }
@@ -429,7 +431,7 @@ public class PixelMapApproximationService {
         });
 
         nodes.stream()
-                .map(n -> pixelMapService.generateChainsAndApproximate(result.get(), transformSource, n))
+                .map(n -> pixelMapService.generateChainsAndApproximate(result.get(), n, tolerance, lineCurvePreference))
                 .peek(gca -> result.update(r -> gca._1))
                 .flatMap(r -> r._2)
                 .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));
@@ -442,7 +444,7 @@ public class PixelMapApproximationService {
                 .filter(p -> pixelMapService.getPixelChains(result.get(), p).isEmpty())
                 .stream()
                 .peek(p -> result.update(r -> pixelMapService.setNode(r, p, true)))
-                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), transformSource, new Node(p)))
+                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), new Node(p), tolerance, lineCurvePreference))
                 .peek(gca -> result.update(r -> gca._1))
                 .flatMap(r -> r._2)
                 .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));

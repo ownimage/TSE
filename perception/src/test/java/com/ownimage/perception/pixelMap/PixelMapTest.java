@@ -80,7 +80,7 @@ public class PixelMapTest {
         Assert.assertEquals(new Byte((byte) 0), result.data().get(1, 1));
         val duration = Duration.between(start, end);
         System.out.println("Duration = " + duration.toMillis());
-        Assert.assertEquals(1, result.data().getSize());
+        Assert.assertEquals(1, result.data().size());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class PixelMapTest {
         Assert.assertEquals(Byte.valueOf(EDGE), result.data().get(1, 1));
         val duration = Duration.between(start, end);
         System.out.println("Duration = " + duration.toMillis());
-        Assert.assertEquals(1, result.data().getSize());
+        Assert.assertEquals(1, result.data().size());
     }
 
     @Test
@@ -151,8 +151,11 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         System.out.println(pixelMap.data().get(2, 0));
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, null, tolerance, lineCurvePreference);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
@@ -173,9 +176,11 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
-
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -195,8 +200,11 @@ public class PixelMapTest {
                 "E    N    "
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -217,12 +225,15 @@ public class PixelMapTest {
                 "    "
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMap = pixelMapApproximationService.process01_reset(pixelMap, null);
-        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, null, tolerance, lineCurvePreference);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -266,9 +277,11 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
-
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
@@ -293,9 +306,11 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
-
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -320,9 +335,11 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
-
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, tolerance, lineCurvePreference, null);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -347,12 +364,15 @@ public class PixelMapTest {
                 "           ",
         };
         var immputablePixelMap = Utility.createMap(input, false);
-        immputablePixelMap = pixelMapApproximationService.actionProcess(immputablePixelMap, Utility.getTransformSource(input), null);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        immputablePixelMap = pixelMapApproximationService.actionProcess(immputablePixelMap, tolerance, lineCurvePreference, null);
         assertEquals(3, immputablePixelMap.pixelChains().size());
         val deletePixels = new ArrayList<Pixel>();
         deletePixels.add(new Pixel(4, 1));
         // WHEN
-        var result = pixelMapActionService.actionDeletePixelChain(immputablePixelMap, Utility.getTransformSource(input), deletePixels);
+        var result = pixelMapActionService.actionDeletePixelChain(immputablePixelMap, deletePixels, tolerance, lineCurvePreference);
         // THEN
         assertEquals(2, result.pixelChains().size());
         String[] actual = Utility.toStrings(result);
@@ -372,8 +392,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
     }
@@ -389,8 +412,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         for (var s : Utility.toStrings(pixelMap)) {
             System.out.println(s);
@@ -414,8 +440,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -436,8 +465,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -458,8 +490,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -480,8 +515,11 @@ public class PixelMapTest {
                 "           ",
         };
         var pixelMap = Utility.createMap(input, false);
+        var transformSource = Utility.getDefaultTransformSource(input.length);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(input.length), null);
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
@@ -490,9 +528,11 @@ public class PixelMapTest {
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
-    public ImmutablePixelMapData addChain(@NonNull ImmutablePixelMapData pixelMap, @NotNull IPixelMapTransformSource ts, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
+    public ImmutablePixelMapData addChain(@NonNull ImmutablePixelMapData pixelMap, @NotNull IPixelMapTransformSource transformSource, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
         var pixelMapRef = StrongReference.of(pixelMap);
-        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapActionService.actionPixelOn(pm, ts, List.of(pStart.add(pixel)))));
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        pChain.forEach(pixel -> pixelMapRef.update(pm -> pixelMapActionService.actionPixelOn(pm, List.of(pStart.add(pixel)), tolerance, lineCurvePreference)));
         return pixelMapRef.get();
     }
 
@@ -505,42 +545,45 @@ public class PixelMapTest {
         var width = 11 + 2 * xMargin;
         var height = 14 + 2 * yMargin;
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(height), null);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 11).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 11).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 12).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 13).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 13).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 13).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 12).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 11).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 10).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 9).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 8).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 7).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 6).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 5).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 4).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(10, 3).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(9, 2).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(8, 1).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(7, 0).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(6, 0).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(5, 0).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(4, 0).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(3, 0).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 1).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 2).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 3).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 4).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 5).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(0, 6).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 7).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 8).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 9).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 10).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(1, 11).add(offset));
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(height), new Pixel(2, 11).add(offset));
+        var transformSource = Utility.getDefaultTransformSource(height);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(3, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(4, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(5, 12).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(6, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(7, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(8, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 12).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 10).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 9).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 8).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 7).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 6).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 5).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 4).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 3).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 2).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(8, 1).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(7, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(6, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(5, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(4, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(3, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(2, 1).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 2).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 3).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 4).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 5).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 6).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 7).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 8).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 9).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 10).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(2, 11).add(offset), tolerance, lineCurvePreference);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -553,7 +596,10 @@ public class PixelMapTest {
         var width = 11 + 2 * xMargin;
         var height = 14 + 2 * yMargin;
         var underTest = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
-        pixelMapApproximationService.actionProcess(underTest, Utility.getDefaultTransformSource(height), null);
+        var transformSource = Utility.getDefaultTransformSource(height);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        pixelMapApproximationService.actionProcess(underTest, tolerance, lineCurvePreference, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(3, 11).add(offset),
                 new Pixel(4, 11).add(offset),
@@ -591,7 +637,7 @@ public class PixelMapTest {
                 new Pixel(1, 11).add(offset),
                 new Pixel(2, 11).add(offset)
         );
-        var actual = pixelMapActionService.actionPixelOn(underTest, ts, pixels);
+        var actual = pixelMapActionService.actionPixelOn(underTest, pixels, tolerance, lineCurvePreference);
         assertEquals(1, actual.pixelChains().size());
     }
 
@@ -599,7 +645,10 @@ public class PixelMapTest {
     public void test_closeLoop_3() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(11), null);
+        var transformSource = Utility.getDefaultTransformSource(11);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -617,7 +666,7 @@ public class PixelMapTest {
                 new Pixel(6, 7),
                 new Pixel(6, 8)
         );
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -625,7 +674,10 @@ public class PixelMapTest {
     public void test_closeLoop_4() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
-        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, Utility.getDefaultTransformSource(11), null);
+        var transformSource = Utility.getDefaultTransformSource(11);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         List<Pixel> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
@@ -644,7 +696,7 @@ public class PixelMapTest {
                 new Pixel(6, 8),
                 new Pixel(6, 9)
         );
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, Utility.getDefaultTransformSource(11), pixels);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -697,11 +749,14 @@ public class PixelMapTest {
     @Test
     public void setPixelOnOff() {
         var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
+        var transformSource = Utility.getDefaultTransformSource(10);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         Pixel pixel = new Pixel(5, 5);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
-        underTest = pixelMapService.setEdge(underTest, null, pixel, true);
+        underTest = pixelMapService.setEdge(underTest, pixel, true, tolerance, lineCurvePreference);
         assertTrue(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
-        underTest = pixelMapService.setEdge(underTest, null, pixel, false);
+        underTest = pixelMapService.setEdge(underTest, pixel, false, tolerance, lineCurvePreference);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
     }
 
@@ -709,12 +764,14 @@ public class PixelMapTest {
     public void actionPixelOnOff() {
         var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(10);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         Pixel pixel = new Pixel(5, 5);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
-        var resultOn = pixelMapActionService.actionPixelOn(underTest, transformSource, pixel);
+        var resultOn = pixelMapActionService.actionPixelOn(underTest, pixel, tolerance, lineCurvePreference);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
         assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
-        var resultOff = pixelMapActionService.actionPixelOff(underTest, transformSource, pixel, 1);
+        var resultOff = pixelMapActionService.actionPixelOff(underTest, pixel, 1, tolerance, lineCurvePreference);
         assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
         assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
         assertFalse(pixelMapService.getOptionalPixelAt(resultOff, 5, 5).get().isEdge(resultOff));

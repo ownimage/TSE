@@ -62,30 +62,33 @@ public class PixelMapActionService {
 
     public ImmutablePixelMapData actionPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
+            @NotNull Pixel pixel,
+            double tolerance,
+            double lineCurvePreference) {
         var pixels = Collections.singletonList(pixel);
-        return actionPixelOn(pixelMap, transformSource, pixels);
+        return actionPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public ImmutablePixelMapData actionPixelOn(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Collection<Pixel> pixels) {
+            @NotNull Collection<Pixel> pixels,
+            double tolerance,
+            double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
         result.update(r -> r.withAutoTrackChanges(false));
         pixels.forEach(pixel ->
-                result.update(r -> pixelMapApproximationService.setEdge(r, transformSource, pixel, true)));
+                result.update(r -> pixelMapApproximationService.setEdge(r, pixel, true, tolerance, lineCurvePreference)));
         result.update(r -> r.withAutoTrackChanges(true));
-        result.update(r -> pixelMapApproximationService.trackPixelOn(r, transformSource, pixels));
+        result.update(r -> pixelMapApproximationService.trackPixelOn(r, pixels, tolerance, lineCurvePreference));
         return result.get();
     }
 
     public ImmutablePixelMapData actionPixelOff(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel,
-            int cursorSize) {
+            int cursorSize,
+            double tolerance,
+            double lineCurvePreference) {
         val result = StrongReference.of(pixelMap);
         double radius = (double) cursorSize / result.get().height();
         new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
@@ -95,22 +98,23 @@ public class PixelMapActionService {
                                 .filter(p -> pixel
                                         .getUHVWMidPoint(result.get().height())
                                         .distance(p.getUHVWMidPoint(result.get().height())) < radius)
-                                .ifPresent(p -> result.update(r -> pixelMapService.setEdge(r, transformSource, p, false)))
+                                .ifPresent(p -> result.update(r -> pixelMapService.setEdge(r, p, false, tolerance, lineCurvePreference)))
                 );
         return result.get();
     }
 
     public ImmutablePixelMapData actionDeletePixelChain(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Collection<Pixel> pixels) {
+            @NotNull Collection<Pixel> pixels,
+            double tolerance,
+            double lineCurvePreference) {
         var clone = StrongReference.of(pixelMap.withAutoTrackChanges(false));
         pixels.stream()
                 .filter(p -> pixelService.isEdge(clone.get(), p))
                 .forEach(p -> pixelMapService.getPixelChains(clone.get(), p)
                         .forEach(pc -> {
                             // TODO in the implementation of the method below make the parameter immutable
-                            clone.update(c -> pixelMapService.setEdge(c, transformSource, pc));
+                            clone.update(c -> pixelMapService.setEdge(c, pc, tolerance, lineCurvePreference));
                             pixelChainService.getStartNode(clone.get(), pc)
                                     .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n)));
                             pixelChainService.getEndNode(clone.get(), pc)
@@ -179,10 +183,11 @@ public class PixelMapActionService {
 
     public ImmutablePixelMapData actionPixelToggle(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull IPixelMapTransformSource transformSource,
-            @NotNull Pixel pixel) {
+            @NotNull Pixel pixel,
+            double tolerance,
+            double lineCurvePreference) {
         var newValue = !pixelService.isEdge(pixelMap, pixel);
-        return pixelMapService.setEdge(pixelMap, transformSource, pixel, newValue);
+        return pixelMapService.setEdge(pixelMap, pixel, newValue, tolerance, lineCurvePreference);
     }
 
     public ImmutablePixelMapData actionPixelChainDeleteAllButThis(
@@ -272,8 +277,9 @@ public class PixelMapActionService {
             @NotNull Pixel pixel,
             double lineCurvePreference) {
         var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
-        if (pixelChains.size() != 1)
+        if (pixelChains.size() != 1) {
             return pixelMap;
+        }
         var pixelChain = pixelChains.get(0);
         var pixelIndex = pixelChain.getPixels().indexOf(pixel);
         var optionalNextVertex = pixelChain.getVertexes().stream()
@@ -303,8 +309,9 @@ public class PixelMapActionService {
             @NotNull Pixel pixel,
             double lineCurvePreference) {
         var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
-        if (pixelChains.size() != 1)
+        if (pixelChains.size() != 1) {
             return pixelMap;
+        }
         var pixelChain = pixelChains.get(0);
         var optionalVertex = pixelChain.getVertexes().stream()
                 .filter(v -> pixelChain.getPixels().get(v.getPixelIndex()).equals(pixel))

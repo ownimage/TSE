@@ -55,7 +55,7 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
         }
     }
 
-    public int getSize() {
+    public int size() {
         synchronized (getSynchronisationObject()) {
             return getMaster().mValues.size();
         }

@@ -136,7 +136,10 @@ public class Utility {
 
     public static ImmutablePixelMapData createMap(final int pX, final int pY) {
         var pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
-        return pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(pY), null);
+        var transformSource = Utility.getDefaultTransformSource(pY);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
+        return pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
     }
 
     public static IPixelMapTransformSource getTransformSource(String[] map) {
@@ -151,8 +154,10 @@ public class Utility {
         ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
                 .width(map[0].length()).height(map.length).is360(true).build();
         pixelMap = setMap(pixelMap, map);
+        double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        double lineCurvePreference = transformSource.getLineCurvePreference();
         return process
-                ? pixelMapApproximationService.actionProcess(pixelMap, getDefaultTransformSource(map.length), null)
+                ? pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null)
                 : pixelMap;
     }
 

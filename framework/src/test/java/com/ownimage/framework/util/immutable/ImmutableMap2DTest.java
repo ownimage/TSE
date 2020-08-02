@@ -151,7 +151,7 @@ public class ImmutableMap2DTest {
         // GIVEN
         val underTest = new ImmutableMap2D<>(100, 100, "0");
         // THEN
-        assertEquals(0, underTest.getSize());
+        assertEquals(0, underTest.size());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class ImmutableMap2DTest {
         // WHEN
         underTest = underTest.set(1, 1, "1");
         // THEN
-        assertEquals(1, underTest.getSize());
+        assertEquals(1, underTest.size());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class ImmutableMap2DTest {
         underTest = underTest.set(1, 1, "1");
         underTest = underTest.set(1, 1, "2");
         // THEN
-        assertEquals(1, underTest.getSize());
+        assertEquals(1, underTest.size());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ImmutableMap2DTest {
         underTest = underTest.set(1, 1, "1");
         underTest = underTest.set(2, 2, "2");
         // THEN
-        assertEquals(2, underTest.getSize());
+        assertEquals(2, underTest.size());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class ImmutableMap2DTest {
         // WHEN
         var result = underTest.forEach(v -> "1");
         // THEN
-        assertEquals(0, underTest.getSize());
+        assertEquals(0, underTest.size());
         assertEquals(result.get(1, 1), "1");
     }
 
@@ -205,7 +205,7 @@ public class ImmutableMap2DTest {
         // WHEN
         var result = underTest.forEach(v -> "2");
         // THEN
-        assertEquals(1, underTest.getSize());
+        assertEquals(1, underTest.size());
         assertEquals(result.get(2, 2), "2");
         assertEquals(result.get(1, 1), "2");
     }
