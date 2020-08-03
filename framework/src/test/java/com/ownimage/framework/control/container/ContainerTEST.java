@@ -9,12 +9,23 @@ import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
 import com.ownimage.framework.undo.UndoRedoBuffer;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ContainerTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     public class Property extends Container {
 

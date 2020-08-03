@@ -14,14 +14,24 @@ import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.view.IView;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 public class IntegerControlTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     IContainer globalContainer = new IContainer() {
 

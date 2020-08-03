@@ -366,7 +366,6 @@ public class Range2DTest {
         val stream = timeInMillis(() -> underTest.stream().forEach(NOOP));
         val forEach = timeInMillis(() -> underTest.forEach(NOOP));
         // THEN
-        System.out.println(streamParallel + " " + stream + " " + forEach);
         Assert.assertTrue(stream <= forEach * 2); // there is a stream overhead
         Assert.assertTrue(streamParallel <= forEach * 2);
     }
@@ -393,7 +392,6 @@ public class Range2DTest {
         val stream = timeInMillis(() -> underTest.stream().forEach(hardSum));
         val forEach = timeInMillis(() -> underTest.forEach(hardSum));
         // THEN
-        System.out.println(streamParallel + " " + stream + " " + forEach);
         Assert.assertTrue(stream < forEach * 1.1);
         Assert.assertTrue(streamParallel < forEach);
     }
@@ -418,7 +416,6 @@ public class Range2DTest {
         val streamParallel = timeInMillis(() -> underTest.forEachParallelThread(8, hardSum));
         val forEach = timeInMillis(() -> underTest.forEach(hardSum));
         // THEN
-        System.out.println(streamParallel + " " + forEach);
         Assert.assertTrue(streamParallel < forEach);
     }
 

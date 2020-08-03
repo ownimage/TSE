@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.awt.*;
+import java.util.logging.LogManager;
 
 public class OpenCLTest {
 
@@ -55,9 +56,10 @@ public class OpenCLTest {
     }
 
     @BeforeClass
-    public static void beforeClass() throws InterruptedException {
+    public static void setViewFactory() throws InterruptedException {
         FrameworkLogger.getInstance().init("logging.properties", "Perception.log");
         FXViewFactory.setAsViewFactory(false);
+        LogManager.getLogManager().reset();
         new OpenCLTest().warmup();
     }
 
@@ -80,7 +82,6 @@ public class OpenCLTest {
         renderJob.run();
         waitTillExecuteQueueEmpty(1000);
         // THEN
-        renderJob.getDuration().ifPresent(d -> System.out.println("Duration = " + d.toMillis()));
         Assert.assertEquals(Color.RED, picture.getColor(10, 10).get());
     }
 
@@ -100,7 +101,6 @@ public class OpenCLTest {
         renderJob.run();
         waitTillExecuteQueueEmpty(1000);
         // THEN
-        renderJob.getDuration().ifPresent(d -> System.out.println("Duration = " + d.toMillis()));
         Assert.assertEquals(new Color(255, 128, 0), picture.getColor(10, 10).get());
     }
 

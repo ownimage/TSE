@@ -161,7 +161,7 @@ public class Utility {
                 : pixelMap;
     }
 
-    static String[] toStrings(final ImmutablePixelMapData pPixelMap) {
+    public static String[] toStrings(final ImmutablePixelMapData pPixelMap) {
         final String[] map = new String[pPixelMap.height()];
         for (int y = 0; y < pPixelMap.height(); y++) {
             final StringBuffer row = new StringBuffer();

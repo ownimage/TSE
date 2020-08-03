@@ -1,27 +1,19 @@
 package com.ownimage.framework.control.type;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ObjectTypeTEST {
-
-    public static class TestObject {
-        private final String mId;
-
-        public TestObject(final String pId) {
-            mId = pId;
-        }
-
-        @Override
-        public String toString() {
-            return mId;
-        }
-    }
 
     public static TestObject mInvalid = new TestObject("invalid");
     public static TestObject mValid = new TestObject("valid");
@@ -30,6 +22,7 @@ public class ObjectTypeTEST {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
+        LogManager.getLogManager().reset();
         mValidList = new Vector<TestObject>();
         mValidList.add(mValid);
         mValidList.add(mOther);
@@ -128,6 +121,19 @@ public class ObjectTypeTEST {
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    public static class TestObject {
+        private final String mId;
+
+        public TestObject(final String pId) {
+            mId = pId;
+        }
+
+        @Override
+        public String toString() {
+            return mId;
+        }
     }
 
 }

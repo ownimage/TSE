@@ -5,11 +5,19 @@
 package com.ownimage.framework.math;
 
 import com.ownimage.framework.util.Framework;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class IntegerPointTEST {
 
@@ -19,7 +27,8 @@ public class IntegerPointTEST {
     static IntegerPoint mIntegerPoint = new IntegerPoint(60, 50);
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass

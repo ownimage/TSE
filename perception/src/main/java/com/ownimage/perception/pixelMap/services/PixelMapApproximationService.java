@@ -74,10 +74,11 @@ public class PixelMapApproximationService {
             IProgressObserver progress) {
         var result = pixelMap.withAutoTrackChanges(false);
         result = process01_reset(result, progress);
-        result = process02_thin(result, progress, tolerance, lineCurvePreference);
+        result = process02_thin(result, tolerance, lineCurvePreference, progress);
         result = process03_generateNodes(result, progress);
+        result = process03b_removeEdgesBetweenTwoNodes(result, tolerance, lineCurvePreference, progress);
         result = process04b_removeBristles(result, tolerance, lineCurvePreference, progress);
-        result = process04a_removeLoneNodes(result, progress, tolerance, lineCurvePreference);
+        result = process04a_removeLoneNodes(result, tolerance, lineCurvePreference, progress);
         result = process05_generateChains(result, progress);
         result = process05a_findLoops(result, progress);
         result = process06_straightLinesRefineCorners(result, lineCurvePreference, progress);
@@ -126,9 +127,7 @@ public class PixelMapApproximationService {
     // TODO need to work out how to have a progress bar
     public ImmutablePixelMapData process02_thin(
             @NotNull ImmutablePixelMapData pixelMap,
-            IProgressObserver progress,
-            double tolerance,
-            double lineCurvePreference) {
+            double tolerance, double lineCurvePreference, IProgressObserver progress) {
         reportProgress(progress, "thinning ...", 0);
         var result = StrongReference.of(pixelMap);
         new Range2D(pixelMap.width(), pixelMap.height())
@@ -150,11 +149,35 @@ public class PixelMapApproximationService {
         return result.get();
     }
 
+    public ImmutablePixelMapData process03b_removeEdgesBetweenTwoNodes(
+            @NotNull ImmutablePixelMapData pixelMap,
+            double tolerance,
+            double lineCurvePreference,
+            IProgressObserver pProgressObserver) {
+        reportProgress(pProgressObserver, "Remove Edges between 2 Nodes ...", 0);
+        var result = StrongReference.of(pixelMap);
+        var removedPixels = new HashSet<Pixel>();
+        pixelMapService.forEachPixel(result.get(), pixel -> {
+            if (!pixelService.isNode(result.get(), pixel)
+                    && pixelService.isEdge(result.get(), pixel)
+                    && pixel.getNodeNeighbours(result.get()).stream().count() >= 2) {
+                result.update(r -> r.withData(r.data().set(pixel.getX(), pixel.getY(), (byte) 0)));
+                removedPixels.add(pixel);
+            }
+        });
+        removedPixels.stream()
+                .flatMap(p -> pixelMapService.stream8Neighbours(result.get(), p))
+                .map(p -> new Pixel(p))
+                .forEach(p -> result.update(r -> thin(r, p, tolerance, lineCurvePreference)));
+        removedPixels.stream()
+                .flatMap(p -> pixelMapService.stream8Neighbours(result.get(), p))
+                .forEach(p -> result.update(r -> pixelMapService.calcIsNode(r, p)._1));
+        return result.get();
+    }
+
     public ImmutablePixelMapData process04a_removeLoneNodes(
             @NotNull ImmutablePixelMapData pixelMap,
-            IProgressObserver pProgressObserver,
-            double tolerance,
-            double lineCurvePreference) {
+            double tolerance, double lineCurvePreference, IProgressObserver pProgressObserver) {
         var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {

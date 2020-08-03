@@ -54,7 +54,7 @@ public class PixelService {
         return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
-    public Pixel getNeighbour(@NotNull Pixel pixel, int pN) {
-        return pixel.add(mNeighbours[pN]);
+    public Pixel getNeighbour(@NotNull IntegerPoint pixel, int pN) {
+        return new Pixel(pixel.add(mNeighbours[pN]));
     }
 }

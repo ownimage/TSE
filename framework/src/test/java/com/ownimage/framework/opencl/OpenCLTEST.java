@@ -6,7 +6,10 @@ import com.aparapi.device.Device;
 import com.aparapi.internal.kernel.KernelManager;
 import lombok.val;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 public class OpenCLTEST {
 
@@ -14,6 +17,11 @@ public class OpenCLTEST {
     final double[] mResult = new double[SIZE];
     final double[] mAdd = new double[]{3.0d};
     final double[] mMul = new double[]{4.0d};
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     class TestKernel extends Kernel {
 

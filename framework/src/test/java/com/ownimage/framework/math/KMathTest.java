@@ -2,12 +2,18 @@ package com.ownimage.framework.math;
 
 import lombok.val;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.function.Function;
+import java.util.logging.LogManager;
 import java.util.stream.IntStream;
 
 public class KMathTest {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     @Test
     public void fromCenter_01() {

@@ -4,9 +4,12 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,11 +22,10 @@ public class PixelTest {
     private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
     private PixelService pixelService = context.getBean(PixelService.class);
 
-//    @BeforeClass
-//    public static void setUpBeforeClass() throws Exception {
-//        FXViewFactory.clearViewFactory();
-//        FXViewFactory.setAsViewFactory(false);
-//    }
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     @Test
     public void isEdge_00() {

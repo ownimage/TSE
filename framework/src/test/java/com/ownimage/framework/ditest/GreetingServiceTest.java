@@ -4,11 +4,14 @@ import com.ownimage.framework.ditest.subpackage.GreetingService;
 import com.ownimage.framework.ditest.subpackage.PersonService;
 import junit.framework.TestCase;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.logging.LogManager;
 
 import static org.mockito.Mockito.when;
 
@@ -20,6 +23,11 @@ public class GreetingServiceTest extends TestCase {
 
     @Mock
     private PersonService personService;
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     @Before
     public void before() {

@@ -1,8 +1,17 @@
 package com.ownimage.framework.opencl;
 
+import org.junit.BeforeClass;
+
+import java.util.logging.LogManager;
+
 public class AddTEST implements ITransform {
 
     private final double mAdd;
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     public AddTEST(final double pAdd) {
         mAdd = pAdd;

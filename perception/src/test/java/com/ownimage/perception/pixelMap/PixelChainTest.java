@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Optional;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -35,9 +36,14 @@ public class PixelChainTest {
     PixelMapData pixelMap;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setupViewFactory() throws Exception {
         FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory(false);
+    }
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @Before

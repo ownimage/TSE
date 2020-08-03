@@ -4,14 +4,23 @@
  */
 package com.ownimage.framework.control.type;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.logging.LogManager;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class IntegerTypeTEST {
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass

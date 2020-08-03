@@ -4,10 +4,13 @@ import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import junit.framework.TestCase;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.logging.LogManager;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
@@ -25,6 +28,12 @@ public class PixelServiceTest extends TestCase {
     private PixelMapData pixelMap;
     @Mock
     private ImmutableMap2D<Byte> data;
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
+
 
     @Test
     public void test_isNode_01() {

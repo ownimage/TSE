@@ -7,15 +7,25 @@ package com.ownimage.framework.queue;
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.queue.IJob.Priority;
 import com.ownimage.framework.queue.IJob.Status;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
 public class JobTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     class JobTest extends Job {
 

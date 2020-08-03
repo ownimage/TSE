@@ -8,20 +8,53 @@ import com.ownimage.framework.app.menu.MenuAction;
 import com.ownimage.framework.app.menu.MenuControl;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.ColorControl;
+import com.ownimage.framework.control.control.DoubleControl;
+import com.ownimage.framework.control.control.FileControl;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.ObjectControl;
+import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.ProgressControl;
+import com.ownimage.framework.control.control.StringControl;
+import com.ownimage.framework.control.layout.BorderLayout;
+import com.ownimage.framework.control.layout.HFlowLayout;
+import com.ownimage.framework.control.layout.HSplitLayout;
+import com.ownimage.framework.control.layout.IContainerList;
+import com.ownimage.framework.control.layout.INamedTabs;
 import com.ownimage.framework.control.layout.IViewable;
-import com.ownimage.framework.control.layout.*;
+import com.ownimage.framework.control.layout.ScrollLayout;
+import com.ownimage.framework.control.layout.VFlowLayout;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.factory.ViewFactoryDELEGATOR;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
 import com.ownimage.framework.undo.UndoRedoBuffer;
-import com.ownimage.framework.view.*;
+import com.ownimage.framework.view.IAppControlView;
+import com.ownimage.framework.view.IBorderView;
+import com.ownimage.framework.view.IDialogView;
+import com.ownimage.framework.view.IDoubleView;
+import com.ownimage.framework.view.IPictureView;
+import com.ownimage.framework.view.ISingleSelectView;
+import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.IViewFactory;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
 public class DoubleControlViewTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     private static class TestDoubleView implements IDoubleView {
 

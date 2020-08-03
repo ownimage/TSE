@@ -4,9 +4,9 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,7 +36,12 @@ public class VertexTest {
 
     @Mock
     PixelMapData pixelMap;
-    
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
+
     @Before
     public void before() {
         when(pixelMap.height()).thenReturn(100);

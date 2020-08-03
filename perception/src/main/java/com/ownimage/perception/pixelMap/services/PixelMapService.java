@@ -171,7 +171,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMapData setNode(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NonNull Pixel pixel,
+            @NonNull IntegerPoint pixel,
             boolean pValue) {
         var result = pixelMap;
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
@@ -185,7 +185,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMapData setData(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IntegerPoint pixel,
             boolean pState,
             byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
@@ -202,7 +202,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMapData nodeAdd(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NonNull Pixel pixel) {
+            @NonNull IntegerPoint pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -214,7 +214,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMapData nodeRemove(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NonNull Pixel pixel) {
+            @NonNull IntegerPoint pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -226,7 +226,7 @@ public class PixelMapService {
 
     public int countEdgeNeighboursTransitions(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NonNull Pixel pixel) {
+            @NonNull IntegerPoint pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
@@ -500,19 +500,19 @@ public class PixelMapService {
 
     public Tuple2<ImmutablePixelMapData, Boolean> calcIsNode(
             @NotNull ImmutablePixelMapData pixelMap,
-            @NotNull Pixel pixel) {
+            @NotNull IntegerPoint point) {
         boolean shouldBeNode = false;
         var pixelMapResult = pixelMap;
-        if (pixelService.isEdge(pixelMap, pixel.toIntegerPoint())) {
+        if (pixelService.isEdge(pixelMap, point)) {
             // here we use transitions to eliminate double counting connected neighbours
             // also note the the number of transitions is twice the number of neighbours
-            int transitionCount = countEdgeNeighboursTransitions(pixelMap, pixel);
+            int transitionCount = countEdgeNeighboursTransitions(pixelMap, point);
             if (transitionCount != 4) {
                 shouldBeNode = true;
-                pixelMapResult = setNode(pixelMap, pixel, true);
+                pixelMapResult = setNode(pixelMap, point, true);
             }
         }
-        return new Tuple2<>(setNode(pixelMapResult, pixel, shouldBeNode), shouldBeNode);
+        return new Tuple2<>(setNode(pixelMapResult, point, shouldBeNode), shouldBeNode);
     }
 
     public Tuple2<ImmutablePixelMapData, Stream<PixelChain>> generateChainsAndApproximate(
@@ -730,4 +730,16 @@ public class PixelMapService {
         return result.get();
     }
 
+
+    public Stream<IntegerPoint> stream8Neighbours(@NotNull ImmutablePixelMapData pixelMapData, @NotNull IntegerPoint center) {
+        return new Range2D(-1, 2, -1, 2).stream()
+                .map(ip -> center.add(ip))
+                .filter(ip -> !ip.equals(center))
+                .filter(ip -> isInBounds(pixelMapData, ip));
+    }
+
+    public boolean isInBounds(@NotNull ImmutablePixelMapData pixelMapData, @NotNull IntegerPoint point) {
+        return point.getX() >= 0 && point.getY() >= 0
+                && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
+    }
 }

@@ -1,11 +1,18 @@
 package com.ownimage.framework.opencl;
 
 import com.aparapi.Kernel;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Vector;
+import java.util.logging.LogManager;
 
 public class TransformSequenceTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     class TransformSequence extends Kernel {
 

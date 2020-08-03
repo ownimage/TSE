@@ -10,9 +10,12 @@ import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -21,6 +24,11 @@ public class PixelChainServiceTest {
 
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelChainService underTest = context.getBean(PixelChainService.class);
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     @Test
     public void resequence() {

@@ -6,11 +6,24 @@ package com.ownimage.framework.queue;
 
 import com.ownimage.framework.queue.IJob.Priority;
 import com.ownimage.framework.queue.IJob.Status;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.logging.LogManager;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ExecuteThreadTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     class JobTEST extends Job {
 

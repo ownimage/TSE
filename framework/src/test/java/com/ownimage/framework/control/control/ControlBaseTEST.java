@@ -17,10 +17,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.logging.LogManager;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ControlBaseTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     private ControlBase<IntegerControl, IntegerType, IntegerMetaType, Integer, IView> mControlBase;
 

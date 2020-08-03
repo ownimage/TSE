@@ -7,12 +7,15 @@ import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.logging.LogManager;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
@@ -28,13 +31,18 @@ public class PixelMapValidationServiceTest {
     public ExpectedException thrown = ExpectedException.none();
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
+    private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
     private PixelMapValidationService underTest = context.getBean(PixelMapValidationService.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory();
+        LogManager.getLogManager().reset();
+    }
 
+    @Before
+    public void createMap() {
         String[] input = {
                 "    N      ",
                 "    E      ",
@@ -94,13 +102,62 @@ public class PixelMapValidationServiceTest {
     }
 
     @Test
-    public void checkAllDataEdgesHave2Neighbours() {
+    public void checkAllDataEdgesHave2Neighbours_01() {
         // GIVEN
         var broken = pixelMap.withData(pixelMap.data().set(3, 2, EDGE));
         thrown.expectMessage("checkAllDataEdgesHave2Neighbours");
         // WHEN
         underTest.validate(broken);
         // THEN
+    }
+
+    @Test
+    public void checkAllDataEdgesHave2Neighbours_02() {
+        // GIVEN pixel map with valid useage of 3 neighbours
+        String[] input = {
+                "  N        ",
+                "  E        ",
+                "  E   EEEN ",
+                "  NEEE     ",
+                "  E        ",
+                "  E        ",
+                "  E        ",
+                "  N        ",
+        };
+        String[] expected = {
+                "  N        ",
+                "  E        ",
+                "  E   EEEN ",
+                "   NEE     ",
+                "  E        ",
+                "  E        ",
+                "  E        ",
+                "  N        ",
+        };
+        // WHEN
+        var actual = Utility.createMap(input, true);
+        // THEN
+        underTest.validate(pixelMap);
+        Utility.assertMapEquals(expected, Utility.toStrings(actual));
+    }
+
+    @Test
+    public void checkAllDataEdgesHave2Neighbours_03() {
+        // GIVEN pixel map with valid useage of 3 neighbours
+        String[] input = {
+                "     N        ",
+                "     E        ",
+                "     E        ",
+                "      NEEN    ",
+                "      E       ",
+                "      E       ",
+                "      N       ",
+        };
+        // WHEN
+        var actual = Utility.createMap(input, true);
+        // THEN
+        underTest.validate(pixelMap);
+        Utility.assertMapEquals(input, Utility.toStrings(actual));
     }
 
     @Test

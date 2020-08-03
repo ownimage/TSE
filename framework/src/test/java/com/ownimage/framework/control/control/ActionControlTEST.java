@@ -6,9 +6,20 @@ package com.ownimage.framework.control.control;
 
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 public class ActionControlTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     private Container mContainer;
 

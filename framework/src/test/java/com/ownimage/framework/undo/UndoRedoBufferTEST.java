@@ -3,9 +3,17 @@ package com.ownimage.framework.undo;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.IntegerControl;
 import com.ownimage.framework.util.Id;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.logging.LogManager;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class UndoRedoBufferTEST {
 
@@ -13,7 +21,8 @@ public class UndoRedoBufferTEST {
     private UndoRedoActionASSISTANT[] mUndoRedoActions;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass

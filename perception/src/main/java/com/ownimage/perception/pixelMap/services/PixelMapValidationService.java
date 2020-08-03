@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Range2D;
+import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
 import io.vavr.Tuple2;
@@ -106,12 +107,14 @@ public class PixelMapValidationService {
             @NotNull ImmutablePixelMapData pixelMap,
             @NotNull Set<IntegerPoint> dataEdges,
             @NotNull Set<IntegerPoint> dataNodes) {
+        var failure = StrongReference.of((IntegerPoint) null);
         var result = dataEdges.stream()
                 .filter(not(dataNodes::contains))
-                .filter(e -> countNonNullNeighbours(pixelMap, e) != 2)
+                .filter(ip -> !(countNonNullNeighbours(pixelMap, ip) == 2 || countEdgeNotNodeNeighbours(pixelMap, ip) == 2))
+                .peek(ip -> failure.set(ip))
                 .findFirst()
                 .isEmpty();
-        return throwErrorIfFalse(result, "checkAllDataEdgesHave2Neighbours failure");
+        return throwErrorIfFalse(result, "checkAllDataEdgesHave2Neighbours failure: " + failure.get());
     }
 
     /**
@@ -124,11 +127,20 @@ public class PixelMapValidationService {
      */
     public boolean checkAllDataNodesShouldBeNodes(
             @NotNull ImmutablePixelMapData pixelMap, @NotNull Set<IntegerPoint> dataNodes) {
+        var failure = StrongReference.of((IntegerPoint) null);
         var result = dataNodes.stream()
-                .filter(n -> !isNode(pixelMap, n))
+                .filter(n -> !shouldBeNode(pixelMap, n))
+                .peek(ip -> failure.set(ip))
                 .findFirst()
                 .isEmpty();
-        return throwErrorIfFalse(result, "checkAllDataNodesShouldBeNodes failure");
+        if (!result) { // check if it is a loop
+            result = pixelMap.pixelChains().stream()
+                    .filter(pc -> pc.getPixels().firstElement().orElseThrow().samePosition(failure.get()))
+                    .filter(pc -> pc.getPixels().lastElement().orElseThrow().samePosition(failure.get()))
+                    .findFirst()
+                    .isPresent();
+        }
+        return throwErrorIfFalse(result, "checkAllDataNodesShouldBeNodes failure: " + failure.get());
     }
 
     /**
@@ -136,7 +148,7 @@ public class PixelMapValidationService {
      * @return true if there are no edges or neighbours around the point
      */
     public boolean isSingleton(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
-        return isNode(pixelMap, point)
+        return shouldBeNode(pixelMap, point)
                 && stream8Neighbours(pixelMap, point)
                 .filter(p -> pixelMap.data().get(p.getX(), p.getY()) != NONE)
                 .findAny()
@@ -150,7 +162,7 @@ public class PixelMapValidationService {
      * @param point
      * @return if the point is a node in pixelMap
      */
-    public boolean isNode(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
+    public boolean shouldBeNode(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
         var edge = (pixelMap.data().get(point.getX(), point.getY()) & EDGE) == EDGE;
         if (!edge) {
             return false;
@@ -159,9 +171,25 @@ public class PixelMapValidationService {
         return countNonNullNeighbours(pixelMap, point) != 2;
     }
 
+    public boolean isDataNode(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
+        return (pixelMap.data().get(point.getX(), point.getY()) & NODE) == NODE;
+    }
+
+    public boolean isDataEdge(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
+        return (pixelMap.data().get(point.getX(), point.getY()) & EDGE) == EDGE;
+    }
+
     public int countNonNullNeighbours(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
         return (int) stream8Neighbours(pixelMap, point)
                 .filter(p -> pixelMap.data().get(p.getX(), p.getY()) != NONE)
+                .count();
+    }
+
+    public int countEdgeNotNodeNeighbours(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
+        return (int) stream8Neighbours(pixelMap, point)
+                .map(p -> pixelMap.data().get(p.getX(), p.getY()))
+                .filter(b -> (byte)(b & EDGE) == EDGE)
+                .filter(b -> (byte)(b & NODE) == 0)
                 .count();
     }
 
@@ -205,12 +233,14 @@ public class PixelMapValidationService {
             @NotNull Collection<IntegerPoint> dataNodes,
             @NotNull Map<IntegerPoint, Node> pixelMapNodes,
             @NotNull Set<IntegerPoint> singletonNodes) {
+        var failure = StrongReference.of((IntegerPoint) null);
         var result = dataNodes.stream()
                 .filter(n -> pixelMapNodes.get(n) == null)
                 .filter(not(singletonNodes::contains))
+                .peek(ip -> failure.set(ip))
                 .findFirst()
                 .isEmpty();
-        return throwErrorIfFalse(result, "checkAllDataNodesArePixelMapNodesOrSingletons failure");
+        return throwErrorIfFalse(result, "checkAllDataNodesArePixelMapNodesOrSingletons failure: " + failure.get());
     }
 
     public boolean throwErrorIfFalse(boolean result, @NotNull String message) {
@@ -260,4 +290,32 @@ public class PixelMapValidationService {
         return dataNodes;
     }
 
+    public String pixelAreaToString(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint centre, int size) {
+
+        var sb = new StringBuilder();
+        for (int y = centre.getY() - size; y <= centre.getY() + size; y++) {
+            for (int x = centre.getX() - size; x <= centre.getX() + size; x++) {
+                var ip = new IntegerPoint(x, y);
+                sb.append(pixelToString(pixelMap, ip));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    public String pixelToString(@NotNull ImmutablePixelMapData pixelMap, @NotNull IntegerPoint point) {
+        if (!isInBounds(pixelMap, point)) {
+            return "X";
+        }
+        if (isDataNode(pixelMap, point) && isDataEdge(pixelMap, point)) {
+            return "N";
+        }
+        if (isDataNode(pixelMap, point) && !isDataEdge(pixelMap, point)) {
+            return "n";
+        }
+        if (isDataEdge(pixelMap, point)) {
+            return "E";
+        }
+        return " ";
+    }
 }

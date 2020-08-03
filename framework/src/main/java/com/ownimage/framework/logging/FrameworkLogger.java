@@ -6,7 +6,11 @@
 package com.ownimage.framework.logging;
 
 import com.ownimage.framework.control.container.Container;
-import com.ownimage.framework.control.control.*;
+import com.ownimage.framework.control.control.ActionControl;
+import com.ownimage.framework.control.control.BooleanControl;
+import com.ownimage.framework.control.control.IControl;
+import com.ownimage.framework.control.control.IntegerControl;
+import com.ownimage.framework.control.control.ObjectControl;
 import com.ownimage.framework.control.event.IControlChangeListener;
 import com.ownimage.framework.control.layout.NamedTabs;
 import com.ownimage.framework.control.type.ObjectStringMetaType;
@@ -18,9 +22,24 @@ import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.javafx.DialogView;
 import lombok.NonNull;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import static com.ownimage.framework.control.container.NullContainer.NullContainer;
 
@@ -153,7 +172,6 @@ public class FrameworkLogger implements IControlChangeListener {// implements IC
     }
 
     public void read(final File pFile) {
-        System.out.println("Logging properties file:" + pFile.getAbsolutePath());
         try (final FileInputStream fstream = new FileInputStream(pFile)) {
             final java.util.Properties props = new java.util.Properties();
             props.load(fstream);

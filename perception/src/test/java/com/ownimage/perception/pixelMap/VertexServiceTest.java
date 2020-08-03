@@ -7,9 +7,12 @@ import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -25,6 +28,11 @@ public class VertexServiceTest {
     PixelMapData pixelMap;
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private VertexService vertexService = context.getBean(VertexService.class);
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     @Before
     public void before() {

@@ -3,6 +3,9 @@ package com.ownimage.framework.control.view;
 import com.ownimage.framework.control.control.IControl;
 import com.ownimage.framework.control.type.DoubleMetaType;
 import com.ownimage.framework.view.IDoubleView;
+import org.junit.BeforeClass;
+
+import java.util.logging.LogManager;
 
 public class ViewASSISTANT implements IDoubleView {
 
@@ -13,6 +16,11 @@ public class ViewASSISTANT implements IDoubleView {
 
     private boolean mVisible = true;
     private boolean mEnabled = false;
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     public ViewASSISTANT(final IControl pControl) {
         mControl = pControl;

@@ -7,11 +7,22 @@ package com.ownimage.framework.control.event;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.control.DoubleControl;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
 public class EventTest {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     class Listener implements IControlChangeListener<DoubleControl>, IControlValidator<DoubleControl> {
 

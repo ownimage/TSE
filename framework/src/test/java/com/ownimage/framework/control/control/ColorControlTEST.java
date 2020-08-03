@@ -8,14 +8,26 @@ import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.persist.PersistDBImpl;
 import com.ownimage.framework.undo.IUndoRedoProviderASSISTANT;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.logging.LogManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ColorControlTEST {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     private ColorControl mColorControl;
     private Container mContainer;

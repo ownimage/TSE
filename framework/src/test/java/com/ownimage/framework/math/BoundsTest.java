@@ -1,10 +1,22 @@
 package com.ownimage.framework.math;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.logging.LogManager;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class BoundsTest {
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
+
     @Test
     public void constructor_valid_0() {
         // GIVEN WHEN THEN

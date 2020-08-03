@@ -12,10 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Random;
 import java.util.logging.Level;
 
 public class SnapshotMap2DTest {
@@ -387,31 +383,4 @@ public class SnapshotMap2DTest {
         Assert.assertEquals(new Byte((byte) 3), mutable.get(7, 7));
     }
 
-    @Test
-    public void benchmark() {
-        FrameworkLogger.getInstance().setLevel(SnapshotMap2D.class.getCanonicalName(), Level.OFF);
-        final int ITERATIONS = 10000;
-        final int WIDTH = 1000;
-        final int HEIGHT = 1000;
-        final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("YYYY MM dd HH:mm:ss SSS");
-
-        //MutableMap2D<Byte> underTest = new MutableMap2D<>(WIDTH, HEIGHT, defaultValue);
-        //SnapshotMap2D<Byte>.Map2D underTest = new SnapshotMap2D<>(WIDTH, HEIGHT, defaultValue).getMutable();
-        SnapshotMap2D<Byte> underTest = new SnapshotMap2D<>(WIDTH, HEIGHT, defaultValue);
-
-        final Random random = new Random();
-        final LocalDateTime start = LocalDateTime.now();
-
-        for (int i = 0; i < ITERATIONS; i++) {
-            underTest = underTest.snapshot();
-            underTest.set(random.nextInt(WIDTH), random.nextInt(HEIGHT), (byte) random.nextInt(64));
-            if (i % 500 == 0) System.out.println("i = " + i);
-        }
-
-        final LocalDateTime end = LocalDateTime.now();
-        System.out.println("start    " + sdf.format(start));
-        System.out.println("end      " + sdf.format(end));
-        System.out.println("milli    " + Duration.between(start, end).toMillis());
-        System.out.println("milli/op " + (float) Duration.between(start, end).toMillis() / ITERATIONS);
-    }
 }

@@ -1,14 +1,21 @@
 package com.ownimage.framework.control.type;
 
 import com.ownimage.framework.math.Point;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
 public class PointTypeTEST {
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass

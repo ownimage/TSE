@@ -1,25 +1,28 @@
 package com.ownimage.framework.undo;
 
 import com.ownimage.framework.logging.FrameworkLogger;
-import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.LogManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SavePointBufferTEST {
-
-
-    public final static Logger mLogger = Framework.getLogger();
 
     private SavePointBuffer mSavePointBuffer;
     private UndoRedoActionSequenceASSISTANT[] mUndoRedoActions;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass

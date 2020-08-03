@@ -72,7 +72,7 @@ public class JTPBatchEngine extends BaseBatchEngine {
             @NonNull final TransformResultBatch pBatch,
             @NonNull final IBatchTransform pTransform
     ) {
-        Framework.log(mLogger, Level.INFO, () -> "Running batch, size=" + pBatch.getBatchSize());
+        mLogger.info(() -> "Running batch, size=" + pBatch.getBatchSize());
 //        transformNoThreads(pBatch, pTransform);
         transformNew(pBatch, pTransform);
 //        transformParallelStream(pBatch, pTransform);

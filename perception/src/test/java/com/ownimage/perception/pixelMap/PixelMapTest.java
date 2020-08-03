@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.logging.LogManager;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
@@ -58,9 +59,14 @@ public class PixelMapTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setupViewFactory() throws Exception {
         FXViewFactory.clearViewFactory();
         FXViewFactory.setAsViewFactory();
+    }
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass
@@ -79,7 +85,6 @@ public class PixelMapTest {
         // THEN
         Assert.assertEquals(new Byte((byte) 0), result.data().get(1, 1));
         val duration = Duration.between(start, end);
-        System.out.println("Duration = " + duration.toMillis());
         Assert.assertEquals(1, result.data().size());
     }
 
@@ -95,7 +100,6 @@ public class PixelMapTest {
         // THEN
         Assert.assertEquals(Byte.valueOf(EDGE), result.data().get(1, 1));
         val duration = Duration.between(start, end);
-        System.out.println("Duration = " + duration.toMillis());
         Assert.assertEquals(1, result.data().size());
     }
 
@@ -150,12 +154,11 @@ public class PixelMapTest {
                 "E    E    "
         };
         var pixelMap = Utility.createMap(input, false);
-        System.out.println(pixelMap.data().get(2, 0));
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, null, tolerance, lineCurvePreference);
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
@@ -180,7 +183,7 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);
@@ -204,7 +207,7 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, tolerance, lineCurvePreference, null);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -229,11 +232,11 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMap = pixelMapApproximationService.process01_reset(pixelMap, null);
-        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, null, tolerance, lineCurvePreference);
+        pixelMap = pixelMapApproximationService.process02_thin(pixelMap, tolerance, lineCurvePreference, null);
         pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
 
         // WHEN
-        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, null, tolerance, lineCurvePreference);
+        pixelMap = pixelMapApproximationService.process04a_removeLoneNodes(pixelMap, tolerance, lineCurvePreference, null);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -347,16 +350,44 @@ public class PixelMapTest {
     }
 
     @Test
+    public void process03b_removeEdgesBetweenTwoNodes() {
+        // GIVEN
+        String[] input = {
+                "    N      ",
+                "    E      ",
+                "    N      ",
+                "   E EEEN  ",
+                "  N        ",
+        };
+        String[] expected = {
+                "    N      ",
+                "           ",
+                "    N      ",
+                "     EEEN  ",
+                "  N        ",
+        };
+        var pixelMap = Utility.createMap(input, false);
+        // WHEN
+        pixelMap = pixelMapApproximationService.process03b_removeEdgesBetweenTwoNodes(pixelMap,  1.2d/1520, 1.2, null);
+
+        // THEN
+        String[] actual = Utility.toStrings(pixelMap);
+        Utility.assertMapEquals(expected, actual);
+    }
+
+    @Test
     public void process04b_deletePixelChain() {
         // GIVEN
         String[] input = {
                 "    N      ",
+                "    E      ",
                 "    E      ",
                 "    N      ",
                 "NEEN NEEN  ",
                 "           ",
         };
         String[] expected = {
+                "           ",
                 "           ",
                 "           ",
                 "    E      ",
@@ -418,9 +449,6 @@ public class PixelMapTest {
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
-        for (var s : Utility.toStrings(pixelMap)) {
-            System.out.println(s);
-        }
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));

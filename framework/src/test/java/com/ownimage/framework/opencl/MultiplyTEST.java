@@ -1,8 +1,17 @@
 package com.ownimage.framework.opencl;
 
+import org.junit.BeforeClass;
+
+import java.util.logging.LogManager;
+
 public class MultiplyTEST implements ITransform {
 
     private final double mMultiply;
+
+    @BeforeClass
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
+    }
 
     public MultiplyTEST(final double pMultiply) {
         mMultiply = pMultiply;

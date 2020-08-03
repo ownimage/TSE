@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.awt.*;
 import java.io.File;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,7 +33,8 @@ public class PictureTypeTEST implements IUndoRedoBufferProvider {
     private final ColorProperty mOOB = new ColorControl("mOOB", "mOOB", mContainer, Color.CYAN).getProperty();
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void turnLoggingOff() throws Exception {
+        LogManager.getLogManager().reset();
     }
 
     @AfterClass
