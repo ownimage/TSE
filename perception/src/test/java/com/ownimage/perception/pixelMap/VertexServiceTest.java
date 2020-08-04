@@ -16,8 +16,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,8 +23,8 @@ import static org.mockito.Mockito.when;
 
 public class VertexServiceTest {
 
-    //    @Mock
     PixelMap pixelMap;
+
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private VertexService vertexService = context.getBean(VertexService.class);
 
@@ -223,16 +221,17 @@ public class VertexServiceTest {
 
     @Test
     public void calcTangent_00() {
-         // GIVEN start and end segments null
+        // GIVEN start and end segments null
         int pixelIndex = 5;
         int vertexIndex = 2;
         int startSegmentIndex = vertexIndex - 1;
         int endSegmentIndex = vertexIndex;
-        var mockPixelChain = new MockPixelChainBuilder(11)
-                .with_getSegment_returns(startSegmentIndex, null)
-                .with_getSegment_returns(endSegmentIndex, null)
-                .build();
-        var mockPixelMap = new MockPixelMapBuilder().build();
+        var mockPixelChain = mock(PixelChain.class);
+        when(mockPixelChain.getPixelCount()).thenReturn(11);
+        when(mockPixelChain.getSegment(startSegmentIndex)).thenReturn(null);
+        when(mockPixelChain.getSegment(endSegmentIndex)).thenReturn(null);
+        when(mockPixelChain.getUHVWPoint(pixelMap, pixelIndex)).thenReturn(new Point(0, 0));
+        var mockPixelMap = mock(PixelMap.class);
         Vertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
@@ -252,11 +251,11 @@ public class VertexServiceTest {
         int startSegmentIndex = vertexIndex - 1;
         int endSegmentIndex = vertexIndex;
         var mockStartSegment = mock(ISegment.class);
-        var mockPixelChain = new MockPixelChainBuilder(11)
-                .with_getSegment_returns(startSegmentIndex, mockStartSegment)
-                .with_getSegment_returns(endSegmentIndex, null)
-                .build();
-        var mockPixelMap = new MockPixelMapBuilder().build();
+        var mockPixelChain = mock(PixelChain.class);
+        when(mockPixelChain.getPixelCount()).thenReturn(11);
+        when(mockPixelChain.getSegment(startSegmentIndex)).thenReturn(mockStartSegment);
+        when(mockPixelChain.getSegment(endSegmentIndex)).thenReturn(null);
+        when(mockPixelChain.getUHVWPoint(pixelMap, pixelIndex)).thenReturn(new Point(0, 0));
 
         Line expected = mock(Line.class);
         when(mockStartSegment.getEndTangent(pixelMap, mockPixelChain)).thenReturn(expected);
@@ -281,11 +280,12 @@ public class VertexServiceTest {
         int startSegmentIndex = vertexIndex - 1;
         int endSegmentIndex = vertexIndex;
         var mockEndSegment = mock(ISegment.class);
-        var mockPixelChain = new MockPixelChainBuilder(11)
-                .with_getSegment_returns(startSegmentIndex, null)
-                .with_getSegment_returns(endSegmentIndex, mockEndSegment)
-                .build();
-        var mockPixelMap = new MockPixelMapBuilder().build();
+        var mockPixelMap = mock(PixelMap.class);
+        var mockPixelChain = mock(PixelChain.class);
+        when(mockPixelChain.getPixelCount()).thenReturn(11);
+        when(mockPixelChain.getSegment(startSegmentIndex)).thenReturn(null);
+        when(mockPixelChain.getSegment(endSegmentIndex)).thenReturn(mockEndSegment);
+        when(mockPixelChain.getUHVWPoint(pixelMap, pixelIndex)).thenReturn(new Point(0, 0));
 
         Line expected = mock(Line.class);
         Line tangent = mock(Line.class);
@@ -303,56 +303,4 @@ public class VertexServiceTest {
         verify(mockEndSegment, times(1)).getStartTangent(mockPixelMap, mockPixelChain);
 //        verifyNoMoreInteractions(mockPixelChain, mockPixelMap, mockEndSegment);
     }
-
-
-    private class MockPixelBuilder {
-        Pixel mPixel = mock(Pixel.class);
-
-        public MockPixelBuilder() {
-        }
-
-        public MockPixelBuilder with_getUHVWMidPoint_returns(Point pPoint) {
-            when(mPixel.getUHVWMidPoint(any())).thenReturn(pPoint);
-            return this;
-        }
-
-        public Pixel build() {
-            return mPixel;
-        }
-    }
-
-    private class MockPixelChainBuilder {
-        PixelChain mPixelChain = mock(PixelChain.class);
-
-        public MockPixelChainBuilder(int pLength) {
-            when(mPixelChain.getPixelCount()).thenReturn(pLength);
-        }
-
-        MockPixelChainBuilder with_getPixel_returns(int pIndex, Pixel pPixel) {
-            when(mPixelChain.getPixel(eq(pIndex))).thenReturn(pPixel);
-            return this;
-        }
-
-        public MockPixelChainBuilder with_getSegment_returns(int pSegmentIndex, ISegment pSegment) {
-            when(mPixelChain.getSegment(pSegmentIndex)).thenReturn(pSegment);
-            return this;
-        }
-
-        public PixelChain build() {
-            return mPixelChain;
-        }
-
-    }
-
-    private class MockPixelMapBuilder {
-        PixelMap mPixelMap = mock(PixelMap.class);
-
-        public MockPixelMapBuilder() {
-        }
-
-        PixelMap build() {
-            return mPixelMap;
-        }
-    }
-
 }

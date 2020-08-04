@@ -6,6 +6,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -23,10 +24,14 @@ public class Vertex implements com.ownimage.perception.pixelMap.immutable.Vertex
 
     private final Point mPosition;
 
-    public Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
+    private Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
         mVertexIndex = pVertexIndex;
         mPixelIndex = pPixelIndex;
         mPosition = pPosition;
+    }
+
+    static public Vertex createVertexFOR_TEST_PURPOSES_ONLY(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
+        return new Vertex(pVertexIndex, pPixelIndex, pPosition);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class Vertex implements com.ownimage.perception.pixelMap.immutable.Vertex
 
     @Override
     public com.ownimage.perception.pixelMap.immutable.Vertex withVertexIndex(int vertexIndex) {
-        return new Vertex(vertexIndex, mPixelIndex, mPosition);
+        return ImmutableVertex.of(mPixelIndex, vertexIndex, mPosition);
     }
 
     @Override
@@ -70,16 +75,5 @@ public class Vertex implements com.ownimage.perception.pixelMap.immutable.Vertex
         return Objects.hash(mVertexIndex, mPixelIndex, mPosition);
     }
 
-    @SuppressWarnings("StringBufferReplaceableByString")
-    @Override
-    public String toString() {
-        return new StringBuilder()
-                .append("Vertex { ")
-                .append("vertexIndex: ").append(mVertexIndex)
-                .append(", pixelIndex: ").append(mPixelIndex)
-                .append(", position: ").append(mPosition)
-                .append(" }")
-                .toString();
-    }
 
 }

@@ -9,8 +9,8 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.val;
@@ -290,7 +290,7 @@ public class PixelMapActionService {
             }
             var vertexIndex = optionalNextVertex.get().getVertexIndex();
             var position = pixel.getUHVWMidPoint(pixelMap.height());
-            var newVertex = new Vertex(0, pixelIndex, position);
+            var newVertex = ImmutableVertex.of(pixelIndex, 0, position);
             var updatedPixelChain = StrongReference.of(pixelChain.changeVertexes(v -> v.add(optionalNextVertex.get().getVertexIndex(), newVertex)));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set( vertexIndex- 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.add( vertexIndex, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex))));

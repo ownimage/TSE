@@ -38,7 +38,7 @@ public class PixelMapUpgradeServiceTest {
         var pixelMap = Utility.createMap(10, 10);
         var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
         IntStream.range(4, 9).boxed()
-                .map(i -> new Vertex(i, 3 + 2 * i, new Point(i / 10.0d, (i + 3) / 10.0d)))
+                .map(i -> Vertex.createVertexFOR_TEST_PURPOSES_ONLY(i, 3 + 2 * i, new Point(i / 10.0d, (i + 3) / 10.0d)))
                 .forEach(v -> pixelChain.update(pc -> pc.changeVertexes(vs -> vs.add(v))));
         assertEquals(6, pixelChain.get().getVertexes().size());
         // WHEN
