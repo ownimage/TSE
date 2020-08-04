@@ -6,8 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -34,7 +34,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     private final ImmutableVectorClone<ISegment> mSegments;
 
     @Getter
-    private final ImmutableVectorClone<IVertex> mVertexes;
+    private final ImmutableVectorClone<VertexData> mVertexes;
 
     @Getter
     private final double mLength;
@@ -45,7 +45,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public PixelChain(@NotNull PixelMap pPixelMap, @NotNull Node pStartNode) {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<IVertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<VertexData>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
         mLength = 0.0d;
         mThickness = IPixelChain.Thickness.Normal;
     }
@@ -53,7 +53,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     public PixelChain(
             @NonNull ImmutableVectorClone<Pixel> pPixels,
             @NonNull ImmutableVectorClone<ISegment> pSegments,
-            @NonNull ImmutableVectorClone<IVertex> pVertexes,
+            @NonNull ImmutableVectorClone<VertexData> pVertexes,
             double pLength,
             @NonNull Thickness pThickness
     ) {

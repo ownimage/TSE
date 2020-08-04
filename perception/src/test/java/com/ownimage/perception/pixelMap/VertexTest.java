@@ -1,8 +1,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -61,7 +61,7 @@ public class VertexTest {
                 .with_getPixel_returns(index, mockPixel)
                 .build();
         // WHEN
-        IVertex underTest = vertexService.createVertex(pixelMap, mockPixelChain, 1, index);
+        VertexData underTest = vertexService.createVertex(pixelMap, mockPixelChain, 1, index);
         // THEN
         assertEquals(index, underTest.getPixelIndex());
         assertEquals(1, underTest.getVertexIndex());
@@ -80,7 +80,7 @@ public class VertexTest {
         var mockPixelMap = new MockPixelMapBuilder().build();
         var mockPixelChain = new MockPixelChainBuilder(10).build();
         // WHEN
-        IVertex underTest = vertexService.createVertex(mockPixelChain, 1, index, pointCtor);
+        VertexData underTest = vertexService.createVertex(mockPixelChain, 1, index, pointCtor);
         // THEN
         assertEquals(index, underTest.getPixelIndex());
         assertEquals(1, underTest.getVertexIndex());
@@ -95,8 +95,8 @@ public class VertexTest {
         // GIVEN
         var pixelChain1 = new MockPixelChainBuilder(10).build();
         var pixelChain2 = new MockPixelChainBuilder(11).build();
-        IVertex underTest1 = vertexService.createVertex(pixelMap, pixelChain1, 1, 5);
-        IVertex underTest2 = vertexService.createVertex(pixelMap, pixelChain2, 1, 5);
+        VertexData underTest1 = vertexService.createVertex(pixelMap, pixelChain1, 1, 5);
+        VertexData underTest2 = vertexService.createVertex(pixelMap, pixelChain2, 1, 5);
         // WHEN THEN
         assertTrue(underTest1.equals(underTest2));
         assertTrue(underTest2.equals(underTest1));
@@ -110,8 +110,8 @@ public class VertexTest {
         // GIVEN
         var pixelChain1 = new MockPixelChainBuilder(10).build();
         var pixelChain2 = new MockPixelChainBuilder(11).build();
-        IVertex underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
-        IVertex underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.2, 0.3));
+        VertexData underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
+        VertexData underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.2, 0.3));
         // WHEN THEN
         assertTrue(underTest1.equals(underTest2));
         assertTrue(underTest2.equals(underTest1));
@@ -125,8 +125,8 @@ public class VertexTest {
         // GIVEN
         var pixelChain1 = new MockPixelChainBuilder(10).build();
         var pixelChain2 = new MockPixelChainBuilder(11).build();
-        IVertex underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
-        IVertex underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.4, 0.5));
+        VertexData underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
+        VertexData underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.4, 0.5));
         // WHEN THEN
         assertFalse(underTest1.equals(underTest2));
         assertFalse(underTest2.equals(underTest1));
@@ -141,7 +141,7 @@ public class VertexTest {
         int pixelIndex = 5;
         var pixelChain = new MockPixelChainBuilder(11).build();
         when(pixelChain.getUHVWPoint(pixelMap, 5)).thenReturn(new Point(1.2, 3.4));
-        IVertex underTest1 = vertexService.createVertex(pixelMap, pixelChain, 1, pixelIndex);
+        VertexData underTest1 = vertexService.createVertex(pixelMap, pixelChain, 1, pixelIndex);
         var expected = "Vertex { vertexIndex: 1, pixelIndex: 5, position: Point{ x : 1.2, y: 3.4 } }";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
@@ -154,7 +154,7 @@ public class VertexTest {
         // GIVEN
         int pixelIndex = 5;
         var pixelChain = new MockPixelChainBuilder(11).build();
-        IVertex underTest1 = vertexService.createVertex(pixelChain, 1, pixelIndex, new Point(0.5, 0.3));
+        VertexData underTest1 = vertexService.createVertex(pixelChain, 1, pixelIndex, new Point(0.5, 0.3));
         var expected = "Vertex { vertexIndex: 1, pixelIndex: 5, position: Point{ x : 0.5, y: 0.3 } }";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
@@ -169,7 +169,7 @@ public class VertexTest {
         int pixelIndex = 5;
         var pixel = new MockPixelBuilder().build();
         var pixelChain = new MockPixelChainBuilder(11).with_getPixel_returns(pixelIndex, pixel).build();
-        IVertex underTest1 = vertexService.createVertex(pixelMap, pixelChain, 1, pixelIndex);
+        VertexData underTest1 = vertexService.createVertex(pixelMap, pixelChain, 1, pixelIndex);
         // WHEN THEN
         assertEquals(pixel, vertexService.getPixel(pixelChain, underTest1));
         verify(pixelChain, times(1)).getPixelCount();
@@ -190,7 +190,7 @@ public class VertexTest {
                 .with_getSegment_returns(segmentIndex, expected)
                 .with_getPixel_returns(pixelIndex, pixel)
                 .build();
-        IVertex underTest = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        VertexData underTest = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, vertexService.getStartSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();
@@ -211,7 +211,7 @@ public class VertexTest {
                 .with_getSegment_returns(segmentIndex, expected)
                 .with_getPixel_returns(pixelIndex, pixel)
                 .build();
-        IVertex underTest = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        VertexData underTest = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         // WHEN THEN
         assertEquals(expected, vertexService.getEndSegment(mockPixelChain, underTest));
         verify(mockPixelChain, times(1)).getPixelCount();

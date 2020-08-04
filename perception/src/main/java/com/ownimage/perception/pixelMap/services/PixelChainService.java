@@ -15,9 +15,9 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
@@ -77,7 +77,7 @@ public class PixelChainService {
                     return v;
                 })
                 .collect(Collectors.toList());
-        var vertexes = new ImmutableVectorClone<IVertex>().addAll(mappedVertexes);
+        var vertexes = new ImmutableVectorClone<VertexData>().addAll(mappedVertexes);
         return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.getLength(), pixelChain.getThickness());
     }
 
@@ -107,10 +107,10 @@ public class PixelChainService {
 
         // reverse vertexes
         int maxPixelIndex = result.getPixels().size() - 1;
-        Vector<IVertex> vertexes = new Vector<>();
+        Vector<VertexData> vertexes = new Vector<>();
         for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
-            IVertex vertex = result.getVertexes().get(i);
-            IVertex v = vertexService.createVertex(pixelMap, result, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
+            VertexData vertex = result.getVertexes().get(i);
+            VertexData v = vertexService.createVertex(pixelMap, result, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
         result = result.changeVertexes(v -> v.clear().addAll(vertexes));
@@ -294,7 +294,7 @@ public class PixelChainService {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
-    public IVertex getStartVertex(IPixelChain pixelChain) {
+    public VertexData getStartVertex(IPixelChain pixelChain) {
         return pixelChain.getVertexes().firstElement().orElse(null);
     }
 
@@ -387,7 +387,7 @@ public class PixelChainService {
         logger.fine(() -> String.format("offset = %s", offset));
 
         otherChain.getSegments().forEach(segment -> {
-            IVertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
+            VertexData end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
             builder.update(b -> b.changeVertexes(v -> v.add(end)));
             StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder.get(), builder.get().getSegments().size());
             builder.update(b -> b.changeSegments(s -> s.add(newSegment)));
@@ -434,7 +434,7 @@ public class PixelChainService {
 
             checkAllVertexesAttached();
 
-            IVertex vertex = getStartVertex(pixelChain);
+            VertexData vertex = getStartVertex(pixelChain);
             int index = 0;
             while (vertex != null) {
                 if (pixelChain.getVertexes().get(vertex.getVertexIndex()) != vertex) {
@@ -462,7 +462,7 @@ public class PixelChainService {
 
             int currentMax = -1;
             for (int i = 0; i < vertexSize; i++) {
-                IVertex v = pixelChain.getVertexes().get(i);
+                VertexData v = pixelChain.getVertexes().get(i);
                 if (i == 0 && v.getPixelIndex() != 0) {
                     throw new IllegalStateException("First vertex wrong)");
                 }
@@ -497,7 +497,7 @@ public class PixelChainService {
 //        }
 //
 //        sb.append("\n\nWalking\n");
-//        IVertex vertex = getStartVertex();
+//        VertexData vertex = getStartVertex();
 //        int index = 0;
 //        while (vertex != null) {
 //            sb.append(String.format("index = %s, vertex.getVertexIndex() = %s\n", index, vertex.getVertexIndex()));
@@ -678,7 +678,7 @@ public class PixelChainService {
         builder = builder.changeVertexes(v -> v.add(startVertex));
 
         int maxIndex = 0;
-        IVertex maxVertex = null;
+        VertexData maxVertex = null;
         ISegment maxSegment = null;
 
         int endIndex = 1;
@@ -728,7 +728,7 @@ public class PixelChainService {
 
 
             //TODO can probably remove these [] here as the lambdas have gone
-            IVertex[] joinVertex = new IVertex[]{pixelChain.getVertex(secondSegmentIndex)};
+            VertexData[] joinVertex = new VertexData[]{pixelChain.getVertex(secondSegmentIndex)};
             ISegment[] firstSegment = new ISegment[]{segment};
             ISegment[] secondSegment = new ISegment[]{pixelChain.getSegment(secondSegmentIndex)};
 
@@ -1083,11 +1083,11 @@ public class PixelChainService {
         var startPixelIndex = pixelChain.getLastVertex().getPixelIndex() + 1;
         var vertexIndex = pixelChain.getVertexCount();
         var segmentIndex = pixelChain.getSegmentCount();
-        var best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+        var best = new StrongReference<Tuple2<ISegment, VertexData>>(null);
         var result = StrongReference.of(pixelChain);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, ISegment, IVertex> bestFit;
+        Tuple3<Integer, ISegment, VertexData> bestFit;
 
         for (int i = startPixelIndex; i < result.get().getPixelCount(); i++) {
             try {
@@ -1165,10 +1165,10 @@ public class PixelChainService {
         result.update(r -> r.changeVertexes(v -> v.add(vertexService.createVertex(pixelMap, r, 0, 0))));
         var vertexIndex = result.get().getVertexCount();
         var segmentIndex = result.get().getSegmentCount();
-        var best = new StrongReference<Tuple2<ISegment, IVertex>>(null);
+        var best = new StrongReference<Tuple2<ISegment, VertexData>>(null);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, ISegment, IVertex> bestFit;
+        Tuple3<Integer, ISegment, VertexData> bestFit;
 
         for (int i = 4; i < result.get().getPixelCount(); i++) {
             try {
@@ -1227,7 +1227,7 @@ public class PixelChainService {
                 .forEach(seg -> segments.update(segs -> segs.add(seg)));
         // sequence vertexes
         var vertexIndex = new AtomicInteger();
-        var vertexes = StrongReference.of(new ImmutableVectorClone<IVertex>());
+        var vertexes = StrongReference.of(new ImmutableVectorClone<VertexData>());
         pixelChain.getVertexes().stream()
                 .map(v -> v.withVertexIndex(vertexIndex.getAndIncrement()))
                 .forEach(v -> vertexes.update(vs -> vs.add(v)));

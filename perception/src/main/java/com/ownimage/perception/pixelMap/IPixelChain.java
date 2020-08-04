@@ -4,8 +4,8 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
@@ -24,7 +24,7 @@ public interface IPixelChain {
 
     ImmutableVectorClone<ISegment> getSegments();
 
-    ImmutableVectorClone<IVertex> getVertexes();
+    ImmutableVectorClone<VertexData> getVertexes();
 
     default Stream<Pixel> streamPixels() {
         return getPixels().stream();
@@ -49,7 +49,7 @@ public interface IPixelChain {
         return getSegments().get(i);
     }
 
-    default IVertex getVertex(int i) {
+    default VertexData getVertex(int i) {
         if (getVertexes().size() <= i || i < 0) {
             return null;
         }
@@ -184,7 +184,7 @@ public interface IPixelChain {
         return getSegments().lastElement().orElse(null);
     }
 
-    default IVertex getLastVertex() {
+    default VertexData getLastVertex() {
         return getVertexes().lastElement().orElse(null);
     }
 
@@ -228,7 +228,7 @@ public interface IPixelChain {
     }
 
 
-    default PixelChain changeVertexes(Function<ImmutableVectorClone<IVertex>, ImmutableVectorClone<IVertex>> fn) {
+    default PixelChain changeVertexes(Function<ImmutableVectorClone<VertexData>, ImmutableVectorClone<VertexData>> fn) {
         return new PixelChain(
                 getPixels(),
                 getSegments(),
@@ -258,7 +258,7 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain setVertex(IVertex pVertex) {
+    default PixelChain setVertex(VertexData pVertex) {
         return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 

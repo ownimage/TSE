@@ -6,7 +6,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * The Vertex class, this class is immutable. Note: this class has a natural ordering that is inconsistent with equals.
  */
-public class Vertex implements IVertex {
+public class Vertex implements VertexData {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +48,7 @@ public class Vertex implements IVertex {
     }
 
     @Override
-    public IVertex withVertexIndex(int vertexIndex) {
+    public VertexData withVertexIndex(int vertexIndex) {
         return new Vertex(vertexIndex, mPixelIndex, mPosition);
     }
 

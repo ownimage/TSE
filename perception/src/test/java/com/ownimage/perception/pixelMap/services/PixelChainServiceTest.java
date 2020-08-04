@@ -6,8 +6,8 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Vertex;
-import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.VertexData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import org.junit.BeforeClass;
@@ -34,7 +34,7 @@ public class PixelChainServiceTest {
     public void resequence() {
         // GIVEN a PixelChain with the Segments and Vertexes messed up
         var pixelMap = mock(PixelMap.class);
-        var vertexes = new ImmutableVectorClone<IVertex>()
+        var vertexes = new ImmutableVectorClone<VertexData>()
                 .add(new Vertex(0, 0, new Point(0, 3)))
                 .add(new Vertex(0, 10, new Point(1, 4)))
                 .add(new Vertex(0, 20, new Point(2, 5)));
