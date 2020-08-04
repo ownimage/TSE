@@ -6,9 +6,9 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
+import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
-import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
     private final ImmutableVectorClone<Pixel> mPixels;
 
     @Getter
-    private final ImmutableVectorClone<ISegment> mSegments;
+    private final ImmutableVectorClone<AbstractSegment> mSegments;
 
     @Getter
     private final ImmutableVectorClone<Vertex> mVertexes;
@@ -52,7 +52,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
 
     public PixelChain(
             @NonNull ImmutableVectorClone<Pixel> pPixels,
-            @NonNull ImmutableVectorClone<ISegment> pSegments,
+            @NonNull ImmutableVectorClone<AbstractSegment> pSegments,
             @NonNull ImmutableVectorClone<Vertex> pVertexes,
             double pLength,
             @NonNull Thickness pThickness

@@ -5,10 +5,10 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
-import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,8 +38,8 @@ public class PixelChainServiceTest {
                 .add(ImmutableVertex.of(0, 0, new Point(0, 3)))
                 .add(ImmutableVertex.of(10, 0, new Point(1, 4)))
                 .add(ImmutableVertex.of(20, 0, new Point(2, 5)));
-        var pixelChainIn = new PixelChain(new ImmutableVectorClone<Pixel>(), new ImmutableVectorClone<ISegment>(), vertexes, 0.0d, IPixelChain.Thickness.Normal);
-        var segments = new ImmutableVectorClone<ISegment>()
+        var pixelChainIn = new PixelChain(new ImmutableVectorClone<Pixel>(), new ImmutableVectorClone<AbstractSegment>(), vertexes, 0.0d, IPixelChain.Thickness.Normal);
+        var segments = new ImmutableVectorClone<AbstractSegment>()
                 .add(SegmentFactory.createTempStraightSegment(pixelMap, pixelChainIn, 0))
                 .add(SegmentFactory.createTempStraightSegment(pixelMap, pixelChainIn, 0));
         pixelChainIn = pixelChainIn.changeSegments(s -> segments);

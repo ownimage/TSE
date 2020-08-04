@@ -1,9 +1,9 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
-import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
@@ -184,7 +184,7 @@ public class VertexTest {
         int pixelIndex = 5;
         int vertexIndex = 2;
         int segmentIndex = vertexIndex - 1;
-        ISegment expected = mock(ISegment.class);
+        AbstractSegment expected = mock(AbstractSegment.class);
         var pixel = new Pixel(5, 3);
         var mockPixelChain = new MockPixelChainBuilder(11)
                 .with_getSegment_returns(segmentIndex, expected)
@@ -205,7 +205,7 @@ public class VertexTest {
         int pixelIndex = 5;
         int vertexIndex = 2;
         int segmentIndex = vertexIndex;
-        ISegment expected = mock(ISegment.class);
+        AbstractSegment expected = mock(AbstractSegment.class);
         var pixel = new Pixel(5, 3);
         var mockPixelChain = new MockPixelChainBuilder(11)
                 .with_getSegment_returns(segmentIndex, expected)
@@ -247,7 +247,7 @@ public class VertexTest {
             return this;
         }
 
-        public MockPixelChainBuilder with_getSegment_returns(int pSegmentIndex, ISegment pSegment) {
+        public MockPixelChainBuilder with_getSegment_returns(int pSegmentIndex, AbstractSegment pSegment) {
             when(mPixelChain.getSegment(pSegmentIndex)).thenReturn(pSegment);
             return this;
         }

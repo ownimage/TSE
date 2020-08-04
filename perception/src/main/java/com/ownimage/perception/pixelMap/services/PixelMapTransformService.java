@@ -9,8 +9,8 @@ import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.render.ITransformResult;
 import io.vavr.Tuple2;
 import lombok.val;
@@ -114,7 +114,7 @@ public class PixelMapTransformService {
         var aspectRatio = pixelMapService.aspectRatio(pixelMap);
         // to prevent the expensive closerThanActual being run against the same segment more than once they
         // are condensed into a set.
-        var candidateSegments = new HashSet<Tuple2<PixelChain, ISegment>>();
+        var candidateSegments = new HashSet<Tuple2<PixelChain, AbstractSegment>>();
         for (int x = (int) Math.floor((uhvw.getX() - maxThickness) * width / aspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxThickness) * width / aspectRatio) + 1; x++) {
             for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * height)) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * height) + 1; y++) {
                 if (0 <= x && x < width && 0 <= y && y < height) {
@@ -133,7 +133,7 @@ public class PixelMapTransformService {
         return result.get();
     }
 
-    public Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(
+    public Optional<ImmutableSet<Tuple2<PixelChain, AbstractSegment>>> getSegments(
             @NotNull ImmutablePixelMap pixelMap, int x, int y) {
         Framework.checkParameterGreaterThanEqual(mLogger, x, 0, "x");
         Framework.checkParameterLessThan(mLogger, x, pixelMap.width(), "x");

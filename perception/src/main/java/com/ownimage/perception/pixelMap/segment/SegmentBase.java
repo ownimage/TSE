@@ -5,29 +5,10 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.framework.math.Line;
-import com.ownimage.framework.math.Point;
-import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.IPixelChain;
-import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.Vertex;
-import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.VertexService;
-import lombok.val;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 
-import java.awt.*;
-import java.util.logging.Logger;
+public abstract class SegmentBase extends AbstractSegment {
 
-public abstract class SegmentBase implements ISegment {
-
-    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    public static VertexService vertexService = context.getBean(VertexService.class);
-
-    private final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
 
     private final int mSegmentIndex;
@@ -43,103 +24,8 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        double error = 0.0d;
-        for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
-            double distance = distance(pPixelMap, pPixelChain, uhvw);
-
-            error += distance * distance;
-        }
-
-        if (error < 0.0d) {
-            mLogger.warning("-ve error");
-        }
-
-        return error;
-    }
-
-    @Override
-    public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel) {
-        val uhvw = pPixel.getUHVWMidPoint(pPixelMap.height());
-        val distance = distance(pPixelMap, pPixelChain, uhvw);
-        return distance * distance;
-    }
-
-    @Override
     public int getSegmentIndex() {
         return mSegmentIndex;
-    }
-
-    @Override
-    public boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public abstract double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
-
-    double getActualThickness(IPixelMapTransformSource pSource, IPixelChain pPixelChain, double pPosition) {
-        return pPixelChain.getActualThickness(pSource, pPosition);
-    }
-
-    @Override
-    public int getEndIndex(IPixelChain pPixelChain) {
-        return pPixelChain.getVertex(mSegmentIndex + 1).getPixelIndex();
-    }
-
-    @Override
-    public Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
-    }
-
-    @Override
-    public Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getEndVertex(pPixelChain).getPosition();
-    }
-
-    @Override
-    public Vertex getEndVertex(IPixelChain pPixelChain) {
-        return pPixelChain.getVertex(mSegmentIndex + 1);
-    }
-
-    @Override
-    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getPixelLength(IPixelChain pPixelChain) {
-        int length;
-
-        if (getStartIndex(pPixelChain) == 0) {
-            length = 1 + getEndIndex(pPixelChain);
-        } else {
-            length = getEndIndex(pPixelChain) - getStartIndex(pPixelChain);
-        }
-
-        return length;
-    }
-
-    @Override
-    public int getStartIndex(IPixelChain pPixelChain) {
-        return pPixelChain.getVertex(mSegmentIndex).getPixelIndex();
     }
 
     @Override
@@ -147,56 +33,4 @@ public abstract class SegmentBase implements ISegment {
         return mStartPosition;
     }
 
-    @Override
-    public Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return new Line(
-                getStartUHVWPoint(pPixelMap, pPixelChain),
-                getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
-        );
-    }
-
-    @Override
-    public Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getStartVertex(pPixelChain).getPosition();
-    }
-
-    @Override
-    public Vertex getStartVertex(IPixelChain pPixelChain) {
-        return pPixelChain.getVertex(mSegmentIndex);
-    }
-
-    @Override
-    public void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
-    }
-
-    public boolean noPixelFurtherThan(PixelMap pPixelMap, IPixelChain pPixelChain, double pDistance) {
-        for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
-            Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
-            if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "SegmentBase[" + mSegmentIndex + "]";
-    }
-
-    @Override
-    public ISegment getNextSegment(IPixelChain pixelChain) {
-        return vertexService.getEndSegment(pixelChain, getEndVertex(pixelChain));
-    }
-
-    @Override
-    public ISegment getPreviousSegment(IPixelChain pixelChain) {
-        return vertexService.getStartSegment(pixelChain, getEndVertex(pixelChain));
-    }
-
-    @Override
-    public boolean containsPixelIndex(IPixelChain pPixelChain, int pIndex) {
-        return getStartIndex(pPixelChain) <= pIndex && pIndex <= getEndIndex(pPixelChain);
-    }
 }
