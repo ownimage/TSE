@@ -1,7 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
@@ -33,7 +33,7 @@ public class PixelChainTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @Mock
-    PixelMapData pixelMap;
+    PixelMap pixelMap;
 
     @BeforeClass
     public static void setupViewFactory() throws Exception {
@@ -48,7 +48,7 @@ public class PixelChainTest {
 
     @Before
     public void before() {
-        pixelMap = mock(PixelMapData.class);
+        pixelMap = mock(PixelMap.class);
         when(pixelMap.height()).thenReturn(100);
         when(pixelMap.width()).thenReturn(100);
     }

@@ -11,7 +11,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -89,7 +89,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
     private int[][] mData;
     private int[][] mMagnitude;
     private IPictureSource sourceImage;
-    private ImmutablePixelMapData edgeData;
+    private ImmutablePixelMap edgeData;
 
     private float gaussianKernelRadius;
     private float lowThreshold;
@@ -301,7 +301,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public ImmutablePixelMapData getEdgeData() {
+    public ImmutablePixelMap getEdgeData() {
         return edgeData;
     }
 
@@ -692,7 +692,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
      */
 
     @Override
-    public void setEdgeData(final ImmutablePixelMapData edgeData) {
+    public void setEdgeData(final ImmutablePixelMap edgeData) {
         this.edgeData = edgeData;
     }
 
@@ -826,7 +826,7 @@ public class CannyEdgeDetectorJavaThreads implements ICannyEdgeDetector {
         // NOTE: There is currently no mechanism for obtaining the edge data
         // in any other format other than an INT_ARGB type BufferedImage.
         // This may be easily remedied by providing alternative accessors.
-        edgeData = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
+        edgeData = ImmutablePixelMap.builder().width(width).height(height).is360(true).build();
 
         double tolerance = mTransform.getLineTolerance() / mTransform.getHeight();
         double lineCurvePreference = mTransform.getLineCurvePreference();

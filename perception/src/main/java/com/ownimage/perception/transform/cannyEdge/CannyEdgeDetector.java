@@ -9,7 +9,7 @@ import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.control.type.IPictureSource;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -99,7 +99,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     private float[] yGradient;
 
     private boolean mKeepRunning;
-    private ImmutablePixelMapData mPixelMap;
+    private ImmutablePixelMap mPixelMap;
     private CannyEdgeTransform mTransform;
 
     // constructors
@@ -324,7 +324,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
      */
 
     @Override
-    public ImmutablePixelMapData getEdgeData() {
+    public ImmutablePixelMap getEdgeData() {
         return mPixelMap;
     }
 
@@ -601,7 +601,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
     }
 
     @Override
-    public void setEdgeData(final ImmutablePixelMapData pPixelMap) {
+    public void setEdgeData(final ImmutablePixelMap pPixelMap) {
         mPixelMap = pPixelMap;
     }
 
@@ -660,7 +660,7 @@ public class CannyEdgeDetector implements ICannyEdgeDetector {
 
     private void writeEdges(final int pixels[]) {
         if (mPixelMap == null || mPixelMap.width() != width || mPixelMap.height() != height) {
-            mPixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(true).build();
+            mPixelMap = ImmutablePixelMap.builder().width(width).height(height).is360(true).build();
         }
 
         double tolerance = mTransform.getLineTolerance() / mTransform.getHeight();

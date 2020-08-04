@@ -1,7 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -134,8 +134,8 @@ public class Utility {
         };
     }
 
-    public static ImmutablePixelMapData createMap(final int pX, final int pY) {
-        var pixelMap = ImmutablePixelMapData.builder().width(pX).height(pY).is360(true).build();
+    public static ImmutablePixelMap createMap(final int pX, final int pY) {
+        var pixelMap = ImmutablePixelMap.builder().width(pX).height(pY).is360(true).build();
         var transformSource = Utility.getDefaultTransformSource(pY);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -146,12 +146,12 @@ public class Utility {
         return getDefaultTransformSource(map.length);
     }
 
-    public static ImmutablePixelMapData createMap(final String[] map, boolean process) {
+    public static ImmutablePixelMap createMap(final String[] map, boolean process) {
         return createMap(map, getDefaultTransformSource(map.length), process);
     }
 
-    public static ImmutablePixelMapData createMap(String[] map, IPixelMapTransformSource transformSource, boolean process) {
-        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder()
+    public static ImmutablePixelMap createMap(String[] map, IPixelMapTransformSource transformSource, boolean process) {
+        ImmutablePixelMap pixelMap = ImmutablePixelMap.builder()
                 .width(map[0].length()).height(map.length).is360(true).build();
         pixelMap = setMap(pixelMap, map);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
@@ -161,7 +161,7 @@ public class Utility {
                 : pixelMap;
     }
 
-    public static String[] toStrings(final ImmutablePixelMapData pPixelMap) {
+    public static String[] toStrings(final ImmutablePixelMap pPixelMap) {
         final String[] map = new String[pPixelMap.height()];
         for (int y = 0; y < pPixelMap.height(); y++) {
             final StringBuffer row = new StringBuffer();
@@ -176,8 +176,8 @@ public class Utility {
         return map;
     }
 
-    private static ImmutablePixelMapData setMap(final PixelMapData pixelMap, final String[] map) {
-        var result = ImmutablePixelMapData.copyOf(pixelMap);
+    private static ImmutablePixelMap setMap(final PixelMap pixelMap, final String[] map) {
+        var result = ImmutablePixelMap.copyOf(pixelMap);
         if (map.length != pixelMap.height())
             throw new IllegalArgumentException("map.pixelLength != pixelMap.getHeight()");
         int y = 0;

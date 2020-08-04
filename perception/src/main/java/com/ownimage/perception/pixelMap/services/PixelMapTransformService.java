@@ -9,7 +9,7 @@ import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.render.ITransformResult;
 import io.vavr.Tuple2;
@@ -43,7 +43,7 @@ public class PixelMapTransformService {
     }
 
     public void transform(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @Nullable IPixelMapTransformSource transformSource,
             @NotNull ITransformResult renderResult) {
         var point = renderResult.getPoint();
@@ -54,7 +54,7 @@ public class PixelMapTransformService {
     }
 
     public Color transformGetPixelColor(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
             @NotNull Color color) {
@@ -68,7 +68,7 @@ public class PixelMapTransformService {
     }
 
     public Color transformGetLineColor(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
             @NotNull Color color
@@ -81,7 +81,7 @@ public class PixelMapTransformService {
     }
 
     public Color transformGetLineColor(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
             @NotNull Color color,
@@ -99,7 +99,7 @@ public class PixelMapTransformService {
     }
 
     private boolean isAnyLineCloserThan(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
             double pThinWidth,
@@ -134,7 +134,7 @@ public class PixelMapTransformService {
     }
 
     public Optional<ImmutableSet<Tuple2<PixelChain, ISegment>>> getSegments(
-            @NotNull ImmutablePixelMapData pixelMap, int x, int y) {
+            @NotNull ImmutablePixelMap pixelMap, int x, int y) {
         Framework.checkParameterGreaterThanEqual(mLogger, x, 0, "x");
         Framework.checkParameterLessThan(mLogger, x, pixelMap.width(), "x");
         Framework.checkParameterGreaterThanEqual(mLogger, y, 0, "y");
@@ -144,7 +144,7 @@ public class PixelMapTransformService {
     }
 
     public Color getMaxiLineShadowColor(
-            @NotNull ImmutablePixelMapData pixelMap,
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
             @NotNull Color pColor) {

@@ -44,7 +44,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
@@ -118,8 +118,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
 
-    private ImmutablePixelMapData mPixelMap;
-    private ImmutablePixelMapData mUndoPixelMap;
+    private ImmutablePixelMap mPixelMap;
+    private ImmutablePixelMap mUndoPixelMap;
     private IDialogView mEditPixelMapDialogView;
     private IView mView;
     private ReentrantLock mViewEnabledLock = new ReentrantLock();
@@ -188,19 +188,19 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mZoom.setValue(mZoom.getValue() - 1);
     }
 
-    public ImmutablePixelMapData getPixelMap() {
+    public ImmutablePixelMap getPixelMap() {
         return mPixelMap;
     }
 
-    private void setPixelMap(ImmutablePixelMapData pPixelMap) {
+    private void setPixelMap(ImmutablePixelMap pPixelMap) {
         mPixelMap = pPixelMap;
     }
 
-    private ImmutablePixelMapData getUndoPixelMap() {
+    private ImmutablePixelMap getUndoPixelMap() {
         return mUndoPixelMap;
     }
 
-    private void setUndoPixelMap(ImmutablePixelMapData pUndoPixelMap) {
+    private void setUndoPixelMap(ImmutablePixelMap pUndoPixelMap) {
         mUndoPixelMap = pUndoPixelMap;
     }
 
@@ -351,9 +351,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mEditPixelMapDialogView;
     }
 
-    public ImmutablePixelMapData showDialog() {
+    public ImmutablePixelMap showDialog() {
         mPixelMapUndoRedoBuffer = new EPMDUndoRedoBuffer();
-        ImmutablePixelMapData pixelMap = mCannyEdgeTransform.getPixelMap().orElseThrow();
+        ImmutablePixelMap pixelMap = mCannyEdgeTransform.getPixelMap().orElseThrow();
         pixelMapService.checkCompatibleSize(getPixelMap(), pixelMap);
         setPixelMap(pixelMap);
         setUndoPixelMap(pixelMap);
@@ -647,7 +647,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (pPixels.isEmpty()) {
             return false;
         }
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         // TODO shouldnt really set when not needed
         setPixelMap(pixelMapActionService.actionPixelOn(getPixelMap(), pPixels, getLineTolerance(), getLineCurvePreference()));
         if (getPixelMap() != undo) {
@@ -658,7 +658,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private boolean actionPixelOn(@NotNull Pixel pPixel) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         // TODO shouldnt really set when not needed
         setPixelMap(pixelMapActionService.actionPixelOn(getPixelMap(), Lists.newArrayList(pPixel), getLineTolerance(), getLineCurvePreference()));
         if (getPixelMap() != undo) {
@@ -871,7 +871,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private boolean actionPixelOff(@NonNull Pixel pPixel) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionPixelOff(getPixelMap(), pPixel, getCursorSize(), getLineTolerance(), getLineCurvePreference()));
         boolean changesMade = getPixelMap() != undo;
         if (changesMade) {
@@ -880,7 +880,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return changesMade;
     }
 
-    private void addUndoRedoEntry(String pDescription, ImmutablePixelMapData pUndo, ImmutablePixelMapData pRedo) {
+    private void addUndoRedoEntry(String pDescription, ImmutablePixelMap pUndo, ImmutablePixelMap pRedo) {
         getUndoRedoBuffer().add(pDescription, () -> setPixelMap(pUndo), () -> setPixelMap(pRedo));
     }
 
@@ -920,7 +920,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (pPixels.isEmpty()) {
             return false;
         }
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionDeletePixelChain(getPixelMap(), pPixels, getLineTolerance(), getLineCurvePreference()));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Delete PixelChain", undo, getPixelMap());
@@ -930,7 +930,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private boolean actionPixelChainVertex(@NonNull Pixel pixel, boolean add) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         if (add) {
             setPixelMap(pixelMapActionService.actionVertexAdd(getPixelMap(), pixel, getLineCurvePreference()));
         } else {
@@ -971,7 +971,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 break;
         }
 
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionSetPixelChainThickness(getPixelMap(), pPixels, mapper));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
@@ -981,7 +981,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private boolean actionPixelToggle(@NonNull Pixel pPixel) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         graffitiPixelWorkingColor(pPixel);
         setPixelMap(pixelMapActionService.actionPixelToggle(getPixelMap(), pPixel, getLineTolerance(), getLineCurvePreference()));
         addUndoRedoEntry("Action Pixel Toggle", undo, getPixelMap());
@@ -989,7 +989,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private boolean actionPixelChainDeleteAllButThis(@NonNull Pixel pPixel) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionPixelChainDeleteAllButThis(getPixelMap(), pPixel));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Delete all but this PixelChain", undo, getPixelMap());
@@ -999,7 +999,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     synchronized private boolean actionPixelChainApproximateCurvesOnly(@NonNull Pixel pPixel) {
-        ImmutablePixelMapData undo = getPixelMap();
+        ImmutablePixelMap undo = getPixelMap();
 //        setPixelMap(pixelMapActionService.actionPixelChainApproximateCurvesOnly(getPixelMap(), mCannyEdgeTransform, pPixel));
         setPixelMap(pixelMapActionService.actionRerefine(getPixelMap(), mCannyEdgeTransform));
         if (undo != getPixelMap()) {

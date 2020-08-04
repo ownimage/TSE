@@ -13,7 +13,7 @@ import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 
 @Value.Immutable
-public interface PixelMapData {
+public interface PixelMap {
 
     @Value.Default
     default int width() {
@@ -64,13 +64,13 @@ public interface PixelMapData {
         return (double) width() / height();
     }
 
-    ImmutablePixelMapData withData(@NotNull ImmutableMap2D<Byte> data);
+    ImmutablePixelMap withData(@NotNull ImmutableMap2D<Byte> data);
 
-    ImmutablePixelMapData withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);
+    ImmutablePixelMap withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);
 
-    ImmutablePixelMapData withPixelChains(@NotNull ImmutableSet<PixelChain> pixelChains);
+    ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<PixelChain> pixelChains);
 
-    ImmutablePixelMapData withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex);
+    ImmutablePixelMap withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, ISegment>>> segmentIndex);
 
-    ImmutablePixelMapData withAutoTrackChanges(boolean autoTrackChanges);
+    ImmutablePixelMap withAutoTrackChanges(boolean autoTrackChanges);
 }

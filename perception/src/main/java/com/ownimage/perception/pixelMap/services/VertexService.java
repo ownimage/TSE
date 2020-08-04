@@ -8,7 +8,7 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.IVertex;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VertexService {
 
-    public IVertex createVertex(PixelMapData pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
+    public IVertex createVertex(PixelMap pPixelMap, IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
@@ -46,7 +46,7 @@ public class VertexService {
      * @param pixelChain the Pixel Chain performing this operation
      * @param pixelMap   the PixelMap performing this operation
      */
-    public Line calcTangent(PixelMapData pixelMap, IPixelChain pixelChain, IVertex vertex) {
+    public Line calcTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex) {
         Line tangent;
         ISegment startSegment = getStartSegment( pixelChain, vertex);
         ISegment endSegment = getEndSegment( pixelChain, vertex);
@@ -81,7 +81,7 @@ public class VertexService {
      * @param pLength        the pixelLength in Pixels to count each way
      * @return the calculated tangent
      */
-    public Line calcLocalTangent(PixelMapData pixelMap, IPixelChain pixelChain, IVertex vertex, int pLength) {
+    public Line calcLocalTangent(PixelMap pixelMap, IPixelChain pixelChain, IVertex vertex, int pLength) {
         val ltStartIndex = KMath.max(vertex.getPixelIndex() - pLength, 0);
         val ltEndIndex = KMath.min(vertex.getPixelIndex() + pLength, pixelChain.getMaxPixelIndex());
         val ltStartPoint = pixelChain.getUHVWPoint(pixelMap, ltStartIndex);

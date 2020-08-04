@@ -27,7 +27,7 @@ import com.ownimage.perception.app.Perception;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
@@ -161,7 +161,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private final DoubleControl mShadowOpacity =
             new DoubleControl("Shadow Opacity", "shadowOpacity", getContainer(), 1.0d);
 
-    private ImmutablePixelMapData mPixelMap; // this is the picture from the file processed for edges
+    private ImmutablePixelMap mPixelMap; // this is the picture from the file processed for edges
 
     public CannyEdgeTransform(Perception pPerception) {
         super("Canny Edge", "cannyEdge");
@@ -432,7 +432,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
 
         // TODO need to change the 360 value to one that is generated from something
         // TODO the width and height should come from the PixelMap ... or it should thrown an error if they are different
-        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(getWidth()).height(getHeight()).build();
+        ImmutablePixelMap pixelMap = ImmutablePixelMap.builder().width(getWidth()).height(getHeight()).build();
         if (pixelMapService.canRead(pDB, pId + "." + getPropertyName())) {
             //pixelMap.read(pDB, pId + "." + getPropertyName());
             pixelMap = pixelMapService.read(pDB, pId + "." + getPropertyName());
@@ -522,7 +522,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             getProgressControl().setVisible(true);
             getProgressControl().setProgress("Working ...", 50);
 
-            ImmutablePixelMapData pixelMap = null;
+            ImmutablePixelMap pixelMap = null;
             SplitTimer.split("regeneratePixelMap() start");
             ICannyEdgeDetector detector = mGenerateEdgesDialog.createCannyEdgeDetector(CannyEdgeDetectorFactory.Type.DEFAULT);
             try {
@@ -552,11 +552,11 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
         }
     }
 
-    public Optional<ImmutablePixelMapData> getPixelMap() {
+    public Optional<ImmutablePixelMap> getPixelMap() {
         return Optional.ofNullable(mPixelMap);
     }
 
-    public void setPixelMap(ImmutablePixelMapData pPixelMap) {
+    public void setPixelMap(ImmutablePixelMap pPixelMap) {
         if (mPixelMap != null && (pPixelMap.width() != getWidth() || pPixelMap.height() != getHeight())) {
             throw new IllegalArgumentException("pPixelMap width and height must match existing PixelMap is present.");
         }

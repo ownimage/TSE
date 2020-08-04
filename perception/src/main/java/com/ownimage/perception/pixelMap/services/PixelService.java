@@ -3,7 +3,7 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -21,23 +21,23 @@ public class PixelService {
         return new IntegerPoint(pixel.getX(), pixel.getY());
     }
 
-    public boolean isNode(PixelMapData pixelMap, Integer x, Integer y) {
+    public boolean isNode(PixelMap pixelMap, Integer x, Integer y) {
         return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.NODE) != 0 : false;
     }
 
 
-    public boolean isNode(PixelMapData pixelMap, IntegerPoint integerPoint) {
+    public boolean isNode(PixelMap pixelMap, IntegerPoint integerPoint) {
         var ip = integerPoint.getClass() == IntegerPoint.class
                 ? integerPoint
                 : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
         return isNode(pixelMap, ip.getX(), ip.getY());
     }
 
-    public boolean isEdge(PixelMapData pixelMap, int x, int y) {
+    public boolean isEdge(PixelMap pixelMap, int x, int y) {
         return isInBounds(pixelMap, x, y) ? (pixelMap.data().get(x, y) & PixelConstants.EDGE) != 0 : false;
     }
 
-    public boolean isInBounds(@NotNull PixelMapData pixelMap, int x, int y) {
+    public boolean isInBounds(@NotNull PixelMap pixelMap, int x, int y) {
         if (y < 0 || y >= pixelMap.height()) {
             return false;
         }
@@ -47,7 +47,7 @@ public class PixelService {
         return true;
     }
 
-    public boolean isEdge(PixelMapData pixelMap, IntegerPoint integerPoint) {
+    public boolean isEdge(PixelMap pixelMap, IntegerPoint integerPoint) {
         var ip = integerPoint.getClass() == IntegerPoint.class
                 ? integerPoint
                 : new IntegerPoint(integerPoint.getX(), integerPoint.getY());

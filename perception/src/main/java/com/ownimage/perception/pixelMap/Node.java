@@ -7,7 +7,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
@@ -120,7 +120,7 @@ public class Node extends Pixel {
         return clone;
     }
 
-    public ImmutablePixelMapData mergePixelChains(ImmutablePixelMapData pixelMap) {
+    public ImmutablePixelMap mergePixelChains(ImmutablePixelMap pixelMap) {
         var result = StrongReference.of(pixelMap);
         int count = countPixelChains();
         mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));

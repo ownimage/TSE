@@ -10,7 +10,7 @@ import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Vertex;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.val;
@@ -60,8 +60,8 @@ public class PixelMapActionService {
         this.pixelService = pixelService;
     }
 
-    public ImmutablePixelMapData actionPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelOn(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel,
             double tolerance,
             double lineCurvePreference) {
@@ -69,8 +69,8 @@ public class PixelMapActionService {
         return actionPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
-    public ImmutablePixelMapData actionPixelOn(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelOn(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Collection<Pixel> pixels,
             double tolerance,
             double lineCurvePreference) {
@@ -83,8 +83,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionPixelOff(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelOff(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel,
             int cursorSize,
             double tolerance,
@@ -103,8 +103,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionDeletePixelChain(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionDeletePixelChain(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Collection<Pixel> pixels,
             double tolerance,
             double lineCurvePreference) {
@@ -126,8 +126,8 @@ public class PixelMapActionService {
         return clone.get().withAutoTrackChanges(true);
     }
 
-    public ImmutablePixelMapData actionEqualizeValues(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionEqualizeValues(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull EqualizeValues values) {
         if (pixelMap.pixelChains().size() == 0) {
             return pixelMap;
@@ -161,8 +161,8 @@ public class PixelMapActionService {
         return pixelMap;
     }
 
-    public ImmutablePixelMapData actionSetPixelChainThickness(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionSetPixelChainThickness(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Collection<Pixel> pixels,
             @NotNull Function<PixelChain, IPixelChain.Thickness> mapper) {
         var result = StrongReference.of(pixelMap);
@@ -181,8 +181,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionPixelToggle(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelToggle(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel,
             double tolerance,
             double lineCurvePreference) {
@@ -190,8 +190,8 @@ public class PixelMapActionService {
         return pixelMapService.setEdge(pixelMap, pixel, newValue, tolerance, lineCurvePreference);
     }
 
-    public ImmutablePixelMapData actionPixelChainDeleteAllButThis(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelChainDeleteAllButThis(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel) {
         val pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
         if (pixelChains.size() != 1) {
@@ -204,8 +204,8 @@ public class PixelMapActionService {
     }
 
 
-    public ImmutablePixelMapData actionPixelChainApproximateCurvesOnly(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionPixelChainApproximateCurvesOnly(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Pixel pixel) {
         if (pixelMapService.getPixelChains(pixelMap, pixel).isEmpty()) {
@@ -223,8 +223,8 @@ public class PixelMapActionService {
         return clone.get();
     }
 
-    public ImmutablePixelMapData actionReapproximate(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionReapproximate(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource) {
         SplitTimer.split("PixelMap actionReapproximate() start");
         var result = StrongReference.of(pixelMap);
@@ -243,8 +243,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionRerefine(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionRerefine(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull CannyEdgeTransform transformSource) {
         var result = StrongReference.of(pixelMap);
         Vector<PixelChain> updates = new Vector<>();
@@ -259,8 +259,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionSetPixelChainDefaultThickness(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionSetPixelChainDefaultThickness(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull CannyEdgeTransform transform) {
         int shortLength = transform.getShortLineLength();
         int mediumLength = transform.getMediumLineLength();
@@ -272,8 +272,8 @@ public class PixelMapActionService {
         return result;
     }
 
-    public ImmutablePixelMapData actionVertexAdd(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionVertexAdd(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel,
             double lineCurvePreference) {
         var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
@@ -304,8 +304,8 @@ public class PixelMapActionService {
         return result.get();
     }
 
-    public ImmutablePixelMapData actionVertexRemove(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public ImmutablePixelMap actionVertexRemove(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel,
             double lineCurvePreference) {
         var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);

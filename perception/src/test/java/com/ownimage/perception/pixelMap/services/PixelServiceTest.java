@@ -2,7 +2,7 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import junit.framework.TestCase;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class PixelServiceTest extends TestCase {
     private final IntegerPoint integerPoint = new IntegerPoint(x, y);
     private PixelService underTest = new PixelService();
     @Mock
-    private PixelMapData pixelMap;
+    private PixelMap pixelMap;
     @Mock
     private ImmutableMap2D<Byte> data;
 

@@ -3,7 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
@@ -107,7 +107,7 @@ public class PixelMapTest {
     public void setData_01() {
         // GIVEN
         Pixel pixel = new Pixel(1, 1);
-        ImmutablePixelMapData pixelMap = Utility.createMap(3, 3);
+        ImmutablePixelMap pixelMap = Utility.createMap(3, 3);
         // WHEN
         assertFalse(pixelMapService.getData(pixelMap, pixel, NODE));
         assertFalse(pixelMapService.getData(pixelMap, pixel, EDGE));
@@ -556,7 +556,7 @@ public class PixelMapTest {
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
-    public ImmutablePixelMapData addChain(@NonNull ImmutablePixelMapData pixelMap, @NotNull IPixelMapTransformSource transformSource, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
+    public ImmutablePixelMap addChain(@NonNull ImmutablePixelMap pixelMap, @NotNull IPixelMapTransformSource transformSource, @NotNull Pixel pStart, @NotNull List<Pixel> pChain) {
         var pixelMapRef = StrongReference.of(pixelMap);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -572,7 +572,7 @@ public class PixelMapTest {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         var width = 11 + 2 * xMargin;
         var height = 14 + 2 * yMargin;
-        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
+        ImmutablePixelMap pixelMap = ImmutablePixelMap.builder().width(width).height(height).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(height);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -623,7 +623,7 @@ public class PixelMapTest {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
         var width = 11 + 2 * xMargin;
         var height = 14 + 2 * yMargin;
-        var underTest = ImmutablePixelMapData.builder().width(width).height(height).is360(false).build();
+        var underTest = ImmutablePixelMap.builder().width(width).height(height).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(height);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -672,7 +672,7 @@ public class PixelMapTest {
     @Test
     public void test_closeLoop_3() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
+        ImmutablePixelMap pixelMap = ImmutablePixelMap.builder().width(9).height(11).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(11);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -701,7 +701,7 @@ public class PixelMapTest {
     @Test
     public void test_closeLoop_4() {
         IPixelMapTransformSource ts = new PixelMapTransformSource(2000, 1.2, 1.2);
-        ImmutablePixelMapData pixelMap = ImmutablePixelMapData.builder().width(9).height(11).is360(false).build();
+        ImmutablePixelMap pixelMap = ImmutablePixelMap.builder().width(9).height(11).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(11);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -749,7 +749,7 @@ public class PixelMapTest {
         var source = Utility.getDefaultTransformSource(20);
         pixelMap.update(pm -> addChain(pm, source, start1, chainS1));
         pixelMap.update(pm -> addChain(pm, source, start2, chainNE));
-        BiConsumer<ImmutablePixelMapData, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
+        BiConsumer<ImmutablePixelMap, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
             assertEquals(2, pPixelMap.pixelChains().size());
             List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());
@@ -776,7 +776,7 @@ public class PixelMapTest {
 
     @Test
     public void setPixelOnOff() {
-        var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
+        var underTest = ImmutablePixelMap.builder().width(10).height(10).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(10);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
@@ -790,7 +790,7 @@ public class PixelMapTest {
 
     @Test
     public void actionPixelOnOff() {
-        var underTest = ImmutablePixelMapData.builder().width(10).height(10).is360(false).build();
+        var underTest = ImmutablePixelMap.builder().width(10).height(10).is360(false).build();
         var transformSource = Utility.getDefaultTransformSource(10);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();

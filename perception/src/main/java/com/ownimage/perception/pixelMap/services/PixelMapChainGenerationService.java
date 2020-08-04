@@ -5,7 +5,7 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,8 @@ public class PixelMapChainGenerationService {
         this.pixelMapService = pixelMapService;
     }
 
-    public Tuple2<ImmutablePixelMapData, PixelChain> generateChain(
-            @NotNull ImmutablePixelMapData pixelMap,
+    public Tuple2<ImmutablePixelMap, PixelChain> generateChain(
+            @NotNull ImmutablePixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             @NotNull Pixel pixel) {
         Optional<Node> node = pixelMapService.getNode(pixelMap, pixel);
@@ -69,8 +69,8 @@ public class PixelMapChainGenerationService {
         return new Tuple2<>(result, copy);
     }
 
-    public Tuple2<ImmutablePixelMapData, Collection<PixelChain>> generateChains(
-            @NotNull ImmutablePixelMapData pixelMap, @NotNull Node pStartNode) {
+    public Tuple2<ImmutablePixelMap, Collection<PixelChain>> generateChains(
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Node pStartNode) {
         var result = StrongReference.of(pixelMap);
 
         Vector<PixelChain> chains = new Vector<>();

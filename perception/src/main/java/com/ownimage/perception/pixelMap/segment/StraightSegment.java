@@ -10,7 +10,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 
 public class StraightSegment extends SegmentBase {
 
@@ -19,12 +19,12 @@ public class StraightSegment extends SegmentBase {
 
     private final LineSegment mLineSegment;
 
-    StraightSegment(PixelMapData pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
+    StraightSegment(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
         this(pPixelMap, pPixelChain, pSegmentIndex, 0.0d);
     }
 
     private StraightSegment(
-            PixelMapData pPixelMap,
+            PixelMap pPixelMap,
             IPixelChain pPixelChain,
             int pSegmentIndex,
             double pStartPosition
@@ -42,7 +42,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public void graffiti(
-            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
+            PixelMap pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
     ) {
@@ -51,7 +51,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public boolean closerThanActual(
-            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
+            PixelMap pPixelMap,
             IPixelChain pPixelChain,
             IPixelMapTransformSource pTransformSource,
             Point pPoint,
@@ -65,7 +65,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public boolean closerThan(
-            com.ownimage.perception.pixelMap.immutable.PixelMapData pPixelMap,
+            PixelMap pPixelMap,
             IPixelChain pPixelChain,
             Point pPoint,
             double pTolerance
@@ -74,12 +74,12 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public double closestLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint) {
+    public double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint) {
         return mLineSegment.closestLambda(pPoint);
     }
 
     @Override
-    public double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    public double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         return mLineSegment.distance(pUVHWPoint);
     }
 
@@ -88,42 +88,42 @@ public class StraightSegment extends SegmentBase {
     }
 
     @Override
-    public Vector getEndTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getAB().normalize();
     }
 
     @Override
-    public double getLength(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getAB().length();
     }
 
     @Override
-    public double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMaxX();
     }
 
     @Override
-    public double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMaxY();
     }
 
     @Override
-    public double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMinX();
     }
 
     @Override
-    public double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return mLineSegment.getMinY();
     }
 
     @Override
-    public Point getPointFromLambda(PixelMapData pPixelMap, IPixelChain pPixelChain, double pLambda) {
+    public Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pLambda) {
         return mLineSegment.getPoint(pLambda);
     }
 
     @Override
-    public Vector getStartTangentVector(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getAB().minus().normalize();
     }
 

@@ -2,7 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.IVertex;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -36,7 +36,7 @@ public class VertexTest {
     private VertexService vertexService = context.getBean(VertexService.class);
 
     @Mock
-    PixelMapData pixelMap;
+    PixelMap pixelMap;
 
     @BeforeClass
     public static void turnLoggingOff() throws Exception {
@@ -259,12 +259,12 @@ public class VertexTest {
     }
 
     private class MockPixelMapBuilder {
-        PixelMapData mPixelMap = mock(PixelMapData.class);
+        PixelMap mPixelMap = mock(PixelMap.class);
 
         public MockPixelMapBuilder() {
         }
 
-        PixelMapData build() {
+        PixelMap build() {
             return mPixelMap;
         }
     }

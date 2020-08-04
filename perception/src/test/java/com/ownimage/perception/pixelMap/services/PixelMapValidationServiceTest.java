@@ -6,7 +6,7 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PixelMapValidationServiceTest {
 
-    private static ImmutablePixelMapData pixelMap;
+    private static ImmutablePixelMap pixelMap;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

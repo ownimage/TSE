@@ -16,8 +16,8 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.IVertex;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
@@ -95,7 +95,7 @@ public class PixelChainService {
      * @param pixelMap the PixelMap this chain belongs to
      * @return a new PixelChain with the elements reversed
      */
-    public PixelChain reverse(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+    public PixelChain reverse(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
         // note that this uses direct access to the data members as the public setters have other side effects
         //validate("reverse");
         var result = pixelChain;
@@ -127,7 +127,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference) {
         var result = refine01_matchCurves(pixelMap, pixelChain, lineCurvePreference);
@@ -135,7 +135,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine03FirstSegment(
-            PixelMapData pixelMap,
+            PixelMap pixelMap,
             IPixelChain pixelChain,
             double lineCurvePreference,
             ISegment currentSegment
@@ -197,7 +197,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine03_matchCurves(
-            @NotNull PixelMapData pPixelMap,
+            @NotNull PixelMap pPixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference) {
 
@@ -219,7 +219,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine03LastSegment(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
             @NotNull ISegment currentSegment) {
@@ -285,12 +285,12 @@ public class PixelChainService {
         return pixelChain.getPixels().firstElement().orElseThrow();
     }
 
-    public Optional<Node> getEndNode(ImmutablePixelMapData pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getEndNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
     }
 
 
-    public Optional<Node> getStartNode(ImmutablePixelMapData pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getStartNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
@@ -314,8 +314,8 @@ public class PixelChainService {
     }
 
 
-    public Tuple2<ImmutablePixelMapData, PixelChain> setEndNode(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
-        var pixelMapResult = ImmutablePixelMapData.copyOf(pixelMap);
+    public Tuple2<ImmutablePixelMap, PixelChain> setEndNode(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
+        var pixelMapResult = ImmutablePixelMap.copyOf(pixelMap);
         IPixelChain builder = pixelChain.changePixels(p -> p.add(pNode));
 
         // need to do a check here to see if we are clobbering over another chain
@@ -358,7 +358,7 @@ public class PixelChainService {
      * @param pixelMap   the pixelMap
      * @param otherChain the other chain
      */
-    public PixelChain merge(@NotNull PixelMapData pixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
+    public PixelChain merge(@NotNull PixelMap pixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
         StrongReference<IPixelChain> builder = StrongReference.of(thisChain);
 
         validate(thisChain, false, "add otherChain");
@@ -547,8 +547,8 @@ public class PixelChainService {
     }
 
     @Deprecated // this modifies the pixelmap there is a better version in
-    public Tuple2<ImmutablePixelMapData, PixelChain> indexSegments(
-            @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pixelChain, boolean add) {
+    public Tuple2<ImmutablePixelMap, PixelChain> indexSegments(
+            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pixelChain, boolean add) {
         var result = StrongReference.of(pixelMap);
         if (add) {
             StrongReference<IPixelChain> builder = StrongReference.of(pixelChain);
@@ -571,8 +571,8 @@ public class PixelChainService {
         }
     }
 
-    public ImmutablePixelMapData index(
-            @NotNull ImmutablePixelMapData pixelMap, @NotNull PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
+    public ImmutablePixelMap index(
+            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pPixelChain, ISegment pSegment, boolean pAdd) {
         var result = StrongReference.of(pixelMap.withSegmentCount(pixelMap.segmentCount() + 1));
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
@@ -637,7 +637,7 @@ public class PixelChainService {
      * @param otherChain the other chain
      * @param pNode      the node
      */
-    public PixelChain merge(ImmutablePixelMapData pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
+    public PixelChain merge(ImmutablePixelMap pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
         logger.fine("merge");
 //        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
 //            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
@@ -656,14 +656,14 @@ public class PixelChainService {
         return merge(pPixelMap, thisChain, otherChain);
     }
 
-    public PixelChain approximate(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+    public PixelChain approximate(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
         var result = approximate01_straightLines(pixelMap, pixelChain, tolerance);
         result = approximate02_refineCorners(pixelMap, result);
         return result;
     }
 
     public PixelChain approximate01_straightLines(
-            @NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+            @NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
         if (pixelChain.getPixelCount() <= 1) {
@@ -711,7 +711,7 @@ public class PixelChainService {
         return PixelChain.of(builder);
     }
 
-    public PixelChain approximate02_refineCorners(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+    public PixelChain approximate02_refineCorners(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
         if (pixelChain.getSegmentCount() <= 1) {
             return pixelChain;
         }
@@ -775,7 +775,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine01_matchCurves(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference) {
         if (pixelChain.getSegmentCount() == 1) {
@@ -795,7 +795,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine01MidSegment(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             ISegment currentSegment
@@ -837,7 +837,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine03MidSegment(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
             ISegment currentSegment
@@ -859,7 +859,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine03MidSegmentEatForward(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
             ISegment currentSegment
@@ -936,7 +936,7 @@ public class PixelChainService {
     }
 
     public double calcError(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             int startPixelIndex,
             int endPixelIndex,
@@ -960,7 +960,7 @@ public class PixelChainService {
     }
 
     // need to make sure that not only the pixels are close to the line but the line is close to the pixels
-    public boolean isValid(@NotNull PixelMapData pixelMap,
+    public boolean isValid(@NotNull PixelMap pixelMap,
                            @NotNull PixelChain pixelChain,
                            @NotNull ISegment segment) {
         if (segment == null) {
@@ -982,7 +982,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine01EndSegment(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             @NotNull ISegment currentSegment
@@ -1023,7 +1023,7 @@ public class PixelChainService {
     }
 
     public PixelChain refine01FirstSegment(
-            PixelMapData pixelMap,
+            PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             ISegment segment
@@ -1074,7 +1074,7 @@ public class PixelChainService {
     }
 
     public PixelChain approximateCurvesOnly_subsequentSegments(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
@@ -1125,7 +1125,7 @@ public class PixelChainService {
 
 
     public boolean segmentMidpointValid(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             @NotNull CurveSegment segment,
             double distance) {
@@ -1136,7 +1136,7 @@ public class PixelChainService {
 
 
     public PixelChain approximateCurvesOnly(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
@@ -1156,7 +1156,7 @@ public class PixelChainService {
     }
 
     public PixelChain approximateCurvesOnly_firstSegment(
-            @NotNull PixelMapData pixelMap,
+            @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
@@ -1213,7 +1213,7 @@ public class PixelChainService {
         return result.get();
     }
 
-    public PixelChain resequence(@NotNull PixelMapData pixelMap, @NotNull PixelChain pixelChain) {
+    public PixelChain resequence(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
         if (pixelChain.getSegments().size() + 1 != pixelChain.getVertexes().size()) {
             logger.severe(String.format("PixelChainService::resequence segment/vertex mismatch, vertexSize = %s, segmentSize = %s", pixelChain.getVertexes().size(), pixelChain.getSegments().size()));
         }

@@ -12,7 +12,7 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.IVertex;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.val;
@@ -43,7 +43,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
@@ -60,7 +60,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double calcError(PixelMapData pPixelMap, IPixelChain pPixelChain, Pixel pPixel) {
+    public double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel) {
         val uhvw = pPixel.getUHVWMidPoint(pPixelMap.height());
         val distance = distance(pPixelMap, pPixelChain, uhvw);
         return distance * distance;
@@ -72,13 +72,13 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public boolean closerThan(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
+    public boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
-    public abstract double distance(PixelMapData pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
+    public abstract double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
 
     double getActualThickness(IPixelMapTransformSource pSource, IPixelChain pPixelChain, double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
@@ -90,12 +90,12 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getEndTangent(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
     @Override
-    public Point getEndUHVWPoint(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getPosition();
     }
 
@@ -105,22 +105,22 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public double getMaxX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMaxY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMinX(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getMinY(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         throw new UnsupportedOperationException();
     }
 
@@ -148,7 +148,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Line getStartTangent(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return new Line(
                 getStartUHVWPoint(pPixelMap, pPixelChain),
                 getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
@@ -156,7 +156,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public Point getStartUHVWPoint(PixelMapData pPixelMap, IPixelChain pPixelChain) {
+    public Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPosition();
     }
 
@@ -166,11 +166,11 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public void graffiti(PixelMapData pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
+    public void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
     }
 
-    public boolean noPixelFurtherThan(PixelMapData pPixelMap, IPixelChain pPixelChain, double pDistance) {
+    public boolean noPixelFurtherThan(PixelMap pPixelMap, IPixelChain pPixelChain, double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
             if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {

@@ -30,8 +30,7 @@ import com.ownimage.framework.view.event.ImmutableUIEvent;
 import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMapData;
-import com.ownimage.perception.pixelMap.immutable.PixelMapData;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -158,7 +157,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         return view;
     }
 
-    private void generatePreviewPictureFromData(ImmutablePixelMapData pPixelMap) {
+    private void generatePreviewPictureFromData(ImmutablePixelMap pPixelMap) {
         //SplitTimer.split("generatePreviewPictureFromData(final PixelMap pPixelMap) start");
         int size = getSize();
 
