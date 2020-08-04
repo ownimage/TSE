@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Value.Immutable
-public interface VertexData extends Serializable {
+public interface Vertex extends Serializable {
 
     @Value.Parameter(order = 1)
     int getPixelIndex();
@@ -23,13 +23,13 @@ public interface VertexData extends Serializable {
     @Value.Parameter(order = 3)
     Point getPosition();
 
-    VertexData withVertexIndex(int vertexIndex);
+    Vertex withVertexIndex(int vertexIndex);
 
-    default ImmutableVertexData toImmutable(VertexData vertex) {
-        return ImmutableVertexData.of(getPixelIndex(), getVertexIndex(), getPosition());
+    default ImmutableVertex toImmutable(Vertex vertex) {
+        return ImmutableVertex.of(getPixelIndex(), getVertexIndex(), getPosition());
     }
 
-    default boolean sameValue(VertexData vertex) {
+    default boolean sameValue(Vertex vertex) {
         if (this == vertex) {
             return true;
         }

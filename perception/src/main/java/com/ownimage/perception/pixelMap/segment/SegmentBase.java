@@ -12,7 +12,7 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.VertexData;
+import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import lombok.val;
@@ -100,7 +100,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public VertexData getEndVertex(IPixelChain pPixelChain) {
+    public Vertex getEndVertex(IPixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex + 1);
     }
 
@@ -161,7 +161,7 @@ public abstract class SegmentBase implements ISegment {
     }
 
     @Override
-    public VertexData getStartVertex(IPixelChain pPixelChain) {
+    public Vertex getStartVertex(IPixelChain pPixelChain) {
         return pPixelChain.getVertex(mSegmentIndex);
     }
 

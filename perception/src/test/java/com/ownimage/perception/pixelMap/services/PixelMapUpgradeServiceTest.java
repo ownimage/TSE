@@ -7,7 +7,7 @@ import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.Vertex;
-import com.ownimage.perception.pixelMap.immutable.ImmutableVertexData;
+import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -47,7 +47,7 @@ public class PixelMapUpgradeServiceTest {
         assertEquals(6, result.getVertexes().size());
         for (int i = 0; i < result.getVertexes().size(); i++) {
             assertTrue(pixelChain.get().getVertex(i).sameValue(result.getVertex(i)));
-            assertSame(ImmutableVertexData.class, result.getVertex(i).getClass());
+            assertSame(ImmutableVertex.class, result.getVertex(i).getClass());
         }
     }
 }

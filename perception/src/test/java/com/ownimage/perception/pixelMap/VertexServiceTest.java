@@ -3,7 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.VertexData;
+import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -233,7 +233,7 @@ public class VertexServiceTest {
                 .with_getSegment_returns(endSegmentIndex, null)
                 .build();
         var mockPixelMap = new MockPixelMapBuilder().build();
-        VertexData vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        Vertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
         var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
@@ -261,7 +261,7 @@ public class VertexServiceTest {
         Line expected = mock(Line.class);
         when(mockStartSegment.getEndTangent(pixelMap, mockPixelChain)).thenReturn(expected);
 
-        VertexData vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        Vertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
         var actual = underTest.calcTangent(pixelMap, mockPixelChain, vertex);
@@ -292,7 +292,7 @@ public class VertexServiceTest {
         when(tangent.getReverse()).thenReturn(expected);
         when(mockEndSegment.getStartTangent(mockPixelMap, mockPixelChain)).thenReturn(tangent);
 
-        VertexData vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
+        Vertex vertex = vertexService.createVertex(pixelMap, mockPixelChain, vertexIndex, pixelIndex);
         var underTest = new VertexService();
         // WHEN THEN
         var actual = underTest.calcTangent(mockPixelMap, mockPixelChain, vertex);

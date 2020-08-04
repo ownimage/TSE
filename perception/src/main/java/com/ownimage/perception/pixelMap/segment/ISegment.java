@@ -12,7 +12,7 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.VertexData;
+import com.ownimage.perception.pixelMap.immutable.Vertex;
 
 import java.io.Serializable;
 
@@ -74,7 +74,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the end Vertex
      */
-    VertexData getEndVertex(IPixelChain pPixelChain);
+    Vertex getEndVertex(IPixelChain pPixelChain);
 
     double getLength(PixelMap pPixelMap, IPixelChain pPixelChain);
 
@@ -116,7 +116,7 @@ public interface ISegment extends Serializable, Cloneable {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the start Vertex
      */
-    VertexData getStartVertex(IPixelChain pPixelChain);
+    Vertex getStartVertex(IPixelChain pPixelChain);
 
     void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics);
 
