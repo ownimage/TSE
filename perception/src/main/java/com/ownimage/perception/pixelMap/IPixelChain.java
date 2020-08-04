@@ -4,6 +4,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
+import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.transform.CannyEdgeTransform;

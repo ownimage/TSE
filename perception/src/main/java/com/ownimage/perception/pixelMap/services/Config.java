@@ -51,4 +51,8 @@ public class Config {
         return new PixelMapValidationService();
     }
 
+    @Bean
+    public PixelMapUpgradeService pixelMapUpgradeService() {
+        return new PixelMapUpgradeService();
+    }
 }

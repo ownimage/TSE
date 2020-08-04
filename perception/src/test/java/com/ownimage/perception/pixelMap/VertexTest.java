@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.IVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMapData;
 import com.ownimage.perception.pixelMap.segment.ISegment;
 import com.ownimage.perception.pixelMap.services.Config;

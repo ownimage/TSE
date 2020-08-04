@@ -29,6 +29,7 @@ public class PixelMapValidationServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
     private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);

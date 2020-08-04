@@ -6,7 +6,6 @@
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.IVertex;
 import org.immutables.value.Value;
 
 import java.io.Serializable;

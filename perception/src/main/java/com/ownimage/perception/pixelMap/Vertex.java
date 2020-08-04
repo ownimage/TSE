@@ -6,8 +6,7 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
-import lombok.Getter;
-import lombok.NonNull;
+import com.ownimage.perception.pixelMap.immutable.IVertex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
