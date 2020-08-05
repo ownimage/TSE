@@ -12,6 +12,8 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 
+import java.util.Objects;
+
 public class StraightSegment extends SegmentBase {
 
 
@@ -129,7 +131,7 @@ public class StraightSegment extends SegmentBase {
 
     @Override
     public String toString() {
-        return "StraightSegment[" + super.toString() + "]";
+        return "StraightSegment{ mLineSegment: " + Objects.toString(mLineSegment) + "} ";
     }
 
     @Override

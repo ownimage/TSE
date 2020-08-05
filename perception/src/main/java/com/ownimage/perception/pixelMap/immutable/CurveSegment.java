@@ -1,12 +1,6 @@
-/*
- *  This code is part of the Perception programme.
- *
- *  All code copyright (c) 2018 ownimage.co.uk, Keith Hart
- */
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.CubicEquation;
-import com.ownimage.framework.math.CubicEquation.Root;
 import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.QuarticEquation;
@@ -15,58 +9,20 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
 import io.vavr.Tuple2;
-import org.immutables.value.Value;
 
 import java.awt.*;
+import java.io.Serializable;
 
-@Value.Immutable
-public abstract class AbstractCurveSegment implements Segment {
+public interface CurveSegment extends Segment, Serializable, Cloneable {
 
-    private final static long serialVersionUID = 1L;
+    Point getA();
 
-    abstract public Point getP1();
+    Point getB();
 
-    abstract public Point getA();
-
-    abstract public Point getB();
-
-//    AbstractCurveSegment(
-//            PixelMap pPixelMap,
-//            IPixelChain pPixelChain,
-//            int pSegmentIndex,
-//            Point pP1
-//    ) {
-//        this(pPixelMap, pPixelChain, pSegmentIndex, pP1, 0.0d);
-//    }
-
-//    private AbstractCurveSegment(
-//            PixelMap pPixelMap,
-//            IPixelChain pPixelChain,
-//            int pSegmentIndex,
-//            Point pP1,
-//            double pStartPosition
-//    ) {
-//        super(pSegmentIndex, pStartPosition);
-//        mP1 = pP1;
-//        mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelMap, pPixelChain)).minus(getP1().multiply(2.0d));
-//        mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
-//    }
-//
-//    private AbstractCurveSegment(
-//            int pSegmentIndex,
-//            Point pP1,
-//            Point pA,
-//            Point pB,
-//            double pStartPosition
-//    ) {
-//        super(pSegmentIndex, pStartPosition);
-//        mP1 = pP1;
-//        mA = pA;
-//        mB = pB;
-//    }
+    Point getP1();
 
     @Override
-    public boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
+    default boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
         double lambda = closestLambda(pPixelMap, pPixelChain, pPoint);
         double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
         double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
@@ -74,17 +30,22 @@ public abstract class AbstractCurveSegment implements Segment {
     }
 
     @Override
-    public boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
+    default boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
         double distance = distance(pPixelMap, pPixelChain, pPoint);
         return distance < pTolerance;
     }
 
     @Override
-    public double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    default double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+        return closestLambdaAndDistance(pPixelMap, pPixelChain, pUVHWPoint)._2;
+    }
+
+    @Override
+    default double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         return closestLambdaAndDistance(pPixelMap, pPixelChain, pUVHWPoint)._1;
     }
 
-    private Tuple2<Double, Double> closestLambdaAndDistance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    default Tuple2<Double, Double> closestLambdaAndDistance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         // Note this is closely related to distance
         Point C = getP0(pPixelMap, pPixelChain).minus(pUVHWPoint);
 
@@ -97,7 +58,7 @@ public abstract class AbstractCurveSegment implements Segment {
         QuarticEquation distanceSquared = new QuarticEquation(a, b, c, d, e);
         CubicEquation differential = distanceSquared.differentiate();
 
-        Root root = differential.solve();
+        CubicEquation.Root root = differential.solve();
 
         double t1 = KMath.limit01(root.getRoot1());
         Point p1 = getPointFromLambda(pPixelMap, pPixelChain, t1);
@@ -127,43 +88,39 @@ public abstract class AbstractCurveSegment implements Segment {
         return new Tuple2<>(t3, distance3);
     }
 
-    @Override
-    public double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
-        return closestLambdaAndDistance(pPixelMap, pPixelChain, pUVHWPoint)._2;
-    }
 
     @Override
-    public Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getP2P1(pPixelMap, pPixelChain).normalize();
     }
 
     @Override
-    public double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
         // TODO needs improvement
         return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelMap, pPixelChain).length();
     }
 
     @Override
-    public double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
     }
 
     @Override
-    public double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 
     @Override
-    public double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
     }
 
     @Override
-    public double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
     }
 
-    private Point getP0(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Point getP0(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getStartUHVWPoint(pPixelMap, pPixelChain);
     }
 
@@ -174,11 +131,12 @@ public abstract class AbstractCurveSegment implements Segment {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    private Vector getP0P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getP0P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getP1().minus(getP0(pPixelMap, pPixelChain));
     }
 
-    private Point getP2(PixelMap pPixelMap, IPixelChain pPixelChain) {
+
+    default Point getP2(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getEndUHVWPoint(pPixelMap, pPixelChain);
     }
 
@@ -189,24 +147,24 @@ public abstract class AbstractCurveSegment implements Segment {
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    private Vector getP2P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getP2P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getP2(pPixelMap, pPixelChain).minus(getP1());
     }
 
     @Override
-    public Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT) {
+    default Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT) {
         return getP0(pPixelMap, pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
                 .add(getP2(pPixelMap, pPixelChain).multiply(pT * pT));
     }
 
     @Override
-    public Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return getP0P1(pPixelMap, pPixelChain).minus().normalize();
     }
 
     @Override
-    public void graffiti(
+    default void graffiti(
             PixelMap pPixelMap,
             IPixelChain pPixelChain,
             ISegmentGrafittiHelper pGraphics
@@ -217,11 +175,6 @@ public abstract class AbstractCurveSegment implements Segment {
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), Color.RED);
         //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
-    }
-
-    @Override
-    public String toString() {
-        return "CurveSegment[" + super.toString() + "]";
     }
 
 }

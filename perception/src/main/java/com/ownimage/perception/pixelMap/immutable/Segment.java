@@ -79,21 +79,13 @@ public interface Segment extends Serializable {
         return pPixelChain.getVertex(getSegmentIndex() + 1);
     }
 
-    default double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
+    double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    default double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
+    double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    default double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
+    double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain);
 
-    default double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        throw new UnsupportedOperationException();
-    }
+    double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain);
 
     default int getPixelLength(IPixelChain pPixelChain) {
         int length;

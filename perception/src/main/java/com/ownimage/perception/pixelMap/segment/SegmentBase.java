@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap.segment;
 
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 
-public abstract class SegmentBase extends AbstractSegment {
+public abstract class SegmentBase implements Segment {
 
     private final static long serialVersionUID = 1L;
 
