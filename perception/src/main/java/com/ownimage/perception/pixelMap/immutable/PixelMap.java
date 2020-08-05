@@ -45,7 +45,7 @@ public interface PixelMap {
     }
 
     @Value.Default
-    default Immutable2DArray<ImmutableSet<Tuple2<PixelChain, AbstractSegment>>> segmentIndex() {
+    default Immutable2DArray<ImmutableSet<Tuple2<PixelChain, Segment>>> segmentIndex() {
         return new Immutable2DArray<>(width(), height(), 10);
     }
 
@@ -69,7 +69,7 @@ public interface PixelMap {
 
     ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<PixelChain> pixelChains);
 
-    ImmutablePixelMap withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, AbstractSegment>>> segmentIndex);
+    ImmutablePixelMap withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, Segment>>> segmentIndex);
 
     ImmutablePixelMap withAutoTrackChanges(boolean autoTrackChanges);
 }

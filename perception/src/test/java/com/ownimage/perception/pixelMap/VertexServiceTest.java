@@ -2,8 +2,8 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
@@ -250,7 +250,7 @@ public class VertexServiceTest {
         int vertexIndex = 2;
         int startSegmentIndex = vertexIndex - 1;
         int endSegmentIndex = vertexIndex;
-        var mockStartSegment = mock(AbstractSegment.class);
+        var mockStartSegment = mock(Segment.class);
         var mockPixelChain = mock(PixelChain.class);
         when(mockPixelChain.getPixelCount()).thenReturn(11);
         when(mockPixelChain.getSegment(startSegmentIndex)).thenReturn(mockStartSegment);
@@ -279,7 +279,7 @@ public class VertexServiceTest {
         int vertexIndex = 2;
         int startSegmentIndex = vertexIndex - 1;
         int endSegmentIndex = vertexIndex;
-        var mockEndSegment = mock(AbstractSegment.class);
+        var mockEndSegment = mock(Segment.class);
         var mockPixelMap = mock(PixelMap.class);
         var mockPixelChain = mock(PixelChain.class);
         when(mockPixelChain.getPixelCount()).thenReturn(11);

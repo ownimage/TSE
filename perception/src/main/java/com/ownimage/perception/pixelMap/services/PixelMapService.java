@@ -13,8 +13,8 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
@@ -346,7 +346,7 @@ public class PixelMapService {
     public ImmutablePixelMap indexSegments(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull PixelChain pixelChain,
-            @NotNull AbstractSegment segment,
+            @NotNull Segment segment,
             boolean add) {
         var segmentIndex = StrongReference.of(pixelMap.segmentIndex());
         var segmentCount = pixelMap.segmentCount() + 1;
@@ -677,7 +677,7 @@ public class PixelMapService {
 
     public void validate(@NotNull ImmutablePixelMap pixelMap) {
 //        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
-        Set segments = new HashSet<AbstractSegment>();
+        Set segments = new HashSet<Segment>();
         for (int x = 0; x < pixelMap.width(); x++) {
             for (int y = 0; y < pixelMap.height(); y++) {
                 var list = pixelMap.segmentIndex().get(x, y);

@@ -15,9 +15,9 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
@@ -116,7 +116,7 @@ public class PixelChainService {
         result = result.changeVertexes(v -> v.clear().addAll(vertexes));
 
         // reverse segments
-        Vector<AbstractSegment> segments = new Vector<>();
+        Vector<Segment> segments = new Vector<>();
         for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
             if (i != pixelChain.getVertexes().size() - 1) {
                 StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, result, segments.size());
@@ -138,7 +138,7 @@ public class PixelChainService {
             PixelMap pixelMap,
             IPixelChain pixelChain,
             double lineCurvePreference,
-            AbstractSegment currentSegment
+            Segment currentSegment
     ) {
         // this only works if this or the next segment are straight
         var originalNextSegment = currentSegment.getNextSegment(pixelChain);
@@ -212,7 +212,7 @@ public class PixelChainService {
             } else if (currentSegment == result.get().getLastSegment()) {
                 result.update(r -> refine03LastSegment(pPixelMap, r, lineCurvePreference, currentSegment));
             } else {
-                result.update(r-> refine03MidSegment(pPixelMap, r, lineCurvePreference, currentSegment));
+                result.update(r -> refine03MidSegment(pPixelMap, r, lineCurvePreference, currentSegment));
             }
         });
         return result.get();
@@ -222,7 +222,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
-            @NotNull AbstractSegment currentSegment) {
+            @NotNull Segment currentSegment) {
         var originalPrevSegment = currentSegment.getPreviousSegment(pixelChain);
         // this only works if this or the previous segment are straight
         if (!((currentSegment instanceof StraightSegment) || (originalPrevSegment instanceof StraightSegment))) {
@@ -554,7 +554,7 @@ public class PixelChainService {
             StrongReference<IPixelChain> builder = StrongReference.of(pixelChain);
             StrongReference<Double> startPosition = StrongReference.of(0.0d);
             pixelChain.getSegments().forEach(segment -> {
-                AbstractSegment segmentClone = segment.withStartPosition(startPosition.get());
+                Segment segmentClone = segment.withStartPosition(startPosition.get());
                 builder.update(b -> b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
                 startPosition.update(s -> s += segment.getLength(pixelMap, builder.get()));
             });
@@ -572,7 +572,7 @@ public class PixelChainService {
     }
 
     public ImmutablePixelMap index(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pPixelChain, AbstractSegment pSegment, boolean pAdd) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pPixelChain, Segment pSegment, boolean pAdd) {
         var result = StrongReference.of(pixelMap.withSegmentCount(pixelMap.segmentCount() + 1));
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
@@ -602,7 +602,7 @@ public class PixelChainService {
                     System.out.println("########################### PixelMap  remove " + i);
                 }
                 result.update(r -> r.withSegmentIndex(r.segmentIndex()
-                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, AbstractSegment>>().addAll(segments))));
+                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, Segment>>().addAll(segments))));
             }
         });
         return result.get();
@@ -679,7 +679,7 @@ public class PixelChainService {
 
         int maxIndex = 0;
         Vertex maxVertex = null;
-        AbstractSegment maxSegment = null;
+        Segment maxSegment = null;
 
         int endIndex = 1;
 
@@ -729,8 +729,8 @@ public class PixelChainService {
 
             //TODO can probably remove these [] here as the lambdas have gone
             Vertex[] joinVertex = new Vertex[]{pixelChain.getVertex(secondSegmentIndex)};
-            AbstractSegment[] firstSegment = new AbstractSegment[]{segment};
-            AbstractSegment[] secondSegment = new AbstractSegment[]{pixelChain.getSegment(secondSegmentIndex)};
+            var firstSegment = new Segment[]{segment};
+            var secondSegment = new Segment[]{pixelChain.getSegment(secondSegmentIndex)};
 
             var minPixelIndex = (segment.getStartVertex(pixelChain).getPixelIndex() + segment.getEndVertex(pixelChain).getPixelIndex()) / 2;
             var maxPixelIndex = (secondSegment[0].getStartVertex(pixelChain).getPixelIndex() + secondSegment[0].getEndVertex(pixelChain).getPixelIndex()) / 2;
@@ -798,7 +798,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
-            AbstractSegment currentSegment
+            Segment currentSegment
     ) {
         var result = pixelChain;
         // get tangent at start and end
@@ -820,7 +820,7 @@ public class PixelChainService {
                     Line newEndTangent = new Line(p1, currentSegment.getEndVertex(result).getPosition());
                     p1 = newStartTangent.intersect(newEndTangent);
                     // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
-                    AbstractSegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
                     if (candidateSegment != null) {
                         double candidateError = candidateSegment.calcError(pixelMap, result);
                         if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
@@ -840,7 +840,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
-            AbstractSegment currentSegment
+            Segment currentSegment
     ) {
         // instrument
         // Assumption that we are only going to smooth forward
@@ -862,7 +862,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull IPixelChain pixelChain,
             double lineCurvePreference,
-            AbstractSegment currentSegment
+            Segment currentSegment
     ) {
         var originalNextSegment = currentSegment.getNextSegment(pixelChain);
         if (currentSegment instanceof CurveSegment && originalNextSegment instanceof CurveSegment) {
@@ -940,8 +940,8 @@ public class PixelChainService {
             @NotNull PixelChain pixelChain,
             int startPixelIndex,
             int endPixelIndex,
-            @NotNull AbstractSegment startSegment,
-            @NotNull AbstractSegment endSegment
+            @NotNull Segment startSegment,
+            @NotNull Segment endSegment
     ) {
         var error = 0d;
         for (var i = startPixelIndex; i <= endPixelIndex; i++) {
@@ -962,7 +962,7 @@ public class PixelChainService {
     // need to make sure that not only the pixels are close to the line but the line is close to the pixels
     public boolean isValid(@NotNull PixelMap pixelMap,
                            @NotNull PixelChain pixelChain,
-                           @NotNull AbstractSegment segment) {
+                           @NotNull Segment segment) {
         if (segment == null) {
             return false;
         }
@@ -985,7 +985,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
-            @NotNull AbstractSegment currentSegment
+            @NotNull Segment currentSegment
     ) {
         var result = pixelChain;
         var bestSegment = currentSegment;
@@ -1003,7 +1003,7 @@ public class PixelChainService {
                 try {
                     double lambda = (double) i / currentSegment.getPixelLength(result);
                     Point p1 = tangentRuler.getPoint(lambda);
-                    AbstractSegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
                     if (candidateSegment != null) {
                         double candidateError = candidateSegment.calcError(pixelMap, result);
 
@@ -1026,7 +1026,7 @@ public class PixelChainService {
             PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference,
-            AbstractSegment segment
+            Segment segment
     ) {
         var result = pixelChain;
         var bestSegment = segment;
@@ -1048,7 +1048,7 @@ public class PixelChainService {
                 try {
                     double lambda = (double) i / segment.getPixelLength(result);
                     Point p1 = tangentRuler.getPoint(lambda);
-                    AbstractSegment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, segment.getSegmentIndex(), p1);
+                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, segment.getSegmentIndex(), p1);
                     if (candidateSegment == null) {
                         continue;
                     }
@@ -1083,17 +1083,17 @@ public class PixelChainService {
         var startPixelIndex = pixelChain.getLastVertex().getPixelIndex() + 1;
         var vertexIndex = pixelChain.getVertexCount();
         var segmentIndex = pixelChain.getSegmentCount();
-        var best = new StrongReference<Tuple2<AbstractSegment, Vertex>>(null);
+        var best = new StrongReference<Tuple2<Segment, Vertex>>(null);
         var result = StrongReference.of(pixelChain);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, AbstractSegment, Vertex> bestFit;
+        Tuple3<Integer, Segment, Vertex> bestFit;
 
         for (int i = startPixelIndex; i < result.get().getPixelCount(); i++) {
             try {
                 var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
                 var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
-                var startTangent = vertexService.getStartSegment( result.get(), startVertex).getEndTangent(pixelMap, result.get());
+                var startTangent = vertexService.getStartSegment(result.get(), startVertex).getEndTangent(pixelMap, result.get());
                 var p = lt3.intersect(startTangent);
                 if (p != null) {
                     result.update(r -> r.setVertex(candidateVertex));
@@ -1165,10 +1165,10 @@ public class PixelChainService {
         result.update(r -> r.changeVertexes(v -> v.add(vertexService.createVertex(pixelMap, r, 0, 0))));
         var vertexIndex = result.get().getVertexCount();
         var segmentIndex = result.get().getSegmentCount();
-        var best = new StrongReference<Tuple2<AbstractSegment, Vertex>>(null);
+        var best = new StrongReference<Tuple2<Segment, Vertex>>(null);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, AbstractSegment, Vertex> bestFit;
+        Tuple3<Integer, Segment, Vertex> bestFit;
 
         for (int i = 4; i < result.get().getPixelCount(); i++) {
             try {
@@ -1220,7 +1220,7 @@ public class PixelChainService {
         // sequence segments
         var segmentIndex = new AtomicInteger();
         var startPosition = new AtomicDouble();
-        var segments = StrongReference.of(new ImmutableVectorClone<AbstractSegment>());
+        var segments = StrongReference.of(new ImmutableVectorClone<Segment>());
         pixelChain.getSegments().stream()
                 .map(s -> s.withSegmentIndex(segmentIndex.getAndIncrement()))
                 .map(s -> s.withStartPosition(startPosition.getAndAdd(s.getLength(pixelMap, pixelChain))))

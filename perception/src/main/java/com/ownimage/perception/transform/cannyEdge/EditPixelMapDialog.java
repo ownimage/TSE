@@ -44,8 +44,8 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
@@ -433,7 +433,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private void graffitiSegment(
             GrafittiHelper pGrafittiHelper,
             PixelChain pPixelChain,
-            AbstractSegment pSegment
+            Segment pSegment
     ) {
         Framework.logEntry(mLogger);
         SegmentGraffitiHelper segmentGrafittiHelper = new SegmentGraffitiHelper(pGrafittiHelper, this::UHVWtoView);

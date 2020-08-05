@@ -4,8 +4,8 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
@@ -22,7 +22,7 @@ public interface IPixelChain {
 
     ImmutableVectorClone<Pixel> getPixels();
 
-    ImmutableVectorClone<AbstractSegment> getSegments();
+    ImmutableVectorClone<Segment> getSegments();
 
     ImmutableVectorClone<Vertex> getVertexes();
 
@@ -30,7 +30,7 @@ public interface IPixelChain {
         return getPixels().stream();
     }
 
-    default Stream<AbstractSegment> streamSegments() {
+    default Stream<Segment> streamSegments() {
         return getSegments().stream();
     }
 
@@ -42,7 +42,7 @@ public interface IPixelChain {
         return getPixelCount() - 1;
     }
 
-    default AbstractSegment getSegment(int i) {
+    default Segment getSegment(int i) {
         if (getSegments().size() <= i || i < 0) {
             return null;
         }
@@ -96,7 +96,7 @@ public interface IPixelChain {
         return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap.height());
     }
 
-    default Optional<AbstractSegment> getOptionalLastSegment() {
+    default Optional<Segment> getOptionalLastSegment() {
         return getSegments().lastElement();
     }
 
@@ -176,11 +176,11 @@ public interface IPixelChain {
 
     double getLength();
 
-    default AbstractSegment getFirstSegment() {
+    default Segment getFirstSegment() {
         return getSegments().firstElement().orElse(null);
     }
 
-    default AbstractSegment getLastSegment() {
+    default Segment getLastSegment() {
         return getSegments().lastElement().orElse(null);
     }
 
@@ -217,7 +217,7 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain changeSegments(Function<ImmutableVectorClone<AbstractSegment>, ImmutableVectorClone<AbstractSegment>> fn) {
+    default PixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
         return new PixelChain(
                 getPixels(),
                 fn.apply(getSegments()),
@@ -262,7 +262,7 @@ public interface IPixelChain {
         return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 
-    default PixelChain setSegment(AbstractSegment pSegment) {
+    default PixelChain setSegment(Segment pSegment) {
         return changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 }

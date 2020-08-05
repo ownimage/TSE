@@ -6,9 +6,9 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.immutable.AbstractSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -48,8 +48,8 @@ public class VertexService {
      */
     public Line calcTangent(PixelMap pixelMap, IPixelChain pixelChain, Vertex vertex) {
         Line tangent;
-        AbstractSegment startSegment = getStartSegment(pixelChain, vertex);
-        AbstractSegment endSegment = getEndSegment(pixelChain, vertex);
+        Segment startSegment = getStartSegment(pixelChain, vertex);
+        Segment endSegment = getEndSegment(pixelChain, vertex);
 
         if (startSegment == null && endSegment == null) {
             tangent = null;
@@ -95,11 +95,11 @@ public class VertexService {
         return pixelChain.getPixel(vertex.getPixelIndex());
     }
 
-    public AbstractSegment getStartSegment(IPixelChain pixelChain, Vertex vertex) {
+    public Segment getStartSegment(IPixelChain pixelChain, Vertex vertex) {
         return pixelChain.getSegment(vertex.getVertexIndex() - 1);
     }
 
-    public AbstractSegment getEndSegment(IPixelChain pixelChain, Vertex vertex) {
+    public Segment getEndSegment(IPixelChain pixelChain, Vertex vertex) {
         return pixelChain.getSegment(vertex.getVertexIndex());
     }
 
