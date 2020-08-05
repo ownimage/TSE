@@ -7,7 +7,6 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -18,20 +17,14 @@ public class Vertex implements com.ownimage.perception.pixelMap.immutable.Vertex
 
     private static final long serialVersionUID = 1L;
 
-    private final int mVertexIndex;
+    private int mVertexIndex;
 
-    private final int mPixelIndex;
+    private int mPixelIndex;
 
-    private final Point mPosition;
+    private Point mPosition;
 
-    private Vertex(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
-        mVertexIndex = pVertexIndex;
-        mPixelIndex = pPixelIndex;
-        mPosition = pPosition;
-    }
+    private Vertex() {
 
-    static public Vertex createVertexFOR_TEST_PURPOSES_ONLY(int pVertexIndex, int pPixelIndex, @NotNull Point pPosition) {
-        return new Vertex(pVertexIndex, pPixelIndex, pPosition);
     }
 
     @Override

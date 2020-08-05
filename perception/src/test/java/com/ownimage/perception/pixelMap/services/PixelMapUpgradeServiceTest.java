@@ -19,6 +19,8 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PixelMapUpgradeServiceTest {
 
@@ -38,16 +40,23 @@ public class PixelMapUpgradeServiceTest {
         var pixelMap = Utility.createMap(10, 10);
         var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
         IntStream.range(4, 9).boxed()
-                .map(i -> Vertex.createVertexFOR_TEST_PURPOSES_ONLY(i, 3 + 2 * i, new Point(i / 10.0d, (i + 3) / 10.0d)))
+                .map(i -> {
+                            var vertex = mock(Vertex.class);
+                            when(vertex.getPixelIndex()).thenReturn(3 + 2 * i);
+                            when(vertex.getVertexIndex()).thenReturn(i);
+                            when(vertex.getPosition()).thenReturn(new Point(i / 10.0d, (i + 3) / 10.0d));
+                            return vertex;
+                        }
+                )
                 .forEach(v -> pixelChain.update(pc -> pc.changeVertexes(vs -> vs.add(v))));
         assertEquals(6, pixelChain.get().getVertexes().size());
         // WHEN
-        var result = underTest.upgradeVertex(pixelChain.get());
+        var actual = underTest.upgradeVertex(pixelChain.get());
         // THEN
-        assertEquals(6, result.getVertexes().size());
-        for (int i = 0; i < result.getVertexes().size(); i++) {
-            assertTrue(pixelChain.get().getVertex(i).sameValue(result.getVertex(i)));
-            assertSame(ImmutableVertex.class, result.getVertex(i).getClass());
+        assertEquals(6, actual.getVertexes().size());
+        for (int i = 0; i < actual.getVertexes().size(); i++) {
+            assertTrue(actual.getVertex(i).sameValue(pixelChain.get().getVertex(i)));
+            assertSame(ImmutableVertex.class, actual.getVertex(i).getClass());
         }
     }
 }
