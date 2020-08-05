@@ -9,16 +9,29 @@ import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
 import io.vavr.Tuple2;
+import org.immutables.value.Value;
 
 import java.awt.*;
 import java.io.Serializable;
 
+@Value.Immutable
 public interface CurveSegment extends Segment, Serializable, Cloneable {
 
+    @Override
+    @Value.Parameter(order = 1)
+    int getSegmentIndex();
+
+    @Override
+    @Value.Parameter(order = 2)
+    double getStartPosition();
+
+    @Value.Parameter(order = 3)
     Point getA();
 
+    @Value.Parameter(order = 4)
     Point getB();
 
+    @Value.Parameter(order = 5)
     Point getP1();
 
     @Override
