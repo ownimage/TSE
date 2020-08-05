@@ -142,7 +142,7 @@ public class VertexTest {
         var pixelChain = new MockPixelChainBuilder(11).build();
         when(pixelChain.getUHVWPoint(pixelMap, 5)).thenReturn(new Point(1.2, 3.4));
         Vertex underTest1 = vertexService.createVertex(pixelMap, pixelChain, 1, pixelIndex);
-        var expected = "Vertex{pixelIndex=5, vertexIndex=1, position=Point{ x : 1.2, y: 3.4 }}";
+        var expected = "Vertex{vertexIndex=1, pixelIndex=5, position=Point{ x : 1.2, y: 3.4 }}";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
         verify(pixelChain, times(1)).getPixelCount();
@@ -155,7 +155,7 @@ public class VertexTest {
         int pixelIndex = 5;
         var pixelChain = new MockPixelChainBuilder(11).build();
         Vertex underTest1 = vertexService.createVertex(pixelChain, 1, pixelIndex, new Point(0.5, 0.3));
-        var expected = "Vertex{pixelIndex=5, vertexIndex=1, position=Point{ x : 0.5, y: 0.3 }}";
+        var expected = "Vertex{vertexIndex=1, pixelIndex=5, position=Point{ x : 0.5, y: 0.3 }}";
         // WHEN THEN
         assertEquals(expected, underTest1.toString());
         verify(pixelChain, times(1)).getPixelCount();

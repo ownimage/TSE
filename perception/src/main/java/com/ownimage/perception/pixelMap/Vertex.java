@@ -46,7 +46,7 @@ public class Vertex implements com.ownimage.perception.pixelMap.immutable.Vertex
 
     @Override
     public com.ownimage.perception.pixelMap.immutable.Vertex withVertexIndex(int vertexIndex) {
-        return ImmutableVertex.of(mPixelIndex, vertexIndex, mPosition);
+        return ImmutableVertex.of(vertexIndex, mPixelIndex, mPosition);
     }
 
     @Override

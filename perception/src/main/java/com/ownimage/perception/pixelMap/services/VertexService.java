@@ -21,7 +21,7 @@ public class VertexService {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
         val position = pPixelChain.getUHVWPoint(pPixelMap, pPixelIndex);
-        return ImmutableVertex.of(pPixelIndex, pVertexIndex, position);
+        return ImmutableVertex.of(pVertexIndex, pPixelIndex, position);
     }
 
     public Vertex createVertex(IPixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
@@ -29,7 +29,7 @@ public class VertexService {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
 
-        return ImmutableVertex.of(pPixelIndex, pVertexIndex, pPosition);
+        return ImmutableVertex.of(pVertexIndex, pPixelIndex, pPosition);
     }
 
     private Line calcTangent(Point pPoint, Line pStartTangent, Line pEndTangent) {

@@ -290,8 +290,8 @@ public class PixelMapActionService {
             }
             var vertexIndex = optionalNextVertex.get().getVertexIndex();
             var position = pixel.getUHVWMidPoint(pixelMap.height());
-            var newVertex = ImmutableVertex.of(pixelIndex, 0, position);
-            var updatedPixelChain = StrongReference.of(pixelChain.changeVertexes(v -> v.add(optionalNextVertex.get().getVertexIndex(), newVertex)));
+        var newVertex = ImmutableVertex.of(0, pixelIndex, position);
+        var updatedPixelChain = StrongReference.of(pixelChain.changeVertexes(v -> v.add(optionalNextVertex.get().getVertexIndex(), newVertex)));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set( vertexIndex- 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
             updatedPixelChain.update(upc -> upc.changeSegments(s -> s.add( vertexIndex, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex))));
         updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));

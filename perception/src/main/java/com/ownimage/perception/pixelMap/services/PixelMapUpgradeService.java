@@ -9,7 +9,7 @@ public class PixelMapUpgradeService {
     public IPixelChain upgradeVertex(IPixelChain pixelChain) {
         var newVertexs = StrongReference.of(pixelChain.getVertexes().clear());
         pixelChain.getVertexes().stream()
-                .map(v -> ImmutableVertex.of(v.getPixelIndex(), v.getVertexIndex(), v.getPosition()))
+                .map(v -> ImmutableVertex.of(v.getVertexIndex(), v.getPixelIndex(), v.getPosition()))
         .forEach(v -> newVertexs.update(vs -> vs.add(v)));
         return pixelChain.changeVertexes(v -> newVertexs.get());
     }

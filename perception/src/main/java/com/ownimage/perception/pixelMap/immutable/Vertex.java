@@ -14,11 +14,12 @@ import java.util.Objects;
 @Value.Immutable
 public interface Vertex extends Serializable {
 
+
     @Value.Parameter(order = 1)
-    int getPixelIndex();
+    int getVertexIndex();
 
     @Value.Parameter(order = 2)
-    int getVertexIndex();
+    int getPixelIndex();
 
     @Value.Parameter(order = 3)
     Point getPosition();
@@ -26,7 +27,7 @@ public interface Vertex extends Serializable {
     Vertex withVertexIndex(int vertexIndex);
 
     default ImmutableVertex toImmutable(Vertex vertex) {
-        return ImmutableVertex.of(getPixelIndex(), getVertexIndex(), getPosition());
+        return ImmutableVertex.of(getVertexIndex(), getPixelIndex(), getPosition());
     }
 
     default boolean sameValue(Vertex vertex) {

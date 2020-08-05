@@ -36,8 +36,8 @@ public class PixelChainServiceTest {
         var pixelMap = mock(PixelMap.class);
         var vertexes = new ImmutableVectorClone<Vertex>()
                 .add(ImmutableVertex.of(0, 0, new Point(0, 3)))
-                .add(ImmutableVertex.of(10, 0, new Point(1, 4)))
-                .add(ImmutableVertex.of(20, 0, new Point(2, 5)));
+                .add(ImmutableVertex.of(0, 10, new Point(1, 4)))
+                .add(ImmutableVertex.of(0, 20, new Point(2, 5)));
         var pixelChainIn = new PixelChain(new ImmutableVectorClone<Pixel>(), new ImmutableVectorClone<AbstractSegment>(), vertexes, 0.0d, IPixelChain.Thickness.Normal);
         var segments = new ImmutableVectorClone<AbstractSegment>()
                 .add(SegmentFactory.createTempStraightSegment(pixelMap, pixelChainIn, 0))
