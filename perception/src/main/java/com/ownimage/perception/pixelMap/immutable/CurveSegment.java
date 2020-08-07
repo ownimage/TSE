@@ -35,6 +35,11 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
     Point getP1();
 
     @Override
+    default Segment toImmutable() {
+        return ImmutableCurveSegment.copyOf(this);
+    }
+
+    @Override
     default boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
         double lambda = closestLambda(pPixelMap, pPixelChain, pPoint);
         double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
@@ -115,26 +120,26 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
 
     @Override
     default double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
+        return KMath.max(getStartUHVWPoint(pPixelChain).getX(), getEndUHVWPoint(pPixelChain).getX(), getP1().getX());
     }
 
     @Override
     default double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return KMath.max(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
+        return KMath.max(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
     @Override
     default double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getX(), getEndUHVWPoint(pPixelMap, pPixelChain).getX(), getP1().getX());
+        return KMath.min(getStartUHVWPoint(pPixelChain).getX(), getEndUHVWPoint(pPixelChain).getX(), getP1().getX());
     }
 
     @Override
     default double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return KMath.min(getStartUHVWPoint(pPixelMap, pPixelChain).getY(), getEndUHVWPoint(pPixelMap, pPixelChain).getY(), getP1().getY());
+        return KMath.min(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
     default Point getP0(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getStartUHVWPoint(pPixelMap, pPixelChain);
+        return getStartUHVWPoint(pPixelChain);
     }
 
     /**
@@ -150,7 +155,7 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
 
 
     default Point getP2(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getEndUHVWPoint(pPixelMap, pPixelChain);
+        return getEndUHVWPoint(pPixelChain);
     }
 
     /**
@@ -188,6 +193,17 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
         pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), Color.RED);
         //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
+    }
+
+    @Override
+    default CurveSegment withStartPosition(double startPosition) {
+        return ImmutableCurveSegment.copyOf(this).withStartPosition(startPosition);
+    }
+
+    @Override
+    default CurveSegment withSegmentIndex(int segmentIndex) {
+        return ImmutableCurveSegment.copyOf(this).withSegmentIndex(segmentIndex);
+
     }
 
 }

@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap.segment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import org.jetbrains.annotations.NotNull;
 
 public class CurveSegment extends SegmentBase implements com.ownimage.perception.pixelMap.immutable.CurveSegment {
 
@@ -39,13 +40,8 @@ public class CurveSegment extends SegmentBase implements com.ownimage.perception
         mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
     }
 
-    private CurveSegment(
-            int pSegmentIndex,
-            Point pP1,
-            Point pA,
-            Point pB,
-            double pStartPosition
-    ) {
+    public CurveSegment(
+            int pSegmentIndex, double pStartPosition, @NotNull Point pA, @NotNull Point pB, @NotNull Point pP1) {
         super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
         mA = pA;
@@ -74,23 +70,5 @@ public class CurveSegment extends SegmentBase implements com.ownimage.perception
         return "CurveSegment[" + super.toString() + "]";
     }
 
-    @Override
-    public CurveSegment withStartPosition(
-            double pStartPosition
-    ) {
-        //noinspection FloatingPointEquality
-        if (getStartPosition() == pStartPosition) {
-            return this;
-        }
-        return new CurveSegment(getSegmentIndex(), mP1, mA, mB, pStartPosition);
-    }
 
-    @Override
-    public CurveSegment withSegmentIndex(int segmentIndex) {
-        //noinspection FloatingPointEquality
-        if (getSegmentIndex() == segmentIndex) {
-            return this;
-        }
-        return new CurveSegment(segmentIndex, mP1, mA, mB, getStartPosition());
-    }
 }

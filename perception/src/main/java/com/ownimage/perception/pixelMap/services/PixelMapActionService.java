@@ -284,16 +284,16 @@ public class PixelMapActionService {
         var pixelIndex = pixelChain.getPixels().indexOf(pixel);
         var optionalNextVertex = pixelChain.getVertexes().stream()
                 .filter(v -> v.getPixelIndex() >= pixelIndex)
-                    .findFirst();
-            if (optionalNextVertex.isEmpty() || optionalNextVertex.get().getPixelIndex() == pixelIndex) {
-                return pixelMap;
-            }
-            var vertexIndex = optionalNextVertex.get().getVertexIndex();
-            var position = pixel.getUHVWMidPoint(pixelMap.height());
+                .findFirst();
+        if (optionalNextVertex.isEmpty() || optionalNextVertex.get().getPixelIndex() == pixelIndex) {
+            return pixelMap;
+        }
+        var vertexIndex = optionalNextVertex.get().getVertexIndex();
+        var position = pixel.getUHVWMidPoint(pixelMap.height());
         var newVertex = ImmutableVertex.of(0, pixelIndex, position);
         var updatedPixelChain = StrongReference.of(pixelChain.changeVertexes(v -> v.add(optionalNextVertex.get().getVertexIndex(), newVertex)));
-            updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set( vertexIndex- 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
-            updatedPixelChain.update(upc -> upc.changeSegments(s -> s.add( vertexIndex, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex))));
+        updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set(vertexIndex - 1, SegmentFactory.createTempStraightSegment(upc, vertexIndex - 1))));
+        updatedPixelChain.update(upc -> upc.changeSegments(s -> s.add(vertexIndex, SegmentFactory.createTempStraightSegment(upc, vertexIndex))));
         updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
         updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
 
@@ -329,7 +329,7 @@ public class PixelMapActionService {
         var updatedPixelChain = StrongReference.of(pixelChain
                 .changeSegments(s -> s.remove(vertexIndex))
                 .changeVertexes(v -> v.remove(vertexIndex)));
-        updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set(vertexIndex - 1, SegmentFactory.createTempStraightSegment(pixelMap, upc, vertexIndex - 1))));
+        updatedPixelChain.update(upc -> upc.changeSegments(s -> s.set(vertexIndex - 1, SegmentFactory.createTempStraightSegment(upc, vertexIndex - 1))));
         updatedPixelChain.update(upc -> pixelChainService.resequence(pixelMap, upc));
         updatedPixelChain.update(upc -> pixelChainService.refine(pixelMap, upc, lineCurvePreference));
 

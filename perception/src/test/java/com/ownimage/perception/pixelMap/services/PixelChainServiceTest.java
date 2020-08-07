@@ -40,8 +40,8 @@ public class PixelChainServiceTest {
                 .add(ImmutableVertex.of(0, 20, new Point(2, 5)));
         var pixelChainIn = new PixelChain(new ImmutableVectorClone<Pixel>(), new ImmutableVectorClone<Segment>(), vertexes, 0.0d, IPixelChain.Thickness.Normal);
         var segments = new ImmutableVectorClone<Segment>()
-                .add(SegmentFactory.createTempStraightSegment(pixelMap, pixelChainIn, 0))
-                .add(SegmentFactory.createTempStraightSegment(pixelMap, pixelChainIn, 0));
+                .add(SegmentFactory.createTempStraightSegment(pixelChainIn, 0))
+                .add(SegmentFactory.createTempStraightSegment(pixelChainIn, 0));
         pixelChainIn = pixelChainIn.changeSegments(s -> segments);
         // WHEN
         var pixelChainOut = underTest.resequence(pixelMap, pixelChainIn);

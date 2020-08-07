@@ -5,8 +5,6 @@
  */
 package com.ownimage.framework.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.function.Function;
 
 /**
@@ -29,7 +27,7 @@ public class StrongReference<T> {
         this.value = value;
     }
 
-    public static <T> StrongReference<T> of(@NotNull T value) {
+    public static <T> StrongReference<T> of(T value) {
         return new StrongReference(value);
     }
 

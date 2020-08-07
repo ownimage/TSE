@@ -119,7 +119,7 @@ public class PixelChainService {
         Vector<Segment> segments = new Vector<>();
         for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
             if (i != pixelChain.getVertexes().size() - 1) {
-                StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, result, segments.size());
+                var newSegment = SegmentFactory.createTempStraightSegment(result, segments.size());
                 segments.add(newSegment);
             }
         }
@@ -389,7 +389,7 @@ public class PixelChainService {
         otherChain.getSegments().forEach(segment -> {
             Vertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
             builder.update(b -> b.changeVertexes(v -> v.add(end)));
-            StraightSegment newSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder.get(), builder.get().getSegments().size());
+            var newSegment = SegmentFactory.createTempStraightSegment(builder.get(), builder.get().getSegments().size());
             builder.update(b -> b.changeSegments(s -> s.add(newSegment)));
         });
 
@@ -692,7 +692,7 @@ public class PixelChainService {
             for (int index = endIndex; index < builder.getPixelCount(); index++) {
                 var candidateVertex = vertexService.createVertex(pixelMap, builder, vertexIndex, index);
                 builder = builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
-                var candidateSegment = SegmentFactory.createTempStraightSegment(pixelMap, builder, segmentIndex);
+                var candidateSegment = SegmentFactory.createTempStraightSegment(builder, segmentIndex);
                 builder = builder.changeSegments(s -> s.set(segmentIndex, candidateSegment));
 
                 if (candidateSegment.noPixelFurtherThan(pixelMap, builder, tolerance)) {
@@ -745,9 +745,9 @@ public class PixelChainService {
                 for (int candidateIndex = minPixelIndex + 1; candidateIndex < maxPixelIndex; candidateIndex++) {
                     joinVertex[0] = vertexService.createVertex(pixelMap, pixelChain, secondSegmentIndex, candidateIndex);
                     result = result.setVertex(joinVertex[0]);
-                    firstSegment[0] = SegmentFactory.createTempStraightSegment(pixelMap, result, firstSegmentIndex);
+                    firstSegment[0] = SegmentFactory.createTempStraightSegment(result, firstSegmentIndex);
                     result = result.setSegment(firstSegment[0]);
-                    secondSegment[0] = SegmentFactory.createTempStraightSegment(pixelMap, result, secondSegmentIndex);
+                    secondSegment[0] = SegmentFactory.createTempStraightSegment(result, secondSegmentIndex);
                     result = result.setSegment(secondSegment[0]);
 
                     currentError = segment.calcError(pixelMap, result) + secondSegment[0].calcError(pixelMap, result);
@@ -995,10 +995,10 @@ public class PixelChainService {
             lowestError *= lineCurvePreference;
             // calculate start tangent
             Line tangent = vertexService.calcTangent(pixelMap, result, currentSegment.getStartVertex(result));
-            Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(pixelMap, result));
+            Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(result));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
-            Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(pixelMap, result), closest);
+            Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(result), closest);
             for (int i = 1; i < currentSegment.getPixelLength(result); i++) { // first and last pixel will throw an error and are equivalent to the straight line
                 try {
                     double lambda = (double) i / currentSegment.getPixelLength(result);
@@ -1040,10 +1040,10 @@ public class PixelChainService {
 
 
             // find closest point between start point and tangent line
-            Point closest = tangent.closestPoint(segment.getStartUHVWPoint(pixelMap, result));
+            Point closest = tangent.closestPoint(segment.getStartUHVWPoint(result));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
-            LineSegment tangentRuler = new LineSegment(closest, segment.getEndUHVWPoint(pixelMap, result));
+            LineSegment tangentRuler = new LineSegment(closest, segment.getEndUHVWPoint(result));
             for (int i = 1; i < segment.getPixelLength(result); i++) { // first and last pixel will throw an error and are equivalent to the straight line
                 try {
                     double lambda = (double) i / segment.getPixelLength(result);
@@ -1114,11 +1114,11 @@ public class PixelChainService {
             result.update(r -> r.setSegment(best.get()._1));
             result.update(r -> r.setVertex(best.get()._2));
             if (best.get()._1 == null || result.get().getPixelCount() - startPixelIndex == 1) {
-                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, result.get(), segmentIndex)));
+                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(result.get(), segmentIndex)));
             }
         } else {
             result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
-            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, segmentIndex)));
+            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, segmentIndex)));
         }
         return result.get();
     }
@@ -1203,11 +1203,11 @@ public class PixelChainService {
             result.update(r -> r.setSegment(best.get()._1));
             result.update(r -> r.setVertex(best.get()._2));
             if (result.get().getSegment(0) == null) {
-                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, 0)));
+                result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, 0)));
             }
         } else {
             result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
-            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(pixelMap, r, segmentIndex)));
+            result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, segmentIndex)));
         }
 
         return result.get();

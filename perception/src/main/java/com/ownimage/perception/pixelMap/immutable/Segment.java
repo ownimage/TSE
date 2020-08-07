@@ -40,6 +40,8 @@ public interface Segment extends Serializable {
 
     Segment withStartPosition(double pStartPosition);
 
+    Segment toImmutable();
+
     boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
     double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint);
@@ -68,10 +70,10 @@ public interface Segment extends Serializable {
     }
 
     default Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return new Line(getEndUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
+        return new Line(getEndUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
-    default Point getEndUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Point getEndUHVWPoint(IPixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getPosition();
     }
 
@@ -109,12 +111,12 @@ public interface Segment extends Serializable {
 
     default Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
         return new Line(
-                getStartUHVWPoint(pPixelMap, pPixelChain),
-                getStartUHVWPoint(pPixelMap, pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
+                getStartUHVWPoint(pPixelChain),
+                getStartUHVWPoint(pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
         );
     }
 
-    default Point getStartUHVWPoint(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Point getStartUHVWPoint(IPixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPosition();
     }
 
@@ -123,7 +125,7 @@ public interface Segment extends Serializable {
     }
 
     default void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
-        pGraphics.graffitiLine(getStartUHVWPoint(pPixelMap, pPixelChain), getEndUHVWPoint(pPixelMap, pPixelChain), Color.GREEN);
+        pGraphics.graffitiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain), Color.GREEN);
     }
 
     default boolean noPixelFurtherThan(PixelMap pPixelMap, IPixelChain pPixelChain, double pDistance) {

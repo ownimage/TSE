@@ -5,16 +5,26 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
+import org.immutables.value.Value;
 
+@Value.Immutable
 public interface StraightSegment extends Segment {
 
     @Override
+    @Value.Parameter(order = 1)
     int getSegmentIndex();
 
     @Override
+    @Value.Parameter(order = 2)
     double getStartPosition();
 
+    @Value.Parameter(order = 3)
     LineSegment getLineSegment();
+
+    @Override
+    default Segment toImmutable() {
+        return ImmutableStraightSegment.copyOf(this);
+    }
 
     @Override
     default boolean closerThanActual(
@@ -95,19 +105,12 @@ public interface StraightSegment extends Segment {
     }
 
     @Override
-    default StraightSegment withStartPosition(double pStartPosition) {
-        //noinspection FloatingPointEquality
-        if (getStartPosition() == pStartPosition) {
-            return this;
-        }
-        return new com.ownimage.perception.pixelMap.segment.StraightSegment(getSegmentIndex(), pStartPosition, getLineSegment());
+    default StraightSegment withStartPosition(double startPosition) {
+        return ImmutableStraightSegment.copyOf(this).withStartPosition(startPosition);
     }
 
     @Override
     default StraightSegment withSegmentIndex(int segmentIndex) {
-        if (getSegmentIndex() == segmentIndex) {
-            return this;
-        }
-        return new com.ownimage.perception.pixelMap.segment.StraightSegment(segmentIndex, getStartPosition(), getLineSegment());
+        return ImmutableStraightSegment.copyOf(this).withSegmentIndex(segmentIndex);
     }
 }

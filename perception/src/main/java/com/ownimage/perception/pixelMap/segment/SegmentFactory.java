@@ -6,9 +6,11 @@
 package com.ownimage.perception.pixelMap.segment;
 
 import com.ownimage.framework.logging.FrameworkLogger;
+import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 
 import java.util.Optional;
@@ -59,8 +61,13 @@ public class SegmentFactory {
     }
 
 
-    static public StraightSegment createTempStraightSegment(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex) {
-        return new StraightSegment(pPixelMap, pPixelChain, pSegmentIndex);
+    static public ImmutableStraightSegment createTempStraightSegment(IPixelChain pixelChain, int segmentIndex) {
+        var temp = ImmutableStraightSegment
+                .of(segmentIndex, 0.0d, new LineSegment(Point.Point00, Point.Point11));
+        Point a = temp.getStartUHVWPoint(pixelChain);
+        Point b = temp.getEndUHVWPoint(pixelChain);
+        var lineSegment = new LineSegment(a, b);
+        return temp.withLineSegment(lineSegment);
     }
 
 }
