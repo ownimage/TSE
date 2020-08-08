@@ -5,7 +5,6 @@ import com.ownimage.framework.math.KMath;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.QuarticEquation;
 import com.ownimage.framework.math.Vector;
-import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
 import io.vavr.Tuple2;

@@ -6,7 +6,7 @@
 package com.ownimage.perception.pixelMap.segment;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 

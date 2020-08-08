@@ -77,7 +77,7 @@ public class PixelMapTest {
     public void process01_reset_01() {
         // GIVEN
         var underTest = Utility.createMap(2000, 1500);
-        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) ( NODE));
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (NODE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(underTest, null);
@@ -92,7 +92,7 @@ public class PixelMapTest {
     public void process01_reset_02() {
         // GIVEN
         var underTest = Utility.createMap(2000, 1500);
-        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) ( NODE | EDGE));
+        underTest = pixelMapService.setValue(underTest, 1, 1, (byte) (NODE | EDGE));
         val start = Instant.now();
         // WHEN
         var result = pixelMapApproximationService.process01_reset(underTest, null);
@@ -368,7 +368,7 @@ public class PixelMapTest {
         };
         var pixelMap = Utility.createMap(input, false);
         // WHEN
-        pixelMap = pixelMapApproximationService.process03b_removeEdgesBetweenTwoNodes(pixelMap,  1.2d/1520, 1.2, null);
+        pixelMap = pixelMapApproximationService.process03b_removeEdgesBetweenTwoNodes(pixelMap, 1.2d / 1520, 1.2, null);
 
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
@@ -749,7 +749,7 @@ public class PixelMapTest {
         var source = Utility.getDefaultTransformSource(20);
         pixelMap.update(pm -> addChain(pm, source, start1, chainS1));
         pixelMap.update(pm -> addChain(pm, source, start2, chainNE));
-        BiConsumer<ImmutablePixelMap, PixelChain.Thickness> test = (pPixelMap, pThickness) -> {
+        BiConsumer<ImmutablePixelMap, Thickness> test = (pPixelMap, pThickness) -> {
             assertEquals(2, pPixelMap.pixelChains().size());
             List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());

@@ -6,7 +6,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -27,10 +27,9 @@ import java.util.logging.Logger;
 @Service
 public class PixelMapTransformService {
 
-    private  PixelMapService pixelMapService;
-    private  PixelService pixelService;
-
     private final static Logger mLogger = Framework.getLogger();
+    private PixelMapService pixelMapService;
+    private PixelService pixelService;
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
@@ -119,8 +118,8 @@ public class PixelMapTransformService {
             for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * height)) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * height) + 1; y++) {
                 if (0 <= x && x < width && 0 <= y && y < height) {
                     getSegments(pixelMap, x, y).ifPresent(set -> set.stream()
-                            .filter(tuple -> tuple._1().getThickness() != IPixelChain.Thickness.None)
-                            .filter(tuple -> !pThickOnly || tuple._1().getThickness() == IPixelChain.Thickness.Thick)
+                            .filter(tuple -> tuple._1().getThickness() != Thickness.None)
+                            .filter(tuple -> !pThickOnly || tuple._1().getThickness() == Thickness.Thick)
                             .forEach(candidateSegments::add));
                 }
             }

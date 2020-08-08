@@ -11,10 +11,11 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
@@ -43,13 +44,11 @@ import java.util.stream.Collectors;
 @Service
 public class PixelChainService {
 
+    private final static Logger logger = Framework.getLogger();
+    private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
     private PixelMapService pixelMapService;
     private PixelMapTransformService pixelMapTransformService;
     private VertexService vertexService;
-
-    private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
-
-    private final static Logger logger = Framework.getLogger();
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
@@ -305,7 +304,7 @@ public class PixelChainService {
      * @param thickness the p thickness
      * @return the PixeclChain
      */
-    public PixelChain withThickness(@NotNull PixelChain pixelChain, @NotNull IPixelChain.Thickness thickness) {
+    public PixelChain withThickness(@NotNull PixelChain pixelChain, @NotNull Thickness thickness) {
         if (thickness == pixelChain.getThickness()) {
             return pixelChain;
         }
@@ -327,17 +326,17 @@ public class PixelChainService {
         return new Tuple2(pixelMapResult, builder);
     }
 
-    public IPixelChain.Thickness getThickness(
+    public Thickness getThickness(
             @NotNull PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
         var pixelLength = getPixelLength(pixelChain);
         if (pixelLength < thinLength) {
-            return IPixelChain.Thickness.None;
+            return Thickness.None;
         } else if (pixelLength < normalLength) {
-            return IPixelChain.Thickness.Thin;
+            return Thickness.Thin;
         } else if (pixelLength < longLength) {
-            return IPixelChain.Thickness.Normal;
+            return Thickness.Normal;
         }
-        return IPixelChain.Thickness.Thick;
+        return Thickness.Thick;
     }
 
     public int getPixelLength(@NotNull PixelChain pixelChain) {
@@ -346,7 +345,7 @@ public class PixelChainService {
 
     public PixelChain withThickness(
             @NotNull PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
-        IPixelChain.Thickness thickness = getThickness(pixelChain, thinLength, normalLength, longLength);
+        Thickness thickness = getThickness(pixelChain, thinLength, normalLength, longLength);
         return withThickness(pixelChain, thickness);
     }
 

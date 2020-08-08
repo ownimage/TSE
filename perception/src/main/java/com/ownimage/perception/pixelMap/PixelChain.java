@@ -6,6 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
@@ -47,7 +49,7 @@ public class PixelChain implements Serializable, Cloneable, IPixelChain {
         mSegments = new ImmutableVectorClone<>();
         mVertexes = new ImmutableVectorClone<Vertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
         mLength = 0.0d;
-        mThickness = IPixelChain.Thickness.Normal;
+        mThickness = Thickness.Normal;
     }
 
     public PixelChain(

@@ -5,7 +5,7 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.SplitTimer;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.EqualizeValues;
-import com.ownimage.perception.pixelMap.IPixelChain;
+import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelChain;
@@ -27,13 +27,12 @@ import java.util.logging.Logger;
 @Service
 public class PixelMapActionService {
 
-    private  PixelMapService pixelMapService;
-    private  PixelMapChainGenerationService pixelMapChainGenerationService;
-    private  PixelMapApproximationService pixelMapApproximationService;
-    private  PixelChainService pixelChainService;
-    private  PixelService pixelService;
-
     private final static Logger logger = Framework.getLogger();
+    private PixelMapService pixelMapService;
+    private PixelMapChainGenerationService pixelMapChainGenerationService;
+    private PixelMapApproximationService pixelMapApproximationService;
+    private PixelChainService pixelChainService;
+    private PixelService pixelService;
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
@@ -164,7 +163,7 @@ public class PixelMapActionService {
     public ImmutablePixelMap actionSetPixelChainThickness(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull Collection<Pixel> pixels,
-            @NotNull Function<PixelChain, IPixelChain.Thickness> mapper) {
+            @NotNull Function<PixelChain, Thickness> mapper) {
         var result = StrongReference.of(pixelMap);
         pixels.stream()
                 .filter(p -> pixelService.isEdge(pixelMap, p))

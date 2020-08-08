@@ -1,8 +1,8 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 
