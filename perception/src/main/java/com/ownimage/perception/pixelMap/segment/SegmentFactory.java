@@ -10,8 +10,10 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.immutable.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -19,32 +21,37 @@ import java.util.logging.Logger;
 
 public class SegmentFactory {
 
-    public enum SegmentType {
-        Straight, Curve, DoubleCurve
-    }
-
-
     private final static Logger mLogger = Framework.getLogger();
 
     /**
      * Creates the curve segment starting at pStart, ending at pEnd and the gradient of the curve at the start and end is towards pP1.
      * will return a LineApproximation instead.
      *
-     *
      * @param pPixelMap
-     * @param pPixelChain the Pixel Chain performing this operation
-     * @param pP1         the point that the start and end gradient goes through
+     * @param the       Pixel Chain performing this operation
+     * @param pP1       the point that the start and end gradient goes through
      * @return the curve approximation
      */
-    static public CurveSegment createTempCurveSegmentTowards(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex, Point pP1) {
+    static public ImmutableCurveSegment createTempCurveSegmentTowards(
+            @NotNull PixelMap pPixelMap, @NotNull IPixelChain pixelChain, int segmentIndex, @NotNull Point p1) {
         try {
-            CurveSegment segment = new CurveSegment(pPixelMap, pPixelChain, pSegmentIndex, pP1);
+            var p0 = pixelChain.getVertex(segmentIndex).getPosition();
+            var p2 = pixelChain.getVertex(segmentIndex + 1).getPosition();
+            var a = p0.add(p2).minus(p1.multiply(2.0d));
+            var b = p1.minus(p0).multiply(2.0d);
+            var segment = ImmutableCurveSegment.builder()
+                    .segmentIndex(segmentIndex)
+                    .startPosition(0.0d)
+                    .a(a)
+                    .b(b)
+                    .p1(p1)
+                    .build();
             if (
                     segment.getA().length2() != 0
-                    && segment.getMinX(pPixelMap, pPixelChain) > 0.0d
-                    && segment.getMaxX(pPixelMap, pPixelChain) < (double) pPixelMap.width() / pPixelMap.height()
-                    && segment.getMinY(pPixelMap, pPixelChain) > 0.0d
-                    && segment.getMinY(pPixelMap, pPixelChain) < 1.0d
+                            && segment.getMinX(pPixelMap, pixelChain) > 0.0d
+                            && segment.getMaxX(pPixelMap, pixelChain) < (double) pPixelMap.width() / pPixelMap.height()
+                            && segment.getMinY(pPixelMap, pixelChain) > 0.0d
+                            && segment.getMinY(pPixelMap, pixelChain) < 1.0d
             ) {
                 return segment;
             } else {
@@ -56,7 +63,8 @@ public class SegmentFactory {
         return null;
     }
 
-    static public Optional<CurveSegment> createOptionalTempCurveSegmentTowards(PixelMap pPixelMap, IPixelChain pPixelChain, int pSegmentIndex, Point pP1) {
+    static public Optional<ImmutableCurveSegment> createOptionalTempCurveSegmentTowards(
+            @NotNull PixelMap pPixelMap, @NotNull IPixelChain pPixelChain, int pSegmentIndex, @NotNull Point pP1) {
         return Optional.ofNullable(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 

@@ -10,6 +10,9 @@ import com.ownimage.perception.pixelMap.immutable.IPixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class needs to remain here for the deserialization of existing transforms.
+ */
 public class CurveSegment extends SegmentBase implements com.ownimage.perception.pixelMap.immutable.CurveSegment {
 
     private final static long serialVersionUID = 1L;
@@ -36,8 +39,8 @@ public class CurveSegment extends SegmentBase implements com.ownimage.perception
     ) {
         super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
-        mA = getP0(pPixelMap, pPixelChain).add(getP2(pPixelMap, pPixelChain)).minus(getP1().multiply(2.0d));
-        mB = getP1().minus(getP0(pPixelMap, pPixelChain)).multiply(2.0d);
+        mA = getP0(pPixelChain).add(getP2(pPixelChain)).minus(getP1().multiply(2.0d));
+        mB = getP1().minus(getP0(pPixelChain)).multiply(2.0d);
     }
 
     public CurveSegment(

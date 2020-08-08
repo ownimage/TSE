@@ -9,6 +9,9 @@ import com.ownimage.framework.math.LineSegment;
 
 import java.util.Objects;
 
+/**
+ * This class needs to remain here for the deserialization of existing transforms.
+ */
 public class StraightSegment extends SegmentBase implements com.ownimage.perception.pixelMap.immutable.StraightSegment {
 
     private final static long serialVersionUID = 1L;

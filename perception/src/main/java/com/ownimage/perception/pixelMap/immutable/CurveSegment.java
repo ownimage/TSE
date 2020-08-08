@@ -16,6 +16,25 @@ import java.io.Serializable;
 @Value.Immutable
 public interface CurveSegment extends Segment, Serializable, Cloneable {
 
+    static ImmutableCurveSegment create(
+            IPixelChain pixelChain,
+            int segmentIndex,
+            Point p1,
+            double startPosition
+    ) {
+        var p0 = pixelChain.getVertex(segmentIndex).getPosition();
+        var p2 = pixelChain.getVertex(segmentIndex + 1).getPosition();
+        var a = p0.add(p2).minus(p1.multiply(2.0d));
+        var b = p1.minus(p0).multiply(2.0d);
+        return ImmutableCurveSegment.builder()
+                .segmentIndex(segmentIndex)
+                .startPosition(startPosition)
+                .a(a)
+                .b(b)
+                .p1(p1)
+                .build();
+    }
+
     @Override
     @Value.Parameter(order = 1)
     int getSegmentIndex();
@@ -39,7 +58,8 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
     }
 
     @Override
-    default boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier) {
+    default boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource
+            pTransformSource, Point pPoint, double pMultiplier) {
         double lambda = closestLambda(pPixelMap, pPixelChain, pPoint);
         double position = getStartPosition() + lambda * getLength(pPixelMap, pPixelChain);
         double actualThickness = getActualThickness(pTransformSource, pPixelChain, position) * pMultiplier;
@@ -64,7 +84,7 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
 
     default Tuple2<Double, Double> closestLambdaAndDistance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
         // Note this is closely related to distance
-        Point C = getP0(pPixelMap, pPixelChain).minus(pUVHWPoint);
+        Point C = getP0(pPixelChain).minus(pUVHWPoint);
 
         double a = getA().length2();
         double b = 2.0d * getA().dot(getB());
@@ -114,7 +134,7 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
     @Override
     default double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
         // TODO needs improvement
-        return getP0P1(pPixelMap, pPixelChain).length() + getP2P1(pPixelMap, pPixelChain).length();
+        return getP0P1(pPixelChain).length() + getP2P1(pPixelMap, pPixelChain).length();
     }
 
     @Override
@@ -137,23 +157,22 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
         return KMath.min(getStartUHVWPoint(pPixelChain).getY(), getEndUHVWPoint(pPixelChain).getY(), getP1().getY());
     }
 
-    default Point getP0(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Point getP0(IPixelChain pPixelChain) {
         return getStartUHVWPoint(pPixelChain);
     }
 
     /**
      * Gets the Vector from P0 to P1.
      *
-     * @param pPixelMap   the PixelMap performing the this operation
      * @param pPixelChain the Pixel Chain performing this operation
      * @return the Vector
      */
-    default Vector getP0P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getP1().minus(getP0(pPixelMap, pPixelChain));
+    default Vector getP0P1(IPixelChain pPixelChain) {
+        return getP1().minus(getP0(pPixelChain));
     }
 
 
-    default Point getP2(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Point getP2(IPixelChain pPixelChain) {
         return getEndUHVWPoint(pPixelChain);
     }
 
@@ -165,19 +184,19 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
      * @return the Vector
      */
     default Vector getP2P1(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getP2(pPixelMap, pPixelChain).minus(getP1());
+        return getP2(pPixelChain).minus(getP1());
     }
 
     @Override
     default Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT) {
-        return getP0(pPixelMap, pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
+        return getP0(pPixelChain).multiply((1.0d - pT) * (1.0d - pT)) //
                 .add(getP1().multiply(2.0d * (1.0d - pT) * pT)) //
-                .add(getP2(pPixelMap, pPixelChain).multiply(pT * pT));
+                .add(getP2(pPixelChain).multiply(pT * pT));
     }
 
     @Override
     default Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
-        return getP0P1(pPixelMap, pPixelChain).minus().normalize();
+        return getP0P1(pPixelChain).minus().normalize();
     }
 
     @Override
@@ -187,9 +206,9 @@ public interface CurveSegment extends Segment, Serializable, Cloneable {
             ISegmentGrafittiHelper pGraphics
     ) {
         var c = Color.WHITE;
-        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP1(), c);
-        pGraphics.graffitiLine(getP1(), getP2(pPixelMap, pPixelChain), c);
-        pGraphics.graffitiLine(getP0(pPixelMap, pPixelChain), getP2(pPixelMap, pPixelChain), Color.RED);
+        pGraphics.graffitiLine(getP0(pPixelChain), getP1(), c);
+        pGraphics.graffitiLine(getP1(), getP2(pPixelChain), c);
+        pGraphics.graffitiLine(getP0(pPixelChain), getP2(pPixelChain), Color.RED);
         //super.graffiti(pPixelMap, pPixelChain, pGraphics);
         pGraphics.graffitiControlPoint(getP1());
     }
