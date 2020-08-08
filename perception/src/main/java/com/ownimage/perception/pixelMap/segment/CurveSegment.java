@@ -6,8 +6,6 @@
 package com.ownimage.perception.pixelMap.segment;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.immutable.IPixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -21,36 +19,14 @@ public class CurveSegment extends SegmentBase implements com.ownimage.perception
     private final Point mA;
     private final Point mB;
 
-    CurveSegment(
-            PixelMap pPixelMap,
-            IPixelChain pPixelChain,
-            int pSegmentIndex,
-            Point pP1
-    ) {
-        this(pPixelMap, pPixelChain, pSegmentIndex, pP1, 0.0d);
-    }
-
+    /* This is only here to allow access for testing ... it is called through reflection */
     private CurveSegment(
-            PixelMap pPixelMap,
-            IPixelChain pPixelChain,
-            int pSegmentIndex,
-            Point pP1,
-            double pStartPosition
-    ) {
-        super(pSegmentIndex, pStartPosition);
-        mP1 = pP1;
-        mA = getP0(pPixelChain).add(getP2(pPixelChain)).minus(getP1().multiply(2.0d));
-        mB = getP1().minus(getP0(pPixelChain)).multiply(2.0d);
-    }
-
-    public CurveSegment(
             int pSegmentIndex, double pStartPosition, @NotNull Point pA, @NotNull Point pB, @NotNull Point pP1) {
         super(pSegmentIndex, pStartPosition);
         mP1 = pP1;
         mA = pA;
         mB = pB;
     }
-
 
     @Override
     public Point getA() {
@@ -72,6 +48,5 @@ public class CurveSegment extends SegmentBase implements com.ownimage.perception
     public String toString() {
         return "CurveSegment[" + super.toString() + "]";
     }
-
 
 }

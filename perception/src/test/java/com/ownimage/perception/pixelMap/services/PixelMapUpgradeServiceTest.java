@@ -14,11 +14,13 @@ import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
+import org.jetbrains.annotations.NotNull;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.lang.reflect.Constructor;
 import java.util.logging.LogManager;
 import java.util.stream.IntStream;
 
@@ -69,21 +71,32 @@ public class PixelMapUpgradeServiceTest {
         }
     }
 
+    private CurveSegment generateCurveSegment(
+            int segmentIndex, double startPosition, @NotNull Point a, @NotNull Point b, @NotNull Point p1) {
+        try {
+            Constructor<CurveSegment> ctor = CurveSegment.class
+                    .getDeclaredConstructor(int.class, double.class, Point.class, Point.class, Point.class);
+            ctor.setAccessible(true);
+            return ctor.newInstance(segmentIndex, startPosition, a, b, p1);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private PixelChain generatePixelChain() {
         var pixelMap = Utility.createMap(10, 10);
         var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
         // create segments
         IntStream.range(4, 9).boxed()
                 .map(i -> {
-                            int index = 3 + 2 * i;
-                            double position = i + 2.2d;
-                            var a = new Point(i / 10.0d, (i + 3) / 10.0d);
+                    int index = 3 + 2 * i;
+                    double position = i + 2.2d;
+                    var a = new Point(i / 10.0d, (i + 3) / 10.0d);
                             var b = new Point(i + 3 / 10.0d, (i + 7) / 10.0d);
                             var p1 = new Point(i + 7 / 10.0d, (i + 11) / 10.0d);
                             var lineSegment = new LineSegment(a, b);
                             if ((i & 1) == 0) {
-                                var curveSegment = new CurveSegment(index, position, a, b, p1);
-                                return curveSegment;
+                                return generateCurveSegment(index, position, a, b, p1);
                             }
                             var straightSegment = new StraightSegment(index, position, lineSegment);
                             return straightSegment;
