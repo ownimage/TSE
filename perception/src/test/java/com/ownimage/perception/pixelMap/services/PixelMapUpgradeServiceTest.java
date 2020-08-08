@@ -4,6 +4,7 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.IPixelChain;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
@@ -40,36 +41,38 @@ public class PixelMapUpgradeServiceTest {
     }
 
     @Test
-    public void upgradeVertexes() {
+    public void upgradePixelChain() {
         // GIVEN
-        var pixelMap = Utility.createMap(10, 10);
-        var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
-        IntStream.range(4, 9).boxed()
-                .map(i -> {
-                            var vertex = mock(Vertex.class);
-                            when(vertex.getPixelIndex()).thenReturn(3 + 2 * i);
-                            when(vertex.getVertexIndex()).thenReturn(i);
-                            when(vertex.getPosition()).thenReturn(new Point(i / 10.0d, (i + 3) / 10.0d));
-                            return vertex;
-                        }
-                )
-                .forEach(v -> pixelChain.update(pc -> pc.changeVertexes(vs -> vs.add(v))));
-        assertEquals(6, pixelChain.get().getVertexes().size());
+        var pixelChain = generatePixelChain();
         // WHEN
-        var actual = underTest.upgradeVertexes(pixelChain.get());
+        var actual = underTest.upgradePixelChain(pixelChain);
         // THEN
+        validateVertexes(pixelChain, actual);
+        validateSegments(pixelChain, actual);
+    }
+
+    private void validateSegments(PixelChain pixelChain, IPixelChain actual) {
+        assertEquals(5, actual.getSegments().size());
+        for (int i = 0; i < actual.getSegments().size(); i++) {
+            assertTrue(actual.getSegment(i) instanceof ImmutableStraightSegment
+                    || actual.getSegment(i) instanceof ImmutableCurveSegment);
+            var expected = pixelChain.getSegment(i).toImmutable();
+            assertEquals(expected, actual.getSegment(i).toImmutable());
+        }
+    }
+
+    private void validateVertexes(PixelChain pixelChain, IPixelChain actual) {
         assertEquals(6, actual.getVertexes().size());
         for (int i = 0; i < actual.getVertexes().size(); i++) {
-            assertTrue(actual.getVertex(i).sameValue(pixelChain.get().getVertex(i)));
+            assertTrue(actual.getVertex(i).sameValue(pixelChain.getVertex(i)));
             assertSame(ImmutableVertex.class, actual.getVertex(i).getClass());
         }
     }
 
-    @Test
-    public void upgradeSegments() {
-        // GIVEN
+    private PixelChain generatePixelChain() {
         var pixelMap = Utility.createMap(10, 10);
         var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
+        // create segments
         IntStream.range(4, 9).boxed()
                 .map(i -> {
                             int index = 3 + 2 * i;
@@ -87,17 +90,40 @@ public class PixelMapUpgradeServiceTest {
                         }
                 )
                 .forEach(s -> pixelChain.update(pc -> pc.changeSegments(segs -> segs.add(s))));
+        // create vertexes
+        IntStream.range(4, 9).boxed()
+                .map(i -> {
+                            var vertex = mock(Vertex.class);
+                            when(vertex.getPixelIndex()).thenReturn(3 + 2 * i);
+                            when(vertex.getVertexIndex()).thenReturn(i);
+                            when(vertex.getPosition()).thenReturn(new Point(i / 10.0d, (i + 3) / 10.0d));
+                            return vertex;
+                        }
+                )
+                .forEach(v -> pixelChain.update(pc -> pc.changeVertexes(vs -> vs.add(v))));
+        assertEquals(6, pixelChain.get().getVertexes().size());
         assertEquals(5, pixelChain.get().getSegments().size());
+        return pixelChain.get();
+    }
+
+    @Test
+    public void upgradeVertexes() {
+        // GIVEN
+        var pixelChain = generatePixelChain();
         // WHEN
-        var actual = underTest.upgradeSegments(pixelChain.get());
+        var actual = underTest.upgradeVertexes(pixelChain);
         // THEN
-        assertEquals(5, actual.getSegments().size());
-        for (int i = 0; i < actual.getSegments().size(); i++) {
-            assertTrue(actual.getSegment(i) instanceof ImmutableStraightSegment
-                    || actual.getSegment(i) instanceof ImmutableCurveSegment);
-            var expected = pixelChain.get().getSegment(i).toImmutable();
-            assertEquals(expected, actual.getSegment(i).toImmutable());
-        }
+        validateVertexes(pixelChain, actual);
+    }
+
+    @Test
+    public void upgradeSegments() {
+        // GIVEN
+        var pixelChain = generatePixelChain();
+        // WHEN
+        var actual = underTest.upgradeSegments(pixelChain);
+        // THEN
+        validateSegments(pixelChain, actual);
     }
 
 }

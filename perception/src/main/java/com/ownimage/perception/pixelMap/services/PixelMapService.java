@@ -60,8 +60,14 @@ public class PixelMapService {
     private static final int[][] eliminate = {{N, E, SW}, {E, S, NW}, {S, W, NE}, {W, N, SE}};
     private PixelMapChainGenerationService pixelMapChainGenerationService;
     private PixelMapApproximationService pixelMapApproximationService;
+    private PixelMapUpgradeService pixelMapUpgradeService;
     private PixelChainService pixelChainService;
     private PixelService pixelService;
+
+    @Autowired
+    public void setPixelMapUpgradeService(PixelMapUpgradeService pixelMapUpgradeService) {
+        this.pixelMapUpgradeService = pixelMapUpgradeService;
+    }
 
     @Autowired
     public void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
@@ -139,7 +145,10 @@ public class PixelMapService {
                 // to be replaced with a constant value
                 Function<PixelChain, PixelChain> fixNullPositionVertexes =
                         pc -> pixelChainService.fixNullPositionVertexes(height, pc);
-                pixelChains = pixelChains.stream().map(fixNullPositionVertexes).collect(Collectors.toList());
+                pixelChains = pixelChains.stream()
+                        .map(fixNullPositionVertexes)
+                        .map(pixelMapUpgradeService::upgradePixelChain)
+                        .collect(Collectors.toList());
                 pixelMap = pixelChainsClear(pixelMap);
                 pixelMap = pixelChainsAddAll(pixelMap, pixelChains);
                 //TODO this will need to change
