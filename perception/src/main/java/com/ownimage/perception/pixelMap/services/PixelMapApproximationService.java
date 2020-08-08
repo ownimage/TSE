@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -245,22 +246,23 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         var pixelsInChains = Collections.synchronizedSet(new HashSet<Pixel>());
         result.get().pixelChains().stream().parallel().forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
-        var counter = Counter.createMaxCounter(pixelMap.width());
-        for (int x = 0; x < pixelMap.height(); x++) {
+        var edges = pixelMap.data().entrySet().stream().parallel()
+                .filter(e -> (e.getValue() | EDGE) != 0)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        var counter = Counter.createMaxCounter(edges.size() + 1);
+        edges.forEach(pixel -> {
             counter.increase();
             reportProgress(pProgressObserver, "Finding loops ...", counter.getPercentInt());
-            for (int y = 0; y < pixelMap.height(); y++) {
-                var pixel = new Pixel(x, y);
-                if (pixelService.isEdge(result.get(), pixel) && !pixelsInChains.contains(pixel)) {
-                    result.update(r -> pixelMapService.setNode(r, pixel, true));
-                    pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
-                        var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                        result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-                        chains._2.forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
-                    });
-                }
+            if (pixelService.isEdge(result.get(), pixel) && !pixelsInChains.contains(pixel)) {
+                result.update(r -> pixelMapService.setNode(r, pixel, true));
+                pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
+                    var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
+                    result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+                    chains._2.forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
+                });
             }
-        }
+        });
         return result.get();
     }
 

@@ -5,8 +5,10 @@ import com.ownimage.framework.util.Framework;
 import lombok.val;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -46,6 +48,12 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
     public Optional<E> getOptional(int pX, int pY) {
         synchronized (getSynchronisationObject()) {
             return Optional.ofNullable(getMaster().get(pX, pY));
+        }
+    }
+
+    public Set<Map.Entry<IntegerPoint, E>> entrySet() {
+        synchronized (getSynchronisationObject()) {
+            return getMaster().mValues.entrySet();
         }
     }
 

@@ -219,8 +219,52 @@ public class ImmutableMap2DTest {
         // WHEN
         underTest = underTest.set(1, 1, "1");
         // THEN
-
         assertEquals(width, underTest.width());
         assertEquals(height, underTest.height());
+    }
+
+    @Test
+    public void entrySet_00() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(10, 10, "0");
+        // WHEN
+        var actual = underTest.entrySet();
+        // THEN
+        assertEquals(0, actual.size());
+    }
+
+    @Test
+    public void entrySet_01() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(10, 10, "0");
+        underTest = underTest.set(1, 1, "X");
+        // WHEN
+        var actual = underTest.entrySet();
+        // THEN
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void entrySet_02() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(10, 10, "0");
+        underTest = underTest.set(1, 1, "X");
+        underTest = underTest.set(1, 1, "Y");
+        // WHEN
+        var actual = underTest.entrySet();
+        // THEN
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void entrySet_03() {
+        // GIVEN
+        var underTest = new ImmutableMap2D<>(10, 10, "0");
+        underTest = underTest.set(1, 1, "X");
+        underTest = underTest.set(2, 2, "X");
+        // WHEN
+        var actual = underTest.entrySet();
+        // THEN
+        assertEquals(2, actual.size());
     }
 }
