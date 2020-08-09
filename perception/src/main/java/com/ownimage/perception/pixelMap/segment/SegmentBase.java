@@ -10,6 +10,7 @@ import com.ownimage.perception.pixelMap.immutable.Segment;
 /**
  * This class needs to remain here for the deserialization of existing transforms.
  */
+@Deprecated
 public abstract class SegmentBase implements Segment {
 
     private final static long serialVersionUID = 1L;

@@ -83,23 +83,34 @@ public class PixelMapUpgradeServiceTest {
         }
     }
 
+    private StraightSegment generateStraigntSegment(
+            int segmentIndex, double startPosition, @NotNull LineSegment lineSegment) {
+        try {
+            Constructor<StraightSegment> ctor = StraightSegment.class
+                    .getDeclaredConstructor(int.class, double.class, LineSegment.class);
+            ctor.setAccessible(true);
+            return ctor.newInstance(segmentIndex, startPosition, lineSegment);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private PixelChain generatePixelChain() {
         var pixelMap = Utility.createMap(10, 10);
         var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
         // create segments
         IntStream.range(4, 9).boxed()
                 .map(i -> {
-                    int index = 3 + 2 * i;
-                    double position = i + 2.2d;
-                    var a = new Point(i / 10.0d, (i + 3) / 10.0d);
+                            int index = 3 + 2 * i;
+                            double position = i + 2.2d;
+                            var a = new Point(i / 10.0d, (i + 3) / 10.0d);
                             var b = new Point(i + 3 / 10.0d, (i + 7) / 10.0d);
                             var p1 = new Point(i + 7 / 10.0d, (i + 11) / 10.0d);
                             var lineSegment = new LineSegment(a, b);
                             if ((i & 1) == 0) {
                                 return generateCurveSegment(index, position, a, b, p1);
                             }
-                            var straightSegment = new StraightSegment(index, position, lineSegment);
-                            return straightSegment;
+                            return generateStraigntSegment(index, position, lineSegment);
                         }
                 )
                 .forEach(s -> pixelChain.update(pc -> pc.changeSegments(segs -> segs.add(s))));
