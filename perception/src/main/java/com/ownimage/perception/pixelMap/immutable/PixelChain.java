@@ -7,7 +7,6 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
 import org.immutables.value.Value;
@@ -17,7 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Value.Immutable
-public interface IPixelChain {
+public interface PixelChain {
 
     default PegCounter getPegCounter() {
         return Services.getServices().getPegCounter();
@@ -196,8 +195,8 @@ public interface IPixelChain {
         return getVertexes().lastElement().orElse(null);
     }
 
-    default PixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
-        return new PixelChain(
+    default com.ownimage.perception.pixelMap.PixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
+        return new com.ownimage.perception.pixelMap.PixelChain(
                 fn.apply(getPixels()),
                 getSegments(),
                 getVertexes(),
@@ -206,8 +205,8 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
-        return new PixelChain(
+    default com.ownimage.perception.pixelMap.PixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
+        return new com.ownimage.perception.pixelMap.PixelChain(
                 getPixels(),
                 fn.apply(getSegments()),
                 getVertexes(),
@@ -216,8 +215,8 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
-        return new PixelChain(
+    default com.ownimage.perception.pixelMap.PixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
+        return new com.ownimage.perception.pixelMap.PixelChain(
                 getPixels(),
                 getSegments(),
                 fn.apply(getVertexes()),
@@ -226,8 +225,8 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain setLength(double length) {
-        return new PixelChain(
+    default com.ownimage.perception.pixelMap.PixelChain setLength(double length) {
+        return new com.ownimage.perception.pixelMap.PixelChain(
                 getPixels(),
                 getSegments(),
                 getVertexes(),
@@ -236,8 +235,8 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain setThickness(@NonNull Thickness thickness) {
-        return new PixelChain(
+    default com.ownimage.perception.pixelMap.PixelChain setThickness(@NonNull Thickness thickness) {
+        return new com.ownimage.perception.pixelMap.PixelChain(
                 getPixels(),
                 getSegments(),
                 getVertexes(),
@@ -246,11 +245,11 @@ public interface IPixelChain {
         );
     }
 
-    default PixelChain setVertex(Vertex pVertex) {
+    default com.ownimage.perception.pixelMap.PixelChain setVertex(Vertex pVertex) {
         return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 
-    default PixelChain setSegment(Segment pSegment) {
+    default com.ownimage.perception.pixelMap.PixelChain setSegment(Segment pSegment) {
         return changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 

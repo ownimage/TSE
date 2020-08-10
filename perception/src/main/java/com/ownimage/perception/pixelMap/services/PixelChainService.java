@@ -14,9 +14,8 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.CurveSegment;
-import com.ownimage.perception.pixelMap.immutable.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
@@ -65,7 +64,7 @@ public class PixelChainService {
         this.vertexService = vertexService;
     }
 
-    public PixelChain fixNullPositionVertexes(int height, PixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain fixNullPositionVertexes(int height, com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         var mappedVertexes = pixelChain.getVertexes().stream()
                 .map(v -> {
                     var p = v.getPosition();
@@ -77,10 +76,10 @@ public class PixelChainService {
                 })
                 .collect(Collectors.toList());
         var vertexes = new ImmutableVectorClone<Vertex>().addAll(mappedVertexes);
-        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.getLength(), pixelChain.getThickness());
+        return new com.ownimage.perception.pixelMap.PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), vertexes, pixelChain.getLength(), pixelChain.getThickness());
     }
 
-    public PixelChain add(IPixelChain pixelChain, Pixel pPixel) {
+    public com.ownimage.perception.pixelMap.PixelChain add(PixelChain pixelChain, Pixel pPixel) {
         return pixelChain.changePixels(p -> p.add(pPixel));
     }
 
@@ -94,7 +93,7 @@ public class PixelChainService {
      * @param pixelMap the PixelMap this chain belongs to
      * @return a new PixelChain with the elements reversed
      */
-    public PixelChain reverse(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain reverse(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         // note that this uses direct access to the data members as the public setters have other side effects
         //validate("reverse");
         var result = pixelChain;
@@ -125,33 +124,33 @@ public class PixelChainService {
         return result.changeSegments(s -> s.clear().addAll(segments));
     }
 
-    public PixelChain refine(
+    public com.ownimage.perception.pixelMap.PixelChain refine(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference) {
         var result = refine01_matchCurves(pixelMap, pixelChain, lineCurvePreference);
         return refine03_matchCurves(pixelMap, result, lineCurvePreference);
     }
 
-    public PixelChain refine03FirstSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine03FirstSegment(
             PixelMap pixelMap,
-            IPixelChain pixelChain,
+            PixelChain pixelChain,
             double lineCurvePreference,
             Segment currentSegment
     ) {
         // this only works if this or the next segment are straight
         var originalNextSegment = currentSegment.getNextSegment(pixelChain);
         if (!((currentSegment instanceof StraightSegment) || (originalNextSegment instanceof StraightSegment))) {
-            return PixelChain.of(pixelChain);
+            return com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         }
 
         var bestCandidateSegment = currentSegment;
         var bestCandidateVertex = currentSegment.getEndVertex(pixelChain);
         var originalEndVertex = currentSegment.getEndVertex(pixelChain);
-        var result = PixelChain.of(pixelChain);
+        var result = com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
 
         try {
-            pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
+            pegCounterService.increase(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = currentSegment.calcError(pixelMap, result) * 1000 * lineCurvePreference; // TODO
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(result);
             var controlPointEnd = originalEndVertex.getPosition()
@@ -187,7 +186,7 @@ public class PixelChainService {
             }
         } finally {
             if (bestCandidateSegment != currentSegment) {
-                pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
+                pegCounterService.increase(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
             result = result.setVertex(bestCandidateVertex);
             result = result.setSegment(bestCandidateSegment);
@@ -195,16 +194,16 @@ public class PixelChainService {
         return result;
     }
 
-    public PixelChain refine03_matchCurves(
+    public com.ownimage.perception.pixelMap.PixelChain refine03_matchCurves(
             @NotNull PixelMap pPixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference) {
 
         if (pixelChain.getSegmentCount() == 1) {
-            return PixelChain.of(pixelChain);
+            return com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         }
 
-        var result = StrongReference.of(PixelChain.of(pixelChain));
+        var result = StrongReference.of(com.ownimage.perception.pixelMap.PixelChain.of(pixelChain));
         result.get().streamSegments().forEach(currentSegment -> {
             if (currentSegment == result.get().getFirstSegment()) {
                 result.update(r -> refine03FirstSegment(pPixelMap, r, lineCurvePreference, currentSegment));
@@ -217,24 +216,24 @@ public class PixelChainService {
         return result.get();
     }
 
-    public PixelChain refine03LastSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine03LastSegment(
             @NotNull PixelMap pixelMap,
-            @NotNull IPixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             @NotNull Segment currentSegment) {
         var originalPrevSegment = currentSegment.getPreviousSegment(pixelChain);
         // this only works if this or the previous segment are straight
         if (!((currentSegment instanceof StraightSegment) || (originalPrevSegment instanceof StraightSegment))) {
-            return PixelChain.of(pixelChain);
+            return com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         }
 
         var bestCandidateSegment = currentSegment;
         var bestCandidateVertex = currentSegment.getEndVertex(pixelChain);
         var originalStartVertex = currentSegment.getStartVertex(pixelChain);
-        var result = PixelChain.of(pixelChain);
+        var result = com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
 
         try {
-            pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
+            pegCounterService.increase(PixelChain.PegCounters.StartSegmentStraightToCurveAttempted);
             var lowestError = currentSegment.calcError(pixelMap, result) * 1000 * lineCurvePreference; // TODO
             var prevSegmentPixelLength = originalPrevSegment.getPixelLength(result);
             var controlPointEnd = originalStartVertex.getPosition()
@@ -271,7 +270,7 @@ public class PixelChainService {
             }
         } finally {
             if (bestCandidateSegment != currentSegment) {
-                pegCounterService.increase(IPixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
+                pegCounterService.increase(PixelChain.PegCounters.StartSegmentStraightToCurveSuccessful);
             }
             result = result.setVertex(bestCandidateVertex);
             result = result.setSegment(bestCandidateSegment);
@@ -280,20 +279,20 @@ public class PixelChainService {
         return result;
     }
 
-    public Pixel firstPixel(PixelChain pixelChain) {
+    public Pixel firstPixel(com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         return pixelChain.getPixels().firstElement().orElseThrow();
     }
 
-    public Optional<Node> getEndNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getEndNode(ImmutablePixelMap pixelMap, com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
     }
 
 
-    public Optional<Node> getStartNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
+    public Optional<Node> getStartNode(ImmutablePixelMap pixelMap, com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
 
-    public Vertex getStartVertex(IPixelChain pixelChain) {
+    public Vertex getStartVertex(PixelChain pixelChain) {
         return pixelChain.getVertexes().firstElement().orElse(null);
     }
 
@@ -304,18 +303,18 @@ public class PixelChainService {
      * @param thickness the p thickness
      * @return the PixeclChain
      */
-    public PixelChain withThickness(@NotNull PixelChain pixelChain, @NotNull Thickness thickness) {
+    public com.ownimage.perception.pixelMap.PixelChain withThickness(@NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, @NotNull Thickness thickness) {
         if (thickness == pixelChain.getThickness()) {
             return pixelChain;
         }
         // TODO what is the best way to do this
-        return new PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), pixelChain.getVertexes(), pixelChain.getLength(), thickness);
+        return new com.ownimage.perception.pixelMap.PixelChain(pixelChain.getPixels(), pixelChain.getSegments(), pixelChain.getVertexes(), pixelChain.getLength(), thickness);
     }
 
 
-    public Tuple2<ImmutablePixelMap, PixelChain> setEndNode(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
+    public Tuple2<ImmutablePixelMap, com.ownimage.perception.pixelMap.PixelChain> setEndNode(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, @NonNull Node pNode) {
         var pixelMapResult = ImmutablePixelMap.copyOf(pixelMap);
-        IPixelChain builder = pixelChain.changePixels(p -> p.add(pNode));
+        PixelChain builder = pixelChain.changePixels(p -> p.add(pNode));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
@@ -327,7 +326,7 @@ public class PixelChainService {
     }
 
     public Thickness getThickness(
-            @NotNull PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
         var pixelLength = getPixelLength(pixelChain);
         if (pixelLength < thinLength) {
             return Thickness.None;
@@ -339,12 +338,12 @@ public class PixelChainService {
         return Thickness.Thick;
     }
 
-    public int getPixelLength(@NotNull PixelChain pixelChain) {
+    public int getPixelLength(@NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         return pixelChain.getPixels().size();
     }
 
-    public PixelChain withThickness(
-            @NotNull PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
+    public com.ownimage.perception.pixelMap.PixelChain withThickness(
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, int thinLength, int normalLength, int longLength) {
         Thickness thickness = getThickness(pixelChain, thinLength, normalLength, longLength);
         return withThickness(pixelChain, thickness);
     }
@@ -357,8 +356,8 @@ public class PixelChainService {
      * @param pixelMap   the pixelMap
      * @param otherChain the other chain
      */
-    public PixelChain merge(@NotNull PixelMap pixelMap, @NotNull PixelChain thisChain, @NotNull PixelChain otherChain) {
-        StrongReference<IPixelChain> builder = StrongReference.of(thisChain);
+    public com.ownimage.perception.pixelMap.PixelChain merge(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain thisChain, @NotNull com.ownimage.perception.pixelMap.PixelChain otherChain) {
+        StrongReference<PixelChain> builder = StrongReference.of(thisChain);
 
         validate(thisChain, false, "add otherChain");
         logger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().getPixels().size()));
@@ -401,7 +400,7 @@ public class PixelChainService {
         return builder.get().setThickness(thickness);
     }
 
-    public void validate(@NotNull IPixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
+    public void validate(@NotNull PixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
         try {
             if (getStartVertex(pixelChain).getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
@@ -539,18 +538,18 @@ public class PixelChainService {
 //
 //
 //
-    public boolean contains(PixelChain pixelChain, Pixel pPixel) {
+    public boolean contains(com.ownimage.perception.pixelMap.PixelChain pixelChain, Pixel pPixel) {
         return pixelChain.getPixels()
                 .stream()
                 .anyMatch(p -> p.samePosition(pPixel));
     }
 
     @Deprecated // this modifies the pixelmap there is a better version in
-    public Tuple2<ImmutablePixelMap, PixelChain> indexSegments(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pixelChain, boolean add) {
+    public Tuple2<ImmutablePixelMap, com.ownimage.perception.pixelMap.PixelChain> indexSegments(
+            @NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, boolean add) {
         var result = StrongReference.of(pixelMap);
         if (add) {
-            StrongReference<IPixelChain> builder = StrongReference.of(pixelChain);
+            StrongReference<PixelChain> builder = StrongReference.of(pixelChain);
             StrongReference<Double> startPosition = StrongReference.of(0.0d);
             pixelChain.getSegments().forEach(segment -> {
                 Segment segmentClone = segment.withStartPosition(startPosition.get());
@@ -571,7 +570,7 @@ public class PixelChainService {
     }
 
     public ImmutablePixelMap index(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pPixelChain, Segment pSegment, boolean pAdd) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pPixelChain, Segment pSegment, boolean pAdd) {
         var result = StrongReference.of(pixelMap.withSegmentCount(pixelMap.segmentCount() + 1));
         // // TODO make assumption that this is 360
         // // mSegmentIndex.add(pLineSegment);
@@ -601,7 +600,7 @@ public class PixelChainService {
                     System.out.println("########################### PixelMap  remove " + i);
                 }
                 result.update(r -> r.withSegmentIndex(r.segmentIndex()
-                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, Segment>>().addAll(segments))));
+                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<com.ownimage.perception.pixelMap.PixelChain, Segment>>().addAll(segments))));
             }
         });
         return result.get();
@@ -623,7 +622,7 @@ public class PixelChainService {
      *
      * @return the number of Pixels in the PixelChain.
      */
-    public int pixelLength(@NotNull PixelChain pixelChain) {
+    public int pixelLength(@NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         return pixelChain.getPixels().size();
     }
 
@@ -636,16 +635,16 @@ public class PixelChainService {
      * @param otherChain the other chain
      * @param pNode      the node
      */
-    public PixelChain merge(ImmutablePixelMap pPixelMap, PixelChain thisChain, PixelChain otherChain, Node pNode) {
+    public com.ownimage.perception.pixelMap.PixelChain merge(ImmutablePixelMap pPixelMap, com.ownimage.perception.pixelMap.PixelChain thisChain, com.ownimage.perception.pixelMap.PixelChain otherChain, Node pNode) {
         logger.fine("merge");
 //        if (!(getStartNode(pPixelMap) == pNode || getEndNode(pPixelMap) == pNode) || !(otherChain.getStartNode(pPixelMap) == pNode || otherChain.getEndNode(pPixelMap) == pNode)) {
 //            throw new IllegalArgumentException("Either this PixelChain: " + this + ", and otherChain: " + otherChain + ", must share the following node:" + pNode);
 //        }
 
-        StrongReference<PixelChain> one = new StrongReference<>(otherChain);
+        StrongReference<com.ownimage.perception.pixelMap.PixelChain> one = new StrongReference<>(otherChain);
         getEndNode(pPixelMap, otherChain).filter(n -> n == pNode).ifPresent(n -> one.set(reverse(pPixelMap, otherChain)));
 
-        StrongReference<PixelChain> other = new StrongReference<>(otherChain);
+        StrongReference<com.ownimage.perception.pixelMap.PixelChain> other = new StrongReference<>(otherChain);
         getStartNode(pPixelMap, otherChain).filter(n -> n == pNode).ifPresent(n -> other.set(reverse(pPixelMap, otherChain)));
 
 //        if (one.get().getEndNode(pPixelMap) != pNode || other.getStartNode(pPixelMap) != pNode) {
@@ -655,21 +654,21 @@ public class PixelChainService {
         return merge(pPixelMap, thisChain, otherChain);
     }
 
-    public PixelChain approximate(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+    public com.ownimage.perception.pixelMap.PixelChain approximate(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, double tolerance) {
         var result = approximate01_straightLines(pixelMap, pixelChain, tolerance);
         result = approximate02_refineCorners(pixelMap, result);
         return result;
     }
 
-    public PixelChain approximate01_straightLines(
-            @NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, double tolerance) {
+    public com.ownimage.perception.pixelMap.PixelChain approximate01_straightLines(
+            @NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain, double tolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
         if (pixelChain.getPixelCount() <= 1) {
             return pixelChain;
         }
 
-        var builder = PixelChain.of(pixelChain);
+        var builder = com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         builder = builder.changeSegments(ImmutableVectorClone::clear);
         builder = builder.changeVertexes(ImmutableVectorClone::clear);
 
@@ -707,15 +706,15 @@ public class PixelChainService {
             builder = builder.setSegment(maxSegment);
             endIndex = maxIndex + 1;
         }
-        return PixelChain.of(builder);
+        return com.ownimage.perception.pixelMap.PixelChain.of(builder);
     }
 
-    public PixelChain approximate02_refineCorners(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain approximate02_refineCorners(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         if (pixelChain.getSegmentCount() <= 1) {
             return pixelChain;
         }
 
-        PixelChain result = PixelChain.of(pixelChain);
+        com.ownimage.perception.pixelMap.PixelChain result = com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         // the for loop means that I am processing the current state of the builder, not the 'old' stream state
         // this is important as the builder is being mutated.
         for (int i = 0; i < pixelChain.getSegmentCount() - 1; i++) { // do not process last segment
@@ -737,7 +736,7 @@ public class PixelChainService {
             var currentError = segment.calcError(pixelMap, pixelChain) + secondSegment[0].calcError(pixelMap, pixelChain);
             var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
 
-            pixelChain.getPegCounter().increase(IPixelChain.PegCounters.RefineCornersAttempted);
+            pixelChain.getPegCounter().increase(PixelChain.PegCounters.RefineCornersAttempted);
             // the check below is needed as some segments may only be one index pixelLength so generating a midpoint might generate an invalid segment
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;
@@ -762,7 +761,7 @@ public class PixelChainService {
                                 .dot(best._4.getStartTangentVector(pixelMap, result))
                                 < 0.5d
                 ) {
-                    pegCounterService.increase(IPixelChain.PegCounters.RefineCornersSuccessful);
+                    pegCounterService.increase(PixelChain.PegCounters.RefineCornersSuccessful);
                 }
                 var finalBest = best;
                 result = result.setVertex(finalBest._3);
@@ -773,9 +772,9 @@ public class PixelChainService {
         return result;
     }
 
-    public PixelChain refine01_matchCurves(
+    public com.ownimage.perception.pixelMap.PixelChain refine01_matchCurves(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference) {
         if (pixelChain.getSegmentCount() == 1) {
             return pixelChain;
@@ -793,9 +792,9 @@ public class PixelChainService {
         return result.get();
     }
 
-    public PixelChain refine01MidSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine01MidSegment(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference,
             Segment currentSegment
     ) {
@@ -835,9 +834,9 @@ public class PixelChainService {
         return result.setSegment(bestSegment);
     }
 
-    public PixelChain refine03MidSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine03MidSegment(
             @NotNull PixelMap pixelMap,
-            @NotNull IPixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             Segment currentSegment
     ) {
@@ -857,23 +856,23 @@ public class PixelChainService {
         // Question 1 what are we going to do with fixed points
     }
 
-    public PixelChain refine03MidSegmentEatForward(
+    public com.ownimage.perception.pixelMap.PixelChain refine03MidSegmentEatForward(
             @NotNull PixelMap pixelMap,
-            @NotNull IPixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             double lineCurvePreference,
             Segment currentSegment
     ) {
         var originalNextSegment = currentSegment.getNextSegment(pixelChain);
         if (currentSegment instanceof CurveSegment && originalNextSegment instanceof CurveSegment) {
-            return PixelChain.of(pixelChain);
+            return com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
         }
         var bestCandidateSegment = currentSegment;
         var bestCandidateVertex = currentSegment.getEndVertex(pixelChain);
         var originalEndVertex = currentSegment.getEndVertex(pixelChain);
-        var result = PixelChain.of(pixelChain);
+        var result = com.ownimage.perception.pixelMap.PixelChain.of(pixelChain);
 
         try {
-            pegCounterService.increase(IPixelChain.PegCounters.MidSegmentEatForwardAttempted);
+            pegCounterService.increase(PixelChain.PegCounters.MidSegmentEatForwardAttempted);
             var nextSegmentPixelLength = originalNextSegment.getPixelLength(result);
             var controlPointEnd = originalEndVertex.getPosition()
                     .add(
@@ -925,7 +924,7 @@ public class PixelChainService {
             }
         } finally {
             if (bestCandidateSegment != currentSegment) {
-                pegCounterService.increase(IPixelChain.PegCounters.MidSegmentEatForwardSuccessful);
+                pegCounterService.increase(PixelChain.PegCounters.MidSegmentEatForwardSuccessful);
             }
             result = result.setVertex(bestCandidateVertex);
             result = result.setSegment(bestCandidateSegment);
@@ -936,7 +935,7 @@ public class PixelChainService {
 
     public double calcError(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             int startPixelIndex,
             int endPixelIndex,
             @NotNull Segment startSegment,
@@ -960,7 +959,7 @@ public class PixelChainService {
 
     // need to make sure that not only the pixels are close to the line but the line is close to the pixels
     public boolean isValid(@NotNull PixelMap pixelMap,
-                           @NotNull PixelChain pixelChain,
+                           @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
                            @NotNull Segment segment) {
         if (segment == null) {
             return false;
@@ -980,9 +979,9 @@ public class PixelChainService {
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
     }
 
-    public PixelChain refine01EndSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine01EndSegment(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference,
             @NotNull Segment currentSegment
     ) {
@@ -1021,15 +1020,15 @@ public class PixelChainService {
         return result.setSegment(bestSegment);
     }
 
-    public PixelChain refine01FirstSegment(
+    public com.ownimage.perception.pixelMap.PixelChain refine01FirstSegment(
             PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double lineCurvePreference,
             Segment segment
     ) {
         var result = pixelChain;
         var bestSegment = segment;
-        pegCounterService.increase(IPixelChain.PegCounters.refine01FirstSegmentAttempted);
+        pegCounterService.increase(PixelChain.PegCounters.refine01FirstSegmentAttempted);
         try {
             // get error values from straight line to start the compare
             double lowestError = segment.calcError(pixelMap, result);
@@ -1064,7 +1063,7 @@ public class PixelChainService {
                 }
             }
             if (bestSegment != segment) {
-                pegCounterService.increase(IPixelChain.PegCounters.refine01FirstSegmentSuccessful);
+                pegCounterService.increase(PixelChain.PegCounters.refine01FirstSegmentSuccessful);
             }
         } catch (Exception pT) {
             logger.severe(() -> FrameworkLogger.throwableToString(pT));
@@ -1072,9 +1071,9 @@ public class PixelChainService {
         return result.setSegment(bestSegment);
     }
 
-    public PixelChain approximateCurvesOnly_subsequentSegments(
+    public com.ownimage.perception.pixelMap.PixelChain approximateCurvesOnly_subsequentSegments(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
     ) {
@@ -1125,7 +1124,7 @@ public class PixelChainService {
 
     public boolean segmentMidpointValid(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             @NotNull CurveSegment segment,
             double distance) {
         Point curveMidPoint = segment.getPointFromLambda(pixelMap, pixelChain, 0.5d);
@@ -1134,9 +1133,9 @@ public class PixelChainService {
     }
 
 
-    public PixelChain approximateCurvesOnly(
+    public com.ownimage.perception.pixelMap.PixelChain approximateCurvesOnly(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
     ) {
@@ -1154,9 +1153,9 @@ public class PixelChainService {
         return result;
     }
 
-    public PixelChain approximateCurvesOnly_firstSegment(
+    public com.ownimage.perception.pixelMap.PixelChain approximateCurvesOnly_firstSegment(
             @NotNull PixelMap pixelMap,
-            @NotNull PixelChain pixelChain,
+            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference
     ) {
@@ -1212,7 +1211,7 @@ public class PixelChainService {
         return result.get();
     }
 
-    public PixelChain resequence(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain resequence(@NotNull PixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
         if (pixelChain.getSegments().size() + 1 != pixelChain.getVertexes().size()) {
             logger.severe(String.format("PixelChainService::resequence segment/vertex mismatch, vertexSize = %s, segmentSize = %s", pixelChain.getVertexes().size(), pixelChain.getSegments().size()));
         }

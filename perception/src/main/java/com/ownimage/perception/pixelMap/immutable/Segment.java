@@ -17,7 +17,7 @@ public interface Segment extends Serializable {
 
     double getStartPosition();
 
-    default double calcError(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double calcError(PixelMap pPixelMap, PixelChain pPixelChain) {
         double error = 0.0d;
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
@@ -33,62 +33,62 @@ public interface Segment extends Serializable {
         return error;
     }
 
-    double getLength(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getLength(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pT);
+    Point getPointFromLambda(PixelMap pPixelMap, PixelChain pPixelChain, double pT);
 
     Segment withStartPosition(double pStartPosition);
 
     Segment toImmutable();
 
-    boolean closerThanActual(PixelMap pPixelMap, IPixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
+    boolean closerThanActual(PixelMap pPixelMap, PixelChain pPixelChain, IPixelMapTransformSource pTransformSource, Point pPoint, double pMultiplier);
 
-    double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint);
+    double closestLambda(PixelMap pPixelMap, PixelChain pPixelChain, Point pPoint);
 
     Segment withSegmentIndex(int segmentIndex);
 
-    default double calcError(PixelMap pPixelMap, IPixelChain pPixelChain, Pixel pPixel) {
+    default double calcError(PixelMap pPixelMap, PixelChain pPixelChain, Pixel pPixel) {
         val uhvw = pPixel.getUHVWMidPoint(pPixelMap.height());
         val distance = distance(pPixelMap, pPixelChain, uhvw);
         return distance * distance;
     }
 
-    default boolean closerThan(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint, double pTolerance) {
+    default boolean closerThan(PixelMap pPixelMap, PixelChain pPixelChain, Point pPoint, double pTolerance) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint);
+    double distance(PixelMap pPixelMap, PixelChain pPixelChain, Point pUVHWPoint);
 
-    default double getActualThickness(IPixelMapTransformSource pSource, IPixelChain pPixelChain, double pPosition) {
+    default double getActualThickness(IPixelMapTransformSource pSource, PixelChain pPixelChain, double pPosition) {
         return pPixelChain.getActualThickness(pSource, pPosition);
     }
 
-    default int getEndIndex(IPixelChain pPixelChain) {
+    default int getEndIndex(PixelChain pPixelChain) {
         return pPixelChain.getVertex(getSegmentIndex() + 1).getPixelIndex();
     }
 
-    default Line getEndTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Line getEndTangent(PixelMap pPixelMap, PixelChain pPixelChain) {
         return new Line(getEndUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain).add(getEndTangentVector(pPixelMap, pPixelChain)));
     }
 
-    default Point getEndUHVWPoint(IPixelChain pPixelChain) {
+    default Point getEndUHVWPoint(PixelChain pPixelChain) {
         return getEndVertex(pPixelChain).getPosition();
     }
 
-    default Vertex getEndVertex(IPixelChain pPixelChain) {
+    default Vertex getEndVertex(PixelChain pPixelChain) {
         return pPixelChain.getVertex(getSegmentIndex() + 1);
     }
 
-    double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxX(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMaxY(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinX(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain);
+    double getMinY(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    default int getPixelLength(IPixelChain pPixelChain) {
+    default int getPixelLength(PixelChain pPixelChain) {
         int length;
 
         if (getStartIndex(pPixelChain) == 0) {
@@ -100,34 +100,34 @@ public interface Segment extends Serializable {
         return length;
     }
 
-    Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain);
+    Vector getEndTangentVector(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    default int getStartIndex(IPixelChain pPixelChain) {
+    default int getStartIndex(PixelChain pPixelChain) {
         return pPixelChain.getVertex(getSegmentIndex()).getPixelIndex();
     }
 
-    Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain);
+    Vector getStartTangentVector(PixelMap pPixelMap, PixelChain pPixelChain);
 
-    default Line getStartTangent(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Line getStartTangent(PixelMap pPixelMap, PixelChain pPixelChain) {
         return new Line(
                 getStartUHVWPoint(pPixelChain),
                 getStartUHVWPoint(pPixelChain).add(getStartTangentVector(pPixelMap, pPixelChain))
         );
     }
 
-    default Point getStartUHVWPoint(IPixelChain pPixelChain) {
+    default Point getStartUHVWPoint(PixelChain pPixelChain) {
         return getStartVertex(pPixelChain).getPosition();
     }
 
-    default Vertex getStartVertex(IPixelChain pPixelChain) {
+    default Vertex getStartVertex(PixelChain pPixelChain) {
         return pPixelChain.getVertex(getSegmentIndex());
     }
 
-    default void graffiti(PixelMap pPixelMap, IPixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
+    default void graffiti(PixelMap pPixelMap, PixelChain pPixelChain, ISegmentGrafittiHelper pGraphics) {
         pGraphics.graffitiLine(getStartUHVWPoint(pPixelChain), getEndUHVWPoint(pPixelChain), Color.GREEN);
     }
 
-    default boolean noPixelFurtherThan(PixelMap pPixelMap, IPixelChain pPixelChain, double pDistance) {
+    default boolean noPixelFurtherThan(PixelMap pPixelMap, PixelChain pPixelChain, double pDistance) {
         for (int i = getStartIndex(pPixelChain); i <= getEndIndex(pPixelChain); i++) {
             Point uhvw = pPixelChain.getUHVWPoint(pPixelMap, i);
             if (distance(pPixelMap, pPixelChain, uhvw) > pDistance) {
@@ -137,15 +137,15 @@ public interface Segment extends Serializable {
         return true;
     }
 
-    default Segment getNextSegment(IPixelChain pixelChain) {
+    default Segment getNextSegment(PixelChain pixelChain) {
         return pixelChain.getSegment(getEndVertex(pixelChain).getVertexIndex());
     }
 
-    default Segment getPreviousSegment(IPixelChain pixelChain) {
+    default Segment getPreviousSegment(PixelChain pixelChain) {
         return pixelChain.getSegment(getEndVertex(pixelChain).getVertexIndex() - 1);
     }
 
-    default boolean containsPixelIndex(IPixelChain pPixelChain, int pIndex) {
+    default boolean containsPixelIndex(PixelChain pPixelChain, int pIndex) {
         return getStartIndex(pPixelChain) <= pIndex && pIndex <= getEndIndex(pPixelChain);
     }
 }

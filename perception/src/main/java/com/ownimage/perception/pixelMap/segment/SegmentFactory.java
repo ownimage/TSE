@@ -9,7 +9,7 @@ import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.immutable.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
@@ -33,7 +33,7 @@ public class SegmentFactory {
      * @return the curve approximation
      */
     static public ImmutableCurveSegment createTempCurveSegmentTowards(
-            @NotNull PixelMap pPixelMap, @NotNull IPixelChain pixelChain, int segmentIndex, @NotNull Point p1) {
+            @NotNull PixelMap pPixelMap, @NotNull PixelChain pixelChain, int segmentIndex, @NotNull Point p1) {
         try {
             var p0 = pixelChain.getVertex(segmentIndex).getPosition();
             var p2 = pixelChain.getVertex(segmentIndex + 1).getPosition();
@@ -64,12 +64,12 @@ public class SegmentFactory {
     }
 
     static public Optional<ImmutableCurveSegment> createOptionalTempCurveSegmentTowards(
-            @NotNull PixelMap pPixelMap, @NotNull IPixelChain pPixelChain, int pSegmentIndex, @NotNull Point pP1) {
+            @NotNull PixelMap pPixelMap, @NotNull PixelChain pPixelChain, int pSegmentIndex, @NotNull Point pP1) {
         return Optional.ofNullable(createTempCurveSegmentTowards(pPixelMap, pPixelChain, pSegmentIndex, pP1));
     }
 
 
-    static public ImmutableStraightSegment createTempStraightSegment(IPixelChain pixelChain, int segmentIndex) {
+    static public ImmutableStraightSegment createTempStraightSegment(PixelChain pixelChain, int segmentIndex) {
         var temp = ImmutableStraightSegment
                 .of(segmentIndex, 0.0d, new LineSegment(Point.Point00, Point.Point11));
         Point a = temp.getStartUHVWPoint(pixelChain);

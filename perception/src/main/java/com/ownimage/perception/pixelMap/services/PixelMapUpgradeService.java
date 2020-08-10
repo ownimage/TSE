@@ -1,8 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 
@@ -14,7 +13,7 @@ public class PixelMapUpgradeService {
      * @param pixelChain
      * @return an upgraded PixelChain
      */
-    public PixelChain upgradePixelChain(IPixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain upgradePixelChain(PixelChain pixelChain) {
         var result = upgradeVertexes(pixelChain);
         result = upgradeSegments(result);
         return result;
@@ -26,7 +25,7 @@ public class PixelMapUpgradeService {
      * @param pixelChain
      * @return a new PixelChain with all the vertexes upgraded
      */
-    public PixelChain upgradeVertexes(IPixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain upgradeVertexes(PixelChain pixelChain) {
         var newVertexs = StrongReference.of(pixelChain.getVertexes().clear());
         pixelChain.getVertexes().stream()
                 .map(ImmutableVertex::copyOf)
@@ -40,7 +39,7 @@ public class PixelMapUpgradeService {
      * @param pixelChain
      * @return a new PixelChain with all the segmetns upgraded
      */
-    public PixelChain upgradeSegments(IPixelChain pixelChain) {
+    public com.ownimage.perception.pixelMap.PixelChain upgradeSegments(PixelChain pixelChain) {
         var newSegments = StrongReference.of(pixelChain.getSegments().clear());
         pixelChain.getSegments().stream()
                 .map(Segment::toImmutable)

@@ -28,7 +28,7 @@ public interface StraightSegment extends Segment {
     @Override
     default boolean closerThanActual(
             PixelMap pPixelMap,
-            IPixelChain pPixelChain,
+            PixelChain pPixelChain,
             IPixelMapTransformSource pTransformSource,
             Point pPoint,
             double pMultiplier
@@ -42,7 +42,7 @@ public interface StraightSegment extends Segment {
     @Override
     default boolean closerThan(
             PixelMap pPixelMap,
-            IPixelChain pPixelChain,
+            PixelChain pPixelChain,
             Point pPoint,
             double pTolerance
     ) {
@@ -50,12 +50,12 @@ public interface StraightSegment extends Segment {
     }
 
     @Override
-    default double closestLambda(PixelMap pPixelMap, IPixelChain pPixelChain, Point pPoint) {
+    default double closestLambda(PixelMap pPixelMap, PixelChain pPixelChain, Point pPoint) {
         return getLineSegment().closestLambda(pPoint);
     }
 
     @Override
-    default double distance(PixelMap pPixelMap, IPixelChain pPixelChain, Point pUVHWPoint) {
+    default double distance(PixelMap pPixelMap, PixelChain pPixelChain, Point pUVHWPoint) {
         return getLineSegment().distance(pUVHWPoint);
     }
 
@@ -64,42 +64,42 @@ public interface StraightSegment extends Segment {
     }
 
     @Override
-    default Vector getEndTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getEndTangentVector(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getAB().normalize();
     }
 
     @Override
-    default double getLength(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getLength(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getAB().length();
     }
 
     @Override
-    default double getMaxX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMaxX(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getLineSegment().getMaxX();
     }
 
     @Override
-    default double getMaxY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMaxY(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getLineSegment().getMaxY();
     }
 
     @Override
-    default double getMinX(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMinX(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getLineSegment().getMinX();
     }
 
     @Override
-    default double getMinY(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default double getMinY(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getLineSegment().getMinY();
     }
 
     @Override
-    default Point getPointFromLambda(PixelMap pPixelMap, IPixelChain pPixelChain, double pLambda) {
+    default Point getPointFromLambda(PixelMap pPixelMap, PixelChain pPixelChain, double pLambda) {
         return getLineSegment().getPoint(pLambda);
     }
 
     @Override
-    default Vector getStartTangentVector(PixelMap pPixelMap, IPixelChain pPixelChain) {
+    default Vector getStartTangentVector(PixelMap pPixelMap, PixelChain pPixelChain) {
         return getAB().minus().normalize();
     }
 

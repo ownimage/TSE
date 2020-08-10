@@ -5,10 +5,9 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Node;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.Vertex;
-import com.ownimage.perception.pixelMap.immutable.IPixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
@@ -53,7 +52,7 @@ public class PixelMapUpgradeServiceTest {
         validateSegments(pixelChain, actual);
     }
 
-    private void validateSegments(PixelChain pixelChain, IPixelChain actual) {
+    private void validateSegments(com.ownimage.perception.pixelMap.PixelChain pixelChain, PixelChain actual) {
         assertEquals(5, actual.getSegments().size());
         for (int i = 0; i < actual.getSegments().size(); i++) {
             assertTrue(actual.getSegment(i) instanceof ImmutableStraightSegment
@@ -63,7 +62,7 @@ public class PixelMapUpgradeServiceTest {
         }
     }
 
-    private void validateVertexes(PixelChain pixelChain, IPixelChain actual) {
+    private void validateVertexes(com.ownimage.perception.pixelMap.PixelChain pixelChain, PixelChain actual) {
         assertEquals(6, actual.getVertexes().size());
         for (int i = 0; i < actual.getVertexes().size(); i++) {
             assertTrue(actual.getVertex(i).sameValue(pixelChain.getVertex(i)));
@@ -95,9 +94,9 @@ public class PixelMapUpgradeServiceTest {
         }
     }
 
-    private PixelChain generatePixelChain() {
+    private com.ownimage.perception.pixelMap.PixelChain generatePixelChain() {
         var pixelMap = Utility.createMap(10, 10);
-        var pixelChain = StrongReference.of(new PixelChain(pixelMap, new Node(5, 5)));
+        var pixelChain = StrongReference.of(new com.ownimage.perception.pixelMap.PixelChain(pixelMap, new Node(5, 5)));
         // create segments
         IntStream.range(4, 9).boxed()
                 .map(i -> {
