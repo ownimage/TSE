@@ -30,9 +30,9 @@ public class Node extends Pixel {
      */
     private static final long serialVersionUID = 1L;
 
-    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
-    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
+//    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+//    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+//    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     /**
      * The m pixel chains.
@@ -76,7 +76,7 @@ public class Node extends Pixel {
      *
      * @return the int
      */
-    private int countPixelChains() {
+    public int countPixelChains() {
         return mPixelChains.size();
     }
 
@@ -86,7 +86,7 @@ public class Node extends Pixel {
      * @param pN the p n
      * @return the pixel chain
      */
-    private PixelChain getPixelChain(int pN) {
+    public PixelChain getPixelChain(int pN) {
         if (pN > countPixelChains()) {
             throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
                     countPixelChains() + " chains.");
@@ -118,29 +118,6 @@ public class Node extends Pixel {
         Node clone = new Node(this);
         clone.mPixelChains.addAll(mPixelChains);
         return clone;
-    }
-
-    public ImmutablePixelMap mergePixelChains(ImmutablePixelMap pixelMap) {
-        var result = StrongReference.of(pixelMap);
-        int count = countPixelChains();
-        mLogger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
-        switch (count) {
-            case 2:
-                PixelChain chain0 = getPixelChain(0);
-                PixelChain chain1 = getPixelChain(1);
-                if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    PixelChain merged = pixelChainService.merge(result.get(), chain0, chain1, this);
-                    result.update(r -> pixelMapService.removePixelChain(r, chain0));
-                    result.update(r -> pixelMapService.removePixelChain(r, chain1));
-                    result.update(r -> pixelMapService.addPixelChain(r, merged));
-                }
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-        }
-        return result.get();
     }
 
     @Override

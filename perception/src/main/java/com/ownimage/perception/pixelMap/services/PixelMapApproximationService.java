@@ -293,8 +293,8 @@ public class PixelMapApproximationService {
         reportProgress(pProgressObserver, "Merging Chains ...", 0);
         var result = StrongReference.of(pixelMap);
         logger.info(() -> "number of PixelChains: " + result.get().pixelChains().size());
-        result.get().nodes().values().forEach(pNode ->
-                result.update(r -> pNode.mergePixelChains(r)));
+        result.get().nodes().values().forEach(node ->
+                result.update(r -> pixelMapService.mergePixelChains(r, node)));
         logger.info(() -> "number of PixelChains: " + result.get().pixelChains().size());
         return result.get();
     }

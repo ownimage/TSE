@@ -622,6 +622,28 @@ public class PixelMapService {
         return result.get();
     }
 
+    public ImmutablePixelMap mergePixelChains(@NotNull ImmutablePixelMap pixelMap, @NotNull Node node) {
+        var result = StrongReference.of(pixelMap);
+        int count = node.countPixelChains();
+        logger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
+        switch (count) {
+            case 2:
+                com.ownimage.perception.pixelMap.PixelChain chain0 = node.getPixelChain(0);
+                com.ownimage.perception.pixelMap.PixelChain chain1 = node.getPixelChain(1);
+                if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
+                    com.ownimage.perception.pixelMap.PixelChain merged = pixelChainService.merge(result.get(), chain0, chain1, node);
+                    result.update(r -> removePixelChain(r, chain0));
+                    result.update(r -> removePixelChain(r, chain1));
+                    result.update(r -> addPixelChain(r, merged));
+                }
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+        }
+        return result.get();
+    }
 
     /**
      * @deprecated TODO: explain
