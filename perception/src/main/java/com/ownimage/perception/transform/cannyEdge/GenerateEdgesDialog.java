@@ -33,6 +33,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
@@ -52,6 +53,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
 
     private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private static PixelService pixelService = context.getBean(PixelService.class);
 
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
@@ -173,7 +175,7 @@ public class GenerateEdgesDialog extends Container implements IUIEventListener, 
         Color background = getProperties().getPixelMapBGColor();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                if (pixelMapService.getPixelAt(pPixelMap,x, y).isEdge(pPixelMap)) {
+                if (pixelService.isEdge(pPixelMap, pixelMapService.getPixelAt(pPixelMap,x, y))) {
                     preview.setColor(x, y, foreground);
                 } else {
                     preview.setColor(x, y, background);

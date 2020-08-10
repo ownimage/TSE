@@ -6,13 +6,6 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
-import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.Vector;
 import java.util.stream.Stream;

@@ -8,21 +8,9 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,10 +22,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
 
     final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
-
-    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
-    private static PixelService pixelService = context.getBean(PixelService.class);
 
     private static final IntegerPoint[] mNeighbours = { //
             //
@@ -70,15 +54,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
     }
 
-    public Set<Pixel> allEdgeNeighbours(PixelMap pPixelMap) {
-        HashSet<Pixel> allNeighbours = new HashSet<>();
-        for (Pixel pixel : getNeighbours()) {
-            if (pixel.isEdge(pPixelMap)) {
-                allNeighbours.add(pixel);
-            }
-        }
-        return allNeighbours;
-    }
 
     private synchronized void calcUHVWMidPoint(int height) {
         double y = (getY() + 0.5d) / height;
@@ -86,75 +61,13 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         mUHVW = new Point(x, y);
     }
 
-    public int countEdgeNeighbours(PixelMap pPixelMap) {
-        int count = 0;
-
-        for (Pixel pixel : getNeighbours()) {
-            if (pixel.isEdge(pPixelMap)) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    public int countEdgeNeighboursTransitions(PixelMap pPixelMap) {
-        int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
-
-        int count = 0;
-        boolean currentState = getNeighbour(NW).isEdge(pPixelMap);
-
-        for (int neighbour : loop) {
-            if (currentState != getNeighbour(neighbour).isEdge(pPixelMap)) {
-                currentState = getNeighbour(neighbour).isEdge(pPixelMap);
-                count++;
-            }
-        }
-
-        return count;
-    }
 
     public Pixel getNeighbour(int pN) {
         return add(mNeighbours[pN]);
     }
 
-//	public int getNeigbourEdgeCount() {
-//		int cnt = 0;
-//		for (Pixel p : getNeighbours()) {
-//			if (p.isEdge()) {
-//				cnt++;
-//			}
-//		}
-//		return cnt;
-//	}
-
     public Iterable<Pixel> getNeighbours() {
         return new Neighbours();
-    }
-
-    public Vector<Pixel> getNodeNeighbours(PixelMap pPixelMap) {
-        Framework.logEntry(mLogger);
-        if (mLogger.isLoggable(Level.FINEST)) {
-            mLogger.finest("Pixel = " + this);
-        }
-
-        Vector<Pixel> allNeighbours = new Vector<>();
-        for (Pixel pixel : getNeighbours()) {
-            if (pixelService.isNode(pPixelMap, pixel.toIntegerPoint())) {
-                allNeighbours.add(pixel);
-            }
-        }
-
-        if (mLogger.isLoggable(Level.FINEST)) {
-            mLogger.finest("Returning " + allNeighbours);
-        }
-        Framework.logExit(mLogger);
-
-        return allNeighbours;
-    }
-
-    public int countNodeNeighbours(PixelMap pPixelMap) {
-        return getNodeNeighbours(pPixelMap).size();
     }
 
     // UHVW = unit height variable width
@@ -165,22 +78,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return mUHVW;
     }
 
-    public boolean isEdge(PixelMap pPixelMap) {
-        return pixelService.isEdge(pPixelMap, this.toIntegerPoint());
-    }
-
     public boolean isNeighbour(Pixel pPixel) {
         // big question is are you a neighbour of yourself - YES
         return // pPixel.getPixelMap() == getPixelMap() && //
                 Math.max(Math.abs(pPixel.getX() - getX()), Math.abs(pPixel.getY() - getY())) < 2;
-    }
-
-    public boolean isNode(PixelMap pPixelMap) {
-        return pixelService.isNode(pPixelMap, this.toIntegerPoint());
-    }
-
-    public Optional<Node> getNode(ImmutablePixelMap pPixelMap) {
-        return pixelMapService.getNode(pPixelMap, this);
     }
 
     @Override

@@ -22,6 +22,7 @@ public class PixelMapChainGenerationService {
     private final static Logger logger = Framework.getLogger();
     private PixelChainService pixelChainService;
     private PixelMapService pixelMapService;
+    private PixelService pixelService;
 
     @Autowired
     public void setPixelChainService(PixelChainService pixelChainService) {
@@ -31,6 +32,11 @@ public class PixelMapChainGenerationService {
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
         this.pixelMapService = pixelMapService;
+    }
+
+    @Autowired
+    public void setPixelService(PixelService pixelService) {
+        this.pixelService = pixelService;
     }
 
     public Tuple2<ImmutablePixelMap, PixelChain> generateChain(
@@ -53,7 +59,7 @@ public class PixelMapChainGenerationService {
         var result = pixelMap;
         PixelChain copy = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (Pixel nodalNeighbour : pixel.getNodeNeighbours(result)) {
+        for (Pixel nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 return generateChain(result, copy, nodalNeighbour);
@@ -61,7 +67,8 @@ public class PixelMapChainGenerationService {
         }
         // otherwise go to the next pixel normally
         for (Pixel neighbour : pixel.getNeighbours()) {
-            if (!neighbour.isNode(result) && neighbour.isEdge(result) && !copy.getPixels().contains(neighbour)
+            if (!pixelService.isNode(result, neighbour)
+                    && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(neighbour)
                     && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 return generateChain(result, copy, neighbour);
             }
@@ -75,8 +82,8 @@ public class PixelMapChainGenerationService {
 
         Vector<PixelChain> chains = new Vector<>();
         pStartNode.getNeighbours().forEach(neighbour -> {
-            if (neighbour.isNode(result.get())
-                    || neighbour.isEdge(result.get())
+            if (pixelService.isNode(result.get(), neighbour)
+                    || pixelService.isEdge(result.get(), neighbour)
                     && (
                     pixelMapService.getPixelChains(result.get(), neighbour).isEmpty()
                             && chains.stream().filter(pc -> pc.getPixels().contains(neighbour)).findFirst().isEmpty())

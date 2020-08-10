@@ -41,7 +41,8 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertFalse(underTest.isEdge(pixelMap));
+
+        assertFalse(pixelService.isEdge(pixelMap, underTest));
     }
 
     @Test
@@ -58,7 +59,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertTrue(underTest.isEdge(pixelMap));
+        assertTrue(pixelService.isEdge(pixelMap, underTest));
     }
 
     @Test
@@ -75,7 +76,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertTrue(underTest.isEdge(pixelMap));
+        assertTrue(pixelService.isEdge(pixelMap, underTest));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertTrue(underTest.isEdge(pixelMap));
+        assertTrue(pixelService.isEdge(pixelMap, underTest));
     }
 
     @Test
@@ -109,7 +110,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertFalse(underTest.isEdge(pixelMap));
+        assertFalse(pixelService.isEdge(pixelMap, underTest));
     }
 
     @Test
@@ -126,7 +127,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(0, underTest.countEdgeNeighbours(pixelMap));
+        assertSame(0, pixelService.countEdgeNeighbours(pixelMap, underTest));
     }
 
     @Test
@@ -143,7 +144,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(2, underTest.countEdgeNeighbours(pixelMap));
+        assertSame(2, pixelService.countEdgeNeighbours(pixelMap, underTest));
     }
 
     @Test
@@ -160,7 +161,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(2, underTest.countEdgeNeighbours(pixelMap));
+        assertSame(2, pixelService.countEdgeNeighbours(pixelMap, underTest));
     }
 
     @Test
@@ -175,7 +176,7 @@ public class PixelTest {
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
 
         // WHEN
-        int actual = underTest.countEdgeNeighbours(pixelMap);
+        int actual = pixelService.countEdgeNeighbours(pixelMap, underTest);
 
         // THEN
         assertEquals(0, actual);
@@ -195,7 +196,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(4, underTest.countEdgeNeighboursTransitions(pixelMap));
+        assertSame(4, pixelService.countEdgeNeighboursTransitions(pixelMap, underTest));
     }
 
     @Test
@@ -212,7 +213,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(4, underTest.countEdgeNeighboursTransitions(pixelMap));
+        assertSame(4, pixelService.countEdgeNeighboursTransitions(pixelMap, underTest));
     }
 
     @Test
@@ -229,7 +230,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(0, underTest.countEdgeNeighboursTransitions(pixelMap));
+        assertSame(0, pixelService.countEdgeNeighboursTransitions(pixelMap, underTest));
     }
 
     @Test
@@ -246,7 +247,7 @@ public class PixelTest {
         // WHEN
 
         // THEN
-        assertSame(4, underTest.countEdgeNeighboursTransitions(pixelMap));
+        assertSame(4, pixelService.countEdgeNeighboursTransitions(pixelMap, underTest));
     }
 
     @Test

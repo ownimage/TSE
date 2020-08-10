@@ -5,6 +5,7 @@ import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -19,6 +20,9 @@ public class Utility {
     private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
     private static PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
+
+    private static PixelService pixelService
+            = context.getBean(PixelService.class);
 
     static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
         return new IPixelMapTransformSource() {
@@ -167,8 +171,8 @@ public class Utility {
             final StringBuffer row = new StringBuffer();
             for (int x = 0; x < pPixelMap.width(); x++) {
                 final Pixel p = pixelMapService.getPixelAt(pPixelMap, x, y);
-                if (p.isNode(pPixelMap)) row.append("N");
-                else if (p.isEdge(pPixelMap)) row.append("E");
+                if (pixelService.isNode(pPixelMap, p)) row.append("N");
+                else if (pixelService.isEdge(pPixelMap, p)) row.append("E");
                 else row.append(" ");
             }
             map[y] = row.toString();

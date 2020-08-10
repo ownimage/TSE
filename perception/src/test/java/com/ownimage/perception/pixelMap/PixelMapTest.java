@@ -9,6 +9,7 @@ import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelService;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ public class PixelMapTest {
 
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
+    private PixelService pixelService = context.getBean(PixelService.class);
     private PixelMapActionService pixelMapActionService = context.getBean(PixelMapActionService.class);
     private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
@@ -781,11 +783,11 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertFalse(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
         underTest = pixelMapService.setEdge(underTest, pixel, true, tolerance, lineCurvePreference);
-        assertTrue(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertTrue(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
         underTest = pixelMapService.setEdge(underTest, pixel, false, tolerance, lineCurvePreference);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertFalse(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
     }
 
     @Test
@@ -795,13 +797,13 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         Pixel pixel = new Pixel(5, 5);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
+        assertFalse(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
         var resultOn = pixelMapActionService.actionPixelOn(underTest, pixel, tolerance, lineCurvePreference);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
-        assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
+        assertFalse(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
+        assertTrue(pixelService.isEdge(resultOn, pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get()));
         var resultOff = pixelMapActionService.actionPixelOff(underTest, pixel, 1, tolerance, lineCurvePreference);
-        assertFalse(pixelMapService.getOptionalPixelAt(underTest, 5, 5).get().isEdge(underTest));
-        assertTrue(pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get().isEdge(resultOn));
-        assertFalse(pixelMapService.getOptionalPixelAt(resultOff, 5, 5).get().isEdge(resultOff));
+        assertFalse(pixelService.isEdge(underTest, pixelMapService.getOptionalPixelAt(underTest, 5, 5).get()));
+        assertTrue(pixelService.isEdge(resultOn, pixelMapService.getOptionalPixelAt(resultOn, 5, 5).get()));
+        assertFalse(pixelService.isEdge(resultOff, pixelMapService.getOptionalPixelAt(resultOff, 5, 5).get()));
     }
 }

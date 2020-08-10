@@ -11,8 +11,8 @@ import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import io.vavr.Tuple2;
 import lombok.NonNull;
@@ -442,7 +442,8 @@ public class PixelMapService {
                 .forEach(p -> result.update(r -> setEdge(r, p, false, tolerance, lineCurvePreference)));
         pixelChain.getPixels().stream()
                 .filter(p -> pixelService.isNode(result.get(), p))
-                .filter(p -> p.countEdgeNeighbours(result.get()) < 2 || p.countNodeNeighbours(result.get()) == 2)
+                .filter(p -> pixelService.countEdgeNeighbours(result.get(), p) < 2
+                        || pixelService.countNodeNeighbours(result.get(), p) == 2)
                 .forEach(p -> result.update(r -> setEdge(r, p, false, tolerance, lineCurvePreference)));
         return result.get();
     }
@@ -772,4 +773,5 @@ public class PixelMapService {
         return point.getX() >= 0 && point.getY() >= 0
                 && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
     }
+
 }

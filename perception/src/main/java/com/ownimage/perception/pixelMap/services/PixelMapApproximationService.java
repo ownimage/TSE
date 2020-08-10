@@ -8,8 +8,8 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -160,7 +160,7 @@ public class PixelMapApproximationService {
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (!pixelService.isNode(result.get(), pixel)
                     && pixelService.isEdge(result.get(), pixel)
-                    && pixel.getNodeNeighbours(result.get()).stream().count() >= 2) {
+                    && pixelService.getNodeNeighbours(result.get(), pixel).stream().count() >= 2) {
                 result.update(r -> r.withData(r.data().set(pixel.getX(), pixel.getY(), (byte) 0)));
                 removedPixels.add(pixel);
             }
@@ -183,7 +183,7 @@ public class PixelMapApproximationService {
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
                 Node node = pixelMapService.getNode(result.get(), pixel).get();
-                if (node.countEdgeNeighbours(result.get()) == 0) {
+                if (pixelService.countEdgeNeighbours(result.get(), node) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
                 }
@@ -200,9 +200,9 @@ public class PixelMapApproximationService {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         var toBeRemoved = new Vector<Pixel>();
         var result = StrongReference.of(pixelMap);
-        result.get().nodes().values().forEach(node -> node.getNodeNeighbours(result.get()).forEach(other -> {
-                    Set<Pixel> nodeSet = node.allEdgeNeighbours(result.get());
-                    Set<Pixel> otherSet = other.allEdgeNeighbours(result.get());
+        result.get().nodes().values().forEach(node -> pixelService.getNodeNeighbours(result.get(), node).forEach(other -> {
+                    Set<Pixel> nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
+                    Set<Pixel> otherSet = pixelService.allEdgeNeighbours(result.get(), other);
                     nodeSet.remove(other);
                     nodeSet.removeAll(otherSet);
                     otherSet.remove(node);
@@ -217,7 +217,7 @@ public class PixelMapApproximationService {
         toBeRemoved
                 .forEach(pixel -> {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
-                    pixel.allEdgeNeighbours(result.get())
+                    pixelService.allEdgeNeighbours(result.get(), pixel)
                             .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)._1));
                 });
         return result.get();
@@ -450,7 +450,7 @@ public class PixelMapApproximationService {
                                     pixelChainService.getEndNode(result.get(), pc).ifPresent(nodes::add);
                                     result.update(r -> pixelMapService.removePixelChain(r, pc));
                                 });
-                        neighbour.getNode(result.get()).ifPresent(nodes::add); // this is the case where is is not in a chain
+                        pixelMapService.getNode(result.get(), neighbour).ifPresent(nodes::add); // this is the case where is is not in a chain
                     });
         });
 
