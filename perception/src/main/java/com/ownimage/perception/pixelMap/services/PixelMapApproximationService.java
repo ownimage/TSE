@@ -8,6 +8,7 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import io.vavr.Tuple2;
@@ -95,8 +96,8 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         pixelMap.pixelChains().stream()
                 .flatMap(pc -> Stream.of(
-                        new Tuple2<com.ownimage.perception.pixelMap.PixelChain, Node>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
-                        new Tuple2<com.ownimage.perception.pixelMap.PixelChain, Node>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
+                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
+                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
                 ))
                 .forEach(t2 -> result.update(r -> {
                     var updatedNode = r.nodes().get(new IntegerPoint(t2._2))
@@ -278,7 +279,7 @@ public class PixelMapApproximationService {
         pegCounter.clear(pegs);
         logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
         var result = StrongReference.of(pixelMap);
-        var refined = new Vector<com.ownimage.perception.pixelMap.PixelChain>();
+        var refined = new Vector<ImmutablePixelChain>();
         result.get().pixelChains().forEach(pixelChain ->
                 refined.add(pixelChainService.approximate(result.get(), pixelChain, tolerance)));
         result.update(r -> pixelMapService.pixelChainsClear(r));
@@ -319,7 +320,7 @@ public class PixelMapApproximationService {
         if (pixelChainCount > 0) {
             var counter = Counter.createMaxCounter(pixelChainCount);
             reportProgress(pProgressObserver, "Refining ...", 0);
-            Vector<com.ownimage.perception.pixelMap.PixelChain> refined = new Vector<>();
+            var refined = new Vector<ImmutablePixelChain>();
             result.get().pixelChains().stream().parallel().forEach(pc -> {
                 var refinedPC = pixelChainService.approximateCurvesOnly(result.get(), pc, tolerance, lineCurvePreference);
                 refined.add(refinedPC);

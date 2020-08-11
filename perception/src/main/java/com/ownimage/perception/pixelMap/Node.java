@@ -6,6 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 
 import java.util.Vector;
 import java.util.stream.Stream;
@@ -60,8 +62,8 @@ public class Node extends Pixel {
         return clone;
     }
 
-    public Stream<PixelChain> streamPixelChains() {
-        return mPixelChains.stream();
+    public Stream<ImmutablePixelChain> streamPixelChains() {
+        return mPixelChains.stream().map(ImmutablePixelChain::copyOf);
     }
 
     /**
@@ -79,13 +81,13 @@ public class Node extends Pixel {
      * @param pN the p n
      * @return the pixel chain
      */
-    public PixelChain getPixelChain(int pN) {
+    public ImmutablePixelChain getPixelChain(int pN) {
         if (pN > countPixelChains()) {
             throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
                     countPixelChains() + " chains.");
         }
 
-        return mPixelChains.get(pN);
+        return ImmutablePixelChain.copyOf(mPixelChains.get(pN));
     }
     //
     // public List<PixelChain> getPixelChains() {

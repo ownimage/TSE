@@ -4,8 +4,9 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class PixelMapChainGenerationService {
         this.pixelService = pixelService;
     }
 
-    public Tuple2<ImmutablePixelMap, PixelChain> generateChain(
+    public Tuple2<ImmutablePixelMap, ImmutablePixelChain> generateChain(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             @NotNull Pixel pixel) {
@@ -57,7 +58,7 @@ public class PixelMapChainGenerationService {
         }
 
         var result = pixelMap;
-        PixelChain copy = pixelChainService.add(pixelChain, pixel);
+        var copy = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
         for (Pixel nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
@@ -76,7 +77,7 @@ public class PixelMapChainGenerationService {
         return new Tuple2<>(result, copy);
     }
 
-    public Tuple2<ImmutablePixelMap, Collection<PixelChain>> generateChains(
+    public Tuple2<ImmutablePixelMap, Collection<ImmutablePixelChain>> generateChains(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Node pStartNode) {
         var result = StrongReference.of(pixelMap);
 
@@ -88,7 +89,7 @@ public class PixelMapChainGenerationService {
                     pixelMapService.getPixelChains(result.get(), neighbour).isEmpty()
                             && chains.stream().filter(pc -> pc.getPixels().contains(neighbour)).findFirst().isEmpty())
             ) {
-                PixelChain chain = new PixelChain(pixelMap, pStartNode);
+                var chain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
                 var generatedChain = generateChain(pixelMap, chain, neighbour);
                 result.set(generatedChain._1);
                 chain = generatedChain._2;

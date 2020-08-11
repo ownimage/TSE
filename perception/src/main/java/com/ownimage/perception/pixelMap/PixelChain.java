@@ -35,7 +35,7 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
     private final ImmutableVectorClone<Segment> mSegments;
 
     @Getter
-    private final ImmutableVectorClone<Vertex> mVertexes;
+    private final ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex> mVertexes;
 
     @Getter
     private final double mLength;
@@ -46,7 +46,7 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
     public PixelChain(@NotNull PixelMap pPixelMap, @NotNull Node pStartNode) {
         mPixels = new ImmutableVectorClone<Pixel>().add(pStartNode);
         mSegments = new ImmutableVectorClone<>();
-        mVertexes = new ImmutableVectorClone<Vertex>().add(vertexService.createVertex(pPixelMap, this, 0, 0));
+        mVertexes = new ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex>(); //.add(vertexService.createVertex(pPixelMap, this, 0, 0));
         mLength = 0.0d;
         mThickness = Thickness.Normal;
     }
@@ -65,7 +65,7 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
         mThickness = pThickness;
     }
 
-    public PixelChain(@NonNull com.ownimage.perception.pixelMap.immutable.PixelChain pixelChain) {
+    public PixelChain(@NonNull PixelChain pixelChain) {
         mPixels = pixelChain.getPixels();
         mSegments = pixelChain.getSegments();
         mVertexes = pixelChain.getVertexes();
@@ -73,7 +73,7 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
         mThickness = pixelChain.getThickness();
     }
 
-    public static PixelChain of(@NonNull com.ownimage.perception.pixelMap.immutable.PixelChain pixelChain) {
+    public static PixelChain of(@NonNull PixelChain pixelChain) {
         if (pixelChain instanceof PixelChain) {
             return (PixelChain) pixelChain;
         }

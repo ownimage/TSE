@@ -11,6 +11,7 @@ import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
@@ -139,12 +140,12 @@ public class PixelMapService {
                 byte[] objectBytes = MyBase64.decodeAndDecompress(objectString);
                 ByteArrayInputStream bais = new ByteArrayInputStream(objectBytes);
                 ObjectInputStream ois = new ObjectInputStream(bais);
-                Collection<com.ownimage.perception.pixelMap.PixelChain> pixelChains = (Collection<com.ownimage.perception.pixelMap.PixelChain>) ois.readObject();
+                var rawPixelChains = (Collection<PixelChain>) ois.readObject();
                 // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
                 // to be replaced with a constant value
-                Function<com.ownimage.perception.pixelMap.PixelChain, com.ownimage.perception.pixelMap.PixelChain> fixNullPositionVertexes =
+                Function<com.ownimage.perception.pixelMap.immutable.PixelChain, ImmutablePixelChain> fixNullPositionVertexes =
                         pc -> pixelChainService.fixNullPositionVertexes(height, pc);
-                pixelChains = pixelChains.stream()
+                var pixelChains = rawPixelChains.stream()
                         .map(fixNullPositionVertexes)
                         .map(pixelMapUpgradeService::upgradePixelChain)
                         .collect(Collectors.toList());
@@ -289,9 +290,9 @@ public class PixelMapService {
         }
     }
 
-    public List<com.ownimage.perception.pixelMap.PixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull Pixel pPixel) {
+    public List<ImmutablePixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull Pixel pPixel) {
         Framework.logEntry(logger);
-        List<com.ownimage.perception.pixelMap.PixelChain> pixelChains = pixelMapData.pixelChains().stream()
+        var pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
                 .collect(Collectors.toList());
         Framework.logExit(logger);
@@ -332,7 +333,7 @@ public class PixelMapService {
 
         baos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(baos);
-        Collection<com.ownimage.perception.pixelMap.PixelChain> pixelChains = pixelMap.pixelChains().toCollection();
+        var pixelChains = pixelMap.pixelChains().toCollection();
         oos.writeObject(pixelChains);
         oos.close();
         String objectString = MyBase64.compressAndEncode(baos.toByteArray());
@@ -344,7 +345,7 @@ public class PixelMapService {
 
     public ImmutablePixelMap indexSegments(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             boolean add) {
         var result = StrongReference.of(pixelMap);
         pixelChain.getSegments().forEach(s -> result.update(r -> indexSegments(r, pixelChain, s, add)));
@@ -353,7 +354,7 @@ public class PixelMapService {
 
     public ImmutablePixelMap indexSegments(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             @NotNull Segment segment,
             boolean add) {
         var segmentIndex = StrongReference.of(pixelMap.segmentIndex());
@@ -406,7 +407,7 @@ public class PixelMapService {
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
 
-    public ImmutablePixelMap pixelChainRemove(@NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain chain) {
+    public ImmutablePixelMap pixelChainRemove(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain chain) {
         val result = StrongReference.of(pixelMap);
         result.update(r -> indexSegments(r, chain, false)
                 .withPixelChains(r.pixelChains().remove(chain)));
@@ -424,7 +425,7 @@ public class PixelMapService {
     }
 
 
-    public Vector<com.ownimage.perception.pixelMap.PixelChain> getPixelChainsSortedByLength(ImmutablePixelMap pixelMap) {
+    public Vector<ImmutablePixelChain> getPixelChainsSortedByLength(ImmutablePixelMap pixelMap) {
         var chains = new Vector<>(pixelMap.pixelChains().toCollection());
         chains.sort(Comparator.comparingInt(PixelChain::getPixelCount));
         return chains;
@@ -432,7 +433,7 @@ public class PixelMapService {
 
     public ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMapData,
-            @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain,
+            @NotNull PixelChain pixelChain,
             double tolerance,
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMapData);
@@ -524,7 +525,7 @@ public class PixelMapService {
         return new Tuple2<>(setNode(pixelMapResult, point, shouldBeNode), shouldBeNode);
     }
 
-    public Tuple2<ImmutablePixelMap, Stream<com.ownimage.perception.pixelMap.PixelChain>> generateChainsAndApproximate(
+    public Tuple2<ImmutablePixelMap, Stream<ImmutablePixelChain>> generateChainsAndApproximate(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Node pNode, double tolerance, double lineCurvePreference) {
         var result = pixelMapChainGenerationService.generateChains(pixelMap, pNode);
         var stream = result._2.parallelStream()
@@ -576,7 +577,7 @@ public class PixelMapService {
      *
      * @param pixelChain
      */
-    public ImmutablePixelMap removePixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
+    public ImmutablePixelMap removePixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain) {
         var result = StrongReference.of(pixelChainRemove(pixelMap, pixelChain));
         pixelChainService.getStartNode(result.get(), pixelChain)
                 .ifPresent(n -> result.update(r -> replaceNode(r, n.removePixelChain(pixelChain))));
@@ -585,7 +586,7 @@ public class PixelMapService {
         return result.get();
     }
 
-    public ImmutablePixelMap addPixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pixelChain) {
+    public ImmutablePixelMap addPixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain) {
         var result = pixelChainAdd(pixelMap, pixelChain);
         result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
         result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
@@ -598,13 +599,13 @@ public class PixelMapService {
 
     public ImmutablePixelMap pixelChainsAddAll(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Collection<com.ownimage.perception.pixelMap.PixelChain> pixelChains) {
+            @NotNull Collection<ImmutablePixelChain> pixelChains) {
         var result = StrongReference.of(pixelMap);
         pixelChains.forEach(pc -> result.update(r -> pixelChainAdd(r, pc)));
         return result.get();
     }
 
-    public ImmutablePixelMap pixelChainAdd(@NotNull ImmutablePixelMap pixelMap, @NotNull com.ownimage.perception.pixelMap.PixelChain pChain) {
+    public ImmutablePixelMap pixelChainAdd(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pChain) {
         var is = pixelChainService.indexSegments(pixelMap, pChain, true);
         return pixelMap
                 .withPixelChains(pixelMap.pixelChains().add(is._2))
@@ -617,7 +618,7 @@ public class PixelMapService {
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
     }
 
-    public ImmutablePixelMap addPixelChains(@NotNull ImmutablePixelMap pixelMap, @NotNull Collection<com.ownimage.perception.pixelMap.PixelChain> pixelChains) {
+    public ImmutablePixelMap addPixelChains(@NotNull ImmutablePixelMap pixelMap, @NotNull Collection<ImmutablePixelChain> pixelChains) {
         var result = StrongReference.of(pixelMap);
         pixelChains.forEach(pixelChain -> result.update(r -> addPixelChain(r, pixelChain)));
         return result.get();
@@ -629,10 +630,10 @@ public class PixelMapService {
         logger.info(() -> String.format("Node::mergePixelChains Node=%s, count=%s", this, count));
         switch (count) {
             case 2:
-                com.ownimage.perception.pixelMap.PixelChain chain0 = node.getPixelChain(0);
-                com.ownimage.perception.pixelMap.PixelChain chain1 = node.getPixelChain(1);
+                var chain0 = node.getPixelChain(0);
+                var chain1 = node.getPixelChain(1);
                 if (chain0 != chain1) {// this is to prevent trying to merge a simple loop with itself
-                    com.ownimage.perception.pixelMap.PixelChain merged = pixelChainService.merge(result.get(), chain0, chain1, node);
+                    var merged = pixelChainService.merge(result.get(), chain0, chain1, node);
                     result.update(r -> removePixelChain(r, chain0));
                     result.update(r -> removePixelChain(r, chain1));
                     result.update(r -> addPixelChain(r, merged));
@@ -658,11 +659,11 @@ public class PixelMapService {
      * @deprecated TODO: explain
      */ // Move to a stream
     @Deprecated
-    public void forEachPixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull Consumer<com.ownimage.perception.pixelMap.PixelChain> pFunction) {
+    public void forEachPixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull Consumer<ImmutablePixelChain> pFunction) {
         pixelMap.pixelChains().forEach(pFunction);
     }
 
-    public Stream<com.ownimage.perception.pixelMap.PixelChain> streamPixelChains(@NotNull ImmutablePixelMap pixelMap) {
+    public Stream<ImmutablePixelChain> streamPixelChains(@NotNull ImmutablePixelMap pixelMap) {
         return pixelMap.pixelChains().stream();
     }
 

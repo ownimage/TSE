@@ -13,10 +13,8 @@ import com.ownimage.perception.pixelMap.services.PixelService;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -453,7 +451,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(4, 3), Pixel(4, 2), Pixel(4, 1), Node(4, 0) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -478,7 +476,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(4, 4), Pixel(4, 3), Pixel(4, 2), Node(4, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -503,7 +501,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Node(7, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -528,7 +526,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -553,7 +551,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(5, 4), Pixel(4, 3), Pixel(3, 2), Node(3, 1) ]\n", result.toString());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
@@ -738,7 +736,7 @@ public class PixelMapTest {
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toString()));
+        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
         assertEquals("PixelChain[ Node(3, 4), Pixel(3, 3), Pixel(4, 2), Node(5, 1) ]\n", result.toString());
     }
 
@@ -753,10 +751,10 @@ public class PixelMapTest {
         pixelMap.update(pm -> addChain(pm, source, start2, chainNE));
         BiConsumer<ImmutablePixelMap, Thickness> test = (pPixelMap, pThickness) -> {
             assertEquals(2, pPixelMap.pixelChains().size());
-            List<PixelChain> chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
+            var chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());
             assertEquals(Thickness.Normal, chains1.get(0).getThickness());
-            List<PixelChain> chains2 = pixelMapService.getPixelChains(pPixelMap, start2);
+            var chains2 = pixelMapService.getPixelChains(pPixelMap, start2);
             assertEquals(1, chains2.size());
             assertEquals(pThickness, chains2.get(0).getThickness());
         };
@@ -766,14 +764,6 @@ public class PixelMapTest {
                 .actionSetPixelChainThickness(pixelMap.get(), Arrays.asList(start2), t -> Thickness.Thick);
         // THEN
         test.accept(result, Thickness.Thick);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test

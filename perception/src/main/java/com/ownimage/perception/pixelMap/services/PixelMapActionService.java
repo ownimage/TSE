@@ -8,9 +8,10 @@ import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.val;
@@ -134,7 +135,7 @@ public class PixelMapActionService {
         // TODO do not like this mutable parameter
         var totalLength = new StrongReference<>(0);
         pixelMap.pixelChains().forEach(chain -> totalLength.update(len -> len + chain.getPixelCount()));
-        Vector<PixelChain> sortedChains = pixelMapService.getPixelChainsSortedByLength(pixelMap);
+        var sortedChains = pixelMapService.getPixelChainsSortedByLength(pixelMap);
         int shortThreshold = (int) (totalLength.get() * values.getIgnoreFraction());
         int mediumThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction()));
         int longThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction() +
@@ -192,7 +193,7 @@ public class PixelMapActionService {
     public ImmutablePixelMap actionPixelChainDeleteAllButThis(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull Pixel pixel) {
-        val pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
+        var pixelChains = pixelMapService.getPixelChains(pixelMap, pixel);
         if (pixelChains.size() != 1) {
             return pixelMap;
         }
@@ -227,7 +228,7 @@ public class PixelMapActionService {
             @NotNull IPixelMapTransformSource transformSource) {
         SplitTimer.split("PixelMap actionReapproximate() start");
         var result = StrongReference.of(pixelMap);
-        Vector<PixelChain> updates = new Vector<>();
+        var updates = new Vector<ImmutablePixelChain>();
         val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         val lineCurvePreference = transformSource.getLineCurvePreference();
         result.get().pixelChains().stream()
@@ -246,7 +247,7 @@ public class PixelMapActionService {
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull CannyEdgeTransform transformSource) {
         var result = StrongReference.of(pixelMap);
-        Vector<PixelChain> updates = new Vector<>();
+        var updates = new Vector<ImmutablePixelChain>();
         val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         val lineCurvePreference = transformSource.getLineCurvePreference();
         result.get().pixelChains().stream()
@@ -264,7 +265,7 @@ public class PixelMapActionService {
         int shortLength = transform.getShortLineLength();
         int mediumLength = transform.getMediumLineLength();
         int longLength = transform.getLongLineLength();
-        Vector<PixelChain> updates = new Vector<>();
+        var updates = new Vector<ImmutablePixelChain>();
         pixelMap.pixelChains().forEach(chain -> updates.add(pixelChainService.withThickness(chain, shortLength, mediumLength, longLength)));
         var result = pixelMapService.clearAllPixelChains(pixelMap);
         result = pixelMapService.pixelChainsAddAll(result, updates);

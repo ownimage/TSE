@@ -4,7 +4,7 @@ import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
@@ -38,7 +38,7 @@ public class PixelChainServiceTest {
                 .add(ImmutableVertex.of(0, 0, new Point(0, 3)))
                 .add(ImmutableVertex.of(0, 10, new Point(1, 4)))
                 .add(ImmutableVertex.of(0, 20, new Point(2, 5)));
-        var pixelChainIn = new PixelChain(new ImmutableVectorClone<Pixel>(), new ImmutableVectorClone<Segment>(), vertexes, 0.0d, Thickness.Normal);
+        var pixelChainIn = ImmutablePixelChain.of(new ImmutableVectorClone<Pixel>(), vertexes, new ImmutableVectorClone<Segment>(), 0.0d, Thickness.Normal);
         var segments = new ImmutableVectorClone<Segment>()
                 .add(SegmentFactory.createTempStraightSegment(pixelChainIn, 0))
                 .add(SegmentFactory.createTempStraightSegment(pixelChainIn, 0));

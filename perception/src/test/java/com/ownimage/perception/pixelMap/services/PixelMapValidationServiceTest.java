@@ -4,7 +4,6 @@ import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
-import com.ownimage.perception.pixelMap.PixelChain;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import org.junit.Before;
@@ -92,7 +91,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void checkAllPixelsChainsHaveValidNodeEnds() {
         // GIVEN
-        var pixelChain = new PixelChain(pixelMap, new Node(4, 0));
+        var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, new Node(4, 0));
         pixelChain = pixelChainService.add(pixelChain, new Pixel(3, 0));
         pixelChain = pixelChainService.add(pixelChain, new Node(2, 0));
         var broken = pixelMap.withPixelChains(pixelMap.pixelChains().add(pixelChain));

@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

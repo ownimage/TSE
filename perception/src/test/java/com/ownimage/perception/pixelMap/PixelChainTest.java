@@ -1,6 +1,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
@@ -81,7 +83,7 @@ public class PixelChainTest {
         assertEquals(1, pixelMap.pixelChains().size());
 
         // THEN
-        PixelChain chain = pixelMapService.streamPixelChains(pixelMap).findFirst().orElseThrow();
+        var chain = pixelMapService.streamPixelChains(pixelMap).findFirst().orElseThrow();
         chain = pixelChainService.reverse(pixelMap, chain); // this reverse is here as it chain approximates differently backwards to forwards
         chain = pixelChainService.approximate(pixelMap, chain, tolerance);
         assertEquals(3, chain.getSegmentCount());
@@ -105,7 +107,7 @@ public class PixelChainTest {
         // AND WHEN
         var reverse = pixelChainService.reverse(pixelMap, approx);
         var compare = pixelChainService.reverse(pixelMap, reverse);
-        assertEquals(underTest.toString(), compare.toString());
+        assertEquals(underTest.toReadableString(), compare.toReadableString());
         assertEquals(dumpPixelChain(approx), dumpPixelChain(compare));
 
     }
@@ -259,7 +261,7 @@ public class PixelChainTest {
         Assert.assertEquals(expected, actual);
     }
 
-    private PixelChain createPixelChain() {
+    private ImmutablePixelChain createPixelChain() {
         Pixel[] pixels = new Pixel[]{
                 new Pixel(4, 6),
                 new Pixel(3, 5),
@@ -280,7 +282,7 @@ public class PixelChainTest {
         };
         var pixelMap = Utility.createMap(10, 2000);
 
-        var pixelChain = new PixelChain(pixelMap, new Node(3, 7));
+        var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, new Node(3, 7));
         for (Pixel pixel : pixels) {
             pixelChain = pixelChainService.add(pixelChain, pixel);
         }

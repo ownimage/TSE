@@ -6,7 +6,6 @@ import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.Node;
-import com.ownimage.perception.pixelMap.PixelChain;
 import io.vavr.Tuple2;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,7 @@ public interface PixelMap {
     }
 
     @Value.Default
-    default ImmutableSet<PixelChain> pixelChains() {
+    default ImmutableSet<ImmutablePixelChain> pixelChains() {
         return new ImmutableSet<>();
     }
 
@@ -67,7 +66,7 @@ public interface PixelMap {
 
     ImmutablePixelMap withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);
 
-    ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<PixelChain> pixelChains);
+    ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<ImmutablePixelChain> pixelChains);
 
     ImmutablePixelMap withSegmentIndex(@NotNull Immutable2DArray<ImmutableSet<Tuple2<PixelChain, Segment>>> segmentIndex);
 

@@ -13,6 +13,7 @@ import org.immutables.value.Value;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Value.Immutable
@@ -195,61 +196,61 @@ public interface PixelChain {
         return getVertexes().lastElement().orElse(null);
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
-        return new com.ownimage.perception.pixelMap.PixelChain(
+    default ImmutablePixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
+        return ImmutablePixelChain.of(
                 fn.apply(getPixels()),
-                getSegments(),
                 getVertexes(),
+                getSegments(),
                 getLength(),
                 getThickness()
         );
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
-        return new com.ownimage.perception.pixelMap.PixelChain(
+    default ImmutablePixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
+        return ImmutablePixelChain.of(
                 getPixels(),
+                getVertexes(),
                 fn.apply(getSegments()),
-                getVertexes(),
                 getLength(),
                 getThickness()
         );
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
-        return new com.ownimage.perception.pixelMap.PixelChain(
+    default ImmutablePixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
+        return ImmutablePixelChain.of(
                 getPixels(),
-                getSegments(),
                 fn.apply(getVertexes()),
+                getSegments(),
                 getLength(),
                 getThickness()
         );
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain setLength(double length) {
-        return new com.ownimage.perception.pixelMap.PixelChain(
+    default ImmutablePixelChain setLength(double length) {
+        return ImmutablePixelChain.of(
                 getPixels(),
-                getSegments(),
                 getVertexes(),
+                getSegments(),
                 length,
                 getThickness()
         );
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain setThickness(@NonNull Thickness thickness) {
-        return new com.ownimage.perception.pixelMap.PixelChain(
+    default ImmutablePixelChain setThickness(@NonNull Thickness thickness) {
+        return ImmutablePixelChain.of(
                 getPixels(),
-                getSegments(),
                 getVertexes(),
+                getSegments(),
                 getLength(),
                 thickness
         );
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain setVertex(Vertex pVertex) {
+    default ImmutablePixelChain setVertex(Vertex pVertex) {
         return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
     }
 
-    default com.ownimage.perception.pixelMap.PixelChain setSegment(Segment pSegment) {
+    default ImmutablePixelChain setSegment(Segment pSegment) {
         return changeSegments(v -> v.set(pSegment.getSegmentIndex(), pSegment));
     }
 
@@ -263,4 +264,13 @@ public interface PixelChain {
         refine01FirstSegmentAttempted,
         refine01FirstSegmentSuccessful
     }
+
+    default String toReadableString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("PixelChain[ ");
+        sb.append(getPixels().stream().map(Pixel::toString).collect(Collectors.joining(", ")));
+        sb.append(" ]\n");
+        return sb.toString();
+    }
+
 }
