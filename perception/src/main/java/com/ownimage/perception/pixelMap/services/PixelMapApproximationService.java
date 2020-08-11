@@ -96,8 +96,8 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         pixelMap.pixelChains().stream()
                 .flatMap(pc -> Stream.of(
-                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
-                        new Tuple2<PixelChain, Node>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
+                        new Tuple2<>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
+                        new Tuple2<>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
                 ))
                 .forEach(t2 -> result.update(r -> {
                     var updatedNode = r.nodes().get(new IntegerPoint(t2._2))

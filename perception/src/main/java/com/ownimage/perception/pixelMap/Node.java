@@ -12,106 +12,65 @@ import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import java.util.Vector;
 import java.util.stream.Stream;
 
-// TODO: Auto-generated Javadoc
-
 /**
- * The class Node is where two or more PixelChains can meet.
+ * This class should be immutable.  The reason that has a Vector<PixelChain> rather than an ImmutableVectorClone<ImmutablePixelChain>
+ * is because it needs to remain serialization compatible with older versions.
  */
 public class Node extends Pixel {
 
 
-    /**
-     * The Constant serialVersionUID.
-     */
     private static final long serialVersionUID = 1L;
 
-//    private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-//    private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
-//    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
+    private final Vector<PixelChain> pixelChains = new Vector<>();
 
-    /**
-     * The m pixel chains.
-     */
-    private final Vector<PixelChain> mPixelChains = new Vector<>();
-
-    /**
-     * Instantiates a new node.
-     *
-     * @param pIntegerPoint the pixel
-     */
-    public Node(IntegerPoint pIntegerPoint) {
-        super(pIntegerPoint);
+    public Node(IntegerPoint integerPoint) {
+        super(integerPoint);
     }
 
     public Node(int pX, int pY) {
         super(pX, pY);
     }
 
-    /**
-     * Adds the pixel chain.
-     *
-     * @param pPixelChain the pixel chain
-     */
-    public Node addPixelChain(PixelChain pPixelChain) {
-        if (mPixelChains.contains(pPixelChain)) {
+    public Node addPixelChain(ImmutablePixelChain pixelChain) {
+        if (pixelChains.contains(pixelChain)) {
             return this;
         }
 
         Node clone = copy();
-        clone.mPixelChains.add(pPixelChain);
+        clone.pixelChains.add(pixelChain);
         return clone;
     }
 
     public Stream<ImmutablePixelChain> streamPixelChains() {
-        return mPixelChains.stream().map(ImmutablePixelChain::copyOf);
+        return pixelChains.stream().map(ImmutablePixelChain::copyOf);
     }
 
-    /**
-     * Count pixel chains.
-     *
-     * @return the int
-     */
     public int countPixelChains() {
-        return mPixelChains.size();
+        return pixelChains.size();
     }
 
-    /**
-     * Gets the pixel chain.
-     *
-     * @param pN the p n
-     * @return the pixel chain
-     */
-    public ImmutablePixelChain getPixelChain(int pN) {
-        if (pN > countPixelChains()) {
-            throw new IllegalArgumentException("Cannot return item: " + pN + ". There are only " +
+    public ImmutablePixelChain getPixelChain(int n) {
+        if (n > countPixelChains()) {
+            throw new IllegalArgumentException("Cannot return item: " + n + ". There are only " +
                     countPixelChains() + " chains.");
         }
 
-        return ImmutablePixelChain.copyOf(mPixelChains.get(pN));
+        return ImmutablePixelChain.copyOf(pixelChains.get(n));
     }
-    //
-    // public List<PixelChain> getPixelChains() {
-    // return mPixelChains;
-    // }
 
-    /**
-     * Removes the pixel chain.
-     *
-     * @param pPixelChain the pixel chain
-     */
-    public Node removePixelChain(PixelChain pPixelChain) {
+    public Node removePixelChain(ImmutablePixelChain pixelChain) {
         Node clone = copy();
-        clone.mPixelChains.remove(pPixelChain);
+        clone.pixelChains.remove(pixelChain);
         return clone;
     }
 
-    public boolean containsPixelChain(PixelChain pPixelChain) {
-        return mPixelChains.contains(pPixelChain);
+    public boolean containsPixelChain(ImmutablePixelChain pixelChain) {
+        return pixelChains.contains(pixelChain);
     }
 
     private Node copy() {
         Node clone = new Node(this);
-        clone.mPixelChains.addAll(mPixelChains);
+        clone.pixelChains.addAll(pixelChains);
         return clone;
     }
 
