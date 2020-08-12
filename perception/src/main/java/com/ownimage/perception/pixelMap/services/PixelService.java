@@ -45,10 +45,7 @@ public class PixelService {
 
 
     public boolean isNode(PixelMap pixelMap, IntegerPoint integerPoint) {
-        var ip = integerPoint.getClass() == IntegerPoint.class
-                ? integerPoint
-                : new IntegerPoint(integerPoint.getX(), integerPoint.getY());
-        return isNode(pixelMap, ip.getX(), ip.getY());
+        return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
     }
 
     public boolean isEdge(PixelMap pixelMap, int x, int y) {
@@ -83,11 +80,9 @@ public class PixelService {
         }
 
         Vector<Pixel> allNeighbours = new Vector<>();
-        for (Pixel neighbour : pixel.getNeighbours()) {
-            if (isNode(pixelMap, neighbour.toIntegerPoint())) {
-                allNeighbours.add(neighbour);
-            }
-        }
+        pixel.getNeighbours().
+            filter(n -> isNode(pixelMap, n.toIntegerPoint()))
+            .forEach(allNeighbours::add);
 
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("Returning " + allNeighbours);
@@ -103,24 +98,16 @@ public class PixelService {
 
     public Set<Pixel> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
         HashSet<Pixel> allNeighbours = new HashSet<>();
-        for (Pixel neighbour : pixel.getNeighbours()) {
-            if (isEdge(pixelMap, neighbour)) {
-                allNeighbours.add(neighbour);
-            }
-        }
+        pixel.getNeighbours().
+                filter(p -> isEdge(pixelMap, p))
+                .forEach(allNeighbours::add);
         return allNeighbours;
     }
 
     public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
-        int count = 0;
-
-        for (Pixel neighbour : pixel.getNeighbours()) {
-            if (isEdge(pixelMap, neighbour)) {
-                count++;
-            }
-        }
-
-        return count;
+        return  (int) pixel.getNeighbours()
+                .filter(p -> isEdge(pixelMap, p))
+                .count();
     }
 
     public int countEdgeNeighboursTransitions(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {

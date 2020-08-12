@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
@@ -281,10 +281,10 @@ public class PixelTest {
         };
         var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 1, 1);
-        StrongReference<Integer> count = new StrongReference<>(0);
+        var count = new AtomicInteger();
 
         // WHEN
-        underTest.getNeighbours().forEach(p -> count.set(count.get() + 1));
+        underTest.getNeighbours().forEach(n -> count.getAndIncrement());
 
         // THEN
         assertSame(8, count.get());

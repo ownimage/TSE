@@ -7,12 +7,10 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * The class Pixel provides a wrapper about the byte level information contained in the raw PixelMap array. This can get and set
@@ -21,7 +19,6 @@ import java.util.logging.Logger;
  */
 public class Pixel extends IntegerPoint implements PixelConstants {
 
-    final static Logger mLogger = Framework.getLogger();
     private final static long serialVersionUID = 1L;
 
     private static final IntegerPoint[] mNeighbours = { //
@@ -30,7 +27,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
             new IntegerPoint(-1, 0), new IntegerPoint(0, 0), new IntegerPoint(1, 0), //
             new IntegerPoint(-1, 1), new IntegerPoint(0, 1), new IntegerPoint(1, 1) //
     };
-    private static final int[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
+    private static final Integer[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
 
     private Point mUHVW = null;
 
@@ -50,6 +47,12 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         this(pPixelChain.getPixel(pIndex));
     }
 
+
+    @Override
+    public String toString() {
+        return "Pixel(" + getX() + ", " + getY() + ")";
+    }
+
     @Override
     public Pixel add(IntegerPoint pPoint) {
         return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
@@ -67,8 +70,10 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return add(mNeighbours[pN]);
     }
 
-    public Iterable<Pixel> getNeighbours() {
-        return new Neighbours();
+    public Stream<Pixel> getNeighbours() {
+        return Arrays.stream(mNeighbourOrder)
+                .map(i -> mNeighbours[i])
+                .map(this::add);
     }
 
     // UHVW = unit height variable width
@@ -85,45 +90,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
                 Math.max(Math.abs(pPixel.getX() - getX()), Math.abs(pPixel.getY() - getY())) < 2;
     }
 
-    @Override
-    public String toString() {
-        return "Pixel(" + getX() + ", " + getY() + ")";
-    }
 
     public IntegerPoint toIntegerPoint() {
         return new IntegerPoint(getX(), getY());
-    }
-
-    private class Neighbours implements Iterable<Pixel>, Iterator<Pixel> {
-
-        private int mNext = 0;
-
-        @Override
-        public boolean hasNext() {
-            return mNext < mNeighbourOrder.length;
-        }
-
-        @Override
-        public Iterator<Pixel> iterator() {
-            return this;
-        }
-
-        @Override
-        public Pixel next() {
-            if (hasNext()) {
-                Pixel pixel = getNeighbour(mNeighbourOrder[mNext]);
-                mNext++;
-                return pixel;
-
-            } else {
-                throw new NoSuchElementException();
-            }
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     @Override

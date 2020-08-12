@@ -67,13 +67,15 @@ public class PixelMapChainGenerationService {
             }
         }
         // otherwise go to the next pixel normally
-        for (Pixel neighbour : pixel.getNeighbours()) {
-            if (!pixelService.isNode(result, neighbour)
-                    && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(neighbour)
-                    && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy)))) {
-                return generateChain(result, copy, neighbour);
-            }
+        var nextNormal =  pixel.getNeighbours()
+                .filter(neighbour -> !pixelService.isNode(result, neighbour)
+                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(neighbour)
+                        && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy))))
+                .findFirst();
+        if (nextNormal.isPresent()) {
+            return generateChain(result, copy, nextNormal.get());
         }
+
         return new Tuple2<>(result, copy);
     }
 
