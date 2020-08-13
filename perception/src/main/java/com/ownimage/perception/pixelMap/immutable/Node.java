@@ -6,36 +6,39 @@
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.Pixel;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Vector;
 import java.util.stream.Stream;
 
-/**
- * This class should be immutable.  The reason that has a Vector<PixelChain> rather than an ImmutableVectorClone<ImmutablePixelChain>
- * is because it needs to remain serialization compatible with older versions.
- */
 public class Node {
 
     private static final long serialVersionUID = 1L;
 
-    private final Vector<PixelChain> pixelChains = new Vector<>();
+    private final ImmutableVectorClone<PixelChain> pixelChains;
     private final int x;
     private final int y;
 
-    public Node(IntegerPoint integerPoint) {
-        this.x = integerPoint.getX();
-        this.y = integerPoint.getY();
+    public Node(@NotNull IntegerPoint integerPoint) {
+        this(integerPoint.getX(), integerPoint.getY());
     }
 
     public Node(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this(x, y, new ImmutableVectorClone<>());
     }
 
-    private Node(Node node) {
-        this(node.x, node.y);
-        pixelChains.addAll(node.pixelChains);
+    public Node(int x, int y, @NotNull ImmutableVectorClone<PixelChain> pixelChains) {
+        this.x = x;
+        this.y = y;
+        this.pixelChains = pixelChains;
+    }
+
+    public Node withPixelChains(@NotNull ImmutableVectorClone<PixelChain> pixelChains) {
+        if (this.pixelChains == pixelChains) {
+            return this;
+        }
+        return new Node(x, y, pixelChains);
     }
 
     public int x() {
@@ -50,10 +53,7 @@ public class Node {
         if (pixelChains.contains(pixelChain)) {
             return this;
         }
-
-        var clone = new Node(this);
-        clone.pixelChains.add(pixelChain);
-        return clone;
+        return withPixelChains(pixelChains.add(pixelChain));
     }
 
     public Stream<ImmutablePixelChain> streamPixelChains() {
@@ -74,9 +74,7 @@ public class Node {
     }
 
     public Node removePixelChain(ImmutablePixelChain pixelChain) {
-        var clone = new Node(this);
-        clone.pixelChains.remove(pixelChain);
-        return clone;
+        return withPixelChains(pixelChains.remove(pixelChain));
     }
 
     public boolean containsPixelChain(ImmutablePixelChain pixelChain) {
