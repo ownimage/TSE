@@ -9,10 +9,10 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import io.vavr.Tuple2;
@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -143,11 +142,8 @@ public class PixelMapService {
                 var rawPixelChains = (Collection<PixelChain>) ois.readObject();
                 // fix for the fact that many of the Vertexes will have a lazy evaluation of the position that needs
                 // to be replaced with a constant value
-                Function<com.ownimage.perception.pixelMap.immutable.PixelChain, ImmutablePixelChain> fixNullPositionVertexes =
-                        pc -> pixelChainService.fixNullPositionVertexes(height, pc);
                 var pixelChains = rawPixelChains.stream()
-                        .map(fixNullPositionVertexes)
-                        .map(pixelMapUpgradeService::upgradePixelChain)
+                        .map(pc -> pixelMapUpgradeService.upgradePixelChain(pc, height))
                         .collect(Collectors.toList());
                 pixelMap = pixelChainsClear(pixelMap);
                 pixelMap = pixelChainsAddAll(pixelMap, pixelChains);

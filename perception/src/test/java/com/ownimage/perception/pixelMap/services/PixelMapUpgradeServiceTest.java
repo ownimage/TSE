@@ -4,13 +4,13 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
@@ -46,9 +46,9 @@ public class PixelMapUpgradeServiceTest {
     @Test
     public void upgradePixelChain() {
         // GIVEN
-        var pixelChain = generatePixelChain();
+        var pixelChain = generatePixelChain(10, 10);
         // WHEN
-        var actual = underTest.upgradePixelChain(pixelChain);
+        var actual = underTest.upgradePixelChain(pixelChain, 10);
         // THEN
         validateVertexes(pixelChain, actual);
         validateSegments(pixelChain, actual);
@@ -96,8 +96,8 @@ public class PixelMapUpgradeServiceTest {
         }
     }
 
-    private ImmutablePixelChain generatePixelChain() {
-        var pixelMap = Utility.createMap(10, 10);
+    private ImmutablePixelChain generatePixelChain(int mapWidth, int mapHeight) {
+        var pixelMap = Utility.createMap(mapWidth, mapHeight);
         var pixelChain = StrongReference.of(pixelChainService.createStartingPixelChain(pixelMap, new Node(5, 5)));
         // create segments
         IntStream.range(4, 9).boxed()
@@ -134,9 +134,9 @@ public class PixelMapUpgradeServiceTest {
     @Test
     public void upgradeVertexes() {
         // GIVEN
-        var pixelChain = generatePixelChain();
+        var pixelChain = generatePixelChain(10, 10);
         // WHEN
-        var actual = underTest.upgradeVertexes(pixelChain);
+        var actual = underTest.upgradeVertexes(pixelChain, 10);
         // THEN
         validateVertexes(pixelChain, actual);
     }
@@ -144,7 +144,7 @@ public class PixelMapUpgradeServiceTest {
     @Test
     public void upgradeSegments() {
         // GIVEN
-        var pixelChain = generatePixelChain();
+        var pixelChain = generatePixelChain(10, 10);
         // WHEN
         var actual = underTest.upgradeSegments(pixelChain);
         // THEN

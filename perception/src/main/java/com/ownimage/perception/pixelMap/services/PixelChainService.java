@@ -12,12 +12,12 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.CurveSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
@@ -64,21 +64,6 @@ public class PixelChainService {
     @Autowired
     public void setVertexService(VertexService vertexService) {
         this.vertexService = vertexService;
-    }
-
-    public ImmutablePixelChain fixNullPositionVertexes(int height, @NotNull PixelChain pixelChain) {
-        var mappedVertexes = pixelChain.getVertexes().stream()
-                .map(v -> {
-                    var p = v.getPosition();
-                    if (p == null) {
-                        p = vertexService.getPixel(pixelChain, v).getUHVWMidPoint(height);
-                        return vertexService.createVertex(pixelChain, v.getVertexIndex(), v.getPixelIndex(), p);
-                    }
-                    return v;
-                })
-                .collect(Collectors.toList());
-        var vertexes = new ImmutableVectorClone<Vertex>().addAll(mappedVertexes);
-        return ImmutablePixelChain.of(pixelChain.getPixels(), vertexes, pixelChain.getSegments(), pixelChain.getLength(), pixelChain.getThickness());
     }
 
     public ImmutablePixelChain add(PixelChain pixelChain, Pixel pPixel) {

@@ -2,10 +2,10 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;

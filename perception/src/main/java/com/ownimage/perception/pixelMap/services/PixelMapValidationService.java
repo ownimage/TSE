@@ -3,8 +3,8 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.Node;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 

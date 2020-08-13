@@ -5,7 +5,6 @@ import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.pixelMap.Node;
 import io.vavr.Tuple2;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
