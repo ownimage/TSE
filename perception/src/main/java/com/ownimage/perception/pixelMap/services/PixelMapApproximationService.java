@@ -252,8 +252,8 @@ public class PixelMapApproximationService {
         var counter = Counter.createMaxCounter(edges.size() + 1);
         edges.forEach(pixel -> {
             counter.increase();
-            reportProgress(pProgressObserver, "Finding loops ...", counter.getPercentInt());
             if (pixelService.isEdge(result.get(), pixel) && !pixelsInChains.contains(pixel)) {
+                reportProgress(pProgressObserver, "Finding loops ...", counter.getPercentInt());
                 result.update(r -> pixelMapService.setNode(r, pixel, true));
                 pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
                     var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
