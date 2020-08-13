@@ -301,11 +301,11 @@ public class PixelChainService {
 
     public Tuple2<ImmutablePixelMap, ImmutablePixelChain> setEndNode(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
         var pixelMapResult = ImmutablePixelMap.copyOf(pixelMap);
-        PixelChain builder = pixelChain.changePixels(p -> p.add(pNode));
+        PixelChain builder = pixelChain.changePixels(p -> p.add(pNode.toPixel()));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelCount() >= 3 && pNode.isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
+        if (builder.getPixelCount() >= 3 && pNode.toPixel().isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
             builder = builder.changePixels(p -> p.remove(index));
         }
@@ -1227,13 +1227,13 @@ public class PixelChainService {
     }
 
     public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull Node node) {
-        double y = (node.getY() + 0.5d) / pixelMap.height();
-        double x = (node.getX() + 0.5d) / pixelMap.height();
+        double y = (node.x() + 0.5d) / pixelMap.height();
+        double x = (node.y() + 0.5d) / pixelMap.height();
         var position = new Point(x, y);
         var vertex = ImmutableVertex.of(0, 0, position);
 
         return ImmutablePixelChain.of(
-                new ImmutableVectorClone<Pixel>().add(node),
+                new ImmutableVectorClone<Pixel>().add(node.toPixel()),
                 new ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex>().add(vertex),
                 new ImmutableVectorClone<>(),
                 0.0d,

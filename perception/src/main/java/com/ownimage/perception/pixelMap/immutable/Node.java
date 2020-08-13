@@ -15,19 +15,35 @@ import java.util.stream.Stream;
  * This class should be immutable.  The reason that has a Vector<PixelChain> rather than an ImmutableVectorClone<ImmutablePixelChain>
  * is because it needs to remain serialization compatible with older versions.
  */
-public class Node extends Pixel {
-
+public class Node {
 
     private static final long serialVersionUID = 1L;
 
     private final Vector<PixelChain> pixelChains = new Vector<>();
+    private final int x;
+    private final int y;
 
     public Node(IntegerPoint integerPoint) {
-        super(integerPoint);
+        this.x = integerPoint.getX();
+        this.y = integerPoint.getY();
     }
 
-    public Node(int pX, int pY) {
-        super(pX, pY);
+    public Node(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    private Node(Node node) {
+        this(node.x, node.y);
+        pixelChains.addAll(node.pixelChains);
+    }
+
+    public int x() {
+        return x;
+    }
+
+    public int y() {
+        return y;
     }
 
     public Node addPixelChain(ImmutablePixelChain pixelChain) {
@@ -35,7 +51,7 @@ public class Node extends Pixel {
             return this;
         }
 
-        Node clone = copy();
+        var clone = new Node(this);
         clone.pixelChains.add(pixelChain);
         return clone;
     }
@@ -58,7 +74,7 @@ public class Node extends Pixel {
     }
 
     public Node removePixelChain(ImmutablePixelChain pixelChain) {
-        Node clone = copy();
+        var clone = new Node(this);
         clone.pixelChains.remove(pixelChain);
         return clone;
     }
@@ -67,14 +83,16 @@ public class Node extends Pixel {
         return pixelChains.contains(pixelChain);
     }
 
-    private Node copy() {
-        Node clone = new Node(this);
-        clone.pixelChains.addAll(pixelChains);
-        return clone;
+    public IntegerPoint toIntegerPoint() {
+        return new IntegerPoint(x, y);
+    }
+
+    public Pixel toPixel() {
+        return new Pixel(x, y);
     }
 
     @Override
     public String toString() {
-        return "Node(" + getX() + ", " + getY() + ")";
+        return "Node(" + x + ", " + y + ")";
     }
 }

@@ -1,7 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.control.control.IProgressObserver;
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
@@ -96,11 +95,11 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         pixelMap.pixelChains().stream()
                 .flatMap(pc -> Stream.of(
-                        new Tuple2<>(pc, (Node) pc.getPixels().firstElement().orElseThrow()),
-                        new Tuple2<>(pc, (Node) pc.getPixels().lastElement().orElseThrow())
+                        new Tuple2<>(pc, pixelChainService.getStartNode(pixelMap, pc)),
+                        new Tuple2<>(pc, pixelChainService.getEndNode(pixelMap, pc))
                 ))
                 .forEach(t2 -> result.update(r -> {
-                    var updatedNode = r.nodes().get(new IntegerPoint(t2._2))
+                    var updatedNode = r.nodes().get(t2._2.get().toIntegerPoint())
                             .addPixelChain(t2._1);
                     return r.withNodes(r.nodes().put(updatedNode.toIntegerPoint(), updatedNode));
                 }));
@@ -184,7 +183,7 @@ public class PixelMapApproximationService {
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
                 Node node = pixelMapService.getNode(result.get(), pixel).get();
-                if (pixelService.countEdgeNeighbours(result.get(), node) == 0) {
+                if (pixelService.countEdgeNeighbours(result.get(), node.toPixel()) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
                 }
@@ -201,8 +200,8 @@ public class PixelMapApproximationService {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
         var toBeRemoved = new Vector<Pixel>();
         var result = StrongReference.of(pixelMap);
-        result.get().nodes().values().forEach(node -> pixelService.getNodeNeighbours(result.get(), node).forEach(other -> {
-                    Set<Pixel> nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
+        result.get().nodes().values().forEach(node -> pixelService.getNodeNeighbours(result.get(), node.toPixel()).forEach(other -> {
+                    Set<Pixel> nodeSet = pixelService.allEdgeNeighbours(result.get(), node.toPixel());
                     Set<Pixel> otherSet = pixelService.allEdgeNeighbours(result.get(), other);
                     nodeSet.remove(other);
                     nodeSet.removeAll(otherSet);
@@ -210,7 +209,7 @@ public class PixelMapApproximationService {
                     otherSet.removeAll(nodeSet);
                     if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
                         // TODO should be a better check here to see whether it is better to remove the other node
-                        toBeRemoved.add(node);
+                        toBeRemoved.add(node.toPixel());
                     }
                 })
         );

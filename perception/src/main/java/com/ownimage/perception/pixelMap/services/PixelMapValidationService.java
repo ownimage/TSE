@@ -7,6 +7,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,6 +24,13 @@ public class PixelMapValidationService {
 
     public static <R> Predicate<R> not(Predicate<R> predicate) {
         return predicate.negate();
+    }
+
+    private PixelChainService pixelChainService;
+
+    @Autowired
+    public void setPixelChainService(PixelChainService pixelChainService) {
+        this.pixelChainService = pixelChainService;
     }
 
     public boolean validate(@NotNull ImmutablePixelMap pixelMap) {
@@ -47,8 +55,8 @@ public class PixelMapValidationService {
             @NotNull ImmutablePixelMap pixelMap) {
         var result = pixelMap.pixelChains().stream()
                 .flatMap(pc -> Stream.of(
-                        new Tuple2<>(pc, pixelMap.nodes().get(pc.getPixels().firstElement().orElseThrow().toIntegerPoint())),
-                        new Tuple2<>(pc, pixelMap.nodes().get(pc.getPixels().lastElement().orElseThrow().toIntegerPoint()))
+                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getStartNode(pixelMap, pc).get().toIntegerPoint())),
+                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getEndNode(pixelMap, pc).get().toIntegerPoint()))
                 ))
                 .filter(not(t2 -> t2._2.containsPixelChain(t2._1)))
                 .findFirst()
@@ -252,7 +260,7 @@ public class PixelMapValidationService {
 
     public boolean checkPixelMapNodesKeyMatchesValue(@NotNull Map<IntegerPoint, Node> pixelMapNodes) {
         var result = pixelMapNodes.entrySet().stream()
-                .filter(e -> !(e.getKey().getX() == e.getValue().getX() && e.getKey().getY() == e.getValue().getY()))
+                .filter(e -> !(e.getKey().getX() == e.getValue().x() && e.getKey().getY() == e.getValue().y()))
                 .findFirst()
                 .isEmpty();
         return throwErrorIfFalse(result, "checkPixelMapNodesKeyMatchesValue failure");

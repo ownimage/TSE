@@ -93,7 +93,7 @@ public class PixelMapValidationServiceTest {
         // GIVEN
         var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, new Node(4, 0));
         pixelChain = pixelChainService.add(pixelChain, new Pixel(3, 0));
-        pixelChain = pixelChainService.add(pixelChain, new Node(2, 0));
+        pixelChain = pixelChainService.add(pixelChain, new Pixel(2, 0));
         var broken = pixelMap.withPixelChains(pixelMap.pixelChains().add(pixelChain));
         thrown.expectMessage("checkAllPixelsChainsHaveValidNodeEnds");
         // WHEN
@@ -113,7 +113,7 @@ public class PixelMapValidationServiceTest {
 
     @Test
     public void checkAllDataEdgesHave2Neighbours_02() {
-        // GIVEN pixel map with valid useage of 3 neighbours
+        // GIVEN pixel map with valid usage of 3 neighbours
         String[] input = {
                 "  N        ",
                 "  E        ",
@@ -249,7 +249,7 @@ public class PixelMapValidationServiceTest {
         );
         thrown.expectMessage("checkPixelMapNodesKeyMatchesValue");
         // WHEN
-        underTest.validate(broken);
+        underTest.checkPixelMapNodesKeyMatchesValue(broken.nodes().toHashMap());
         // THEN
     }
 
