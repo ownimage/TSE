@@ -1,5 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
@@ -60,20 +61,20 @@ public class PixelMapChainGenerationService {
         var result = pixelMap;
         var copy = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (Pixel nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
+        for (IntegerPoint nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
-                return generateChain(result, copy, nodalNeighbour);
+                return generateChain(result, copy, new Pixel(nodalNeighbour));
             }
         }
         // otherwise go to the next pixel normally
-        var nextNormal =  pixel.getNeighbours()
+        var nextNormal =  pixelService.getNeighbours(pixel)
                 .filter(neighbour -> !pixelService.isNode(result, neighbour)
-                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(neighbour)
+                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(new Pixel(neighbour))
                         && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy))))
                 .findFirst();
         if (nextNormal.isPresent()) {
-            return generateChain(result, copy, nextNormal.get());
+            return generateChain(result, copy, new Pixel(nextNormal.get()));
         }
 
         return new Tuple2<>(result, copy);
@@ -84,15 +85,15 @@ public class PixelMapChainGenerationService {
         var result = StrongReference.of(pixelMap);
 
         Vector<PixelChain> chains = new Vector<>();
-        pStartNode.toPixel().getNeighbours().forEach(neighbour -> {
+        pixelService.getNeighbours(pStartNode.toIntegerPoint()).forEach(neighbour -> {
             if (pixelService.isNode(result.get(), neighbour)
                     || pixelService.isEdge(result.get(), neighbour)
                     && (
-                    pixelMapService.getPixelChains(result.get(), neighbour).isEmpty()
-                            && chains.stream().filter(pc -> pc.getPixels().contains(neighbour)).findFirst().isEmpty())
+                    pixelMapService.getPixelChains(result.get(), new Pixel(neighbour)).isEmpty()
+                            && chains.stream().filter(pc -> pc.getPixels().contains(new Pixel(neighbour))).findFirst().isEmpty())
             ) {
                 var chain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
-                var generatedChain = generateChain(pixelMap, chain, neighbour);
+                var generatedChain = generateChain(pixelMap, chain, new Pixel(neighbour));
                 result.set(generatedChain._1);
                 chain = generatedChain._2;
                 if (pixelChainService.pixelLength(chain) > 2) {

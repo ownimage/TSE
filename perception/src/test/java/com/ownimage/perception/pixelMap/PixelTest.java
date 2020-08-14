@@ -285,7 +285,7 @@ public class PixelTest {
         var count = new AtomicInteger();
 
         // WHEN
-        underTest.getNeighbours().forEach(n -> count.getAndIncrement());
+        pixelService.getNeighbours(underTest).forEach(n -> count.getAndIncrement());
 
         // THEN
         assertSame(8, count.get());

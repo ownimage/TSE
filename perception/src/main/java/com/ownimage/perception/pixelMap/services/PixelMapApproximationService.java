@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -201,8 +200,8 @@ public class PixelMapApproximationService {
         var toBeRemoved = new Vector<Pixel>();
         var result = StrongReference.of(pixelMap);
         result.get().nodes().values().forEach(node -> pixelService.getNodeNeighbours(result.get(), node.toPixel()).forEach(other -> {
-                    Set<Pixel> nodeSet = pixelService.allEdgeNeighbours(result.get(), node.toPixel());
-                    Set<Pixel> otherSet = pixelService.allEdgeNeighbours(result.get(), other);
+                    var nodeSet = pixelService.allEdgeNeighbours(result.get(), node.toPixel());
+                    var otherSet = pixelService.allEdgeNeighbours(result.get(), new Pixel(other));
                     nodeSet.remove(other);
                     nodeSet.removeAll(otherSet);
                     otherSet.remove(node);
@@ -370,10 +369,12 @@ public class PixelMapApproximationService {
         }
         result.update(r -> pixelMapService.setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel));
-        pixel.getNeighbours().forEach(p -> {
-            result.update(r -> thin(r, p, tolerance, lineCurvePreference));
-            result.update(r -> calcIsNode(r, p));
-        });
+        pixelService.getNeighbours(pixel)
+                .map(Pixel::new)
+                .forEach(p -> {
+                    result.update(r -> thin(r, p, tolerance, lineCurvePreference));
+                    result.update(r -> calcIsNode(r, p));
+                });
         result.update(r -> thin(r, pixel, tolerance, lineCurvePreference));
         if (result.get().autoTrackChanges()) {
             if (isEdge) { // turning pixel on
@@ -442,7 +443,8 @@ public class PixelMapApproximationService {
         var nodes = new HashSet<Node>();
         pixels.forEach(pixel -> {
             pixelMapService.getNode(result.get(), pixel).ifPresent(nodes::add);
-            pixel.getNeighbours()
+            pixelService.getNeighbours(pixel)
+                    .map(Pixel::new)
                     .forEach(neighbour -> {
                         pixelMapService.getPixelChains(result.get(), neighbour)
                                 .forEach(pc -> {

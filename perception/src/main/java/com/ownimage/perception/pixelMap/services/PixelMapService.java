@@ -743,7 +743,9 @@ public class PixelMapService {
         }
         result.update(r -> setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel)._1);
-        pixel.getNeighbours().forEach(p -> {
+        pixelService.getNeighbours(pixel)
+                .map(Pixel::new)
+                .forEach(p -> {
             result.update(r -> thin(r, p, tolerance, lineCurvePreference)._1);
             result.update(r -> calcIsNode(r, p)._1);
         });

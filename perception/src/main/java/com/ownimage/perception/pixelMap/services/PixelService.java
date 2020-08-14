@@ -1,7 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.IntegerPoint;
-import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
@@ -9,11 +8,13 @@ import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.N;
@@ -76,15 +77,15 @@ public class PixelService {
         return pixel.add(mNeighbours[pN]);
     }
 
-    public Vector<Pixel> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+    public Vector<IntegerPoint> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
         Framework.logEntry(logger);
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("Pixel = " + this);
         }
 
-        Vector<Pixel> allNeighbours = new Vector<>();
-        pixel.getNeighbours().
-            filter(n -> isNode(pixelMap, n.toIntegerPoint()))
+        var allNeighbours = new Vector<IntegerPoint>();
+        getNeighbours(pixel)
+            .filter(n -> isNode(pixelMap, n))
             .forEach(allNeighbours::add);
 
         if (logger.isLoggable(Level.FINEST)) {
@@ -99,16 +100,16 @@ public class PixelService {
         return getNodeNeighbours(pixelMap, pixel).size();
     }
 
-    public Set<Pixel> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
-        HashSet<Pixel> allNeighbours = new HashSet<>();
-        pixel.getNeighbours().
-                filter(p -> isEdge(pixelMap, p))
+    public Set<IntegerPoint> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+        var allNeighbours = new HashSet<IntegerPoint>();
+        getNeighbours(pixel)
+                .filter(p -> isEdge(pixelMap, p))
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
 
     public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
-        return  (int) pixel.getNeighbours()
+        return  (int) getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
                 .count();
     }
@@ -135,10 +136,11 @@ public class PixelService {
     }
 
 
-    public Point calcUHVWMidPoint(@NotNull IntegerPoint pixel,  int height) {
-        double y = (pixel.getY() + 0.5d) / height;
-        double x = (pixel.getX() + 0.5d) / height;
-        return new Point(x, y);
+
+    public Stream<IntegerPoint> getNeighbours(@NotNull IntegerPoint point) {
+        return Arrays.stream(mNeighbourOrder)
+                .map(i -> mNeighbours[i])
+                .map(point::add);
     }
 
 }

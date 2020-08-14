@@ -8,10 +8,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.services.PixelService;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The class Pixel provides a wrapper about the byte level information contained in the raw PixelMap array. This can get and set
@@ -21,16 +18,6 @@ import java.util.stream.Stream;
 public class Pixel extends IntegerPoint implements PixelConstants {
 
     private final static long serialVersionUID = 1L;
-    private final static PixelService pixelService = new PixelService();
-
-    private static final IntegerPoint[] mNeighbours = { //
-            //
-            new IntegerPoint(-1, -1), new IntegerPoint(0, -1), new IntegerPoint(1, -1), //
-            new IntegerPoint(-1, 0), new IntegerPoint(0, 0), new IntegerPoint(1, 0), //
-            new IntegerPoint(-1, 1), new IntegerPoint(0, 1), new IntegerPoint(1, 1) //
-    };
-    private static final Integer[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
-
     private Point mUHVW = null;
 
     private Pixel(Pixel pPixel) {
@@ -55,27 +42,23 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return "Pixel(" + getX() + ", " + getY() + ")";
     }
 
-    @Override
-    public Pixel add(IntegerPoint pPoint) {
-        return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
-    }
-
-    public Stream<Pixel> getNeighbours() {
-        return Arrays.stream(mNeighbourOrder)
-                .map(i -> mNeighbours[i])
-                .map(this::add);
-    }
 
     // UHVW = unit height variable width
     public synchronized Point getUHVWMidPoint(int height) {
         if (mUHVW == null) {
             synchronized (this) {
                 if (mUHVW == null) {
-                    mUHVW = pixelService.calcUHVWMidPoint(toIntegerPoint(), height);
+                    mUHVW = calcUHVWMidPoint(toIntegerPoint(), height);
                 }
             }
         }
         return mUHVW;
+    }
+
+    public Point calcUHVWMidPoint(@NotNull IntegerPoint pixel, int height) {
+        double y = (pixel.getY() + 0.5d) / height;
+        double x = (pixel.getX() + 0.5d) / height;
+        return new Point(x, y);
     }
 
     public IntegerPoint toIntegerPoint() {
