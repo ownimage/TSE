@@ -3,8 +3,8 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
+import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +30,17 @@ public class PixelService {
 
     private final static Logger logger = Framework.getLogger();
 
-    private static final PixelMapGridPosition[] mNeighbours = { //
+    private static final IntegerXY[] mNeighbours = { //
             //
-            new PixelMapGridPosition(-1, -1), new PixelMapGridPosition(0, -1), new PixelMapGridPosition(1, -1), //
-            new PixelMapGridPosition(-1, 0), new PixelMapGridPosition(0, 0), new PixelMapGridPosition(1, 0), //
-            new PixelMapGridPosition(-1, 1), new PixelMapGridPosition(0, 1), new PixelMapGridPosition(1, 1) //
+            new IntegerXY(-1, -1), new IntegerXY(0, -1), new IntegerXY(1, -1), //
+            new IntegerXY(-1, 0), new IntegerXY(0, 0), new IntegerXY(1, 0), //
+            new IntegerXY(-1, 1), new IntegerXY(0, 1), new IntegerXY(1, 1) //
     };
 
     private static final Integer[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
 
-    public PixelMapGridPosition pixelToPixelMapGridPosition(@NotNull Pixel pixel) {
-        return new PixelMapGridPosition(pixel.getX(), pixel.getY());
+    public IntegerXY pixelToPixelMapGridPosition(@NotNull Pixel pixel) {
+        return new IntegerXY(pixel.getX(), pixel.getY());
     }
 
     public boolean isNode(PixelMap pixelMap, Integer x, Integer y) {
@@ -48,7 +48,7 @@ public class PixelService {
     }
 
 
-    public boolean isNode(PixelMap pixelMap, PixelMapGridPosition integerPoint) {
+    public boolean isNode(PixelMap pixelMap, IntegerXY integerPoint) {
         return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
     }
 
@@ -66,24 +66,24 @@ public class PixelService {
         return true;
     }
 
-    public boolean isEdge(PixelMap pixelMap, PixelMapGridPosition integerPoint) {
-        var ip = integerPoint.getClass() == PixelMapGridPosition.class
+    public boolean isEdge(PixelMap pixelMap, IntegerXY integerPoint) {
+        var ip = integerPoint.getClass() == IntegerXY.class
                 ? integerPoint
-                : new PixelMapGridPosition(integerPoint.getX(), integerPoint.getY());
+                : new IntegerXY(integerPoint.getX(), integerPoint.getY());
         return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
-    public PixelMapGridPosition getNeighbour(@NotNull PixelMapGridPosition pixel, int pN) {
+    public IntegerXY getNeighbour(@NotNull IntegerXY pixel, int pN) {
         return pixel.add(mNeighbours[pN]);
     }
 
-    public Vector<PixelMapGridPosition> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+    public Vector<IntegerXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
         Framework.logEntry(logger);
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("Pixel = " + this);
         }
 
-        var allNeighbours = new Vector<PixelMapGridPosition>();
+        var allNeighbours = new Vector<IntegerXY>();
         getNeighbours(pixel)
             .filter(n -> isNode(pixelMap, n))
             .forEach(allNeighbours::add);
@@ -100,8 +100,8 @@ public class PixelService {
         return getNodeNeighbours(pixelMap, pixel).size();
     }
 
-    public Set<PixelMapGridPosition> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
-        var allNeighbours = new HashSet<PixelMapGridPosition>();
+    public Set<IntegerXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+        var allNeighbours = new HashSet<IntegerXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
                 .forEach(allNeighbours::add);
@@ -130,14 +130,14 @@ public class PixelService {
         return count;
     }
 
-    public boolean isNeighbour(@NotNull PixelMapGridPosition me, @NotNull PixelMapGridPosition other) {
+    public boolean isNeighbour(@NotNull IntegerXY me, @NotNull IntegerXY other) {
         // big question is are you a neighbour of yourself - YES
         return Math.max(Math.abs(me.getX() - other.getX()), Math.abs(me.getY() - other.getY())) < 2;
     }
 
 
 
-    public Stream<PixelMapGridPosition> getNeighbours(@NotNull PixelMapGridPosition point) {
+    public Stream<IntegerXY> getNeighbours(@NotNull IntegerXY point) {
         return Arrays.stream(mNeighbourOrder)
                 .map(i -> mNeighbours[i])
                 .map(point::add);

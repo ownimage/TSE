@@ -11,9 +11,9 @@ import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import io.vavr.Tuple2;
 import lombok.NonNull;
@@ -168,15 +168,15 @@ public class PixelMapService {
         return pixelMap.withAutoTrackChanges(true);
     }
 
-    // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an PixelMapGridPosition
-    private PixelMapGridPosition getTruePixelMapGridPosition(PixelMapGridPosition pPixelMapGridPosition) {
-        // this is because pPixelMapGridPosition might be a Node or Pixel
-        return pPixelMapGridPosition.getClass() == PixelMapGridPosition.class ? pPixelMapGridPosition : new PixelMapGridPosition(pPixelMapGridPosition.getX(), pPixelMapGridPosition.getY());
+    // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerXY
+    private IntegerXY getTruePixelMapGridPosition(IntegerXY pIntegerXY) {
+        // this is because pIntegerXY might be a Node or Pixel
+        return pIntegerXY.getClass() == IntegerXY.class ? pIntegerXY : new IntegerXY(pIntegerXY.getX(), pIntegerXY.getY());
     }
 
     public @NotNull ImmutablePixelMap setNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull PixelMapGridPosition pixel,
+            @NonNull IntegerXY pixel,
             boolean pValue) {
         var result = pixelMap;
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
@@ -190,7 +190,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setData(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull PixelMapGridPosition pixel,
+            @NotNull IntegerXY pixel,
             boolean pState,
             byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
@@ -207,7 +207,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap nodeAdd(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull PixelMapGridPosition pixel) {
+            @NonNull IntegerXY pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -219,7 +219,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap nodeRemove(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull PixelMapGridPosition pixel) {
+            @NonNull IntegerXY pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -231,7 +231,7 @@ public class PixelMapService {
 
     public int countEdgeNeighboursTransitions(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull PixelMapGridPosition pixel) {
+            @NonNull IntegerXY pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
@@ -253,7 +253,7 @@ public class PixelMapService {
         }
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMap pixelMapData, PixelMapGridPosition integerPoint) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMap pixelMapData, IntegerXY integerPoint) {
         return getOptionalPixelAt(pixelMapData, integerPoint.getX(), integerPoint.getY());
     }
 
@@ -445,9 +445,9 @@ public class PixelMapService {
         return result.get();
     }
 
-    public Optional<Node> getNode(ImmutablePixelMap pixelMap, PixelMapGridPosition pPixelMapGridPosition) {
-        // this is because pPixelMapGridPosition might be a Node or Pixel
-        PixelMapGridPosition point = getTruePixelMapGridPosition(pPixelMapGridPosition);
+    public Optional<Node> getNode(ImmutablePixelMap pixelMap, IntegerXY pIntegerXY) {
+        // this is because pIntegerXY might be a Node or Pixel
+        IntegerXY point = getTruePixelMapGridPosition(pIntegerXY);
         Node node = pixelMap.nodes().get(point);
         if (node != null) {
             return Optional.of(node);
@@ -506,7 +506,7 @@ public class PixelMapService {
 
     public Tuple2<ImmutablePixelMap, Boolean> calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull PixelMapGridPosition point) {
+            @NotNull IntegerXY point) {
         boolean shouldBeNode = false;
         var pixelMapResult = pixelMap;
         if (pixelService.isEdge(pixelMap, point)) {
@@ -761,14 +761,14 @@ public class PixelMapService {
     }
 
 
-    public Stream<PixelMapGridPosition> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull PixelMapGridPosition center) {
+    public Stream<IntegerXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
                 .map(ip -> center.add(ip.getX(), ip.getY()))
                 .filter(ip -> !ip.equals(center))
                 .filter(ip -> isInBounds(pixelMapData, ip));
     }
 
-    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull PixelMapGridPosition point) {
+    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY point) {
         return point.getX() >= 0 && point.getY() >= 0
                 && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
     }

@@ -8,9 +8,9 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -248,7 +248,7 @@ public class PixelMapApproximationService {
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
                 .map(Map.Entry::getKey)
-                .map(PixelMapGridPosition::new)
+                .map(IntegerXY::new)
                 .collect(Collectors.toList());
         var counter = Counter.createMaxCounter(edges.size() + 1);
         edges.forEach(pixel -> {

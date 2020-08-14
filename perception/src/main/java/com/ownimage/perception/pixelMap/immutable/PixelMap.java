@@ -32,7 +32,7 @@ public interface PixelMap {
     }
 
     @Value.Default
-    default ImmutableMap<PixelMapGridPosition, Node> nodes() {
+    default ImmutableMap<IntegerXY, Node> nodes() {
         return new ImmutableMap();
     }
 
@@ -62,7 +62,7 @@ public interface PixelMap {
 
     ImmutablePixelMap withData(@NotNull ImmutableMap2D<Byte> data);
 
-    ImmutablePixelMap withNodes(@NotNull ImmutableMap<PixelMapGridPosition, Node> nodes);
+    ImmutablePixelMap withNodes(@NotNull ImmutableMap<IntegerXY, Node> nodes);
 
     ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<ImmutablePixelChain> pixelChains);
 

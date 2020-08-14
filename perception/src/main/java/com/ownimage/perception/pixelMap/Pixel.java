@@ -6,8 +6,8 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
+import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * information about this Pixel, this might mean reading information from adjacent pixels ... but this class NEVER sets values for
  * other Pixels, and it NEVER registers/deregisters Nodes with the PixelMap.
  */
-public class Pixel extends PixelMapGridPosition implements PixelConstants {
+public class Pixel extends IntegerXY implements PixelConstants {
 
     private final static long serialVersionUID = 1L;
     private Point mUHVW = null;
@@ -24,8 +24,8 @@ public class Pixel extends PixelMapGridPosition implements PixelConstants {
         this(pPixel.getX(), pPixel.getY());
     }
 
-    public Pixel(PixelMapGridPosition pPixelMapGridPosition) {
-        this(pPixelMapGridPosition.getX(), pPixelMapGridPosition.getY());
+    public Pixel(IntegerXY pIntegerXY) {
+        this(pIntegerXY.getX(), pIntegerXY.getY());
     }
 
     public Pixel(int pX, int pY) {
@@ -36,7 +36,7 @@ public class Pixel extends PixelMapGridPosition implements PixelConstants {
         this(pPixelChain.getPixel(pIndex));
     }
 
-    public Pixel add(@NotNull PixelMapGridPosition pmgp) {
+    public Pixel add(@NotNull IntegerXY pmgp) {
         return new Pixel(getX()+pmgp.getX(), getY()+pmgp.getY());
     }
 
@@ -58,14 +58,14 @@ public class Pixel extends PixelMapGridPosition implements PixelConstants {
         return mUHVW;
     }
 
-    public Point calcUHVWMidPoint(@NotNull PixelMapGridPosition pixel, int height) {
+    public Point calcUHVWMidPoint(@NotNull IntegerXY pixel, int height) {
         double y = (pixel.getY() + 0.5d) / height;
         double x = (pixel.getX() + 0.5d) / height;
         return new Point(x, y);
     }
 
-    public PixelMapGridPosition toPixelMapGridPosition() {
-        return new PixelMapGridPosition(getX(), getY());
+    public IntegerXY toPixelMapGridPosition() {
+        return new IntegerXY(getX(), getY());
     }
 
     @Override

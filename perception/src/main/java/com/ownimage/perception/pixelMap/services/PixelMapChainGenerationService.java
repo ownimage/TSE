@@ -5,9 +5,9 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class PixelMapChainGenerationService {
         var result = pixelMap;
         var copy = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (PixelMapGridPosition nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
+        for (IntegerXY nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 return generateChain(result, copy, new Pixel(nodalNeighbour));

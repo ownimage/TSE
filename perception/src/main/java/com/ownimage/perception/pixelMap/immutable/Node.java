@@ -19,7 +19,7 @@ public class Node {
     private final int x;
     private final int y;
 
-    public Node(@NotNull PixelMapGridPosition integerPoint) {
+    public Node(@NotNull IntegerXY integerPoint) {
         this(integerPoint.getX(), integerPoint.getY());
     }
 
@@ -80,8 +80,8 @@ public class Node {
         return pixelChains.contains(pixelChain);
     }
 
-    public PixelMapGridPosition toPixelMapGridPosition() {
-        return new PixelMapGridPosition(x, y);
+    public IntegerXY toPixelMapGridPosition() {
+        return new IntegerXY(x, y);
     }
 
     public Pixel toPixel() {
