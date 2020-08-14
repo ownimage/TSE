@@ -5,9 +5,9 @@
  */
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  * information about this Pixel, this might mean reading information from adjacent pixels ... but this class NEVER sets values for
  * other Pixels, and it NEVER registers/deregisters Nodes with the PixelMap.
  */
-public class Pixel extends IntegerPoint implements PixelConstants {
+public class Pixel extends PixelMapGridPosition implements PixelConstants {
 
     private final static long serialVersionUID = 1L;
     private Point mUHVW = null;
@@ -24,8 +24,8 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         this(pPixel.getX(), pPixel.getY());
     }
 
-    public Pixel(IntegerPoint pIntegerPoint) {
-        this(pIntegerPoint.getX(), pIntegerPoint.getY());
+    public Pixel(PixelMapGridPosition pPixelMapGridPosition) {
+        this(pPixelMapGridPosition.getX(), pPixelMapGridPosition.getY());
     }
 
     public Pixel(int pX, int pY) {
@@ -36,6 +36,9 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         this(pPixelChain.getPixel(pIndex));
     }
 
+    public Pixel add(@NotNull PixelMapGridPosition pmgp) {
+        return new Pixel(getX()+pmgp.getX(), getY()+pmgp.getY());
+    }
 
     @Override
     public String toString() {
@@ -48,21 +51,21 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         if (mUHVW == null) {
             synchronized (this) {
                 if (mUHVW == null) {
-                    mUHVW = calcUHVWMidPoint(toIntegerPoint(), height);
+                    mUHVW = calcUHVWMidPoint(toPixelMapGridPosition(), height);
                 }
             }
         }
         return mUHVW;
     }
 
-    public Point calcUHVWMidPoint(@NotNull IntegerPoint pixel, int height) {
+    public Point calcUHVWMidPoint(@NotNull PixelMapGridPosition pixel, int height) {
         double y = (pixel.getY() + 0.5d) / height;
         double x = (pixel.getX() + 0.5d) / height;
         return new Point(x, y);
     }
 
-    public IntegerPoint toIntegerPoint() {
-        return new IntegerPoint(getX(), getY());
+    public PixelMapGridPosition toPixelMapGridPosition() {
+        return new PixelMapGridPosition(getX(), getY());
     }
 
     @Override

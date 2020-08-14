@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.services;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
@@ -8,6 +7,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class PixelMapChainGenerationService {
         var result = pixelMap;
         var copy = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (IntegerPoint nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
+        for (PixelMapGridPosition nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
                 return generateChain(result, copy, new Pixel(nodalNeighbour));
@@ -85,7 +85,7 @@ public class PixelMapChainGenerationService {
         var result = StrongReference.of(pixelMap);
 
         Vector<PixelChain> chains = new Vector<>();
-        pixelService.getNeighbours(pStartNode.toIntegerPoint()).forEach(neighbour -> {
+        pixelService.getNeighbours(pStartNode.toPixelMapGridPosition()).forEach(neighbour -> {
             if (pixelService.isNode(result.get(), neighbour)
                     || pixelService.isEdge(result.get(), neighbour)
                     && (

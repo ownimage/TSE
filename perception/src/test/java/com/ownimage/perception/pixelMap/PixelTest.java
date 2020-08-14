@@ -342,7 +342,7 @@ public class PixelTest {
         Pixel underTest = new Pixel(5, 5);
         Node sameAsTest = new Node(new Pixel(5, 5));
         // THEN
-        assertTrue(underTest.samePosition(sameAsTest.toIntegerPoint()));
+        assertTrue(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }
 
     @Test
@@ -351,6 +351,6 @@ public class PixelTest {
         Pixel underTest = new Pixel(5, 5);
         Node sameAsTest = new Node(new Pixel(4, 4));
         // THEN
-        assertFalse(underTest.samePosition(sameAsTest.toIntegerPoint()));
+        assertFalse(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }
 }

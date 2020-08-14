@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.immutable;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.immutable.Immutable2DArray;
 import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
@@ -33,7 +32,7 @@ public interface PixelMap {
     }
 
     @Value.Default
-    default ImmutableMap<IntegerPoint, Node> nodes() {
+    default ImmutableMap<PixelMapGridPosition, Node> nodes() {
         return new ImmutableMap();
     }
 
@@ -63,7 +62,7 @@ public interface PixelMap {
 
     ImmutablePixelMap withData(@NotNull ImmutableMap2D<Byte> data);
 
-    ImmutablePixelMap withNodes(@NotNull ImmutableMap<IntegerPoint, Node> nodes);
+    ImmutablePixelMap withNodes(@NotNull ImmutableMap<PixelMapGridPosition, Node> nodes);
 
     ImmutablePixelMap withPixelChains(@NotNull ImmutableSet<ImmutablePixelChain> pixelChains);
 

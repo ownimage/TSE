@@ -10,6 +10,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -98,9 +99,9 @@ public class PixelMapApproximationService {
                         new Tuple2<>(pc, pixelChainService.getEndNode(pixelMap, pc))
                 ))
                 .forEach(t2 -> result.update(r -> {
-                    var updatedNode = r.nodes().get(t2._2.get().toIntegerPoint())
+                    var updatedNode = r.nodes().get(t2._2.get().toPixelMapGridPosition())
                             .addPixelChain(t2._1);
-                    return r.withNodes(r.nodes().put(updatedNode.toIntegerPoint(), updatedNode));
+                    return r.withNodes(r.nodes().put(updatedNode.toPixelMapGridPosition(), updatedNode));
                 }));
         return result.get();
     }
@@ -247,6 +248,7 @@ public class PixelMapApproximationService {
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
                 .map(Map.Entry::getKey)
+                .map(PixelMapGridPosition::new)
                 .collect(Collectors.toList());
         var counter = Counter.createMaxCounter(edges.size() + 1);
         edges.forEach(pixel -> {

@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.services;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
@@ -14,6 +13,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import io.vavr.Tuple2;
 import lombok.NonNull;
@@ -168,15 +168,15 @@ public class PixelMapService {
         return pixelMap.withAutoTrackChanges(true);
     }
 
-    // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerPoint
-    private IntegerPoint getTrueIntegerPoint(IntegerPoint pIntegerPoint) {
-        // this is because pIntegerPoint might be a Node or Pixel
-        return pIntegerPoint.getClass() == IntegerPoint.class ? pIntegerPoint : new IntegerPoint(pIntegerPoint.getX(), pIntegerPoint.getY());
+    // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an PixelMapGridPosition
+    private PixelMapGridPosition getTruePixelMapGridPosition(PixelMapGridPosition pPixelMapGridPosition) {
+        // this is because pPixelMapGridPosition might be a Node or Pixel
+        return pPixelMapGridPosition.getClass() == PixelMapGridPosition.class ? pPixelMapGridPosition : new PixelMapGridPosition(pPixelMapGridPosition.getX(), pPixelMapGridPosition.getY());
     }
 
     public @NotNull ImmutablePixelMap setNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerPoint pixel,
+            @NonNull PixelMapGridPosition pixel,
             boolean pValue) {
         var result = pixelMap;
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
@@ -190,7 +190,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setData(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IntegerPoint pixel,
+            @NotNull PixelMapGridPosition pixel,
             boolean pState,
             byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
@@ -207,31 +207,31 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap nodeAdd(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerPoint pixel) {
+            @NonNull PixelMapGridPosition pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
         var newValue = (byte) (oldValue | NODE);
         return pixelMap.withNodes(
-                pixelMap.nodes().put(getTrueIntegerPoint(pixel), new Node(pixel)))
+                pixelMap.nodes().put(getTruePixelMapGridPosition(pixel), new Node(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public @NotNull ImmutablePixelMap nodeRemove(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerPoint pixel) {
+            @NonNull PixelMapGridPosition pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
         var newValue = (byte) (oldValue & (ALL ^ NODE));
         return pixelMap.withNodes(
-                pixelMap.nodes().remove(getTrueIntegerPoint(pixel)))
+                pixelMap.nodes().remove(getTruePixelMapGridPosition(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public int countEdgeNeighboursTransitions(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerPoint pixel) {
+            @NonNull PixelMapGridPosition pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
@@ -253,7 +253,7 @@ public class PixelMapService {
         }
     }
 
-    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMap pixelMapData, IntegerPoint integerPoint) {
+    public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMap pixelMapData, PixelMapGridPosition integerPoint) {
         return getOptionalPixelAt(pixelMapData, integerPoint.getX(), integerPoint.getY());
     }
 
@@ -410,12 +410,12 @@ public class PixelMapService {
         chain.getPixels()
                 .firstElement()
                 .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
-                .map(pixelService::pixelToIntegerPoint)
+                .map(pixelService::pixelToPixelMapGridPosition)
                 .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
         chain.getPixels()
                 .lastElement()
                 .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
-                .map(pixelService::pixelToIntegerPoint)
+                .map(pixelService::pixelToPixelMapGridPosition)
                 .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
         return result.get();
     }
@@ -445,9 +445,9 @@ public class PixelMapService {
         return result.get();
     }
 
-    public Optional<Node> getNode(ImmutablePixelMap pixelMap, IntegerPoint pIntegerPoint) {
-        // this is because pIntegerPoint might be a Node or Pixel
-        IntegerPoint point = getTrueIntegerPoint(pIntegerPoint);
+    public Optional<Node> getNode(ImmutablePixelMap pixelMap, PixelMapGridPosition pPixelMapGridPosition) {
+        // this is because pPixelMapGridPosition might be a Node or Pixel
+        PixelMapGridPosition point = getTruePixelMapGridPosition(pPixelMapGridPosition);
         Node node = pixelMap.nodes().get(point);
         if (node != null) {
             return Optional.of(node);
@@ -506,7 +506,7 @@ public class PixelMapService {
 
     public Tuple2<ImmutablePixelMap, Boolean> calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IntegerPoint point) {
+            @NotNull PixelMapGridPosition point) {
         boolean shouldBeNode = false;
         var pixelMapResult = pixelMap;
         if (pixelService.isEdge(pixelMap, point)) {
@@ -590,7 +590,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMap replaceNode(@NotNull ImmutablePixelMap pixelMap, @NotNull Node node) {
-        return pixelMap.withNodes(pixelMap.nodes().put(node.toIntegerPoint(), node));
+        return pixelMap.withNodes(pixelMap.nodes().put(node.toPixelMapGridPosition(), node));
     }
 
     public ImmutablePixelMap pixelChainsAddAll(
@@ -699,7 +699,7 @@ public class PixelMapService {
     public ImmutablePixelMap nodesRemoveAll(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Collection<Pixel> pToBeRemoved) {
         var nodes = StrongReference.of(pixelMap.nodes());
-        pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p.toIntegerPoint())));
+        pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p.toPixelMapGridPosition())));
         return pixelMap.withNodes(nodes.get());
     }
 
@@ -761,14 +761,14 @@ public class PixelMapService {
     }
 
 
-    public Stream<IntegerPoint> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerPoint center) {
+    public Stream<PixelMapGridPosition> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull PixelMapGridPosition center) {
         return new Range2D(-1, 2, -1, 2).stream()
-                .map(ip -> center.add(ip))
+                .map(ip -> center.add(ip.getX(), ip.getY()))
                 .filter(ip -> !ip.equals(center))
                 .filter(ip -> isInBounds(pixelMapData, ip));
     }
 
-    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerPoint point) {
+    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull PixelMapGridPosition point) {
         return point.getX() >= 0 && point.getY() >= 0
                 && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
     }

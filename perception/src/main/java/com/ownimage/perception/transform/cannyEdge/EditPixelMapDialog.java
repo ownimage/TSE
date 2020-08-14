@@ -23,7 +23,6 @@ import com.ownimage.framework.control.control.PictureControl;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
-import com.ownimage.framework.math.Bounds;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Rectangle;
 import com.ownimage.framework.undo.UndoRedoBuffer;
@@ -31,7 +30,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Id;
 import com.ownimage.framework.util.KColor;
 import com.ownimage.framework.util.Range2D;
-import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.IAppControlView.DialogOptions;
 import com.ownimage.framework.view.IDialogView;
 import com.ownimage.framework.view.IView;
@@ -45,6 +43,7 @@ import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.PixelMapGridPosition;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
@@ -60,7 +59,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -564,42 +562,42 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void actionCopyToClipboard(Pixel pPixel) {
-        StringBuilder builder = new StringBuilder();
-        StrongReference<Bounds> bounds = new StrongReference<>(null);
-        pixelMapService.getPixelChains(getPixelMap(), pPixel).stream().findFirst().ifPresent(pixelChain -> {
-            bounds.set(new Bounds());
-            pixelChain.streamPixels().forEach(pixel -> bounds.set(bounds.get().getBounds(pixel)));
-            builder.append("int xMargin = 2;\n");
-            builder.append("int yMargin = 2;\n");
-            builder.append("Pixel offset = new Pixel(xMargin, yMargin);\n");
-
-            builder.append("IPixelMapTransformSource ts = new PixelMapTransformSource(");
-            builder.append(getPixelMap().height());
-            builder.append(", ");
-            builder.append(mCannyEdgeTransform.getLineTolerance());
-            builder.append(", ");
-            builder.append(mCannyEdgeTransform.getLineCurvePreference());
-            builder.append(");\n");
-
-            builder.append("PixelMap pixelMap = new PixelMap(");
-            builder.append(bounds.get().getWidth() + " + 2 * xMargin");
-            builder.append(", ");
-            builder.append(bounds.get().getHeight() + " + 2 * yMargin");
-            builder.append(", false, ts);\n");
-
-            builder.append("pixelMap.actionProcess(null);\n");
-
-            pixelChain.streamPixels().forEach(pixel -> {
-                builder.append("pixelMap = pixelMap.actionPixelOn(new Pixel(");
-                builder.append(pixel.minus(bounds.get().getLowerLeft()).getX());
-                builder.append(", ");
-                builder.append(pixel.minus(bounds.get().getLowerLeft()).getY());
-                builder.append(").add(offset));\n");
-            });
-        });
-        builder.append("\n\nassertEquals(1, pixelMap.getPixelChainCount());\n");
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(builder.toString()), null);
-        mLogger.info(() -> "CLIPBOARD: " + builder);
+//        StringBuilder builder = new StringBuilder();
+//        StrongReference<Bounds> bounds = new StrongReference<>(null);
+//        pixelMapService.getPixelChains(getPixelMap(), pPixel).stream().findFirst().ifPresent(pixelChain -> {
+//            bounds.set(new Bounds());
+//            pixelChain.streamPixels().forEach(pixel -> bounds.set(bounds.get().getBounds(pixel)));
+//            builder.append("int xMargin = 2;\n");
+//            builder.append("int yMargin = 2;\n");
+//            builder.append("Pixel offset = new Pixel(xMargin, yMargin);\n");
+//
+//            builder.append("IPixelMapTransformSource ts = new PixelMapTransformSource(");
+//            builder.append(getPixelMap().height());
+//            builder.append(", ");
+//            builder.append(mCannyEdgeTransform.getLineTolerance());
+//            builder.append(", ");
+//            builder.append(mCannyEdgeTransform.getLineCurvePreference());
+//            builder.append(");\n");
+//
+//            builder.append("PixelMap pixelMap = new PixelMap(");
+//            builder.append(bounds.get().getWidth() + " + 2 * xMargin");
+//            builder.append(", ");
+//            builder.append(bounds.get().getHeight() + " + 2 * yMargin");
+//            builder.append(", false, ts);\n");
+//
+//            builder.append("pixelMap.actionProcess(null);\n");
+//
+//            pixelChain.streamPixels().forEach(pixel -> {
+//                builder.append("pixelMap = pixelMap.actionPixelOn(new Pixel(");
+//                builder.append(pixel.minus(bounds.get().getLowerLeft()).getX());
+//                builder.append(", ");
+//                builder.append(pixel.minus(bounds.get().getLowerLeft()).getY());
+//                builder.append(").add(offset));\n");
+//            });
+//        });
+//        builder.append("\n\nassertEquals(1, pixelMap.getPixelChainCount());\n");
+//        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(builder.toString()), null);
+//        mLogger.info(() -> "CLIPBOARD: " + builder);
     }
 
     private boolean isPixelActionOn() {
@@ -828,7 +826,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
                 .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), ip ->
-                        pixelMapService.getOptionalPixelAt(getPixelMap(), ip)
+                        pixelMapService.getOptionalPixelAt(getPixelMap(), new PixelMapGridPosition(ip))
                                 .filter(Predicate.not(mWorkingPixelsArray::contains))
                                 .filter(p -> pPixel.getUHVWMidPoint(mPixelMap.height())
                                         .distance(p.getUHVWMidPoint(mPixelMap.height())) < radius)

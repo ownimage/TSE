@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
@@ -578,41 +577,41 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(new IntegerPoint(3, 11).add(offset))), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(4, 11).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(5, 12).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(6, 13).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(7, 13).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(8, 13).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(9, 12).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(9, 11).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 10).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 9).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 8).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 7).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 6).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 5).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 4).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(10, 3).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(9, 2).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(8, 1).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(7, 0).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(6, 0).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(5, 0).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(4, 0).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(3, 0).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(2, 1).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 2).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(0, 3).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(0, 4).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(0, 5).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(0, 6).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 7).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 8).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 9).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 10).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(1, 11).add(offset)), tolerance, lineCurvePreference);
-        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(new IntegerPoint(2, 11).add(offset)), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(3, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(4, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(5, 12).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(6, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(7, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(8, 13).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 12).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 10).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 9).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 8).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 7).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 6).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 5).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 4).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(10, 3).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(9, 2).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(8, 1).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(7, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(6, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(5, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(4, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(3, 0).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(2, 1).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 2).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 3).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 4).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 5).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(0, 6).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 7).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 8).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 9).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 10).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(1, 11).add(offset), tolerance, lineCurvePreference);
+        pixelMap = pixelMapActionService.actionPixelOn(pixelMap, new Pixel(2, 11).add(offset), tolerance, lineCurvePreference);
         assertEquals(1, pixelMap.pixelChains().size());
     }
 
@@ -630,41 +629,41 @@ public class PixelMapTest {
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMapApproximationService.actionProcess(underTest, tolerance, lineCurvePreference, null);
         List<Pixel> pixels = Arrays.asList(
-                new Pixel(new IntegerPoint(3, 11).add(offset)),
-                new Pixel(new IntegerPoint(4, 11).add(offset)),
-                new Pixel(new IntegerPoint(5, 12).add(offset)),
-                new Pixel(new IntegerPoint(6, 13).add(offset)),
-                new Pixel(new IntegerPoint(7, 13).add(offset)),
-                new Pixel(new IntegerPoint(8, 13).add(offset)),
-                new Pixel(new IntegerPoint(9, 12).add(offset)),
-                new Pixel(new IntegerPoint(9, 11).add(offset)),
-                new Pixel(new IntegerPoint(10, 10).add(offset)),
-                new Pixel(new IntegerPoint(10, 9).add(offset)),
-                new Pixel(new IntegerPoint(10, 8).add(offset)),
-                new Pixel(new IntegerPoint(10, 7).add(offset)),
-                new Pixel(new IntegerPoint(10, 6).add(offset)),
-                new Pixel(new IntegerPoint(10, 5).add(offset)),
-                new Pixel(new IntegerPoint(10, 4).add(offset)),
-                new Pixel(new IntegerPoint(10, 3).add(offset)),
-                new Pixel(new IntegerPoint(9, 2).add(offset)),
-                new Pixel(new IntegerPoint(8, 1).add(offset)),
-                new Pixel(new IntegerPoint(7, 0).add(offset)),
-                new Pixel(new IntegerPoint(6, 0).add(offset)),
-                new Pixel(new IntegerPoint(5, 0).add(offset)),
-                new Pixel(new IntegerPoint(4, 0).add(offset)),
-                new Pixel(new IntegerPoint(3, 0).add(offset)),
-                new Pixel(new IntegerPoint(2, 1).add(offset)),
-                new Pixel(new IntegerPoint(1, 2).add(offset)),
-                new Pixel(new IntegerPoint(0, 3).add(offset)),
-                new Pixel(new IntegerPoint(0, 4).add(offset)),
-                new Pixel(new IntegerPoint(0, 5).add(offset)),
-                new Pixel(new IntegerPoint(0, 6).add(offset)),
-                new Pixel(new IntegerPoint(1, 7).add(offset)),
-                new Pixel(new IntegerPoint(1, 8).add(offset)),
-                new Pixel(new IntegerPoint(1, 9).add(offset)),
-                new Pixel(new IntegerPoint(1, 10).add(offset)),
-                new Pixel(new IntegerPoint(1, 11).add(offset)),
-                new Pixel(new IntegerPoint(2, 11).add(offset))
+                new Pixel(3, 11).add(offset),
+                new Pixel(4, 11).add(offset),
+                new Pixel(5, 12).add(offset),
+                new Pixel(6, 13).add(offset),
+                new Pixel(7, 13).add(offset),
+                new Pixel(8, 13).add(offset),
+                new Pixel(9, 12).add(offset),
+                new Pixel(9, 11).add(offset),
+                new Pixel(10, 10).add(offset),
+                new Pixel(10, 9).add(offset),
+                new Pixel(10, 8).add(offset),
+                new Pixel(10, 7).add(offset),
+                new Pixel(10, 6).add(offset),
+                new Pixel(10, 5).add(offset),
+                new Pixel(10, 4).add(offset),
+                new Pixel(10, 3).add(offset),
+                new Pixel(9, 2).add(offset),
+                new Pixel(8, 1).add(offset),
+                new Pixel(7, 0).add(offset),
+                new Pixel(6, 0).add(offset),
+                new Pixel(5, 0).add(offset),
+                new Pixel(4, 0).add(offset),
+                new Pixel(3, 0).add(offset),
+                new Pixel(2, 1).add(offset),
+                new Pixel(1, 2).add(offset),
+                new Pixel(0, 3).add(offset),
+                new Pixel(0, 4).add(offset),
+                new Pixel(0, 5).add(offset),
+                new Pixel(0, 6).add(offset),
+                new Pixel(1, 7).add(offset),
+                new Pixel(1, 8).add(offset),
+                new Pixel(1, 9).add(offset),
+                new Pixel(1, 10).add(offset),
+                new Pixel(1, 11).add(offset),
+                new Pixel(2, 11).add(offset)
         );
         var actual = pixelMapActionService.actionPixelOn(underTest, pixels, tolerance, lineCurvePreference);
         assertEquals(1, actual.pixelChains().size());

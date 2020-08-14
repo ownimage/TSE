@@ -311,7 +311,7 @@ public class PixelChainService {
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelCount() >= 3 && pixelService.isNeighbour(pNode.toIntegerPoint(), builder.getPixel(builder.getPixelCount() - 3))) {
+        if (builder.getPixelCount() >= 3 && pixelService.isNeighbour(pNode.toPixelMapGridPosition(), builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
             builder = builder.changePixels(p -> p.remove(index));
         }

@@ -5,7 +5,6 @@
  */
 package com.ownimage.perception.pixelMap.immutable;
 
-import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.Pixel;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,7 @@ public class Node {
     private final int x;
     private final int y;
 
-    public Node(@NotNull IntegerPoint integerPoint) {
+    public Node(@NotNull PixelMapGridPosition integerPoint) {
         this(integerPoint.getX(), integerPoint.getY());
     }
 
@@ -81,8 +80,8 @@ public class Node {
         return pixelChains.contains(pixelChain);
     }
 
-    public IntegerPoint toIntegerPoint() {
-        return new IntegerPoint(x, y);
+    public PixelMapGridPosition toPixelMapGridPosition() {
+        return new PixelMapGridPosition(x, y);
     }
 
     public Pixel toPixel() {
