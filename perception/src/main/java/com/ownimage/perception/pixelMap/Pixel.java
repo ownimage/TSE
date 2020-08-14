@@ -84,11 +84,7 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return mUHVW;
     }
 
-    public boolean isNeighbour(Pixel pPixel) {
-        // big question is are you a neighbour of yourself - YES
-        return // pPixel.getPixelMap() == getPixelMap() && //
-                Math.max(Math.abs(pPixel.getX() - getX()), Math.abs(pPixel.getY() - getY())) < 2;
-    }
+
 
 
     public IntegerPoint toIntegerPoint() {

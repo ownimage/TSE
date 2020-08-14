@@ -50,6 +50,7 @@ public class PixelChainService {
     private PixelMapService pixelMapService;
     private PixelMapTransformService pixelMapTransformService;
     private VertexService vertexService;
+    private PixelService pixelService;
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
@@ -64,6 +65,11 @@ public class PixelChainService {
     @Autowired
     public void setVertexService(VertexService vertexService) {
         this.vertexService = vertexService;
+    }
+
+    @Autowired
+    public void setPixelService(PixelService pixelService) {
+        this.pixelService = pixelService;
     }
 
     public ImmutablePixelChain add(PixelChain pixelChain, Pixel pPixel) {
@@ -305,7 +311,7 @@ public class PixelChainService {
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelCount() >= 3 && pNode.toPixel().isNeighbour(builder.getPixel(builder.getPixelCount() - 3))) {
+        if (builder.getPixelCount() >= 3 && pixelService.isNeighbour(pNode.toIntegerPoint(), builder.getPixel(builder.getPixelCount() - 3))) {
             var index = builder.getPixelCount() - 2;
             builder = builder.changePixels(p -> p.remove(index));
         }

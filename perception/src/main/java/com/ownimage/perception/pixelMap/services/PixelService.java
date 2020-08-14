@@ -35,6 +35,8 @@ public class PixelService {
             new IntegerPoint(-1, 1), new IntegerPoint(0, 1), new IntegerPoint(1, 1) //
     };
 
+    private static final Integer[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
+
     public IntegerPoint pixelToIntegerPoint(@NotNull Pixel pixel) {
         return new IntegerPoint(pixel.getX(), pixel.getY());
     }
@@ -124,6 +126,11 @@ public class PixelService {
         }
 
         return count;
+    }
+
+    public boolean isNeighbour(@NotNull IntegerPoint me, @NotNull IntegerPoint other) {
+        // big question is are you a neighbour of yourself - YES
+        return Math.max(Math.abs(me.getX() - other.getX()), Math.abs(me.getY() - other.getY())) < 2;
     }
 
 
