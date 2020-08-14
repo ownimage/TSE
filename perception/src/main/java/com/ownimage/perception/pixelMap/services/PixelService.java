@@ -1,6 +1,7 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.IntegerPoint;
+import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
@@ -71,8 +72,8 @@ public class PixelService {
         return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
-    public Pixel getNeighbour(@NotNull IntegerPoint pixel, int pN) {
-        return new Pixel(pixel.add(mNeighbours[pN]));
+    public IntegerPoint getNeighbour(@NotNull IntegerPoint pixel, int pN) {
+        return pixel.add(mNeighbours[pN]);
     }
 
     public Vector<Pixel> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
@@ -116,11 +117,11 @@ public class PixelService {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
-        boolean currentState = isEdge(pixelMap, pixel.getNeighbour(NW));
+        boolean currentState = isEdge(pixelMap, getNeighbour(pixel, NW));
 
         for (int neighbour : loop) {
-            if (currentState != isEdge(pixelMap, pixel.getNeighbour(neighbour))) {
-                currentState = isEdge(pixelMap, pixel.getNeighbour(neighbour));
+            if (currentState != isEdge(pixelMap, getNeighbour(pixel, neighbour))) {
+                currentState = isEdge(pixelMap, getNeighbour(pixel, neighbour));
                 count++;
             }
         }
@@ -133,5 +134,11 @@ public class PixelService {
         return Math.max(Math.abs(me.getX() - other.getX()), Math.abs(me.getY() - other.getY())) < 2;
     }
 
+
+    public Point calcUHVWMidPoint(@NotNull IntegerPoint pixel,  int height) {
+        double y = (pixel.getY() + 0.5d) / height;
+        double x = (pixel.getX() + 0.5d) / height;
+        return new Point(x, y);
+    }
 
 }

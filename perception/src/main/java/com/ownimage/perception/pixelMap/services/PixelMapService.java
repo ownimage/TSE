@@ -684,9 +684,9 @@ public class PixelMapService {
         var pixelMapResult = pixelMap;
         boolean canEliminate = false;
         for (int[] set : eliminate) {
-            canEliminate |= pixelService.isEdge(pixelMap, pixel.getNeighbour(set[0]))
-                    && pixelService.isEdge(pixelMap, pixel.getNeighbour(set[1]))
-                    && !pixelService.isEdge(pixelMap, pixel.getNeighbour(set[2]));
+            canEliminate |= pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[0]))
+                    && pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[1]))
+                    && !pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[2]));
         }
         if (canEliminate) {
             pixelMapResult = pixelMapApproximationService.setEdge(pixelMapResult, pixel, false, tolerance, lineCurvePreference);

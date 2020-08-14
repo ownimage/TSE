@@ -737,7 +737,7 @@ public class PixelMapTest {
         assertEquals(1, pixelMap.pixelChains().size());
         StringBuilder result = new StringBuilder();
         pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(5, 1), Pixel(4, 2), Pixel(3, 3), Pixel(3, 4) ]\n", result.toString());
+        assertEquals("PixelChain[ Pixel(3, 4), Pixel(3, 3), Pixel(4, 2), Pixel(5, 1) ]\n", result.toString());
     }
 
     @Test

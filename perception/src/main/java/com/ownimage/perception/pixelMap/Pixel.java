@@ -8,6 +8,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.services.PixelService;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
 public class Pixel extends IntegerPoint implements PixelConstants {
 
     private final static long serialVersionUID = 1L;
+    private final static PixelService pixelService = new PixelService();
 
     private static final IntegerPoint[] mNeighbours = { //
             //
@@ -58,18 +60,6 @@ public class Pixel extends IntegerPoint implements PixelConstants {
         return new Pixel(getX() + pPoint.getX(), getY() + pPoint.getY());
     }
 
-
-    private synchronized void calcUHVWMidPoint(int height) {
-        double y = (getY() + 0.5d) / height;
-        double x = (getX() + 0.5d) / height;
-        mUHVW = new Point(x, y);
-    }
-
-
-    public Pixel getNeighbour(int pN) {
-        return add(mNeighbours[pN]);
-    }
-
     public Stream<Pixel> getNeighbours() {
         return Arrays.stream(mNeighbourOrder)
                 .map(i -> mNeighbours[i])
@@ -79,13 +69,14 @@ public class Pixel extends IntegerPoint implements PixelConstants {
     // UHVW = unit height variable width
     public synchronized Point getUHVWMidPoint(int height) {
         if (mUHVW == null) {
-            calcUHVWMidPoint(height);
+            synchronized (this) {
+                if (mUHVW == null) {
+                    mUHVW = pixelService.calcUHVWMidPoint(toIntegerPoint(), height);
+                }
+            }
         }
         return mUHVW;
     }
-
-
-
 
     public IntegerPoint toIntegerPoint() {
         return new IntegerPoint(getX(), getY());
