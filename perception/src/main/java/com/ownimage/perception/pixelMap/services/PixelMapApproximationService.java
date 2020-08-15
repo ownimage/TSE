@@ -6,6 +6,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.IntegerXY;
@@ -198,19 +199,22 @@ public class PixelMapApproximationService {
             double lineCurvePreference,
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
-        var toBeRemoved = new Vector<Pixel>();
+        var toBeRemoved = new Vector<IntegerXY>();
         var result = StrongReference.of(pixelMap);
-        result.get().nodes().values().forEach(node -> pixelService.getNodeNeighbours(result.get(), node.toPixel()).forEach(other -> {
-                    var nodeSet = pixelService.allEdgeNeighbours(result.get(), node.toPixel());
-                    var otherSet = pixelService.allEdgeNeighbours(result.get(), new Pixel(other));
-                    nodeSet.remove(other);
-                    nodeSet.removeAll(otherSet);
-                    otherSet.remove(node);
-                    otherSet.removeAll(nodeSet);
-                    if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
-                        // TODO should be a better check here to see whether it is better to remove the other node
-                        toBeRemoved.add(node.toPixel());
-                    }
+        result.get().nodes().values().stream()
+                .map(IntegerXY::of)
+                .forEach(node -> pixelService.getNodeNeighbours(result.get(), node)
+                        .forEach(other -> {
+                            var nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
+                            var otherSet = pixelService.allEdgeNeighbours(result.get(), other);
+                            nodeSet.remove(other);
+                            nodeSet.removeAll(otherSet);
+                            otherSet.remove(node);
+                            otherSet.removeAll(nodeSet);
+                            if (nodeSet.isEmpty() && !toBeRemoved.contains(other)) {
+                                // TODO should be a better check here to see whether it is better to remove the other node
+                                toBeRemoved.add(node);
+                            }
                 })
         );
         result.update(r -> pixelMapService.nodesRemoveAll(r, toBeRemoved));
@@ -243,8 +247,11 @@ public class PixelMapApproximationService {
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Finding loops ...", 0);
         var result = StrongReference.of(pixelMap);
-        var pixelsInChains = Collections.synchronizedSet(new HashSet<Pixel>());
-        result.get().pixelChains().stream().parallel().forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
+        var pixelsInChains = Collections.synchronizedSet(new HashSet<IntegerXY>());
+        result.get().pixelChains().stream().parallel()
+                .flatMap(pc -> pc.getPixels().stream())
+                .map(IntegerXY::new)
+                .forEach(pixelsInChains::add);
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
                 .map(Map.Entry::getKey)
@@ -259,7 +266,10 @@ public class PixelMapApproximationService {
                 pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
                     var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
                     result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-                    chains._2.forEach(pc -> pixelsInChains.addAll(pc.getPixels().toVector()));
+                    chains._2.stream()
+                            .flatMap(pc -> pc.getPixels().stream())
+                            .map(IntegerXY::new)
+                            .forEach(pixelsInChains::add);
                 });
             }
         });
@@ -336,7 +346,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap thin(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             double tolerance,
             double lineCurvePreference) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
@@ -358,7 +368,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Pixel pixel,
+            @NonNull IXY pixel,
             boolean isEdge,
             double tolerance,
             double lineCurvePreference) {
@@ -390,25 +400,25 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap trackPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Pixel pPixel,
+            @NonNull IXY pPixel,
             double tolerance,
             double lineCurvePreference) {
-        List<Pixel> pixels = Collections.singletonList(pPixel);
+        List<IXY> pixels = Collections.singletonList(pPixel);
         return trackPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMap trackPixelOff(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Pixel pPixel,
+            @NonNull IXY pPixel,
             double tolerance,
             double lineCurvePreference) {
-        List<Pixel> pixels = Collections.singletonList(pPixel);
+        List<IXY> pixels = Collections.singletonList(pPixel);
         return trackPixelOff(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMap trackPixelOff(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull List<Pixel> pixels,
+            @NonNull List<IXY> pixels,
             double tolerance,
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
@@ -433,7 +443,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap trackPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Collection<Pixel> pixels,
+            @NonNull Collection<IXY> pixels,
             double tolerance,
             double lineCurvePreference) {
         if (pixels.isEmpty()) {
@@ -483,7 +493,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Pixel pixel) {
+            @NonNull IXY pixel) {
         boolean shouldBeNode = false;
         if (pixelService.isEdge(pixelMap, pixel)) {
             // here we use transitions to eliminate double counting connected neighbours

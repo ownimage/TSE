@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-public class Node {
+public class Node implements IXY{
 
     private static final long serialVersionUID = 1L;
 
@@ -19,7 +19,7 @@ public class Node {
     private final int x;
     private final int y;
 
-    public Node(@NotNull IntegerXY integerPoint) {
+    public Node(@NotNull IXY integerPoint) {
         this(integerPoint.getX(), integerPoint.getY());
     }
 
@@ -40,11 +40,13 @@ public class Node {
         return new Node(x, y, pixelChains);
     }
 
-    public int x() {
+    @Override
+    public int getX() {
         return x;
     }
 
-    public int y() {
+    @Override
+    public int getY() {
         return y;
     }
 

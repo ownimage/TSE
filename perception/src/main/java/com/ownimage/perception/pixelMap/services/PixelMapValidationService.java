@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
@@ -224,7 +225,7 @@ public class PixelMapValidationService {
         return throwErrorIfFalse(result, "checkNoPixelMapNodesAreSingletons failure");
     }
 
-    public Stream<IntegerXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY center) {
+    public Stream<IXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
                 .map(IntegerXY::new)
                 .map(ip -> center.add(ip))
@@ -232,7 +233,7 @@ public class PixelMapValidationService {
                 .filter(ip -> isInBounds(pixelMapData, ip));
     }
 
-    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY point) {
+    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull IXY point) {
         return point.getX() >= 0 && point.getY() >= 0
                 && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
     }
@@ -261,7 +262,7 @@ public class PixelMapValidationService {
 
     public boolean checkPixelMapNodesKeyMatchesValue(@NotNull Map<IntegerXY, Node> pixelMapNodes) {
         var result = pixelMapNodes.entrySet().stream()
-                .filter(e -> !(e.getKey().getX() == e.getValue().x() && e.getKey().getY() == e.getValue().y()))
+                .filter(e -> !(e.getKey().getX() == e.getValue().getX() && e.getKey().getY() == e.getValue().getY()))
                 .findFirst()
                 .isEmpty();
         return throwErrorIfFalse(result, "checkPixelMapNodesKeyMatchesValue failure");

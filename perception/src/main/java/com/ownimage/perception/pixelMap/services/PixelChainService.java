@@ -14,6 +14,7 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.CurveSegment;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
@@ -534,7 +535,7 @@ public class PixelChainService {
 //
 //
 //
-    public boolean contains(PixelChain pixelChain, Pixel pPixel) {
+    public boolean contains(@NotNull PixelChain pixelChain, @NotNull IXY pPixel) {
         return pixelChain.getPixels()
                 .stream()
                 .anyMatch(p -> p.samePosition(pPixel));
@@ -1233,8 +1234,8 @@ public class PixelChainService {
     }
 
     public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull Node node) {
-        double y = (node.x() + 0.5d) / pixelMap.height();
-        double x = (node.y() + 0.5d) / pixelMap.height();
+        double y = (node.getX() + 0.5d) / pixelMap.height();
+        double x = (node.getY() + 0.5d) / pixelMap.height();
         var position = new Point(x, y);
         var vertex = ImmutableVertex.of(0, 0, position);
 

@@ -9,6 +9,7 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.IntegerXY;
@@ -169,14 +170,14 @@ public class PixelMapService {
     }
 
     // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an IntegerXY
-    private IntegerXY getTruePixelMapGridPosition(IntegerXY pIntegerXY) {
+    private IntegerXY getKey(IXY pIntegerXY) {
         // this is because pIntegerXY might be a Node or Pixel
-        return pIntegerXY.getClass() == IntegerXY.class ? pIntegerXY : new IntegerXY(pIntegerXY.getX(), pIntegerXY.getY());
+        return pIntegerXY.getClass() == IntegerXY.class ? (IntegerXY) pIntegerXY : new IntegerXY(pIntegerXY.getX(), pIntegerXY.getY());
     }
 
     public @NotNull ImmutablePixelMap setNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerXY pixel,
+            @NonNull IXY pixel,
             boolean pValue) {
         var result = pixelMap;
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
@@ -190,7 +191,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setData(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IntegerXY pixel,
+            @NotNull IXY pixel,
             boolean pState,
             byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
@@ -207,31 +208,31 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap nodeAdd(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerXY pixel) {
+            @NonNull IXY pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
         var newValue = (byte) (oldValue | NODE);
         return pixelMap.withNodes(
-                pixelMap.nodes().put(getTruePixelMapGridPosition(pixel), new Node(pixel)))
+                pixelMap.nodes().put(getKey(pixel), new Node(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public @NotNull ImmutablePixelMap nodeRemove(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerXY pixel) {
+            @NonNull IXY pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
         var newValue = (byte) (oldValue & (ALL ^ NODE));
         return pixelMap.withNodes(
-                pixelMap.nodes().remove(getTruePixelMapGridPosition(pixel)))
+                pixelMap.nodes().remove(getKey(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
     }
 
     public int countEdgeNeighboursTransitions(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IntegerXY pixel) {
+            @NonNull IXY pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
@@ -286,7 +287,7 @@ public class PixelMapService {
         }
     }
 
-    public List<ImmutablePixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull Pixel pPixel) {
+    public List<ImmutablePixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull IXY pPixel) {
         Framework.logEntry(logger);
         var pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
@@ -445,9 +446,9 @@ public class PixelMapService {
         return result.get();
     }
 
-    public Optional<Node> getNode(ImmutablePixelMap pixelMap, IntegerXY pIntegerXY) {
+    public Optional<Node> getNode(ImmutablePixelMap pixelMap, IXY pIntegerXY) {
         // this is because pIntegerXY might be a Node or Pixel
-        IntegerXY point = getTruePixelMapGridPosition(pIntegerXY);
+        IntegerXY point = getKey(pIntegerXY);
         Node node = pixelMap.nodes().get(point);
         if (node != null) {
             return Optional.of(node);
@@ -506,7 +507,7 @@ public class PixelMapService {
 
     public Tuple2<ImmutablePixelMap, Boolean> calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IntegerXY point) {
+            @NotNull IXY point) {
         boolean shouldBeNode = false;
         var pixelMapResult = pixelMap;
         if (pixelService.isEdge(pixelMap, point)) {
@@ -675,7 +676,7 @@ public class PixelMapService {
      */
     public Tuple2<ImmutablePixelMap, Boolean> thin(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             double tolerance,
             double lineCurvePreference) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
@@ -697,9 +698,9 @@ public class PixelMapService {
 
 
     public ImmutablePixelMap nodesRemoveAll(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull Collection<Pixel> pToBeRemoved) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Collection<IntegerXY> pToBeRemoved) {
         var nodes = StrongReference.of(pixelMap.nodes());
-        pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p.toPixelMapGridPosition())));
+        pToBeRemoved.forEach(p -> nodes.update(r -> r.remove(p)));
         return pixelMap.withNodes(nodes.get());
     }
 
@@ -730,7 +731,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             boolean isEdge,
             double tolerance,
             double lineCurvePreference) {
@@ -761,7 +762,7 @@ public class PixelMapService {
     }
 
 
-    public Stream<IntegerXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY center) {
+    public Stream<IntegerXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
                 .map(ip -> center.add(ip.getX(), ip.getY()))
                 .filter(ip -> !ip.equals(center))

@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -48,7 +48,7 @@ public class PixelService {
     }
 
 
-    public boolean isNode(PixelMap pixelMap, IntegerXY integerPoint) {
+    public boolean isNode(PixelMap pixelMap, IXY integerPoint) {
         return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
     }
 
@@ -66,33 +66,20 @@ public class PixelService {
         return true;
     }
 
-    public boolean isEdge(PixelMap pixelMap, IntegerXY integerPoint) {
-        var ip = integerPoint.getClass() == IntegerXY.class
-                ? integerPoint
-                : new IntegerXY(integerPoint.getX(), integerPoint.getY());
+    public boolean isEdge(@NotNull PixelMap pixelMap, @NotNull IXY ip) {
         return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
-    public IntegerXY getNeighbour(@NotNull IntegerXY pixel, int pN) {
+    public IXY getNeighbour(@NotNull IXY pixel, int pN) {
         return pixel.add(mNeighbours[pN]);
     }
 
-    public Vector<IntegerXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
-        Framework.logEntry(logger);
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("Pixel = " + this);
-        }
-
+    public Vector<IntegerXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
         var allNeighbours = new Vector<IntegerXY>();
         getNeighbours(pixel)
-            .filter(n -> isNode(pixelMap, n))
-            .forEach(allNeighbours::add);
-
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("Returning " + allNeighbours);
-        }
-        Framework.logExit(logger);
-
+                .filter(n -> isNode(pixelMap, n))
+                .map(IntegerXY::of)
+                .forEach(allNeighbours::add);
         return allNeighbours;
     }
 
@@ -100,10 +87,11 @@ public class PixelService {
         return getNodeNeighbours(pixelMap, pixel).size();
     }
 
-    public Set<IntegerXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+    public Set<IntegerXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
         var allNeighbours = new HashSet<IntegerXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
+                .map(IntegerXY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
@@ -130,14 +118,13 @@ public class PixelService {
         return count;
     }
 
-    public boolean isNeighbour(@NotNull IntegerXY me, @NotNull IntegerXY other) {
+    public boolean isNeighbour(@NotNull IXY me, @NotNull IXY other) {
         // big question is are you a neighbour of yourself - YES
         return Math.max(Math.abs(me.getX() - other.getX()), Math.abs(me.getY() - other.getY())) < 2;
     }
 
 
-
-    public Stream<IntegerXY> getNeighbours(@NotNull IntegerXY point) {
+    public Stream<IXY> getNeighbours(@NotNull IXY point) {
         return Arrays.stream(mNeighbourOrder)
                 .map(i -> mNeighbours[i])
                 .map(point::add);

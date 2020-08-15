@@ -8,6 +8,7 @@ import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
@@ -62,7 +63,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             double tolerance,
             double lineCurvePreference) {
         var pixels = Collections.singletonList(pixel);
@@ -71,7 +72,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Collection<Pixel> pixels,
+            @NotNull Collection<IXY> pixels,
             double tolerance,
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
@@ -85,7 +86,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionPixelOff(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             int cursorSize,
             double tolerance,
             double lineCurvePreference) {
@@ -105,7 +106,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionDeletePixelChain(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Collection<Pixel> pixels,
+            @NotNull Collection<IXY> pixels,
             double tolerance,
             double lineCurvePreference) {
         var clone = StrongReference.of(pixelMap.withAutoTrackChanges(false));
@@ -163,7 +164,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionSetPixelChainThickness(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Collection<Pixel> pixels,
+            @NotNull Collection<IXY> pixels,
             @NotNull Function<PixelChain, Thickness> mapper) {
         var result = StrongReference.of(pixelMap);
         pixels.stream()
@@ -183,7 +184,7 @@ public class PixelMapActionService {
 
     public ImmutablePixelMap actionPixelToggle(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Pixel pixel,
+            @NotNull IXY pixel,
             double tolerance,
             double lineCurvePreference) {
         var newValue = !pixelService.isEdge(pixelMap, pixel);

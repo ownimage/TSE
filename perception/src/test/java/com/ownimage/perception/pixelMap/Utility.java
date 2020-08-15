@@ -7,11 +7,13 @@ import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -163,6 +165,24 @@ public class Utility {
         return process
                 ? pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null)
                 : pixelMap;
+    }
+
+    @Test
+    public void toStringsTest() {
+        // GIVEN
+        String[] input = {
+                "    N      ",
+                "    E      ",
+                "    E      ",
+                "    N      ",
+                "NEEN NEEN  ",
+                "           ",
+        };
+        var immputablePixelMap = Utility.createMap(input, false);
+        // WHEN
+        var actual = toStrings(immputablePixelMap);
+        // THEN
+        assertArrayEquals(input, actual);
     }
 
     public static String[] toStrings(final ImmutablePixelMap pPixelMap) {

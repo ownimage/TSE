@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
@@ -400,7 +401,7 @@ public class PixelMapTest {
         double lineCurvePreference = transformSource.getLineCurvePreference();
         immputablePixelMap = pixelMapApproximationService.actionProcess(immputablePixelMap, tolerance, lineCurvePreference, null);
         assertEquals(3, immputablePixelMap.pixelChains().size());
-        val deletePixels = new ArrayList<Pixel>();
+        val deletePixels = new ArrayList<IXY>();
         deletePixels.add(new Pixel(4, 1));
         // WHEN
         var result = pixelMapActionService.actionDeletePixelChain(immputablePixelMap, deletePixels, tolerance, lineCurvePreference);
@@ -628,7 +629,7 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMapApproximationService.actionProcess(underTest, tolerance, lineCurvePreference, null);
-        List<Pixel> pixels = Arrays.asList(
+        List<IXY> pixels = Arrays.asList(
                 new Pixel(3, 11).add(offset),
                 new Pixel(4, 11).add(offset),
                 new Pixel(5, 12).add(offset),
@@ -677,7 +678,7 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
-        List<Pixel> pixels = Arrays.asList(
+        List<IXY> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
                 new Pixel(3, 8),
@@ -706,7 +707,7 @@ public class PixelMapTest {
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
-        List<Pixel> pixels = Arrays.asList(
+        List<IXY> pixels = Arrays.asList(
                 new Pixel(5, 9),
                 new Pixel(4, 9),
                 new Pixel(3, 8),

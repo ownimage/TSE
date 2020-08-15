@@ -41,6 +41,7 @@ import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
@@ -114,7 +115,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<Thickness> mThinMapsTo;
     private final ObjectControl<Thickness> mNoneMapsTo;
 
-    private final Collection<Pixel> mWorkingPixelsArray = new HashSet();
+    private final Collection<IXY> mWorkingPixelsArray = new HashSet();
 
     private ImmutablePixelMap mPixelMap;
     private ImmutablePixelMap mUndoPixelMap;
@@ -126,8 +127,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private boolean mIsMoveModeActive = false;
     private int mMouseDragStartX;
     private int mMouseDragStartY;
-    private Pixel mMouseLastPixelPosition = null;
-    private Pixel mMouseDragLastPixel = null;
+    private IXY mMouseLastPixelPosition = null;
+    private IXY mMouseDragLastPixel = null;
     private Id mSavepointId;
 
     private boolean mAutoUpdateCurvesDirty = false;
@@ -403,7 +404,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return KColor.alphaMultiply(color, mEdgesOpacity.getValue());
     }
 
-    private Rectangle pixelToGrafittiRectangle(@NotNull Pixel pixel) {
+    private Rectangle pixelToGrafittiRectangle(@NotNull IXY pixel) {
         return pixelToGrafittiRectangle(pixel.getX(), pixel.getY());
     }
 
@@ -532,13 +533,13 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         });
     }
 
-    private boolean mouseClickPixelOn(@NonNull IUIEvent pEvent, @NonNull Pixel pPixel) {
+    private boolean mouseClickPixelOn(@NonNull IUIEvent pEvent, @NonNull IXY pPixel) {
         if (!pEvent.isShift()) {
             return actionPixelOn(pPixel);
         }
         return eventLastClickedToPixel(pEvent)
                 .map(lastClickedPixel -> {
-                    Collection<Pixel> pixels = new HashSet<>();
+                    Collection<IXY> pixels = new HashSet<>();
                     fillIn(pEvent, pPixel, lastClickedPixel, (iui, p) -> pixels.add(p));
                     return actionPixelOn(pixels);
                 })
@@ -641,7 +642,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return mPixelAction.getValue() == PixelAction.CopyToClipboard;
     }
 
-    public boolean actionPixelOn(@NonNull Collection<Pixel> pPixels) {
+    public boolean actionPixelOn(@NonNull Collection<IXY> pPixels) {
         if (pPixels.isEmpty()) {
             return false;
         }
@@ -655,7 +656,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return false;
     }
 
-    synchronized private boolean actionPixelOn(@NotNull Pixel pPixel) {
+    synchronized private boolean actionPixelOn(@NotNull IXY pPixel) {
         ImmutablePixelMap undo = getPixelMap();
         // TODO shouldnt really set when not needed
         setPixelMap(pixelMapActionService.actionPixelOn(getPixelMap(), Lists.newArrayList(pPixel), getLineTolerance(), getLineCurvePreference()));
@@ -733,7 +734,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, @NonNull Pixel pPixel) {
+    private void mouseDragEventPixelViewFillIn(IUIEvent pEvent, @NonNull IXY pPixel) {
         fillIn(pEvent, pPixel, mMouseDragLastPixel, this::mouseDragEventPixelView);
         mMouseDragLastPixel = pPixel;
     }
@@ -743,9 +744,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
      **/
     private void fillIn(
             @NonNull IUIEvent pEvent,
-            @NonNull Pixel pPixel,
-            @NonNull Pixel pLastPixel,
-            @NonNull BiConsumer<IUIEvent, Pixel> pFn
+            @NonNull IXY pPixel,
+            @NonNull IXY pLastPixel,
+            @NonNull BiConsumer<IUIEvent, IXY> pFn
     ) {
         mLogger.fine(() -> String.format("pFn.accept %s, %s", pPixel, pLastPixel));
         if (pPixel != null && (isPixelActionOn() || isPixelActionOff() || isPixelActionDeletePixelChain() || isPixelActionChainThickness())) {
@@ -797,7 +798,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void mouseDragEventPixelView(IUIEvent pEvent, @NonNull Pixel pPixel) {
+    private void mouseDragEventPixelView(IUIEvent pEvent, @NonNull IXY pPixel) {
         boolean change = false;
         if (pPixel != null) {
             if (isPixelActionOn()) {
@@ -821,7 +822,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void addPixelsToWorkingPixelsArray(Pixel pPixel, int pCursorSize) {
+    private void addPixelsToWorkingPixelsArray(IXY pPixel, int pCursorSize) {
         double radius = (double) pCursorSize / getHeight();
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
@@ -836,12 +837,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 );
     }
 
-    private void mouseDragEventPixelAddWorkingPixels(Pixel pPixel, int pCursorSize) {
+    private void mouseDragEventPixelAddWorkingPixels(IXY pPixel, int pCursorSize) {
         graffitiPixelWorkingColor(pPixel);
         addPixelsToWorkingPixelsArray(pPixel, pCursorSize);
     }
 
-    private void mouseDragEventPixelViewOn(@NonNull Pixel pPixel) {
+    private void mouseDragEventPixelViewOn(@NonNull IXY pPixel) {
 //        if (pPixel.isEdge(getPixelMap())) {
         if (pixelService.isEdge(getPixelMap(), pPixel)) {
             return;
@@ -860,7 +861,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         );
     }
 
-    private Pixel graffitiPixelWorkingColor(@NonNull Pixel pPixel) {
+    private IXY graffitiPixelWorkingColor(@NonNull IXY pPixel) {
         Framework.logEntry(mLogger);
         mPictureControl.updateGrafitti(
                 g -> g.drawFilledRectangle(pixelToGrafittiRectangle(pPixel), mWorkingColor)
@@ -868,7 +869,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return pPixel;
     }
 
-    synchronized private boolean actionPixelOff(@NonNull Pixel pPixel) {
+    synchronized private boolean actionPixelOff(@NonNull IXY pPixel) {
         ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionPixelOff(getPixelMap(), pPixel, getCursorSize(), getLineTolerance(), getLineCurvePreference()));
         boolean changesMade = getPixelMap() != undo;
@@ -905,7 +906,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mPictureControl.drawGrafitti();
     }
 
-    private boolean mouseDragEventPixelViewToggle(@NonNull Pixel pPixel) {
+    private boolean mouseDragEventPixelViewToggle(@NonNull IXY pPixel) {
         boolean change = false;
         if (!pPixel.equals(mMouseLastPixelPosition)) {
             change |= actionPixelToggle(pPixel);
@@ -914,7 +915,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return change;
     }
 
-    private boolean actionPixelChainDelete(@NonNull Collection<Pixel> pPixels) {
+    private boolean actionPixelChainDelete(@NonNull Collection<IXY> pPixels) {
         if (pPixels.isEmpty()) {
             return false;
         }
@@ -941,7 +942,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return false;
     }
 
-    private boolean actionPixelChainThickness(@NonNull Collection<Pixel> pPixels) {
+    private boolean actionPixelChainThickness(@NonNull Collection<IXY> pPixels) {
         if (pPixels.isEmpty()) {
             return false;
         }
@@ -978,7 +979,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         return false;
     }
 
-    synchronized private boolean actionPixelToggle(@NonNull Pixel pPixel) {
+    synchronized private boolean actionPixelToggle(@NonNull IXY pPixel) {
         ImmutablePixelMap undo = getPixelMap();
         graffitiPixelWorkingColor(pPixel);
         setPixelMap(pixelMapActionService.actionPixelToggle(getPixelMap(), pPixel, getLineTolerance(), getLineCurvePreference()));

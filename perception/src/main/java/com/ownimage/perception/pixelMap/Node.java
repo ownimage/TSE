@@ -5,8 +5,8 @@
  */
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 
 import java.util.Vector;
@@ -23,7 +23,7 @@ public class Node extends Pixel {
 
     private final Vector<PixelChain> pixelChains = new Vector<>();
 
-    public Node(IntegerXY integerPoint) {
+    public Node(IXY integerPoint) {
         super(integerPoint);
     }
 

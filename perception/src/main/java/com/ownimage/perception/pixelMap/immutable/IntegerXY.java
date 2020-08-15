@@ -12,10 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-public class IntegerXY implements Serializable {
+public class IntegerXY implements IXY, Serializable {
 
 
-    public final static Logger mLogger = Framework.getLogger();
+	public final static Logger mLogger = Framework.getLogger();
 	public final static long serialVersionUID = 1L;
 
 	public static final IntegerXY IntegerPoint00 = new IntegerXY(0, 0);
@@ -24,7 +24,7 @@ public class IntegerXY implements Serializable {
 	private final int mY;
 	transient private Integer mHashCode; /// calculating hash codes was taking a long time so they are now stored
 
-	public IntegerXY(@NotNull IntegerPoint ip) {
+	public IntegerXY(@NotNull IXY ip) {
 		mX = ip.getX();
 		mY = ip.getY();
 	}
@@ -34,17 +34,16 @@ public class IntegerXY implements Serializable {
 		mY = pY;
 	}
 
-	public IntegerXY(@NotNull IntegerXY original) {
-		mX = original.mX;
-		mY = original.mY;
+	public IntegerXY(@NotNull IntegerPoint ip) {
+		mX = ip.getX();
+		mY = ip.getY();
 	}
 
-	public IntegerXY add(final int pDx, final int pDy) {
-		return new IntegerXY(getX() + pDx, getY() + pDy);
-	}
-
-	public IntegerXY add(final IntegerXY pPoint) {
-		return new IntegerXY(getX() + pPoint.getX(), getY() + pPoint.getY());
+	public static IntegerXY of(IXY ixy) {
+		if (ixy instanceof IntegerXY) {
+			return (IntegerXY) ixy;
+		}
+		return new IntegerXY(ixy);
 	}
 
 	public int hashCode() {
@@ -64,29 +63,15 @@ public class IntegerXY implements Serializable {
 	}
 
 
-
+	@Override
 	public int getX() {
 		return mX;
 	}
 
 
+	@Override
 	public int getY() {
 		return mY;
-	}
-
-    public boolean samePosition(final IntegerXY pO) {
-        if (this == pO) return true;
-        if (pO == null) return false;
-        return getX() == pO.getX() && getY() == pO.getY();
-    }
-
-
-    public IntegerXY minus(final int pDx, final int pDy) {
-		return new IntegerXY(getX() - pDx, getY() - pDy);
-	}
-
-	public IntegerXY minus(final IntegerXY pPoint) {
-		return new IntegerXY(getX() - pPoint.getX(), getY() - pPoint.getY());
 	}
 
 	@Override
