@@ -7,9 +7,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.IXY;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -53,11 +51,6 @@ public class Pixel implements IXY, PixelConstants, Serializable {
     }
 
     @Override
-    public Pixel add(@NotNull IXY pmgp) {
-        return new Pixel(getX()+pmgp.getX(), getY()+pmgp.getY());
-    }
-
-    @Override
     public String toString() {
         return "Pixel(" + getX() + ", " + getY() + ")";
     }
@@ -69,21 +62,11 @@ public class Pixel implements IXY, PixelConstants, Serializable {
         if (mUHVW == null) {
             synchronized (this) {
                 if (mUHVW == null) {
-                    mUHVW = calcUHVWMidPoint(this, height);
+                    mUHVW = IXY.super.getUHVWMidPoint(height);
                 }
             }
         }
         return mUHVW;
-    }
-
-    public Point calcUHVWMidPoint(@NotNull IXY pixel, int height) {
-        double y = (pixel.getY() + 0.5d) / height;
-        double x = (pixel.getX() + 0.5d) / height;
-        return new Point(x, y);
-    }
-
-    public IntegerXY toPixelMapGridPosition() {
-        return new IntegerXY(getX(), getY());
     }
 
     @Override

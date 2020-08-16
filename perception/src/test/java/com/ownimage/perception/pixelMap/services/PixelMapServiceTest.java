@@ -9,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
-import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +19,7 @@ public class PixelMapServiceTest {
 
     @BeforeClass
     public static void turnLoggingOff() throws Exception {
-        LogManager.getLogManager().reset();
+//        LogManager.getLogManager().reset();
     }
 
     @Test

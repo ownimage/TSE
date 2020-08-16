@@ -5,6 +5,7 @@ import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
@@ -31,6 +32,7 @@ import java.util.logging.LogManager;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
 import static com.ownimage.perception.pixelMap.PixelConstants.NODE;
+import static com.ownimage.perception.pixelMap.Utility.assertSamePixels;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -734,11 +736,14 @@ public class PixelMapTest {
         // GIVEN WHEN
         var pixelMap = Utility.createMap(20, 20);
         pixelMap = addChain(pixelMap, Utility.getDefaultTransformSource(20), new Pixel(3, 4), chainS1);
+        var expected = pixelChainService.createStartingPixelChain(pixelMap, new Node(5, 1));
+        expected = pixelChainService.add(expected, new Pixel(4, 2));
+        expected = pixelChainService.add(expected, new Pixel(3, 3));
+        expected = pixelChainService.add(expected, new Pixel(3, 4));
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(5, 1), Pixel(4, 2), Pixel(3, 3), Pixel(3, 4) ]\n", result.toString());
+        var actual = pixelMap.pixelChains().stream().findFirst().orElseThrow();
+        assertSamePixels(pixelMap, expected, actual);
     }
 
     @Test
