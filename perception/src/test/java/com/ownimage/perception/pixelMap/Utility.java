@@ -1,19 +1,21 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.pixelMap.services.PixelService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import org.junit.Test;
+import org.jetbrains.annotations.NotNull;
+import org.junit.ComparisonFailure;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -22,9 +24,8 @@ public class Utility {
     private static ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private static PixelMapService pixelMapService = context.getBean(PixelMapService.class);
     private static PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
-
-    private static PixelService pixelService
-            = context.getBean(PixelService.class);
+    private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
+    private static PixelService pixelService = context.getBean(PixelService.class);
 
     static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
         return new IPixelMapTransformSource() {
@@ -167,24 +168,6 @@ public class Utility {
                 : pixelMap;
     }
 
-    @Test
-    public void toStringsTest() {
-        // GIVEN
-        String[] input = {
-                "    N      ",
-                "    E      ",
-                "    E      ",
-                "    N      ",
-                "NEEN NEEN  ",
-                "           ",
-        };
-        var immputablePixelMap = Utility.createMap(input, false);
-        // WHEN
-        var actual = toStrings(immputablePixelMap);
-        // THEN
-        assertArrayEquals(input, actual);
-    }
-
     public static String[] toStrings(final ImmutablePixelMap pPixelMap) {
         final String[] map = new String[pPixelMap.height()];
         for (int y = 0; y < pPixelMap.height(); y++) {
@@ -249,5 +232,18 @@ public class Utility {
             actualBuffer.append(actual[i]).append("\n");
         }
         assertEquals(expectedBuffer.toString().replace(" ", "."), actualBuffer.toString().replace(" ", "."));
+    }
+
+    public static void assertSamePixels(@NotNull PixelMap pixelMap, @NotNull PixelChain pc1, @NotNull PixelChain pc2) {
+        var pc1Readable = pc1.toReadableString();
+        var pc2Readable = pc2.toReadableString();
+        if (pc1Readable.equals(pc2Readable)) {
+            return;
+        }
+        var pc2ReadbleReverse = pixelChainService.reverse(pixelMap, pc2).toReadableString();
+        if (pc1Readable.equals(pc2ReadbleReverse)) {
+            return;
+        }
+        throw new ComparisonFailure("PixelChains do not contain same pixels", pc1Readable, pc2Readable);
     }
 }

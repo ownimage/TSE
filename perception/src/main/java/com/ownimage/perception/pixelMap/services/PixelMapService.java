@@ -301,7 +301,7 @@ public class PixelMapService {
         Framework.logEntry(logger);
 
         db.write(id + ".width", String.valueOf(pixelMap.width()));
-        db.write(id + ".heioght", String.valueOf(pixelMap.height()));
+        db.write(id + ".height", String.valueOf(pixelMap.height()));
 
         // from http://stackoverflow.com/questions/134492/how-to-serialize-an-object-into-a-string
         ByteArrayOutputStream baos;
