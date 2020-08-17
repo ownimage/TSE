@@ -2,7 +2,6 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
-import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
@@ -85,7 +84,6 @@ public class PixelChainTest {
 
         // THEN
         var chain = pixelMapService.streamPixelChains(pixelMap).findFirst().orElseThrow();
-        chain = pixelChainService.reverse(pixelMap, chain); // this reverse is here as it chain approximates differently backwards to forwards
         chain = pixelChainService.approximate(pixelMap, chain, tolerance);
         assertEquals(3, chain.getSegmentCount());
     }
@@ -263,8 +261,7 @@ public class PixelChainTest {
     }
 
     private ImmutablePixelChain createPixelChain() {
-        Pixel[] pixels = new Pixel[]{
-                new Pixel(4, 6),
+        var pixelChain = Utility.createPixelChain(pixelMap, new Pixel(3, 7),  new Pixel(4, 6),
                 new Pixel(3, 5),
                 new Pixel(3, 4),
                 new Pixel(4, 3),
@@ -279,15 +276,8 @@ public class PixelChainTest {
                 new Pixel(10, 5),
                 new Pixel(9, 6),
                 new Pixel(8, 7),
-                new Pixel(7, 7)
-        };
-        var pixelMap = Utility.createMap(10, 2000);
-
-        var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, new Node(3, 7));
-        for (Pixel pixel : pixels) {
-            pixelChain = pixelChainService.add(pixelChain, pixel);
-        }
-        pixelChain = pixelChainService.setEndNode(pixelMap, pixelChain, new Node(6, 7))._2;
+                new Pixel(7, 7),
+        new Pixel(6, 7));
         return pixelChain;
     }
 

@@ -449,13 +449,13 @@ public class PixelMapTest {
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
+        var expected = Utility.createPixelChain(pixelMap, new Pixel(4, 3),
+                new Pixel(4, 2), new Pixel(4, 1), new Pixel(4, 0));
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(4, 3), Pixel(4, 2), Pixel(4, 1), Pixel(4, 0) ]\n", result.toString());
+        assertSamePixels(pixelMap, expected, pixelMap.pixelChains().stream().findFirst().orElseThrow());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
@@ -474,13 +474,13 @@ public class PixelMapTest {
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
+        var expected = Utility.createPixelChain(pixelMap, new Pixel(4, 4),
+                new Pixel(4, 3), new Pixel(4, 2), new Pixel(4, 1));
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(4, 4), Pixel(4, 3), Pixel(4, 2), Pixel(4, 1) ]\n", result.toString());
+        assertSamePixels(pixelMap, expected, pixelMap.pixelChains().stream().findFirst().orElseThrow());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
@@ -499,13 +499,13 @@ public class PixelMapTest {
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
+        var expected = Utility.createPixelChain(pixelMap, new Pixel(3, 4),
+                new Pixel(4, 3), new Pixel(5, 2), new Pixel(6, 2), new Pixel(7, 1));
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(3, 4), Pixel(4, 3), Pixel(5, 2), Pixel(6, 2), Pixel(7, 1) ]\n", result.toString());
+        assertSamePixels(pixelMap, expected, pixelMap.pixelChains().stream().findFirst().orElseThrow());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
@@ -524,13 +524,13 @@ public class PixelMapTest {
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
+        var expected = Utility.createPixelChain(pixelMap, new Pixel(3, 4),
+                new Pixel(3, 3), new Pixel(4, 2), new Pixel(5, 1));
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(3, 4), Pixel(3, 3), Pixel(4, 2), Pixel(5, 1) ]\n", result.toString());
+        assertSamePixels(pixelMap, expected, pixelMap.pixelChains().stream().findFirst().orElseThrow());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 
@@ -549,13 +549,13 @@ public class PixelMapTest {
         var transformSource = Utility.getDefaultTransformSource(input.length);
         double tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
         double lineCurvePreference = transformSource.getLineCurvePreference();
+        var expected = Utility.createPixelChain(pixelMap, new Pixel(5, 4),
+                new Pixel(4, 3), new Pixel(3, 2), new Pixel(3, 1));
         // WHEN
         pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, lineCurvePreference, null);
         // THEN
         assertEquals(1, pixelMap.pixelChains().size());
-        StringBuilder result = new StringBuilder();
-        pixelMap.pixelChains().forEach(pc -> result.append(pc.toReadableString()));
-        assertEquals("PixelChain[ Pixel(5, 4), Pixel(4, 3), Pixel(3, 2), Pixel(3, 1) ]\n", result.toString());
+        assertSamePixels(pixelMap, expected, pixelMap.pixelChains().stream().findFirst().orElseThrow());
         pixelMap.pixelChains().forEach(pc -> pixelChainService.validate(pc, false, "test"));
     }
 

@@ -15,7 +15,6 @@ import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,7 +89,7 @@ public class PixelMapActionService {
             int cursorSize,
             double tolerance,
             double lineCurvePreference) {
-        val result = StrongReference.of(pixelMap);
+        var result = StrongReference.of(pixelMap);
         double radius = (double) cursorSize / result.get().height();
         new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
                 .forEach((x, y) ->
@@ -217,7 +216,7 @@ public class PixelMapActionService {
         var clone = StrongReference.of(pixelMap);
         pixelMapService.getPixelChains(clone.get(), pixel).forEach(pc -> {
             clone.update(c -> pixelMapService.pixelChainRemove(c, pc));
-            val pc2 = pixelChainService.approximateCurvesOnly(clone.get(), pc, tolerance, lineCurvePreference);
+            var pc2 = pixelChainService.approximateCurvesOnly(clone.get(), pc, tolerance, lineCurvePreference);
             clone.update(c -> pixelMapService.pixelChainAdd(c, pc2));
         });
         //copy.indexSegments();
@@ -230,8 +229,8 @@ public class PixelMapActionService {
         SplitTimer.split("PixelMap actionReapproximate() start");
         var result = StrongReference.of(pixelMap);
         var updates = new Vector<ImmutablePixelChain>();
-        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        val lineCurvePreference = transformSource.getLineCurvePreference();
+        var tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        var lineCurvePreference = transformSource.getLineCurvePreference();
         result.get().pixelChains().stream()
                 .parallel()
                 .map(pc -> pixelChainService.approximate(result.get(), pc, tolerance))
@@ -249,8 +248,8 @@ public class PixelMapActionService {
             @NotNull CannyEdgeTransform transformSource) {
         var result = StrongReference.of(pixelMap);
         var updates = new Vector<ImmutablePixelChain>();
-        val tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
-        val lineCurvePreference = transformSource.getLineCurvePreference();
+        var tolerance = transformSource.getLineTolerance() / transformSource.getHeight();
+        var lineCurvePreference = transformSource.getLineCurvePreference();
         result.get().pixelChains().stream()
                 .parallel()
                 .map(pc -> pixelChainService.refine(result.get(), pc, lineCurvePreference))

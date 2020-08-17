@@ -2,12 +2,16 @@ package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
+import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 
+@Value.Immutable
 public interface IXY {
 
+    @Value.Parameter(order = 1)
     int getX();
 
+    @Value.Parameter(order = 2)
     int getY();
 
     static ImmutableIXY of(@NotNull IntegerPoint ip) {

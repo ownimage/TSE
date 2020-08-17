@@ -91,9 +91,8 @@ public class PixelMapValidationServiceTest {
     @Test
     public void checkAllPixelsChainsHaveValidNodeEnds() {
         // GIVEN
-        var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, new Node(4, 0));
-        pixelChain = pixelChainService.add(pixelChain, new Pixel(3, 0));
-        pixelChain = pixelChainService.add(pixelChain, new Pixel(2, 0));
+        var pixelChain = Utility.createPixelChain(pixelMap, new Node(4, 0),
+                new Pixel(3, 0), new Pixel(2, 0));
         var broken = pixelMap.withPixelChains(pixelMap.pixelChains().add(pixelChain));
         thrown.expectMessage("checkAllPixelsChainsHaveValidNodeEnds");
         // WHEN

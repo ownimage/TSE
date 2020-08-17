@@ -202,7 +202,7 @@ public class PixelMapApproximationService {
         var toBeRemoved = new Vector<ImmutableIXY>();
         var result = StrongReference.of(pixelMap);
         result.get().nodes().values().stream()
-                .map(ImmutableIXY::of)
+                .map(ImmutableIXY::copyOf)
                 .forEach(node -> pixelService.getNodeNeighbours(result.get(), node)
                         .forEach(other -> {
                             var nodeSet = pixelService.allEdgeNeighbours(result.get(), node);

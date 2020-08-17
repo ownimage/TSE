@@ -78,7 +78,7 @@ public class PixelService {
         var allNeighbours = new Vector<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(n -> isNode(pixelMap, n))
-                .map(ImmutableIXY::of)
+                .map(ImmutableIXY::copyOf)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
@@ -91,7 +91,7 @@ public class PixelService {
         var allNeighbours = new HashSet<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
-                .map(ImmutableIXY::of)
+                .map(ImmutableIXY::copyOf)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
