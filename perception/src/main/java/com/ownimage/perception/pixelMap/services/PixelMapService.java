@@ -214,7 +214,7 @@ public class PixelMapService {
         var oldValue = pixelMap.data().get(x, y);
         var newValue = (byte) (oldValue | NODE);
         return pixelMap.withNodes(
-                pixelMap.nodes().put(getKey(pixel), new Node(pixel)))
+                pixelMap.nodes().put(getKey(pixel), Node.ofIXY(pixel)))
                 .withData(pixelMap.data().set(x, y, newValue));
     }
 
@@ -455,7 +455,7 @@ public class PixelMapService {
         }
         if (pixelService.isNode(pixelMap, point)) {
             // TODO it is not believed that this is needed as Nodes shuould be immutable 2020/07/04
-            node = new Node(point);
+            node = Node.ofIXY(point);
 //            mNodes = mNodes.put(point, node);
             logger.severe("Found a node that is not in the node map");
             return Optional.of(node);

@@ -250,7 +250,7 @@ public class Utility {
     }
 
     public static ImmutablePixelChain createPixelChain(@NotNull PixelMap pixelMap, @NotNull IXY start, @NotNull Pixel... pixels) {
-        var startNode = new com.ownimage.perception.pixelMap.immutable.Node(start.getX(), start.getY());
+        var startNode = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(start.getX(), start.getY());
         var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, startNode);
         for (var pixel : pixels) {
             pixelChain = pixelChainService.add(pixelChain, pixel);

@@ -4,8 +4,8 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.IXY;
+import com.ownimage.perception.pixelMap.immutable.ImmutableNode;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapActionService;
@@ -736,7 +736,7 @@ public class PixelMapTest {
         // GIVEN WHEN
         var pixelMap = Utility.createMap(20, 20);
         pixelMap = addChain(pixelMap, Utility.getDefaultTransformSource(20), new Pixel(3, 4), chainS1);
-        var expected = pixelChainService.createStartingPixelChain(pixelMap, new Node(5, 1));
+        var expected = pixelChainService.createStartingPixelChain(pixelMap, ImmutableNode.of(5, 1));
         expected = pixelChainService.add(expected, new Pixel(4, 2));
         expected = pixelChainService.add(expected, new Pixel(3, 3));
         expected = pixelChainService.add(expected, new Pixel(3, 4));

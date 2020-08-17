@@ -7,10 +7,10 @@ import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
+import com.ownimage.perception.pixelMap.immutable.ImmutableNode;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableStraightSegment;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
-import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.segment.CurveSegment;
 import com.ownimage.perception.pixelMap.segment.StraightSegment;
@@ -98,7 +98,7 @@ public class PixelMapUpgradeServiceTest {
 
     private ImmutablePixelChain generatePixelChain(int mapWidth, int mapHeight) {
         var pixelMap = Utility.createMap(mapWidth, mapHeight);
-        var pixelChain = StrongReference.of(pixelChainService.createStartingPixelChain(pixelMap, new Node(5, 5)));
+        var pixelChain = StrongReference.of(pixelChainService.createStartingPixelChain(pixelMap, ImmutableNode.of(5, 5)));
         // create segments
         IntStream.range(4, 9).boxed()
                 .map(i -> {

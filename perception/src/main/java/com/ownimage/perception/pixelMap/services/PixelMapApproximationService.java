@@ -482,7 +482,7 @@ public class PixelMapApproximationService {
                 .filter(p -> pixelMapService.getPixelChains(result.get(), p).isEmpty())
                 .stream()
                 .peek(p -> result.update(r -> pixelMapService.setNode(r, p, true)))
-                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), new Node(p), tolerance, lineCurvePreference))
+                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), Node.ofIXY(p), tolerance, lineCurvePreference))
                 .peek(gca -> result.update(r -> gca._1))
                 .flatMap(r -> r._2)
                 .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));

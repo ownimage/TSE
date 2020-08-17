@@ -340,7 +340,7 @@ public class PixelTest {
     public void samePosition_05() {
         // GIVEN
         Pixel underTest = new Pixel(5, 5);
-        Node sameAsTest = new Node(new Pixel(5, 5));
+        Node sameAsTest = Node.ofIXY(new Pixel(5, 5));
         // THEN
         assertTrue(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }
@@ -349,7 +349,7 @@ public class PixelTest {
     public void samePosition_06() {
         // GIVEN
         Pixel underTest = new Pixel(5, 5);
-        Node sameAsTest = new Node(new Pixel(4, 4));
+        Node sameAsTest = Node.ofIXY(new Pixel(4, 4));
         // THEN
         assertFalse(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }
