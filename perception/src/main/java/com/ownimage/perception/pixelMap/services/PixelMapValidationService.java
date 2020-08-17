@@ -3,8 +3,8 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.IXY;
+import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +66,7 @@ public class PixelMapValidationService {
     }
 
     public boolean checkNoPixelMapNodesAreBristles(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<IntegerXY, Node> pixelMapNodes) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<ImmutableIXY, Node> pixelMapNodes) {
         var result = pixelMapNodes.keySet().stream()
                 .filter(ip -> countNonNullNeighbours(pixelMap, ip) == 1)
                 .flatMap(ip -> stream8Neighbours(pixelMap, ip))
@@ -77,7 +77,7 @@ public class PixelMapValidationService {
     }
 
     public boolean checkAllPixelMapNodesReferencePixelChainsInPixelMap(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<IntegerXY, Node> pixelMapNodes) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<ImmutableIXY, Node> pixelMapNodes) {
         var result = pixelMapNodes.values().stream()
                 .flatMap(Node::streamPixelChains)
                 .filter(not(pixelMap.pixelChains()::contains))
@@ -94,18 +94,18 @@ public class PixelMapValidationService {
      * @return
      */
     public boolean checkAllPixelsChainsHaveValidNodeEnds(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<IntegerXY, Node> dataNodes) {
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Map<ImmutableIXY, Node> dataNodes) {
         var dataNodesKeySet = dataNodes.keySet();
         var result = pixelMap.pixelChains().stream()
                 .map(pc -> pc.getPixels().firstElement().orElseThrow())
-                .map(IntegerXY::new)
+                .map(ImmutableIXY::of)
                 .filter(not(dataNodesKeySet::contains))
                 .findFirst()
                 .isEmpty()
                 &&
                 pixelMap.pixelChains().stream()
                         .map(pc -> pc.getPixels().lastElement().orElseThrow())
-                        .map(IntegerXY::new)
+                        .map(ImmutableIXY::of)
                         .filter(not(dataNodesKeySet::contains))
                         .findFirst()
                         .isEmpty();
@@ -114,9 +114,9 @@ public class PixelMapValidationService {
 
     public boolean checkAllDataEdgesHave2Neighbours(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull Set<IntegerXY> dataEdges,
-            @NotNull Set<IntegerXY> dataNodes) {
-        var failure = StrongReference.of((IntegerXY) null);
+            @NotNull Set<ImmutableIXY> dataEdges,
+            @NotNull Set<ImmutableIXY> dataNodes) {
+        var failure = StrongReference.of((ImmutableIXY) null);
         var result = dataEdges.stream()
                 .filter(not(dataNodes::contains))
                 .filter(ip -> !(countNonNullNeighbours(pixelMap, ip) == 2 || countEdgeNotNodeNeighbours(pixelMap, ip) == 2))
@@ -135,8 +135,8 @@ public class PixelMapValidationService {
      * @return
      */
     public boolean checkAllDataNodesShouldBeNodes(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull Set<IntegerXY> dataNodes) {
-        var failure = StrongReference.of((IntegerXY) null);
+            @NotNull ImmutablePixelMap pixelMap, @NotNull Set<ImmutableIXY> dataNodes) {
+        var failure = StrongReference.of((ImmutableIXY) null);
         var result = dataNodes.stream()
                 .filter(n -> !shouldBeNode(pixelMap, n))
                 .peek(ip -> failure.set(ip))
@@ -156,7 +156,7 @@ public class PixelMapValidationService {
      * @param pixelMap
      * @return true if there are no edges or neighbours around the point
      */
-    public boolean isSingleton(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public boolean isSingleton(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         return shouldBeNode(pixelMap, point)
                 && stream8Neighbours(pixelMap, point)
                 .filter(p -> pixelMap.data().get(p.getX(), p.getY()) != NONE)
@@ -171,7 +171,7 @@ public class PixelMapValidationService {
      * @param point
      * @return if the point is a node in pixelMap
      */
-    public boolean shouldBeNode(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public boolean shouldBeNode(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         var edge = (pixelMap.data().get(point.getX(), point.getY()) & EDGE) == EDGE;
         if (!edge) {
             return false;
@@ -180,21 +180,21 @@ public class PixelMapValidationService {
         return countNonNullNeighbours(pixelMap, point) != 2;
     }
 
-    public boolean isDataNode(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public boolean isDataNode(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         return (pixelMap.data().get(point.getX(), point.getY()) & NODE) == NODE;
     }
 
-    public boolean isDataEdge(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public boolean isDataEdge(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         return (pixelMap.data().get(point.getX(), point.getY()) & EDGE) == EDGE;
     }
 
-    public int countNonNullNeighbours(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public int countNonNullNeighbours(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         return (int) stream8Neighbours(pixelMap, point)
                 .filter(p -> pixelMap.data().get(p.getX(), p.getY()) != NONE)
                 .count();
     }
 
-    public int countEdgeNotNodeNeighbours(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public int countEdgeNotNodeNeighbours(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         return (int) stream8Neighbours(pixelMap, point)
                 .map(p -> pixelMap.data().get(p.getX(), p.getY()))
                 .filter(b -> (byte)(b & EDGE) == EDGE)
@@ -209,15 +209,15 @@ public class PixelMapValidationService {
      * @param dataNodes
      * @return
      */
-    public HashSet<IntegerXY> getSingletonNodes(@NotNull ImmutablePixelMap pixelMap, @NotNull Set<IntegerXY> dataNodes) {
-        var singletonNODES = new HashSet<IntegerXY>();
+    public HashSet<ImmutableIXY> getSingletonNodes(@NotNull ImmutablePixelMap pixelMap, @NotNull Set<ImmutableIXY> dataNodes) {
+        var singletonNODES = new HashSet<ImmutableIXY>();
         dataNodes.stream()
                 .filter(ip -> isSingleton(pixelMap, ip))
                 .forEach(singletonNODES::add);
         return singletonNODES;
     }
 
-    public boolean checkNoPixelMapNodesAreSingletons(Map<IntegerXY, Node> pixelMapNodes, @NotNull Set<IntegerXY> singletons) {
+    public boolean checkNoPixelMapNodesAreSingletons(Map<ImmutableIXY, Node> pixelMapNodes, @NotNull Set<ImmutableIXY> singletons) {
         var result = pixelMapNodes.keySet().stream()
                 .filter(singletons::contains)
                 .findFirst()
@@ -225,9 +225,9 @@ public class PixelMapValidationService {
         return throwErrorIfFalse(result, "checkNoPixelMapNodesAreSingletons failure");
     }
 
-    public Stream<IXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IntegerXY center) {
+    public Stream<IXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull ImmutableIXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
-                .map(IntegerXY::new)
+                .map(IXY::of)
                 .map(ip -> center.add(ip))
                 .filter(ip -> !ip.equals(center))
                 .filter(ip -> isInBounds(pixelMapData, ip));
@@ -240,10 +240,10 @@ public class PixelMapValidationService {
 
 
     public boolean checkAllDataNodesArePixelMapNodesOrSingletons(
-            @NotNull Collection<IntegerXY> dataNodes,
-            @NotNull Map<IntegerXY, Node> pixelMapNodes,
-            @NotNull Set<IntegerXY> singletonNodes) {
-        var failure = StrongReference.of((IntegerXY) null);
+            @NotNull Collection<ImmutableIXY> dataNodes,
+            @NotNull Map<ImmutableIXY, Node> pixelMapNodes,
+            @NotNull Set<ImmutableIXY> singletonNodes) {
+        var failure = StrongReference.of((ImmutableIXY) null);
         var result = dataNodes.stream()
                 .filter(n -> pixelMapNodes.get(n) == null)
                 .filter(not(singletonNodes::contains))
@@ -260,7 +260,7 @@ public class PixelMapValidationService {
         return result;
     }
 
-    public boolean checkPixelMapNodesKeyMatchesValue(@NotNull Map<IntegerXY, Node> pixelMapNodes) {
+    public boolean checkPixelMapNodesKeyMatchesValue(@NotNull Map<ImmutableIXY, Node> pixelMapNodes) {
         var result = pixelMapNodes.entrySet().stream()
                 .filter(e -> !(e.getKey().getX() == e.getValue().getX() && e.getKey().getY() == e.getValue().getY()))
                 .findFirst()
@@ -268,7 +268,7 @@ public class PixelMapValidationService {
         return throwErrorIfFalse(result, "checkPixelMapNodesKeyMatchesValue failure");
     }
 
-    public boolean checkAllPixelMapNodesAreDataNodes(@NotNull Map<IntegerXY, Node> pixelMapNodes, @NotNull Set<IntegerXY> dataNodes) {
+    public boolean checkAllPixelMapNodesAreDataNodes(@NotNull Map<ImmutableIXY, Node> pixelMapNodes, @NotNull Set<ImmutableIXY> dataNodes) {
         var result = pixelMapNodes.keySet().stream()
                 .filter(ip -> !dataNodes.contains(ip))
                 .findFirst()
@@ -276,7 +276,7 @@ public class PixelMapValidationService {
         return throwErrorIfFalse(result, "checkAllPixelMapNodesAreDataNodes failure");
     }
 
-    public boolean checkAllDataNodesAreDataEdges(@NotNull Set<IntegerXY> dataNodes, @NotNull Set<IntegerXY> dataEdges) {
+    public boolean checkAllDataNodesAreDataEdges(@NotNull Set<ImmutableIXY> dataNodes, @NotNull Set<ImmutableIXY> dataEdges) {
         var result = dataNodes.stream()
                 .filter(n -> !dataEdges.contains(n))
                 .findAny()
@@ -284,29 +284,29 @@ public class PixelMapValidationService {
         return throwErrorIfFalse(result, "checkAllDataNodesAreDataEdges failure");
     }
 
-    public Set<IntegerXY> getDataNodes(@NotNull ImmutablePixelMap pixelMap) {
+    public Set<ImmutableIXY> getDataNodes(@NotNull ImmutablePixelMap pixelMap) {
         return getDataByType(pixelMap, NODE);
     }
 
-    public Set<IntegerXY> getDataEdges(@NotNull ImmutablePixelMap pixelMap) {
+    public Set<ImmutableIXY> getDataEdges(@NotNull ImmutablePixelMap pixelMap) {
         return getDataByType(pixelMap, EDGE);
     }
 
-    public Set<IntegerXY> getDataByType(@NotNull ImmutablePixelMap pixelMap, byte type) {
-        var dataNodes = new HashSet<IntegerXY>();
+    public Set<ImmutableIXY> getDataByType(@NotNull ImmutablePixelMap pixelMap, byte type) {
+        var dataNodes = new HashSet<ImmutableIXY>();
         new Range2D(pixelMap.width(), pixelMap.height()).stream()
                 .filter(ip -> (pixelMap.data().get(ip.getX(), ip.getY()) & type) == type)
-                .map(IntegerXY::new)
+                .map(IXY::of)
                 .forEach(dataNodes::add);
         return dataNodes;
     }
 
-    public String pixelAreaToString(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY centre, int size) {
+    public String pixelAreaToString(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY centre, int size) {
 
         var sb = new StringBuilder();
         for (int y = centre.getY() - size; y <= centre.getY() + size; y++) {
             for (int x = centre.getX() - size; x <= centre.getX() + size; x++) {
-                var ip = new IntegerXY(x, y);
+                var ip = ImmutableIXY.of(x, y);
                 sb.append(pixelToString(pixelMap, ip));
             }
             sb.append("\n");
@@ -314,7 +314,7 @@ public class PixelMapValidationService {
         return sb.toString();
     }
 
-    public String pixelToString(@NotNull ImmutablePixelMap pixelMap, @NotNull IntegerXY point) {
+    public String pixelToString(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY point) {
         if (!isInBounds(pixelMap, point)) {
             return "X";
         }

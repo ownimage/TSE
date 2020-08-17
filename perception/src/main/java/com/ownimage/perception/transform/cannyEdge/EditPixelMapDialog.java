@@ -43,7 +43,6 @@ import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.services.Config;
@@ -827,7 +826,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         new Range2D(pPixel.getX() - pCursorSize, pPixel.getX() + pCursorSize,
                 pPixel.getY() - pCursorSize, pPixel.getY() + pCursorSize)
                 .forEachParallelThread(Services.getServices().getProperties().getRenderThreadPoolSize(), ip ->
-                        pixelMapService.getOptionalPixelAt(getPixelMap(), new IntegerXY(ip))
+                        pixelMapService.getOptionalPixelAt(getPixelMap(), IXY.of(ip))
                                 .filter(Predicate.not(mWorkingPixelsArray::contains))
                                 .filter(p -> pPixel.getUHVWMidPoint(mPixelMap.height())
                                         .distance(p.getUHVWMidPoint(mPixelMap.height())) < radius)

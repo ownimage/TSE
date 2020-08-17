@@ -7,9 +7,9 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.immutable.IXY;
+import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import io.vavr.Tuple2;
@@ -199,10 +199,10 @@ public class PixelMapApproximationService {
             double lineCurvePreference,
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Removing Bristles ...", 0);
-        var toBeRemoved = new Vector<IntegerXY>();
+        var toBeRemoved = new Vector<ImmutableIXY>();
         var result = StrongReference.of(pixelMap);
         result.get().nodes().values().stream()
-                .map(IntegerXY::of)
+                .map(ImmutableIXY::of)
                 .forEach(node -> pixelService.getNodeNeighbours(result.get(), node)
                         .forEach(other -> {
                             var nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
@@ -247,15 +247,15 @@ public class PixelMapApproximationService {
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Finding loops ...", 0);
         var result = StrongReference.of(pixelMap);
-        var pixelsInChains = Collections.synchronizedSet(new HashSet<IntegerXY>());
+        var pixelsInChains = Collections.synchronizedSet(new HashSet<ImmutableIXY>());
         result.get().pixelChains().stream().parallel()
                 .flatMap(pc -> pc.getPixels().stream())
-                .map(IntegerXY::new)
+                .map(ImmutableIXY::copyOf)
                 .forEach(pixelsInChains::add);
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
                 .map(Map.Entry::getKey)
-                .map(IntegerXY::new)
+                .map(IXY::of)
                 .collect(Collectors.toList());
         var counter = Counter.createMaxCounter(edges.size() + 1);
         edges.forEach(pixel -> {
@@ -268,7 +268,7 @@ public class PixelMapApproximationService {
                     result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
                     chains._2.stream()
                             .flatMap(pc -> pc.getPixels().stream())
-                            .map(IntegerXY::new)
+                            .map(ImmutableIXY::copyOf)
                             .forEach(pixelsInChains::add);
                 });
             }

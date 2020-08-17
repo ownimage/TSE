@@ -82,8 +82,8 @@ public class Node implements IXY{
         return pixelChains.contains(pixelChain);
     }
 
-    public IntegerXY toPixelMapGridPosition() {
-        return new IntegerXY(x, y);
+    public ImmutableIXY toPixelMapGridPosition() {
+        return ImmutableIXY.of(x, y);
     }
 
     public Pixel toPixel() {

@@ -4,7 +4,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
 import com.ownimage.perception.pixelMap.immutable.IXY;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
+import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -30,17 +30,17 @@ public class PixelService {
 
     private final static Logger logger = Framework.getLogger();
 
-    private static final IntegerXY[] mNeighbours = { //
+    private static final ImmutableIXY[] mNeighbours = { //
             //
-            new IntegerXY(-1, -1), new IntegerXY(0, -1), new IntegerXY(1, -1), //
-            new IntegerXY(-1, 0), new IntegerXY(0, 0), new IntegerXY(1, 0), //
-            new IntegerXY(-1, 1), new IntegerXY(0, 1), new IntegerXY(1, 1) //
+            ImmutableIXY.of(-1, -1), ImmutableIXY.of(0, -1), ImmutableIXY.of(1, -1), //
+            ImmutableIXY.of(-1, 0), ImmutableIXY.of(0, 0), ImmutableIXY.of(1, 0), //
+            ImmutableIXY.of(-1, 1), ImmutableIXY.of(0, 1), ImmutableIXY.of(1, 1) //
     };
 
     private static final Integer[] mNeighbourOrder = {0, 1, 2, 5, 8, 7, 6, 3};
 
-    public IntegerXY pixelToPixelMapGridPosition(@NotNull Pixel pixel) {
-        return new IntegerXY(pixel.getX(), pixel.getY());
+    public ImmutableIXY pixelToPixelMapGridPosition(@NotNull Pixel pixel) {
+        return ImmutableIXY.of(pixel.getX(), pixel.getY());
     }
 
     public boolean isNode(PixelMap pixelMap, Integer x, Integer y) {
@@ -74,11 +74,11 @@ public class PixelService {
         return pixel.add(mNeighbours[pN]);
     }
 
-    public Vector<IntegerXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
-        var allNeighbours = new Vector<IntegerXY>();
+    public Vector<ImmutableIXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
+        var allNeighbours = new Vector<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(n -> isNode(pixelMap, n))
-                .map(IntegerXY::of)
+                .map(ImmutableIXY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
@@ -87,11 +87,11 @@ public class PixelService {
         return getNodeNeighbours(pixelMap, pixel).size();
     }
 
-    public Set<IntegerXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
-        var allNeighbours = new HashSet<IntegerXY>();
+    public Set<ImmutableIXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
+        var allNeighbours = new HashSet<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
-                .map(IntegerXY::of)
+                .map(ImmutableIXY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }

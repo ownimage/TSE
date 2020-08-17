@@ -1,6 +1,8 @@
 package com.ownimage.perception.pixelMap.immutable;
 
+import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
+import org.jetbrains.annotations.NotNull;
 
 public interface IXY {
 
@@ -8,12 +10,16 @@ public interface IXY {
 
     int getY();
 
-    default IntegerXY add(final int pDx, final int pDy) {
-        return new IntegerXY(getX() + pDx, getY() + pDy);
+    static ImmutableIXY of(@NotNull IntegerPoint ip) {
+        return ImmutableIXY.of(ip.getX(),ip.getY());
+    }
+
+    default ImmutableIXY add(final int pDx, final int pDy) {
+        return ImmutableIXY.of(getX() + pDx, getY() + pDy);
     }
 
     default IXY add(final IXY pPoint) {
-        return new IntegerXY(getX() + pPoint.getX(), getY() + pPoint.getY());
+        return ImmutableIXY.of(getX() + pPoint.getX(), getY() + pPoint.getY());
     }
 
     default boolean samePosition(final IXY pO) {

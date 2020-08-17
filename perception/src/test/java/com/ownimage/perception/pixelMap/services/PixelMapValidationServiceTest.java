@@ -3,8 +3,8 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.Utility;
+import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.IntegerXY;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -77,7 +77,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void checkPixelChainEndsReferenceNodesThatReferenceThePixelChain() {
         // GIVEN
-        IntegerXY point = new IntegerXY(4, 0);
+        ImmutableIXY point = ImmutableIXY.of(4, 0);
         var broken = pixelMap.withNodes(
                 pixelMap.nodes()
                         .remove(point)
@@ -173,7 +173,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void isSingleton_01() {
         // GIVEN
-        IntegerXY singletonPoint = new IntegerXY(5, 5);
+        ImmutableIXY singletonPoint = ImmutableIXY.of(5, 5);
         var pixelMap = Utility.createMap(10, 10);
         pixelMap = pixelMap.withData(pixelMap.data().set(5, 5, (byte) (EDGE | NODE)));
         pixelMap = pixelMap.withNodes(pixelMap.nodes().put(singletonPoint, new Node(singletonPoint)));
@@ -184,7 +184,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void isSingleton_02() {
         // GIVEN
-        IntegerXY singletonPoint = new IntegerXY(5, 5);
+        ImmutableIXY singletonPoint = ImmutableIXY.of(5, 5);
         var pixelMap = Utility.createMap(10, 10);
         // WHEN THEN
         assertFalse(underTest.isSingleton(pixelMap, singletonPoint));
@@ -193,7 +193,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void isSingleton_03() {
         // GIVEN
-        IntegerXY point = new IntegerXY(0, 3);
+        ImmutableIXY point = ImmutableIXY.of(0, 3);
         // WHEN THEN
         assertFalse(underTest.isSingleton(pixelMap, point));
     }
@@ -201,7 +201,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void isInBounds_01() {
         // GIVEN
-        IntegerXY point = new IntegerXY(0, 3);
+        ImmutableIXY point = ImmutableIXY.of(0, 3);
         // WHEN THEN
         assertTrue(underTest.isInBounds(pixelMap, point));
     }
@@ -209,7 +209,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void isInBounds_02() {
         // GIVEN
-        IntegerXY point = new IntegerXY(20, 20);
+        ImmutableIXY point = ImmutableIXY.of(20, 20);
         // WHEN THEN
         assertFalse(underTest.isInBounds(pixelMap, point));
     }
@@ -217,7 +217,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void checkNoPixelMapNodesAreSingletons() {
         // GIVEN
-        var singleton = new IntegerXY(1, 1);
+        var singleton = ImmutableIXY.of(1, 1);
         var broken = pixelMap.withData(pixelMap.data()
                 .set(singleton.getX(), singleton.getY(), (byte) (NODE | EDGE))
         );
@@ -245,7 +245,7 @@ public class PixelMapValidationServiceTest {
     public void checkPixelMapNodesKeyMatchesValue() {
         // GIVEN
         var broken = pixelMap.withNodes(pixelMap.nodes()
-                .put(new IntegerXY(1, 1), new Node(1, 2))
+                .put(ImmutableIXY.of(1, 1), new Node(1, 2))
         );
         thrown.expectMessage("checkPixelMapNodesKeyMatchesValue");
         // WHEN
@@ -256,7 +256,7 @@ public class PixelMapValidationServiceTest {
     @Test
     public void checkAllPixelMapNodesAreDataNodes() {
         // GIVEN
-        IntegerXY singletonPoint = new IntegerXY(5, 5);
+        ImmutableIXY singletonPoint = ImmutableIXY.of(5, 5);
         var broken = pixelMap.withNodes(pixelMap.nodes().put(singletonPoint, new Node(singletonPoint)));
         thrown.expectMessage("checkAllPixelMapNodesAreDataNodes");
         // WHEN
