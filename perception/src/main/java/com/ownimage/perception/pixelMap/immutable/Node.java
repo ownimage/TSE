@@ -6,7 +6,6 @@
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.perception.pixelMap.Pixel;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 

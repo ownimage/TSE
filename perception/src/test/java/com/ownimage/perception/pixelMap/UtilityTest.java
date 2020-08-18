@@ -2,6 +2,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.logging.FrameworkLogger;
 import com.ownimage.framework.view.javafx.FXViewFactory;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import org.junit.BeforeClass;

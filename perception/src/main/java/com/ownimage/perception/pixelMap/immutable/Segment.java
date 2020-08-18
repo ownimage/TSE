@@ -4,9 +4,7 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.segment.ISegmentGrafittiHelper;
-import lombok.val;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -48,8 +46,8 @@ public interface Segment extends Serializable {
     Segment withSegmentIndex(int segmentIndex);
 
     default double calcError(PixelMap pPixelMap, PixelChain pPixelChain, Pixel pPixel) {
-        val uhvw = pPixel.getUHVWMidPoint(pPixelMap.height());
-        val distance = distance(pPixelMap, pPixelChain, uhvw);
+        var uhvw = pPixel.getUHVWMidPoint(pPixelMap.height());
+        var distance = distance(pPixelMap, pPixelChain, uhvw);
         return distance * distance;
     }
 

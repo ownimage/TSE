@@ -1,10 +1,10 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.PixelConstants;
 import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

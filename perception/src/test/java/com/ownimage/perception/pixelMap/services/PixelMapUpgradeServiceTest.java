@@ -50,24 +50,26 @@ public class PixelMapUpgradeServiceTest {
         // WHEN
         var actual = underTest.upgradePixelChain(pixelChain, 10);
         // THEN
-        validateVertexes(pixelChain, actual);
+       validateVertexes(pixelChain, actual);
         validateSegments(pixelChain, actual);
     }
 
-    private void validateSegments(PixelChain pixelChain, PixelChain actual) {
+    private void validateSegments(PixelChain expected, PixelChain actual) {
         assertEquals(5, actual.getSegments().size());
+        assertEquals(5, expected.getSegments().size());
         for (int i = 0; i < actual.getSegments().size(); i++) {
             assertTrue(actual.getSegment(i) instanceof ImmutableStraightSegment
                     || actual.getSegment(i) instanceof ImmutableCurveSegment);
-            var expected = pixelChain.getSegment(i).toImmutable();
-            assertEquals(expected, actual.getSegment(i).toImmutable());
+            var expectedSegment = expected.getSegment(i).toImmutable();
+            assertEquals(expectedSegment, actual.getSegment(i).toImmutable());
         }
     }
 
-    private void validateVertexes(PixelChain pixelChain, PixelChain actual) {
+    private void validateVertexes(PixelChain expected, PixelChain actual) {
         assertEquals(6, actual.getVertexes().size());
+        assertEquals(6, expected.getVertexes().size());
         for (int i = 0; i < actual.getVertexes().size(); i++) {
-            assertTrue(actual.getVertex(i).sameValue(pixelChain.getVertex(i)));
+            assertTrue(actual.getVertex(i).sameValue(expected.getVertex(i)));
             assertSame(ImmutableVertex.class, actual.getVertex(i).getClass());
         }
     }

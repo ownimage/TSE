@@ -1,12 +1,12 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.view.javafx.FXViewFactory;
-import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableNode;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;

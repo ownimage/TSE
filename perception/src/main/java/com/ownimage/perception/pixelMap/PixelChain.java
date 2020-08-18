@@ -7,6 +7,7 @@ package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import lombok.Getter;
 

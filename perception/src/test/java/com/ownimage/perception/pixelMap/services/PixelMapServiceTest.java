@@ -3,12 +3,15 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.persist.SortedProperties;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
+import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
+import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,7 +22,7 @@ public class PixelMapServiceTest {
 
     @BeforeClass
     public static void turnLoggingOff() throws Exception {
-//        LogManager.getLogManager().reset();
+        LogManager.getLogManager().reset();
     }
 
     @Test
@@ -31,6 +34,15 @@ public class PixelMapServiceTest {
         assertEquals(1520, actual.height());
         assertEquals(3742, actual.pixelChains().size());
         assertEquals(88768, actual.data().size());
+        validatePixels(actual);
+    }
+
+    private void validatePixels(ImmutablePixelMap actual) {
+        var count = actual.pixelChains().stream()
+                .flatMap(PixelChain::streamPixels)
+                .filter(p -> !(p instanceof Pixel))
+                .count();
+        assertEquals(0, count);
     }
 
     private ImmutablePixelMap readPixelMap() throws IOException {

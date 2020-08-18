@@ -24,7 +24,10 @@ public interface Vertex extends Serializable {
     @Value.Parameter(order = 3)
     Point getPosition();
 
-    Vertex withVertexIndex(int vertexIndex);
+    default Vertex withVertexIndex(int vertexIndex) {
+        return ImmutableVertex.of(vertexIndex, getPixelIndex(), getPosition());
+    }
+
 
     default ImmutableVertex toImmutable(Vertex vertex) {
         return ImmutableVertex.of(getVertexIndex(), getPixelIndex(), getPosition());

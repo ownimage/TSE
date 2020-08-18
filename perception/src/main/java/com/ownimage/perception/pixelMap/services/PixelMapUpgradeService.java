@@ -1,8 +1,11 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
+import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
@@ -19,15 +22,39 @@ public class PixelMapUpgradeService {
     }
 
     /**
-     * Upgrades a PixelChain to use the immutables Vertex and Segments.
+     * Upgrades a PixelChain to use the immutables Pixels, Vertex and Segments.
      *
      * @param pixelChain
      * @return an upgraded PixelChain
      */
     public ImmutablePixelChain upgradePixelChain(@NotNull PixelChain pixelChain, int height) {
-        var result = upgradeVertexes(pixelChain, height);
+        var result = upgradePixels(pixelChain);
+        result = upgradeVertexes(result, height);
         result = upgradeSegments(result);
         return result;
+    }
+
+    /**
+     * Upgrades a PixelChain from using the old IntergerPoint based Pixels and nodes to the immutables Pixel
+     *
+     * @param pixelChain
+     * @return a new PixelChain with all the vertexes upgraded
+     */
+    public ImmutablePixelChain upgradePixels(@NotNull PixelChain pixelChain) {
+        var newPixels = StrongReference.of(pixelChain.getPixels().clear());
+        for (int i = 0; i < pixelChain.getPixels().size(); i++) {
+            var oldPixel = (Object) pixelChain.getPixels().get(i);
+            // the line belows allows for the conversion of old and new formats of the pixel
+            var ip = oldPixel instanceof IXY ? (IXY) oldPixel : IXY.of((IntegerPoint) oldPixel);
+            var newPixel = new Pixel(ip.getX(), ip.getY());
+            newPixels.update(np -> np.add(newPixel));
+        }
+//        pixelChain.getPixels().stream()
+//                .map(p -> (Object)p)
+//                .map(o -> (IntegerPoint)o)
+//                .map(ip -> new Pixel(ip.getX(), ip.getY()))
+//                .forEach(newPixels::add);
+        return pixelChain.changePixels(pixels -> newPixels.get());
     }
 
     /**
@@ -68,4 +95,5 @@ public class PixelMapUpgradeService {
         var position = vertexService.getPixel(pixelChain, vertex).getUHVWMidPoint(height);
         return vertexService.createVertex(pixelChain, vertex.getVertexIndex(), vertex.getPixelIndex(), position);
     }
+
 }

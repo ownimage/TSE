@@ -5,6 +5,7 @@
  */
 package com.ownimage.perception.pixelMap;
 
+import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 
 import java.util.Vector;
@@ -14,12 +15,13 @@ import java.util.Vector;
  * The reason that has a Vector<PixelChain> rather than an ImmutableVectorClone<ImmutablePixelChain>
  * is because it needs to remain serialization compatible with older versions.
  */
-public class Node extends Pixel {
+public class Node extends IntegerPoint {
 
     private static final long serialVersionUID = 1L;
+
     private final Vector<PixelChain> pixelChains = new Vector<>();
 
-    private Node(int pX, int pY) {
-        super(pX, pY);
+    private Node() {
+        super(0, 0);
     }
 }

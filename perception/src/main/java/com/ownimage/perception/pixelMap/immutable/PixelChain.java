@@ -6,7 +6,6 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
-import com.ownimage.perception.pixelMap.Pixel;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
 import org.immutables.value.Value;
