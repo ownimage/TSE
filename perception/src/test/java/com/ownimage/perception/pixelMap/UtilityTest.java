@@ -68,7 +68,7 @@ public class UtilityTest {
         var startNode = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(5, 5);
         var pixelChain1 = pixelChainService.createStartingPixelChain(pixelMap, startNode);
         var pixelChain2 = pixelChainService.createStartingPixelChain(pixelMap, startNode);
-        pixelChain2 = pixelChainService.add(pixelChain2, new Pixel(5, 6));
+        pixelChain2 = pixelChainService.add(pixelChain2, Pixel.of(5, 6, pixelMap.height()));
         thrown.expectMessage("PixelChains do not contain same pixels");
         // WHEN
         assertSamePixels(pixelMap, pixelChain1, pixelChain2);
@@ -80,9 +80,9 @@ public class UtilityTest {
         var pixelMap = Utility.createMap(10, 10);
         var startNode = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(5, 5);
         var pixelChain1 = pixelChainService.createStartingPixelChain(pixelMap, startNode);
-        pixelChain1 = pixelChainService.add(pixelChain1, new Pixel(5, 6));
+        pixelChain1 = pixelChainService.add(pixelChain1, Pixel.of(5, 6, pixelMap.height()));
         var pixelChain2 = pixelChainService.createStartingPixelChain(pixelMap, startNode);
-        pixelChain2 = pixelChainService.add(pixelChain2, new Pixel(5, 6));
+        pixelChain2 = pixelChainService.add(pixelChain2, Pixel.of(5, 6, pixelMap.height()));
         // WHEN
         assertSamePixels(pixelMap, pixelChain1, pixelChain2);
     }
@@ -94,15 +94,15 @@ public class UtilityTest {
 
         var startNode1 = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(5, 5);
         var pixelChain1 = pixelChainService.createStartingPixelChain(pixelMap, startNode1);
-        pixelChain1 = pixelChainService.add(pixelChain1, new Pixel(5, 6));
-        pixelChain1 = pixelChainService.add(pixelChain1, new Pixel(6, 7));
-        pixelChain1 = pixelChainService.add(pixelChain1, new Pixel(8, 8));
+        pixelChain1 = pixelChainService.add(pixelChain1, Pixel.of(5, 6, pixelMap.height()));
+        pixelChain1 = pixelChainService.add(pixelChain1, Pixel.of(6, 7, pixelMap.height()));
+        pixelChain1 = pixelChainService.add(pixelChain1, Pixel.of(8, 8, pixelMap.height()));
 
         var startNode2 = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(8, 8);
         var pixelChain2 = pixelChainService.createStartingPixelChain(pixelMap, startNode2);
-        pixelChain2 = pixelChainService.add(pixelChain2, new Pixel(6, 7));
-        pixelChain2 = pixelChainService.add(pixelChain2, new Pixel(5, 6));
-        pixelChain2 = pixelChainService.add(pixelChain2, new Pixel(5, 5));
+        pixelChain2 = pixelChainService.add(pixelChain2, Pixel.of(6, 7, pixelMap.height()));
+        pixelChain2 = pixelChainService.add(pixelChain2, Pixel.of(5, 6, pixelMap.height()));
+        pixelChain2 = pixelChainService.add(pixelChain2, Pixel.of(5, 5, pixelMap.height()));
         // WHEN
         assertSamePixels(pixelMap, pixelChain1, pixelChain2);
     }

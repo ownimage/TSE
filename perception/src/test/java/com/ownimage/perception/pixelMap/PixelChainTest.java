@@ -221,7 +221,7 @@ public class PixelChainTest {
         // WHEN
         val actual = underTest.getOptionalPixel(2).orElseThrow();
         // THEN
-        Assert.assertEquals(new Pixel(3, 5), actual);
+        Assert.assertEquals(Pixel.of(3, 5, pixelMap.height()), actual);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -247,7 +247,7 @@ public class PixelChainTest {
         // WHEN
         val actual = underTest.getPixel(2);
         // THEN
-        Assert.assertEquals(new Pixel(3, 5), actual);
+        Assert.assertEquals(Pixel.of(3, 5, pixelMap.height()), actual);
     }
 
     @Test
@@ -262,23 +262,26 @@ public class PixelChainTest {
     }
 
     private ImmutablePixelChain createPixelChain() {
-        var pixelChain = Utility.createPixelChain(pixelMap, new Pixel(3, 7),  new Pixel(4, 6),
-                new Pixel(3, 5),
-                new Pixel(3, 4),
-                new Pixel(4, 3),
-                new Pixel(4, 2),
-                new Pixel(5, 1),
-                new Pixel(6, 1),
-                new Pixel(7, 1),
-                new Pixel(8, 2),
-                new Pixel(9, 2),
-                new Pixel(10, 3),
-                new Pixel(11, 4),
-                new Pixel(10, 5),
-                new Pixel(9, 6),
-                new Pixel(8, 7),
-                new Pixel(7, 7),
-        new Pixel(6, 7));
+        var height = pixelMap.height();
+        var pixelChain = Utility.createPixelChain(pixelMap,
+                Pixel.of(3, 7, height),
+                Pixel.of(4, 6, height),
+                Pixel.of(3, 5, height),
+                Pixel.of(3, 4, height),
+                Pixel.of(4, 3, height),
+                Pixel.of(4, 2, height),
+                Pixel.of(5, 1, height),
+                Pixel.of(6, 1, height),
+                Pixel.of(7, 1, height),
+                Pixel.of(8, 2, height),
+                Pixel.of(9, 2, height),
+                Pixel.of(10, 3, height),
+                Pixel.of(11, 4, height),
+                Pixel.of(10, 5, height),
+                Pixel.of(9, 6, height),
+                Pixel.of(8, 7, height),
+                Pixel.of(7, 7, height),
+                Pixel.of(6, 7, height));
         return pixelChain;
     }
 

@@ -165,7 +165,7 @@ public class VertexTest {
     public void getPixel_00() {
         // GIVEN
         int pixelIndex = 5;
-        var pixel = new Pixel(5, 5);
+        var pixel = Pixel.of(5, 5, pixelMap.height());
         var point = pixel.getUHVWMidPoint(10);
         var pixelChain = mock(PixelChain.class);
         when(pixelChain.getPixelCount()).thenReturn(8);
@@ -185,7 +185,7 @@ public class VertexTest {
         int vertexIndex = 2;
         int segmentIndex = vertexIndex - 1;
         Segment expected = mock(Segment.class);
-        var pixel = new Pixel(5, 3);
+        var pixel = Pixel.of(5, 3, pixelMap.height());
         var point = pixel.getUHVWMidPoint(pixelMap.height());
         var mockPixelChain = mock(PixelChain.class);
         when(mockPixelChain.getPixelCount()).thenReturn(11);
@@ -206,7 +206,7 @@ public class VertexTest {
         int vertexIndex = 2;
         int segmentIndex = vertexIndex;
         Segment expected = mock(Segment.class);
-        var pixel = new Pixel(5, 3);
+        var pixel = Pixel.of(5, 3, pixelMap.height());
         var point = pixel.getUHVWMidPoint(pixelMap.height());
         var mockPixelChain = mock(PixelChain.class);
         when(mockPixelChain.getPixelCount()).thenReturn(11);

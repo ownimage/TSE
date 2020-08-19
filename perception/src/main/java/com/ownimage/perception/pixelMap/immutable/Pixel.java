@@ -6,78 +6,31 @@
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.perception.pixelMap.PixelConstants;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
-/**
- * The class Pixel provides a wrapper about the byte level information contained in the raw PixelMap array. This can get and set
- * information about this Pixel, this might mean reading information from adjacent pixels ... but this class NEVER sets values for
- * other Pixels, and it NEVER registers/deregisters Nodes with the PixelMap.
- */
-public class Pixel implements IXY, PixelConstants, Serializable {
+public interface Pixel extends IXY, Serializable {
 
-    private final static long serialVersionUID = 1L;
-    private final int mX;
-    private final int mY;
-    transient private Integer mHashCode; /// calculating hash codes was taking a long time so they are now stored
-    private Point mUHVW = null;
-
-    private Pixel(Pixel pPixel) {
-        this(pPixel.getX(), pPixel.getY());
+    static ImmutablePixel of(@NotNull IXY ixy, int height) {
+        return of(ixy.getX(), ixy.getY(), height);
     }
 
-    public Pixel(IXY pIntegerXY) {
-        this(pIntegerXY.getX(), pIntegerXY.getY());
+    static ImmutablePixel of(int x, int y, int height) {
+        double dx = (x + 0.5d) / height;
+        double dy = (y + 0.5d) / height;
+        var center = new Point(dx, dy);
+        return new ImmutablePixel(x, y, center);
     }
 
-    public Pixel(int pX, int pY) {
-        this.mX = pX;
-        this.mY = pY;
-    }
+    int getX();
 
-    public Pixel(PixelChain pPixelChain, int pIndex) {
-        this(pPixelChain.getPixel(pIndex));
-    }
+    int getY();
 
-    public int getX() {
-        return mX;
-    }
-
-
-    public int getY() {
-        return mY;
-    }
+    Point getUHVWMidPoint();
 
     @Override
-    public String toString() {
-        return "Pixel(" + getX() + ", " + getY() + ")";
+    default Point getUHVWMidPoint(int height) {
+        return getUHVWMidPoint();
     }
-
-
-    // UHVW = unit height variable width
-    @Override
-    public synchronized Point getUHVWMidPoint(int height) {
-        if (mUHVW == null) {
-            synchronized (this) {
-                if (mUHVW == null) {
-                    mUHVW = IXY.super.getUHVWMidPoint(height);
-                }
-            }
-        }
-        return mUHVW;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        return mX == ((Pixel)other).mX && mY == ((Pixel)other).mY;
-    }
-
-
 }

@@ -200,10 +200,10 @@ public class Utility {
                     case ' ':
                         break;
                     case 'N':
-                        result = pixelMapService.setValue(result, x, y, (byte) (Pixel.NODE | Pixel.EDGE));
+                        result = pixelMapService.setValue(result, x, y, (byte) (PixelConstants.NODE | PixelConstants.EDGE));
                         break;
                     case 'E':
-                        result = pixelMapService.setValue(result, x, y, Pixel.EDGE);
+                        result = pixelMapService.setValue(result, x, y, PixelConstants.EDGE);
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected char:" + c + ", y=" + y);

@@ -266,7 +266,7 @@ public class PixelMapService {
             return Optional.empty();
         }
         int newX = modWidth(pixelMapData, x);
-        return Optional.of(new Pixel(newX, y));
+        return Optional.of(Pixel.of(newX, y, pixelMapData.height()));
     }
 
     public int modWidth(@NotNull ImmutablePixelMap pixelMapData, int pX) {
@@ -467,7 +467,7 @@ public class PixelMapService {
         if (0 > x || x >= pixelMapData.width() || 0 > y || y >= pixelMapData.height()) {
             return Optional.empty();
         }
-        return Optional.of(new Pixel(x, y));
+        return Optional.of(Pixel.of(x, y, pixelMapData.height()));
     }
 
     public Optional<Pixel> getOptionalPixelAt(@NotNull ImmutablePixelMap pixelMapData, @NotNull Point point) {
@@ -484,7 +484,7 @@ public class PixelMapService {
         int y = (int) (yIn * h);
         y = y == h ? h - 1 : y;
         x = modWidth(pixelMapData, x);
-        return new Pixel(x, y);
+        return Pixel.of(x, y, pixelMapData.height());
     }
 
     public Pixel getPixelAt(@NotNull ImmutablePixelMap pixelMapData, int xIn, int yIn) {
@@ -745,7 +745,6 @@ public class PixelMapService {
         result.update(r -> setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel)._1);
         pixelService.getNeighbours(pixel)
-                .map(Pixel::new)
                 .forEach(p -> {
             result.update(r -> thin(r, p, tolerance, lineCurvePreference)._1);
             result.update(r -> calcIsNode(r, p)._1);

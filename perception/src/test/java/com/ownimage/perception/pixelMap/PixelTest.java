@@ -23,6 +23,8 @@ public class PixelTest {
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelMapService pixelMapService = context.getBean(PixelMapService.class);
     private PixelService pixelService = context.getBean(PixelService.class);
+    
+    private final int height = 10;
 
     @BeforeClass
     public static void turnLoggingOff() throws Exception {
@@ -295,7 +297,7 @@ public class PixelTest {
     @Test
     public void samePosition_00() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
+        Pixel underTest = Pixel.of(5, 5, height);
         Pixel sameAsTest = null;
         // THEN
         assertFalse(underTest.samePosition(sameAsTest));
@@ -304,8 +306,8 @@ public class PixelTest {
     @Test
     public void samePosition_01() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Pixel sameAsTest = new Pixel(5, 5);
+        Pixel underTest = Pixel.of(5, 5, height);
+        Pixel sameAsTest = Pixel.of(5, 5, height);
         // THEN
         assertTrue(underTest.samePosition(sameAsTest));
     }
@@ -313,8 +315,8 @@ public class PixelTest {
     @Test
     public void samePosition_02() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Pixel sameAsTest = new Pixel(4, 5);
+        Pixel underTest = Pixel.of(5, 5, height);
+        Pixel sameAsTest = Pixel.of(4, 5, height);
         // THEN
         assertFalse(underTest.samePosition(sameAsTest));
     }
@@ -322,8 +324,8 @@ public class PixelTest {
     @Test
     public void samePosition_03() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Pixel sameAsTest = new Pixel(5, 4);
+        Pixel underTest = Pixel.of(5, 5, height);
+        Pixel sameAsTest = Pixel.of(5, 4, height);
         // THEN
         assertFalse(underTest.samePosition(sameAsTest));
     }
@@ -331,8 +333,8 @@ public class PixelTest {
     @Test
     public void samePosition_04() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Pixel sameAsTest = new Pixel(4, 4);
+        Pixel underTest = Pixel.of(5, 5, height);
+        Pixel sameAsTest = Pixel.of(4, 4, height);
         // THEN
         assertFalse(underTest.samePosition(sameAsTest));
     }
@@ -340,8 +342,8 @@ public class PixelTest {
     @Test
     public void samePosition_05() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Node sameAsTest = Node.ofIXY(new Pixel(5, 5));
+        Pixel underTest = Pixel.of(5, 5, height);
+        Node sameAsTest = Node.ofIXY(Pixel.of(5, 5, height));
         // THEN
         assertTrue(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }
@@ -349,8 +351,8 @@ public class PixelTest {
     @Test
     public void samePosition_06() {
         // GIVEN
-        Pixel underTest = new Pixel(5, 5);
-        Node sameAsTest = Node.ofIXY(new Pixel(4, 4));
+        Pixel underTest = Pixel.of(5, 5, height);
+        Node sameAsTest = Node.ofIXY(Pixel.of(4, 4, height));
         // THEN
         assertFalse(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
     }

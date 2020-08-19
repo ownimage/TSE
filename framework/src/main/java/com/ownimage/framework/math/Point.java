@@ -5,56 +5,28 @@
  */
 package com.ownimage.framework.math;
 
-import com.ownimage.framework.util.Framework;
-
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.logging.Logger;
 
-// TODO: Auto-generated Javadoc
-
-/**
- * The Class Point.
- */
 public class Point implements Serializable {
 
-    private final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 2079085567426992350L;
 
-    /**
-     * The Constant Point00.
-     */
     public final static Point Point00 = new Point(0.0d, 0.0d);
 
-    /**
-     * The Constant Point11.
-     */
     public final static Point Point11 = new Point(1.0d, 1.0d);
 
-    /**
-     * The Constant Point01.
-     */
     public final static Point Point01 = new Point(0.0d, 1.0d);
 
-    /**
-     * The Constant Point10.
-     */
     public final static Point Point10 = new Point(1.0d, 0.0d);
 
-    /**
-     * The Constant Point0505.
-     */
     public final static Point Point0505 = new Point(0.5d, 0.5d);
 
-    /**
-     * The m x.
-     */
-    private double mX;
+    private final double mX;
 
-    /**
-     * The m y.
-     */
-    private double mY;
+    private final double mY;
+
+    private final int hashCode;
 
     /**
      * Instantiates a new point.
@@ -63,8 +35,9 @@ public class Point implements Serializable {
      * @param pY the p y
      */
     public Point(final double pX, final double pY) {
-        setX(pX);
-        setY(pY);
+        mX = pX;
+        mY = pY;
+        hashCode = Objects.hash(mX, mY);
     }
 
     /**
@@ -87,7 +60,7 @@ public class Point implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mX, mY);
+        return hashCode;
     }
 
     /**
@@ -450,23 +423,7 @@ public class Point implements Serializable {
     // }
     //
 
-    /**
-     * Sets the x.
-     *
-     * @param x the new x
-     */
-    protected void setX(final double x) {
-        mX = x;
-    }
 
-    /**
-     * Sets the y.
-     *
-     * @param y the new y
-     */
-    protected void setY(final double y) {
-        mY = y;
-    }
 
     /**
      * Calculates the Point at the same X position but on the top of the unit square, i.e. (mX, 1).

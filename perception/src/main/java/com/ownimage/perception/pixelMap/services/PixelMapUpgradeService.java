@@ -28,7 +28,7 @@ public class PixelMapUpgradeService {
      * @return an upgraded PixelChain
      */
     public ImmutablePixelChain upgradePixelChain(@NotNull PixelChain pixelChain, int height) {
-        var result = upgradePixels(pixelChain);
+        var result = upgradePixels(pixelChain, height);
         result = upgradeVertexes(result, height);
         result = upgradeSegments(result);
         return result;
@@ -40,20 +40,15 @@ public class PixelMapUpgradeService {
      * @param pixelChain
      * @return a new PixelChain with all the vertexes upgraded
      */
-    public ImmutablePixelChain upgradePixels(@NotNull PixelChain pixelChain) {
+    public ImmutablePixelChain upgradePixels(@NotNull PixelChain pixelChain, int height) {
         var newPixels = StrongReference.of(pixelChain.getPixels().clear());
         for (int i = 0; i < pixelChain.getPixels().size(); i++) {
             var oldPixel = (Object) pixelChain.getPixels().get(i);
             // the line belows allows for the conversion of old and new formats of the pixel
             var ip = oldPixel instanceof IXY ? (IXY) oldPixel : IXY.of((IntegerPoint) oldPixel);
-            var newPixel = new Pixel(ip.getX(), ip.getY());
+            var newPixel = Pixel.of(ip.getX(), ip.getY(), height);
             newPixels.update(np -> np.add(newPixel));
         }
-//        pixelChain.getPixels().stream()
-//                .map(p -> (Object)p)
-//                .map(o -> (IntegerPoint)o)
-//                .map(ip -> new Pixel(ip.getX(), ip.getY()))
-//                .forEach(newPixels::add);
         return pixelChain.changePixels(pixels -> newPixels.get());
     }
 

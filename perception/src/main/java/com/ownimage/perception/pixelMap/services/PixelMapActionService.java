@@ -116,9 +116,9 @@ public class PixelMapActionService {
                             // TODO in the implementation of the method below make the parameter immutable
                             clone.update(c -> pixelMapService.setEdge(c, pc, tolerance, lineCurvePreference));
                             pixelChainService.getStartNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n.toPixel())));
+                                    .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n)));
                             pixelChainService.getEndNode(clone.get(), pc)
-                                    .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n.toPixel())));
+                                    .ifPresent(n -> clone.update(c -> pixelMapService.nodeRemove(c, n)));
                             clone.update(c -> c.withPixelChains(c.pixelChains().remove(pc)));
                             clone.update(c -> pixelMapService.indexSegments(c, pc, false));
                             clone.update(c -> pixelMapService.indexSegments(c, pc, false));

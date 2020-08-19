@@ -168,7 +168,6 @@ public class PixelMapApproximationService {
         });
         removedPixels.stream()
                 .flatMap(p -> pixelMapService.stream8Neighbours(result.get(), p))
-                .map(p -> new Pixel(p))
                 .forEach(p -> result.update(r -> thin(r, p, tolerance, lineCurvePreference)));
         removedPixels.stream()
                 .flatMap(p -> pixelMapService.stream8Neighbours(result.get(), p))
@@ -184,7 +183,7 @@ public class PixelMapApproximationService {
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
                 Node node = pixelMapService.getNode(result.get(), pixel).get();
-                if (pixelService.countEdgeNeighbours(result.get(), node.toPixel()) == 0) {
+                if (pixelService.countEdgeNeighbours(result.get(), node) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
                 }
@@ -382,7 +381,6 @@ public class PixelMapApproximationService {
         result.update(r -> pixelMapService.setData(r, pixel, isEdge, EDGE));
         result.update(r -> calcIsNode(r, pixel));
         pixelService.getNeighbours(pixel)
-                .map(Pixel::new)
                 .forEach(p -> {
                     result.update(r -> thin(r, p, tolerance, lineCurvePreference));
                     result.update(r -> calcIsNode(r, p));
@@ -456,7 +454,6 @@ public class PixelMapApproximationService {
         pixels.forEach(pixel -> {
             pixelMapService.getNode(result.get(), pixel).ifPresent(nodes::add);
             pixelService.getNeighbours(pixel)
-                    .map(Pixel::new)
                     .forEach(neighbour -> {
                         pixelMapService.getPixelChains(result.get(), neighbour)
                                 .forEach(pc -> {

@@ -64,17 +64,17 @@ public class PixelMapChainGenerationService {
         for (IXY nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
-                return generateChain(result, copy, new Pixel(nodalNeighbour));
+                return generateChain(result, copy, Pixel.of(nodalNeighbour, pixelMap.height()));
             }
         }
         // otherwise go to the next pixel normally
         var nextNormal =  pixelService.getNeighbours(pixel)
                 .filter(neighbour -> !pixelService.isNode(result, neighbour)
-                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(new Pixel(neighbour))
+                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))
                         && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy))))
                 .findFirst();
         if (nextNormal.isPresent()) {
-            return generateChain(result, copy, new Pixel(nextNormal.get()));
+            return generateChain(result, copy, Pixel.of(nextNormal.get(), pixelMap.height()));
         }
 
         return new Tuple2<>(result, copy);
@@ -89,11 +89,11 @@ public class PixelMapChainGenerationService {
             if (pixelService.isNode(result.get(), neighbour)
                     || pixelService.isEdge(result.get(), neighbour)
                     && (
-                    pixelMapService.getPixelChains(result.get(), new Pixel(neighbour)).isEmpty()
-                            && chains.stream().filter(pc -> pc.getPixels().contains(new Pixel(neighbour))).findFirst().isEmpty())
+                    pixelMapService.getPixelChains(result.get(), Pixel.of(neighbour, pixelMap.height())).isEmpty()
+                            && chains.stream().filter(pc -> pc.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))).findFirst().isEmpty())
             ) {
                 var chain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
-                var generatedChain = generateChain(pixelMap, chain, new Pixel(neighbour));
+                var generatedChain = generateChain(pixelMap, chain, Pixel.of(neighbour, pixelMap.height()));
                 result.set(generatedChain._1);
                 chain = generatedChain._2;
                 if (pixelChainService.pixelLength(chain) > 2) {

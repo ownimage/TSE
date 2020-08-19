@@ -96,7 +96,7 @@ public class PixelService {
         return allNeighbours;
     }
 
-    public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull Pixel pixel) {
+    public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
         return  (int) getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
                 .count();

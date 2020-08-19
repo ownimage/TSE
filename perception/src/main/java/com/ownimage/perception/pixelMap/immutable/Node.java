@@ -88,8 +88,8 @@ public interface Node extends IXY {
         return ImmutableIXY.of(getX(), getY());
     }
 
-    default Pixel toPixel() {
-        return new Pixel(getX(), getY());
+    default Pixel toPixel(int height) {
+        return Pixel.of(getX(), getY(), height);
     }
 
 }

@@ -28,11 +28,6 @@ public interface Vertex extends Serializable {
         return ImmutableVertex.of(vertexIndex, getPixelIndex(), getPosition());
     }
 
-
-    default ImmutableVertex toImmutable(Vertex vertex) {
-        return ImmutableVertex.of(getVertexIndex(), getPixelIndex(), getPosition());
-    }
-
     default boolean sameValue(Vertex vertex) {
         if (this == vertex) {
             return true;
