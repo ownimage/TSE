@@ -8,6 +8,7 @@ package com.ownimage.framework.math;
 import com.ownimage.framework.util.Framework;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 // TODO: Auto-generated Javadoc
@@ -84,6 +85,11 @@ public class Point implements Serializable {
         this(pPoint.getX(), pPoint.getY());
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(mX, mY);
+    }
+
     /**
      * Adds this point to pIn and returns a new point. Point is immutable.
      *
@@ -140,12 +146,12 @@ public class Point implements Serializable {
     }
 
     @Override
-    public boolean equals(final Object pObj) {
-        if (pObj instanceof Point) {
-            final Point other = (Point) pObj;
-            return this.mX == other.mX && this.mY == other.mY;
-        }
-        return super.equals(pObj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Point point = (Point) o;
+        return Double.compare(point.mX, mX) == 0 &&
+                Double.compare(point.mY, mY) == 0;
     }
 
     public Point getMidpoint(final Point pOther) {
