@@ -11,7 +11,7 @@ import org.immutables.value.Value;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Value.Immutable
+@Value.Immutable(prehash = true)
 public interface Vertex extends Serializable {
 
 

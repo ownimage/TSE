@@ -6,7 +6,7 @@ import com.ownimage.framework.math.Vector;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import org.immutables.value.Value;
 
-@Value.Immutable
+@Value.Immutable(prehash = true)
 public interface StraightSegment extends Segment {
 
     @Override

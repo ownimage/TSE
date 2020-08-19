@@ -5,7 +5,7 @@ import com.ownimage.framework.math.Point;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 
-@Value.Immutable
+@Value.Immutable(prehash = true)
 public interface IXY {
 
     @Value.Parameter(order = 1)

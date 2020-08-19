@@ -13,7 +13,7 @@ import org.immutables.value.Value;
 import java.awt.*;
 import java.io.Serializable;
 
-@Value.Immutable
+@Value.Immutable(prehash = true)
 public interface CurveSegment extends Segment, Serializable, Cloneable {
 
     static ImmutableCurveSegment create(

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-@Value.Immutable
+@Value.Immutable(prehash = true)
 public interface Node extends IXY {
 
 //    private final ImmutableVectorClone<PixelChain> pixelChains;
