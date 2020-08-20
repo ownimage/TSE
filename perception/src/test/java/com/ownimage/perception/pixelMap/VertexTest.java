@@ -3,9 +3,8 @@ package com.ownimage.perception.pixelMap;
 import com.ownimage.framework.math.Point;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.PixelMap;
-import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
+import com.ownimage.perception.pixelMap.immutable.*;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.VertexService;
 import org.junit.Before;
@@ -19,25 +18,18 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import java.util.logging.LogManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class VertexTest {
 
-    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private VertexService vertexService = context.getBean(VertexService.class);
-
     @Mock
     PixelMap pixelMap;
+    private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+    private VertexService vertexService = context.getBean(VertexService.class);
 
     @BeforeClass
     public static void turnLoggingOff() throws Exception {
@@ -109,8 +101,8 @@ public class VertexTest {
         // GIVEN
         var pixelChain1 = new MockPixelChainBuilder(10).build();
         var pixelChain2 = new MockPixelChainBuilder(11).build();
-        Vertex underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
-        Vertex underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.2, 0.3));
+        ImmutableVertex underTest1 = vertexService.createVertex(pixelChain1, 1, 5, new Point(0.2, 0.3));
+        ImmutableVertex underTest2 = vertexService.createVertex(pixelChain2, 1, 5, new Point(0.2, 0.3));
         // WHEN THEN
         assertTrue(underTest1.equals(underTest2));
         assertTrue(underTest2.equals(underTest1));

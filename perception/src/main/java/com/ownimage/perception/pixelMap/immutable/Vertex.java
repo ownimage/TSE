@@ -14,7 +14,6 @@ import java.util.Objects;
 @Value.Immutable(prehash = true)
 public interface Vertex extends Serializable {
 
-
     @Value.Parameter(order = 1)
     int getVertexIndex();
 

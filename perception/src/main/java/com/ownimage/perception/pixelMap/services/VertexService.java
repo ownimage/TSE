@@ -24,7 +24,7 @@ public class VertexService {
         return ImmutableVertex.of(pVertexIndex, pPixelIndex, position);
     }
 
-    public Vertex createVertex(PixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
+    public ImmutableVertex createVertex(PixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
         if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
             throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
         }
