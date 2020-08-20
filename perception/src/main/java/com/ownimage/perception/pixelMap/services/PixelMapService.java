@@ -664,39 +664,6 @@ public class PixelMapService {
         return pixelMap.pixelChains().stream();
     }
 
-    /**
-     * Thin checks whether a Pixel should be removed in order to make the absolute single Pixel wide lines that are needed. If the
-     * Pixel should not be an edge this method 1) does a setEdge(false) on the Pixel, and 2) returns true. Otherwise it returns
-     * false.
-     *
-     * @param pixel the pixel
-     * @param tolerance
-     * @param lineCurvePreference
-     * @return true, if the Pixel was thinned.
-     */
-    public Tuple2<ImmutablePixelMap, Boolean> thin(
-            @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IXY pixel,
-            double tolerance,
-            double lineCurvePreference) {
-        if (!pixelService.isEdge(pixelMap, pixel)) {
-            return new Tuple2<>(pixelMap, false);
-        }
-        var pixelMapResult = pixelMap;
-        boolean canEliminate = false;
-        for (int[] set : eliminate) {
-            canEliminate |= pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[0]))
-                    && pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[1]))
-                    && !pixelService.isEdge(pixelMap, pixelService.getNeighbour(pixel, set[2]));
-        }
-        if (canEliminate) {
-            pixelMapResult = pixelMapApproximationService.setEdge(pixelMapResult, pixel, false, tolerance, lineCurvePreference);
-            pixelMapResult = nodeRemove(pixelMapResult, pixel);
-        }
-        return new Tuple2<>(pixelMapResult, canEliminate);
-    }
-
-
     public ImmutablePixelMap nodesRemoveAll(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Collection<ImmutableIXY> pToBeRemoved) {
         var nodes = StrongReference.of(pixelMap.nodes());
@@ -746,20 +713,19 @@ public class PixelMapService {
         result.update(r -> calcIsNode(r, pixel)._1);
         pixelService.getNeighbours(pixel)
                 .forEach(p -> {
-            result.update(r -> thin(r, p, tolerance, lineCurvePreference)._1);
+            result.update(r -> pixelMapApproximationService.thin(r, p, tolerance, lineCurvePreference));
             result.update(r -> calcIsNode(r, p)._1);
         });
-        result.update(r -> thin(r, pixel, tolerance, lineCurvePreference)._1);
+        result.update(r -> pixelMapApproximationService.thin(r, pixel, tolerance, lineCurvePreference));
         if (result.get().autoTrackChanges()) {
             if (isEdge) { // turning pixel on
                 result.update(r -> pixelMapApproximationService.trackPixelOn(r, pixel, tolerance, lineCurvePreference));
-            } else { // turning pixel off
+            } else { // turning pixel of
                 result.update(r -> pixelMapApproximationService.trackPixelOff(r, pixel, tolerance, lineCurvePreference));
             }
         }
         return result.get();
     }
-
 
     public Stream<ImmutableIXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
