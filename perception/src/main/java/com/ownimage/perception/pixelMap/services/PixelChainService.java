@@ -302,17 +302,16 @@ public class PixelChainService {
     }
 
 
-    public Tuple2<ImmutablePixelMap, ImmutablePixelChain> setEndNode(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain, @NonNull Node pNode) {
-        var pixelMapResult = ImmutablePixelMap.copyOf(pixelMap);
-        PixelChain builder = pixelChain.changePixels(p -> p.add(pNode.toPixel(pixelMap.height())));
+    public ImmutablePixelChain setEndNode(@NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pixelChain, @NonNull Node node) {
+        var result = pixelChain.changePixels(p -> p.add(node.toPixel(pixelMap.height())));
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (builder.getPixelCount() >= 3 && pixelService.isNeighbour(pNode.toImmutableIXY(), builder.getPixel(builder.getPixelCount() - 3))) {
-            var index = builder.getPixelCount() - 2;
-            builder = builder.changePixels(p -> p.remove(index));
+        if (result.getPixelCount() >= 3 && pixelService.isNeighbour(node.toImmutableIXY(), result.getPixel(result.getPixelCount() - 3))) {
+            var index = result.getPixelCount() - 2;
+            result = result.changePixels(p -> p.remove(index));
         }
-        return new Tuple2(pixelMapResult, builder);
+        return result;
     }
 
     public Thickness getThickness(

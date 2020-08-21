@@ -41,7 +41,7 @@ public class PixelMapChainGenerationService {
         this.pixelService = pixelService;
     }
 
-    public Tuple2<ImmutablePixelMap, ImmutablePixelChain> generateChain(
+    public ImmutablePixelChain generateChain(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             @NotNull Pixel pixel) {
@@ -58,26 +58,25 @@ public class PixelMapChainGenerationService {
             logger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
         }
 
-        var result = pixelMap;
-        var copy = pixelChainService.add(pixelChain, pixel);
+        var result = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (IXY nodalNeighbour : pixelService.getNodeNeighbours(result, pixel)) {
+        for (IXY nodalNeighbour : pixelService.getNodeNeighbours(pixelMap, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
-            if (!(copy.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(copy)))) {
-                return generateChain(result, copy, Pixel.of(nodalNeighbour, pixelMap.height()));
+            if (!(result.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(result)))) {
+                return generateChain(pixelMap, result, Pixel.of(nodalNeighbour, pixelMap.height()));
             }
         }
         // otherwise go to the next pixel normally
         var nextNormal =  pixelService.getNeighbours(pixel)
-                .filter(neighbour -> !pixelService.isNode(result, neighbour)
-                        && pixelService.isEdge(result, neighbour) && !copy.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))
-                        && !(copy.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(copy))))
+                .filter(neighbour -> !pixelService.isNode(pixelMap, neighbour)
+                        && pixelService.isEdge(pixelMap, neighbour) && !result.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))
+                        && !(result.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(result))))
                 .findFirst();
         if (nextNormal.isPresent()) {
-            return generateChain(result, copy, Pixel.of(nextNormal.get(), pixelMap.height()));
+            return generateChain(pixelMap, result, Pixel.of(nextNormal.get(), pixelMap.height()));
         }
 
-        return new Tuple2<>(result, copy);
+        return result;
     }
 
     public Tuple2<ImmutablePixelMap, Collection<ImmutablePixelChain>> generateChains(
@@ -92,12 +91,10 @@ public class PixelMapChainGenerationService {
                     pixelMapService.getPixelChains(result.get(), Pixel.of(neighbour, pixelMap.height())).isEmpty()
                             && chains.stream().filter(pc -> pc.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))).findFirst().isEmpty())
             ) {
-                var chain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
-                var generatedChain = generateChain(pixelMap, chain, Pixel.of(neighbour, pixelMap.height()));
-                result.set(generatedChain._1);
-                chain = generatedChain._2;
-                if (pixelChainService.pixelLength(chain) > 2) {
-                    chains.add(chain);
+                var startingChain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
+                var generatedChain = generateChain(pixelMap, startingChain, Pixel.of(neighbour, pixelMap.height()));
+                if (pixelChainService.pixelLength(generatedChain) > 2) {
+                    chains.add(generatedChain);
                 }
             }
         });
