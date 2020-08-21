@@ -626,11 +626,10 @@ public class PixelMapService {
         return result.get();
     }
 
-    public ImmutablePixelMap pixelChainAdd(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pChain) {
-        var is = pixelChainService.indexSegments(pixelMap, pChain, true);
-        return pixelMap
-                .withPixelChains(pixelMap.pixelChains().add(is._2))
-                .withSegmentIndex(is._1.segmentIndex());
+    public ImmutablePixelMap pixelChainAdd(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain chain) {
+        var withStartPositions = pixelChainService.setStartPositions(pixelMap, chain);
+        var result = pixelMap.withPixelChains(pixelMap.pixelChains().add(withStartPositions));
+        return indexSegments(result, withStartPositions, true);
     }
 
     public ImmutablePixelMap pixelChainsClear(@NotNull ImmutablePixelMap pixelMap) {

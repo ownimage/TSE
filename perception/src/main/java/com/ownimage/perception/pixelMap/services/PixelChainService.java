@@ -537,29 +537,17 @@ public class PixelChainService {
                 .anyMatch(p -> p.samePosition(pPixel));
     }
 
-    @Deprecated // this modifies the pixelmap there is a better version in
-    public Tuple2<ImmutablePixelMap, ImmutablePixelChain> indexSegments(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain, boolean add) {
-        var result = StrongReference.of(pixelMap);
-        if (add) {
-            var builder = StrongReference.of(pixelChain);
-            var startPosition = StrongReference.of(0.0d);
-            pixelChain.getSegments().forEach(segment -> {
-                Segment segmentClone = segment.withStartPosition(startPosition.get());
-                builder.update(b -> b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
-                startPosition.update(s -> s += segment.getLength(pixelMap, builder.get()));
-            });
-            var newPixelChain = builder.get().setLength(startPosition.get());
-            newPixelChain.streamSegments().forEach(segment -> {
-                result.update(r -> pixelMapService.indexSegments(r, newPixelChain, segment, true));
-            });
-            return new Tuple2<>(result.get(), newPixelChain);
-        } else {
-            pixelChain.getSegments().forEach(segment -> {
-                result.update(r -> pixelMapService.indexSegments(r, pixelChain, segment, false));
-            });
-            return new Tuple2<>(result.get(), pixelChain);
-        }
+    public ImmutablePixelChain setStartPositions(
+            @NotNull ImmutablePixelMap pixelMap,
+            @NotNull ImmutablePixelChain pixelChain) {
+        var result = StrongReference.of(pixelChain);
+        var startPosition = StrongReference.of(0.0d);
+        pixelChain.getSegments().forEach(segment -> {
+            Segment segmentClone = segment.withStartPosition(startPosition.get());
+            result.update(b -> b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
+            startPosition.update(s -> s += segment.getLength(pixelMap, result.get()));
+        });
+        return result.get().setLength(startPosition.get());
     }
 
     /**
