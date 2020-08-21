@@ -345,7 +345,7 @@ public class PixelTest {
         Pixel underTest = Pixel.of(5, 5, height);
         Node sameAsTest = Node.ofIXY(Pixel.of(5, 5, height));
         // THEN
-        assertTrue(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
+        assertTrue(underTest.samePosition(sameAsTest.toImmutableIXY()));
     }
 
     @Test
@@ -354,6 +354,6 @@ public class PixelTest {
         Pixel underTest = Pixel.of(5, 5, height);
         Node sameAsTest = Node.ofIXY(Pixel.of(4, 4, height));
         // THEN
-        assertFalse(underTest.samePosition(sameAsTest.toPixelMapGridPosition()));
+        assertFalse(underTest.samePosition(sameAsTest.toImmutableIXY()));
     }
 }

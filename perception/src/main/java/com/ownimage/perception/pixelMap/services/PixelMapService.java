@@ -591,7 +591,7 @@ public class PixelMapService {
     }
 
     public ImmutablePixelMap replaceNode(@NotNull ImmutablePixelMap pixelMap, @NotNull Node node) {
-        return pixelMap.withNodes(pixelMap.nodes().put(node.toPixelMapGridPosition(), node));
+        return pixelMap.withNodes(pixelMap.nodes().put(node.toImmutableIXY(), node));
     }
 
     public ImmutablePixelMap pixelChainsAddAll(

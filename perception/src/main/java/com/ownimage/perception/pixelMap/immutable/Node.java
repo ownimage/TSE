@@ -84,7 +84,7 @@ public interface Node extends IXY {
         return pixelChains().contains(pixelChain);
     }
 
-    default ImmutableIXY toPixelMapGridPosition() {
+    default ImmutableIXY toImmutableIXY() {
         return ImmutableIXY.of(getX(), getY());
     }
 

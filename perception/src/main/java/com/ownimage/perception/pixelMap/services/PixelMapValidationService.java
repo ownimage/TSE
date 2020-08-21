@@ -56,8 +56,8 @@ public class PixelMapValidationService {
             @NotNull ImmutablePixelMap pixelMap) {
         var result = pixelMap.pixelChains().stream()
                 .flatMap(pc -> Stream.of(
-                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getStartNode(pixelMap, pc).get().toPixelMapGridPosition())),
-                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getEndNode(pixelMap, pc).get().toPixelMapGridPosition()))
+                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getStartNode(pixelMap, pc).get().toImmutableIXY())),
+                        new Tuple2<>(pc, pixelMap.nodes().get(pixelChainService.getEndNode(pixelMap, pc).get().toImmutableIXY()))
                 ))
                 .filter(not(t2 -> t2._2.containsPixelChain(t2._1)))
                 .findFirst()

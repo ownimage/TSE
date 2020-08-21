@@ -100,9 +100,9 @@ public class PixelMapApproximationService {
                         new Tuple2<>(pc, pixelChainService.getEndNode(pixelMap, pc))
                 ))
                 .forEach(t2 -> result.update(r -> {
-                    var updatedNode = r.nodes().get(t2._2.get().toPixelMapGridPosition())
+                    var updatedNode = r.nodes().get(t2._2.get().toImmutableIXY())
                             .addPixelChain(t2._1);
-                    return r.withNodes(r.nodes().put(updatedNode.toPixelMapGridPosition(), updatedNode));
+                    return r.withNodes(r.nodes().put(updatedNode.toImmutableIXY(), updatedNode));
                 }));
         return result.get();
     }

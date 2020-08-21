@@ -85,7 +85,7 @@ public class PixelMapChainGenerationService {
         var result = StrongReference.of(pixelMap);
 
         Vector<PixelChain> chains = new Vector<>();
-        pixelService.getNeighbours(pStartNode.toPixelMapGridPosition()).forEach(neighbour -> {
+        pixelService.getNeighbours(pStartNode.toImmutableIXY()).forEach(neighbour -> {
             if (pixelService.isNode(result.get(), neighbour)
                     || pixelService.isEdge(result.get(), neighbour)
                     && (
