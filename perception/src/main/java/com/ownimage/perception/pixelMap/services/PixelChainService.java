@@ -7,9 +7,7 @@ import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.PegCounter;
-import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.util.immutable.ImmutableSet;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.CurveSegment;
@@ -29,13 +27,11 @@ import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.Tuple4;
 import lombok.NonNull;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -555,64 +551,16 @@ public class PixelChainService {
             });
             var newPixelChain = builder.get().setLength(startPosition.get());
             newPixelChain.streamSegments().forEach(segment -> {
-                result.update(r -> index(r, newPixelChain, segment, true));
+                result.update(r -> pixelMapService.indexSegments(r, newPixelChain, segment, true));
             });
             return new Tuple2<>(result.get(), newPixelChain);
         } else {
             pixelChain.getSegments().forEach(segment -> {
-                result.update(r -> index(r, pixelChain, segment, false));
+                result.update(r -> pixelMapService.indexSegments(r, pixelChain, segment, false));
             });
             return new Tuple2<>(result.get(), pixelChain);
         }
     }
-
-    public ImmutablePixelMap index(
-            @NotNull ImmutablePixelMap pixelMap, @NotNull PixelChain pPixelChain, Segment pSegment, boolean pAdd) {
-        var result = StrongReference.of(pixelMap.withSegmentCount(pixelMap.segmentCount() + 1));
-        // // TODO make assumption that this is 360
-        // // mSegmentIndex.add(pLineSegment);
-        //
-        int minX = (int) Math.floor(pSegment.getMinX(pixelMap, pPixelChain) * pixelMap.width() / pixelMap.getAspectRatio()) - 1;
-        minX = Math.max(minX, 0);
-        minX = Math.min(minX, pixelMap.width() - 1);
-        int maxX = (int) Math.ceil(pSegment.getMaxX(pixelMap, pPixelChain) * pixelMap.width() / pixelMap.getAspectRatio()) + 1;
-        maxX = Math.min(maxX, pixelMap.width() - 1);
-        int minY = (int) Math.floor(pSegment.getMinY(pixelMap, pPixelChain) * pixelMap.height()) - 1;
-        minY = Math.max(minY, 0);
-        minY = Math.min(minY, pixelMap.height() - 1);
-        int maxY = (int) Math.ceil(pSegment.getMaxY(pixelMap, pPixelChain) * pixelMap.height()) + 1;
-        maxY = Math.min(maxY, pixelMap.height() - 1);
-
-        new Range2D(minX, maxX, minY, maxY).stream().forEach(i -> {
-            Pixel pixel = pixelMapService.getPixelAt(result.get(), i.getX(), i.getY());
-            Point centre = pixel.getUHVWMidPoint(pixelMap.height());
-            if (pSegment.closerThan(result.get(), pPixelChain, centre, pixelMapService.getUHVWHalfPixel(pixelMap).length())) {
-                val segments = new HashSet();
-                pixelMapTransformService.getSegments(result.get(), i.getX(), i.getY())
-                        .map(ImmutableSet::toCollection).ifPresent(segments::addAll);
-                if (pAdd) {
-                    segments.add(new Tuple2<>(pPixelChain, pSegment));
-                } else {
-                    segments.remove(new Tuple2<>(pPixelChain, pSegment));
-                    System.out.println("########################### PixelMap  remove " + i);
-                }
-                result.update(r -> r.withSegmentIndex(r.segmentIndex()
-                        .set(i.getX(), i.getY(), new ImmutableSet<Tuple2<PixelChain, Segment>>().addAll(segments))));
-            }
-        });
-        return result.get();
-    }
-
-//
-//    /**
-//     * @deprecated TODO: explain
-//     */
-//    @Deprecated
-//    private Pixel lastPixel() {
-//        // happy for this to throw exception
-//        return mPixels.lastElement().orElseThrow();
-//    }
-//
 
     /**
      * Length of the PixelChain. This is the number of Pixels that it contains.
