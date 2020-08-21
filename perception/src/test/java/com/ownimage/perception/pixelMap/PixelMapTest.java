@@ -248,7 +248,7 @@ public class PixelMapTest {
     }
 
     @Test
-    public void process03_generateNodes() {
+    public void process03_generateNodes_00() {
         // GIVEN
         String[] input = {
                 "E E       ",
@@ -267,6 +267,31 @@ public class PixelMapTest {
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void process03_generateNodes_01() {
+        // GIVEN
+        String[] input = {
+                "    N      ",
+                "    E      ",
+                "    N      ",
+                "   N EEEN  ",
+                "           ",
+        };
+        String[] expected = {
+                "    N      ",
+                "    E      ",
+                "    N      ",
+                "   N EEEN  ",
+                "           ",
+        };
+        var pixelMap = Utility.createMap(input, false);
+        // WHEN
+        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
+        // THEN
+        String[] actual = Utility.toStrings(pixelMap);
+        Utility.assertMapEquals(expected, actual);
     }
 
     @Test
@@ -347,7 +372,6 @@ public class PixelMapTest {
         double lineCurvePreference = transformSource.getLineCurvePreference();
         // WHEN
         pixelMap = pixelMapApproximationService.process04b_removeBristles(pixelMap, tolerance, lineCurvePreference, null);
-
         // THEN
         String[] actual = Utility.toStrings(pixelMap);
         Utility.assertMapEquals(expected, actual);

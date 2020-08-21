@@ -179,14 +179,13 @@ public class PixelMapService {
             @NotNull ImmutablePixelMap pixelMap,
             @NonNull IXY pixel,
             boolean pValue) {
-        var result = pixelMap;
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
-            result = nodeRemove(result, pixel);
+            return nodeRemove(pixelMap, pixel);
         }
         if (!pixelService.isNode(pixelMap, pixel) && pValue) {
-            result = nodeAdd(result, pixel);
+            return nodeAdd(pixelMap, pixel);
         }
-        return setData(result, pixel, pValue, NODE);
+        return pixelMap;
     }
 
     public @NotNull ImmutablePixelMap setData(
@@ -206,18 +205,38 @@ public class PixelMapService {
         return pixelMap;
     }
 
+    /**
+     * This adds the node to the PixelMap data and nodes.
+     *
+     * @param pixelMap
+     * @param pixel
+     * @return
+     */
     public @NotNull ImmutablePixelMap nodeAdd(
             @NotNull ImmutablePixelMap pixelMap,
             @NonNull IXY pixel) {
+        var result = pixelMap;
         var x = pixel.getX();
         var y = pixel.getY();
+
         var oldValue = pixelMap.data().get(x, y);
-        var newValue = (byte) (oldValue | NODE);
-        return pixelMap.withNodes(
-                pixelMap.nodes().put(getKey(pixel), Node.ofIXY(pixel)))
-                .withData(pixelMap.data().set(x, y, newValue));
+        var newValue = (byte) (oldValue | NODE | EDGE);
+        result = result.withData(result.data().set(x, y, newValue));
+
+        var key = getKey(pixel);
+        if (pixelMap.nodes().get(key) == null) {
+            result = result.withNodes(result.nodes().put(key, Node.of(key)));
+        }
+        return result;
     }
 
+    /**
+     * This removes the node from the PixelMap data and nodes.
+     *
+     * @param pixelMap
+     * @param pixel
+     * @return
+     */
     public @NotNull ImmutablePixelMap nodeRemove(
             @NotNull ImmutablePixelMap pixelMap,
             @NonNull IXY pixel) {
@@ -505,21 +524,26 @@ public class PixelMapService {
         return (double) pixelMap.width() / pixelMap.height();
     }
 
-    public Tuple2<ImmutablePixelMap, Boolean> calcIsNode(
+    /**
+     * This method calculates whether the IXY should be a node and sets the PixelMap (data and nodes) accordingly
+     *
+     * @param pixelMap
+     * @param point
+     * @return
+     */
+    public ImmutablePixelMap calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull IXY point) {
         boolean shouldBeNode = false;
-        var pixelMapResult = pixelMap;
         if (pixelService.isEdge(pixelMap, point)) {
             // here we use transitions to eliminate double counting connected neighbours
             // also note the the number of transitions is twice the number of neighbours
             int transitionCount = countEdgeNeighboursTransitions(pixelMap, point);
             if (transitionCount != 4) {
                 shouldBeNode = true;
-                pixelMapResult = setNode(pixelMap, point, true);
             }
         }
-        return new Tuple2<>(setNode(pixelMapResult, point, shouldBeNode), shouldBeNode);
+        return setNode(pixelMap, point, shouldBeNode);
     }
 
     public Tuple2<ImmutablePixelMap, Stream<ImmutablePixelChain>> generateChainsAndApproximate(
@@ -710,12 +734,12 @@ public class PixelMapService {
             result.update(r -> setNode(r, pixel, false));
         }
         result.update(r -> setData(r, pixel, isEdge, EDGE));
-        result.update(r -> calcIsNode(r, pixel)._1);
+        result.update(r -> calcIsNode(r, pixel));
         pixelService.getNeighbours(pixel)
                 .forEach(p -> {
-            result.update(r -> pixelMapApproximationService.thin(r, p, tolerance, lineCurvePreference));
-            result.update(r -> calcIsNode(r, p)._1);
-        });
+                    result.update(r -> pixelMapApproximationService.thin(r, p, tolerance, lineCurvePreference));
+                    result.update(r -> calcIsNode(r, p));
+                });
         result.update(r -> pixelMapApproximationService.thin(r, pixel, tolerance, lineCurvePreference));
         if (result.get().autoTrackChanges()) {
             if (isEdge) { // turning pixel on

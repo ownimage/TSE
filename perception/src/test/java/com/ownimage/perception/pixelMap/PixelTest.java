@@ -264,14 +264,10 @@ public class PixelTest {
         };
         var pixelMap = Utility.createMap(input, false);
         Pixel underTest = pixelMapService.getPixelAt(pixelMap, 0, 2);
-
         // WHEN
         var actual = pixelMapService.calcIsNode(pixelMap, underTest);
-        boolean n = actual._2;
-        var finalPM = actual._1;
-
+        var finalPM = actual;
         // THEN
-        assertTrue(n);
         assertTrue(pixelService.isNode(finalPM, underTest));
     }
 

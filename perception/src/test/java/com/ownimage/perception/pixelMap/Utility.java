@@ -177,7 +177,8 @@ public class Utility {
             final StringBuffer row = new StringBuffer();
             for (int x = 0; x < pPixelMap.width(); x++) {
                 final Pixel p = pixelMapService.getPixelAt(pPixelMap, x, y);
-                if (pixelService.isNode(pPixelMap, p)) row.append("N");
+                if (pixelService.isNode(pPixelMap, p) && pixelService.isEdge(pPixelMap, p)) row.append("N");
+                else if (pixelService.isNode(pPixelMap, p)) row.append("n");
                 else if (pixelService.isEdge(pPixelMap, p)) row.append("E");
                 else row.append(" ");
             }
@@ -200,7 +201,7 @@ public class Utility {
                     case ' ':
                         break;
                     case 'N':
-                        result = pixelMapService.setValue(result, x, y, (byte) (PixelConstants.NODE | PixelConstants.EDGE));
+                        result = pixelMapService.nodeAdd(result, Pixel.of(x, y, result.height()));
                         break;
                     case 'E':
                         result = pixelMapService.setValue(result, x, y, PixelConstants.EDGE);

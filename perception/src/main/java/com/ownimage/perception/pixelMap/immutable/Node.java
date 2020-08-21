@@ -14,25 +14,6 @@ import java.util.stream.Stream;
 @Value.Immutable(prehash = true)
 public interface Node extends IXY {
 
-//    private final ImmutableVectorClone<PixelChain> pixelChains;
-//    private final int x;
-//    private final int y;
-
-    //    public Node(@NotNull IXY integerPoint) {
-//        this(integerPoint.getX(), integerPoint.getY());
-//    }
-//
-//    Node(int x, int y) {
-//        this(x, y, new ImmutableVectorClone<>());
-//    }
-//
-//    Node(int x, int y, @NotNull ImmutableVectorClone<PixelChain> pixelChains) {
-//        this.x = x;
-//        this.y = y;
-//        this.pixelChains = pixelChains;
-//    }
-//
-
     @Override
     @Value.Parameter(order = 1)
     int getX();
@@ -90,6 +71,10 @@ public interface Node extends IXY {
 
     default Pixel toPixel(int height) {
         return Pixel.of(getX(), getY(), height);
+    }
+
+    static ImmutableNode of(@NotNull IXY ixy) {
+        return ImmutableNode.of(ixy.getX(), ixy.getY());
     }
 
 }

@@ -141,11 +141,7 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {
-            var calsIsNodeResult = pixelMapService.calcIsNode(result.get(), pixel);
-            result.set(calsIsNodeResult._1);
-            if (calsIsNodeResult._2) {
-                result.update(r -> pixelMapService.nodeAdd(r, pixel));
-            }
+            result.update(r -> pixelMapService.calcIsNode(result.get(), pixel));
         });
         return result.get();
     }
@@ -171,7 +167,7 @@ public class PixelMapApproximationService {
                 .forEach(p -> result.update(r -> thin(r, p, tolerance, lineCurvePreference)));
         removedPixels.stream()
                 .flatMap(p -> pixelMapService.stream8Neighbours(result.get(), p))
-                .forEach(p -> result.update(r -> pixelMapService.calcIsNode(r, p)._1));
+                .forEach(p -> result.update(r -> pixelMapService.calcIsNode(r, p)));
         return result.get();
     }
 
@@ -221,7 +217,7 @@ public class PixelMapApproximationService {
                 .forEach(pixel -> {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     pixelService.allEdgeNeighbours(result.get(), pixel)
-                            .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)._1));
+                            .forEach(pPixel -> result.update(r -> pixelMapService.calcIsNode(r, pPixel)));
                 });
         return result.get();
     }
