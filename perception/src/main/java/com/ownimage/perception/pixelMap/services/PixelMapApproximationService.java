@@ -232,7 +232,7 @@ public class PixelMapApproximationService {
             counter.increase();
             reportProgress(pProgressObserver, "Generating chains ...", counter.getPercentInt());
             var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-            result.set(pixelMapService.pixelChainsAddAll(chains._1, chains._2));
+            result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
         });
         logger.info(() -> "Number of chains: " + result.get().pixelChains().size());
         return result.get();
@@ -260,8 +260,8 @@ public class PixelMapApproximationService {
                 result.update(r -> pixelMapService.setNode(r, pixel, true));
                 pixelMapService.getNode(result.get(), pixel).ifPresent(node -> {
                     var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                    result.update(r -> pixelMapService.pixelChainsAddAll(chains._1, chains._2));
-                    chains._2.stream()
+                    result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
+                    chains.stream()
                             .flatMap(pc -> pc.getPixels().stream())
                             .map(ImmutableIXY::copyOf)
                             .forEach(pixelsInChains::add);
@@ -423,8 +423,7 @@ public class PixelMapApproximationService {
                     .forEach(chainPixel -> pixelMapService.getNode(result.get(), chainPixel)
                             .ifPresent(node -> {
                                 var generatedChains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                                result.update(r -> generatedChains._1);
-                                var chains = generatedChains._2
+                                var chains = generatedChains
                                         .parallelStream()
                                         .map(pc2 -> pixelChainService.approximateCurvesOnly(result.get(), pc2, tolerance, lineCurvePreference))
                                         .collect(Collectors.toList());
@@ -462,9 +461,7 @@ public class PixelMapApproximationService {
         });
 
         nodes.stream()
-                .map(n -> pixelMapService.generateChainsAndApproximate(result.get(), n, tolerance, lineCurvePreference))
-                .peek(gca -> result.update(r -> gca._1))
-                .flatMap(r -> r._2)
+                .flatMap(n -> pixelMapService.generateChainsAndApproximate(result.get(), n, tolerance, lineCurvePreference))
                 .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));
 
         // if there is a loop then this ensures that it is closed and converted to pixel chain
@@ -475,9 +472,7 @@ public class PixelMapApproximationService {
                 .filter(p -> pixelMapService.getPixelChains(result.get(), p).isEmpty())
                 .stream()
                 .peek(p -> result.update(r -> pixelMapService.setNode(r, p, true)))
-                .map(p -> pixelMapService.generateChainsAndApproximate(result.get(), Node.ofIXY(p), tolerance, lineCurvePreference))
-                .peek(gca -> result.update(r -> gca._1))
-                .flatMap(r -> r._2)
+                .flatMap(p -> pixelMapService.generateChainsAndApproximate(result.get(), Node.ofIXY(p), tolerance, lineCurvePreference))
                 .forEach(pc -> result.update(r -> pixelMapService.addPixelChain(r, pc)));
 
         return result.get();

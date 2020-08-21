@@ -546,13 +546,13 @@ public class PixelMapService {
         return setNode(pixelMap, point, shouldBeNode);
     }
 
-    public Tuple2<ImmutablePixelMap, Stream<ImmutablePixelChain>> generateChainsAndApproximate(
+    public Stream<ImmutablePixelChain> generateChainsAndApproximate(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Node pNode, double tolerance, double lineCurvePreference) {
         var result = pixelMapChainGenerationService.generateChains(pixelMap, pNode);
-        var stream = result._2.parallelStream()
+        var stream = result.parallelStream()
                 .map(pc -> pixelChainService.approximate(pixelMap, pc, tolerance))
                 .map(pc -> pixelChainService.approximateCurvesOnly(pixelMap, pc, tolerance, lineCurvePreference));
-        return new Tuple2<>(result._1, stream);
+        return stream;
     }
 
     public ImmutablePixelMap resetNode(@NotNull ImmutablePixelMap pixelMap) {

@@ -1,14 +1,12 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,16 +77,14 @@ public class PixelMapChainGenerationService {
         return result;
     }
 
-    public Tuple2<ImmutablePixelMap, Collection<ImmutablePixelChain>> generateChains(
+    public Collection<ImmutablePixelChain> generateChains(
             @NotNull ImmutablePixelMap pixelMap, @NotNull Node pStartNode) {
-        var result = StrongReference.of(pixelMap);
-
-        Vector<PixelChain> chains = new Vector<>();
+        Vector<ImmutablePixelChain> chains = new Vector<>();
         pixelService.getNeighbours(pStartNode.toImmutableIXY()).forEach(neighbour -> {
-            if (pixelService.isNode(result.get(), neighbour)
-                    || pixelService.isEdge(result.get(), neighbour)
+            if (pixelService.isNode(pixelMap, neighbour)
+                    || pixelService.isEdge(pixelMap, neighbour)
                     && (
-                    pixelMapService.getPixelChains(result.get(), Pixel.of(neighbour, pixelMap.height())).isEmpty()
+                    pixelMapService.getPixelChains(pixelMap, Pixel.of(neighbour, pixelMap.height())).isEmpty()
                             && chains.stream().filter(pc -> pc.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))).findFirst().isEmpty())
             ) {
                 var startingChain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
@@ -98,6 +94,6 @@ public class PixelMapChainGenerationService {
                 }
             }
         });
-        return new Tuple2(result.get(), chains);
+        return chains;
     }
 }
