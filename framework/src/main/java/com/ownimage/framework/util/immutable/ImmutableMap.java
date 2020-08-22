@@ -1,9 +1,9 @@
 package com.ownimage.framework.util.immutable;
 
-import lombok.val;
-
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
@@ -20,14 +20,14 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         super(pPrevious, pRedo, pUndo);
     }
 
-    public ImmutableMap clear() {
+    public ImmutableMap<K, V> clear() {
         return new ImmutableMap();
     }
 
-    public ImmutableMap put(K pKey, V pValue) {
+    public ImmutableMap<K, V> put(K pKey, V pValue) {
         synchronized (getSynchronisationObject()) {
-            val master = getMaster();
-            val currentValue = master.get(pKey);
+            var master = getMaster();
+            var currentValue = master.get(pKey);
             Consumer<HashMap<K, V>> redo = m -> m.put(pKey, pValue);
             Consumer<HashMap<K, V>> undo = master.containsKey(pKey)
                     ? m -> m.put(pKey, currentValue)
@@ -38,18 +38,18 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
 
     public V get(K pKey) {
         synchronized (getSynchronisationObject()) {
-            val master = getMaster();
+            var master = getMaster();
             return master.get(pKey);
         }
     }
 
-    public ImmutableMap remove(K pKey) {
+    public ImmutableMap<K, V> remove(K pKey) {
         synchronized (getSynchronisationObject()) {
-            val master = getMaster();
+            var master = getMaster();
             if (!master.containsKey(pKey)) {
                 return this;
             }
-            val currentValue = master.get(pKey);
+            var currentValue = master.get(pKey);
             Consumer<HashMap<K, V>> redo = m -> m.remove(pKey);
             Consumer<HashMap<K, V>> undo = master.containsKey(pKey)
                     ? m -> m.put(pKey, currentValue)
@@ -71,9 +71,18 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         }
     }
 
-    public java.util.Collection<V> values() {
+    public Collection<V> values() {
         synchronized (getSynchronisationObject()) {
             return getMaster().values();
+        }
+    }
+
+    public ImmutableMap<K, V> update(K key, BiFunction<K, V, V> fn) {
+        synchronized (getSynchronisationObject()) {
+            var master = getMaster();
+            var currentValue = master.get(key);
+            var newValue = fn.apply(key, currentValue);
+            return put(key, newValue);
         }
     }
 

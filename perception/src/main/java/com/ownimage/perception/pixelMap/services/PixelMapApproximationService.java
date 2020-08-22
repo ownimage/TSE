@@ -12,7 +12,6 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import io.vavr.Tuple2;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.E;
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
@@ -93,18 +91,15 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMap process09_connectNodes(
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver progress) {
-        var result = StrongReference.of(pixelMap);
+        var nodes = StrongReference.of(pixelMap.nodes());
         pixelMap.pixelChains().stream()
-                .flatMap(pc -> Stream.of(
-                        new Tuple2<>(pc, pixelChainService.getStartNode(pixelMap, pc)),
-                        new Tuple2<>(pc, pixelChainService.getEndNode(pixelMap, pc))
-                ))
-                .forEach(t2 -> result.update(r -> {
-                    var updatedNode = r.nodes().get(t2._2.get().toImmutableIXY())
-                            .addPixelChain(t2._1);
-                    return r.withNodes(r.nodes().put(updatedNode.toImmutableIXY(), updatedNode));
-                }));
-        return result.get();
+                .forEach(pc -> {
+                    var startNodeKey = pixelChainService.getStartNode(pixelMap, pc).orElseThrow().toImmutableIXY();
+                    var endNodeKey = pixelChainService.getEndNode(pixelMap, pc).orElseThrow().toImmutableIXY();
+                    nodes.update(n -> n.update(startNodeKey, (k, v) -> v.addPixelChain(pc)));
+                    nodes.update(n -> n.update(endNodeKey, (k, v) -> v.addPixelChain(pc)));
+                });
+        return pixelMap.withNodes(nodes.get());
     }
 
     public @NotNull ImmutablePixelMap process01_reset(

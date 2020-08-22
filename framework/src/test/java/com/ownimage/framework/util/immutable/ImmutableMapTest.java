@@ -1,6 +1,5 @@
 package com.ownimage.framework.util.immutable;
 
-import lombok.val;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -12,12 +11,12 @@ public class ImmutableMapTest {
     @Test
     public void clear_01() {
         // GIVEN
-        val key = 1;
-        val value = "one";
-        val underTest = new ImmutableMap<Integer, String>().put(key, value);
+        var key = 1;
+        var value = "one";
+        var underTest = new ImmutableMap<Integer, String>().put(key, value);
         assertEquals(underTest.get(key), value);
         // WHEN
-        val actual = underTest.clear();
+        var actual = underTest.clear();
         // THEN
         assertEquals(underTest.get(key), value);
         assertEquals(actual.get(key), null);
@@ -28,13 +27,13 @@ public class ImmutableMapTest {
     @Test
     public void put_01() {
         // GIVEN
-        val key = 1;
-        val value1 = "one";
-        val value2 = "two";
-        val underTest = new ImmutableMap<Integer, String>().put(key, value1);
+        var key = 1;
+        var value1 = "one";
+        var value2 = "two";
+        var underTest = new ImmutableMap<Integer, String>().put(key, value1);
         assertEquals(underTest.get(key), value1);
         // WHEN
-        val actual = underTest.put(key, value2);
+        var actual = underTest.put(key, value2);
         // THEN
         assertEquals(underTest.get(key), value1);
         assertEquals(actual.get(key), value2);
@@ -51,7 +50,7 @@ public class ImmutableMapTest {
         assertEquals(underTest.get(1), "one");
         assertEquals(underTest.get(2), "two");
         // WHEN
-        val actual = underTest.put(1, "ONE");
+        var actual = underTest.put(1, "ONE");
         // THEN
         assertEquals(underTest.get(1), "one");
         assertEquals(underTest.get(2), "two");
@@ -67,14 +66,31 @@ public class ImmutableMapTest {
     }
 
     @Test
+    public void update_01() {
+        // GIVEN
+        var key = "one";
+        var value1 = 1;
+        var value2 = 2;
+        var underTest = new ImmutableMap<String, Integer>().put(key, value1);
+        assertEquals((long) underTest.get(key), value1);
+        // WHEN
+        var actual = underTest.update(key, (k, v) -> value2);
+        // THEN
+        assertEquals((long) underTest.get(key), value1);
+        assertEquals((long) actual.get(key), value2);
+        assertEquals((long) underTest.get(key), value1);
+        assertEquals((long) actual.get(key), value2);
+    }
+
+    @Test
     public void remove_01() {
         // GIVEN
-        val key = 1;
-        val value1 = "one";
-        val underTest = new ImmutableMap<Integer, String>().put(key, value1);
+        var key = 1;
+        var value1 = "one";
+        var underTest = new ImmutableMap<Integer, String>().put(key, value1);
         assertEquals(underTest.get(key), value1);
         // WHEN
-        val actual = underTest.remove(key);
+        var actual = underTest.remove(key);
         // THEN
         assertEquals(underTest.get(key), value1);
         assertEquals(actual.get(key), null);
@@ -85,13 +101,13 @@ public class ImmutableMapTest {
     @Test
     public void remove_02() {
         // GIVEN
-        val key = 1;
-        val key2 = 2;
-        val value1 = "one";
-        val underTest = new ImmutableMap<Integer, String>().put(key, value1);
+        var key = 1;
+        var key2 = 2;
+        var value1 = "one";
+        var underTest = new ImmutableMap<Integer, String>().put(key, value1);
         assertEquals(underTest.get(key), value1);
         // WHEN
-        val actual = underTest.remove(key2);
+        var actual = underTest.remove(key2);
         // THEN
         assertEquals(underTest.get(key), value1);
         assertEquals(actual.get(key), "one");
@@ -107,9 +123,9 @@ public class ImmutableMapTest {
     @Test
     public void size_01() {
         // GIVEN
-        val underTest = new ImmutableMap<Integer, String>();
+        var underTest = new ImmutableMap<Integer, String>();
         // WHEN
-        val actual = underTest.size();
+        var actual = underTest.size();
         // THEN
         assertEquals(actual, 0);
     }
@@ -117,10 +133,10 @@ public class ImmutableMapTest {
     @Test
     public void size_02() {
         // GIVEN
-        val underTest = new ImmutableMap<Integer, String>()
+        var underTest = new ImmutableMap<Integer, String>()
                 .put(1, "one");
         // WHEN
-        val actual = underTest.size();
+        var actual = underTest.size();
         // THEN
         assertEquals(actual, 1);
     }
@@ -128,11 +144,11 @@ public class ImmutableMapTest {
     @Test
     public void size_03() {
         // GIVEN
-        val underTest = new ImmutableMap<Integer, String>()
+        var underTest = new ImmutableMap<Integer, String>()
                 .put(1, "one")
                 .put(1, "two");
         // WHEN
-        val actual = underTest.size();
+        var actual = underTest.size();
         // THEN
         assertEquals(actual, 1);
     }
@@ -140,11 +156,11 @@ public class ImmutableMapTest {
     @Test
     public void size_04() {
         // GIVEN
-        val underTest = new ImmutableMap<Integer, String>()
+        var underTest = new ImmutableMap<Integer, String>()
                 .put(1, "one")
                 .put(2, "two");
         // WHEN
-        val actual = underTest.size();
+        var actual = underTest.size();
         // THEN
         assertEquals(actual, 2);
     }
@@ -152,12 +168,12 @@ public class ImmutableMapTest {
     @Test
     public void size_05() {
         // GIVEN
-        val underTest = new ImmutableMap<Integer, String>()
+        var underTest = new ImmutableMap<Integer, String>()
                 .put(1, "one")
                 .put(2, "two")
                 .clear();
         // WHEN
-        val actual = underTest.size();
+        var actual = underTest.size();
         // THEN
         assertEquals(actual, 0);
     }

@@ -467,19 +467,9 @@ public class PixelMapService {
 
     public Optional<Node> getNode(ImmutablePixelMap pixelMap, IXY pIntegerXY) {
         // this is because pIntegerXY might be a Node or Pixel
-        ImmutableIXY point = getKey(pIntegerXY);
-        Node node = pixelMap.nodes().get(point);
-        if (node != null) {
-            return Optional.of(node);
-        }
-        if (pixelService.isNode(pixelMap, point)) {
-            // TODO it is not believed that this is needed as Nodes shuould be immutable 2020/07/04
-            node = Node.ofIXY(point);
-//            mNodes = mNodes.put(point, node);
-            logger.severe("Found a node that is not in the node map");
-            return Optional.of(node);
-        }
-        return Optional.empty();
+        ImmutableIXY key = getKey(pIntegerXY);
+        Node node = pixelMap.nodes().get(key);
+        return Optional.ofNullable(node);
     }
 
     public Optional<Pixel> getPixelOptionalAt(@NotNull ImmutablePixelMap pixelMapData, int x, int y) {

@@ -277,7 +277,6 @@ public class PixelChainService {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
     }
 
-
     public Optional<Node> getStartNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
         return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
     }
