@@ -59,34 +59,19 @@ public class PixelChainTest {
     @Test
     public void pixelChain_approximate() {
         // GIVEN
-        String[] input = {
-                "                          ",
-                "     EEE                  ",
-                "    E   EE                ",
-                "    E     E               ",
-                "   E       E              ",
-                "   E      E               ",
-                "    E    E                ",
-                "   N  NEE                 ",
-                "                          ",
-        };
-        var ipmts = mock(IPixelMapTransformSource.class);
-        when(ipmts.getHeight()).thenReturn(input.length);
-        when(ipmts.getLineTolerance()).thenReturn(1.2d);
-        when(ipmts.getLineCurvePreference()).thenReturn(1.7d);
-        double tolerance = ipmts.getLineTolerance() / ipmts.getHeight();
-
-        var pixelMap = Utility.createMap(input, ipmts, false);
-        pixelMap = pixelMapApproximationService.process03_generateNodes(pixelMap, null);
-
+        var pixelMap = Utility.createMap(26, 9);
+        var height = pixelMap.height();
+        var tolerance = 1.2d / height;
+        var chain = Utility.createPixelChain(pixelMap, Pixel.of(3, 7, height),
+                Pixel.of(4, 6, height), Pixel.of(3, 5, height), Pixel.of(3, 4, height), Pixel.of(4, 3, height),
+                Pixel.of(4, 2, height), Pixel.of(5, 1, height), Pixel.of(6, 1, height), Pixel.of(7, 1, height),
+                Pixel.of(8, 2, height), Pixel.of(9, 2, height), Pixel.of(10, 3, height), Pixel.of(11, 4, height),
+                Pixel.of(10, 5, height), Pixel.of(9, 6, height), Pixel.of(8, 7, height), Pixel.of(7, 7, height),
+                Pixel.of(6, 7, height));
         // WHEN
-        pixelMap = pixelMapApproximationService.process05_generateChains(pixelMap, null);
-        assertEquals(1, pixelMap.pixelChains().size());
-
+        var actual = pixelChainService.approximate(pixelMap, chain, tolerance);
         // THEN
-        var chain = pixelMapService.streamPixelChains(pixelMap).findFirst().orElseThrow();
-        chain = pixelChainService.approximate(pixelMap, chain, tolerance);
-        assertEquals(3, chain.getSegmentCount());
+        assertEquals(3, actual.getSegmentCount());
     }
 
     @Test

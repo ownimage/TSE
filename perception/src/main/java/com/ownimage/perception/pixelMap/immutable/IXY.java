@@ -1,12 +1,13 @@
 package com.ownimage.perception.pixelMap.immutable;
 
+import com.google.common.base.MoreObjects;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
 
 @Value.Immutable(prehash = true)
-public interface IXY {
+public interface IXY extends Comparable<IXY> {
 
     @Value.Parameter(order = 1)
     int getX();
@@ -36,5 +37,19 @@ public interface IXY {
         double y = (getY() + 0.5d) / height;
         double x = (getX() + 0.5d) / height;
         return new Point(x, y);
+    }
+
+    @Override
+    default int compareTo(@NotNull IXY o) {
+        var diff = getX() - o.getX();
+        return diff != 0 ? diff : getY() - o.getY();
+    }
+
+    default String toIXYString() {
+        return MoreObjects.toStringHelper("IXY")
+                .omitNullValues()
+                .add("x", getX())
+                .add("y", getY())
+                .toString();
     }
 }
