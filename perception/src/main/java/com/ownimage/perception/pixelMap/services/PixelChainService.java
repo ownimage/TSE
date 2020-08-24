@@ -1167,17 +1167,22 @@ public class PixelChainService {
         return pixelChain.changeVertexes(v -> vertexes.get()).changeSegments(s -> segments.get());
     }
 
-    public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull Node node) {
-        double y = (node.getX() + 0.5d) / pixelMap.height();
-        double x = (node.getY() + 0.5d) / pixelMap.height();
+    public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull IXY ixy) {
+        double y = (ixy.getX() + 0.5d) / pixelMap.height();
+        double x = (ixy.getY() + 0.5d) / pixelMap.height();
         var position = new Point(x, y);
         var vertex = ImmutableVertex.of(0, 0, position);
 
         return ImmutablePixelChain.of(
-                new ImmutableVectorClone<Pixel>().add(node.toPixel(pixelMap.height())),
+                new ImmutableVectorClone<Pixel>().add(Pixel.of(ixy, pixelMap.height())),
                 new ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex>().add(vertex),
                 new ImmutableVectorClone<>(),
                 0.0d,
                 Thickness.Normal);
+    }
+
+    public boolean isLoop(@NotNull ImmutablePixelChain pixelChain) {
+        if (pixelChain.getPixels().size() == 0) return false;
+        return 0 == pixelChain.getPixels().firstElement().get().compareTo(pixelChain.getPixels().lastElement().get());
     }
 }

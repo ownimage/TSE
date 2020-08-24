@@ -68,7 +68,10 @@ public class PixelMapChainGenerationService {
         var nextNormal =  pixelService.getNeighbours(pixel)
                 .filter(neighbour -> !pixelService.isNode(pixelMap, neighbour)
                         && pixelService.isEdge(pixelMap, neighbour) && !result.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))
-                        && !(result.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(result))))
+                        && !(result.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(result)))
+                        // below stops you making a loop of 4 back to yourself
+                        && !(result.getPixelCount() == 2 && pixelService.isNeighbour(neighbour, result.getPixels().get(0)))
+                )
                 .findFirst();
         if (nextNormal.isPresent()) {
             return generateChain(pixelMap, result, Pixel.of(nextNormal.get(), pixelMap.height()));

@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -223,12 +224,15 @@ public class PixelMapApproximationService {
         reportProgress(pProgressObserver, "Generating chains ...", 0);
         var result = StrongReference.of(pixelMap);
         var counter = Counter.createMaxCounter(pixelMap.nodes().size() + 1);
-        pixelMap.nodes().values().forEach(node -> {
+        var chains = Collections.synchronizedCollection(new ArrayList<ImmutablePixelChain>());
+        pixelMap.nodes().values().parallelStream().forEach(node -> {
             counter.increase();
             reportProgress(pProgressObserver, "Generating chains ...", counter.getPercentInt());
-            var chains = pixelMapChainGenerationService.generateChains(result.get(), node);
-            result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
+            pixelMapChainGenerationService.generateChains(result.get(), node).stream()
+                    .filter(pc -> 0 >= pc.getPixels().firstElement().get().compareTo(pc.getPixels().lastElement().get()))
+                    .forEach(chains::add);
         });
+        result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
         logger.info(() -> "Number of chains: " + result.get().pixelChains().size());
         return result.get();
     }

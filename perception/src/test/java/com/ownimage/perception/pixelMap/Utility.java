@@ -30,7 +30,7 @@ public class Utility {
     private static PixelChainService pixelChainService = context.getBean(PixelChainService.class);
     private static PixelService pixelService = context.getBean(PixelService.class);
 
-    static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
+    public static IPixelMapTransformSource getDefaultTransformSource(final int pHeight) {
         return new IPixelMapTransformSource() {
             @Override
             public int getHeight() {

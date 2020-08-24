@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.ownimage.perception.pixelMap.PixelConstants.EDGE;
@@ -142,14 +143,26 @@ public class PixelMapValidationService {
                 .peek(ip -> failure.set(ip))
                 .findFirst()
                 .isEmpty();
+        var count = StrongReference.of(0L);
+        var loopCount = StrongReference.of(0L);
         if (!result) { // check if it is a loop
             result = pixelMap.pixelChains().stream()
                     .filter(pc -> pc.getPixels().firstElement().orElseThrow().samePosition(failure.get()))
                     .filter(pc -> pc.getPixels().lastElement().orElseThrow().samePosition(failure.get()))
                     .findFirst()
                     .isPresent();
+            count.update(c ->  dataNodes.stream()
+                    .filter(n -> !shouldBeNode(pixelMap, n))
+                    .count());
+            loopCount.update(lc -> pixelMap.pixelChains().stream()
+                    .filter(pc -> pc.getPixels().firstElement().get().samePosition(pc.getPixels().lastElement().get()))
+                    .count());
         }
-        return throwErrorIfFalse(result, "checkAllDataNodesShouldBeNodes failure: " + failure.get());
+        return throwErrorIfFalse(result, () ->"checkAllDataNodesShouldBeNodes failure: count = " + count
+                + ", number of loops = " + loopCount
+                + ", first failure" + failure.get()
+                + System.lineSeparator() + System.lineSeparator()
+                + pixelAreaToString(pixelMap, failure.get(), 5));
     }
 
     /**
@@ -260,6 +273,13 @@ public class PixelMapValidationService {
         return result;
     }
 
+    public boolean throwErrorIfFalse(boolean result, @NotNull Supplier<String> message) {
+        if (!result) {
+            throw new RuntimeException(message.get());
+        }
+        return result;
+    }
+
     public boolean checkPixelMapNodesKeyMatchesValue(@NotNull Map<ImmutableIXY, Node> pixelMapNodes) {
         var result = pixelMapNodes.entrySet().stream()
                 .filter(e -> !(e.getKey().getX() == e.getValue().getX() && e.getKey().getY() == e.getValue().getY()))
@@ -304,8 +324,8 @@ public class PixelMapValidationService {
     public String pixelAreaToString(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutableIXY centre, int size) {
 
         var sb = new StringBuilder();
-        for (int y = centre.getY() - size; y <= centre.getY() + size; y++) {
-            for (int x = centre.getX() - size; x <= centre.getX() + size; x++) {
+        for (int y = Math.max(centre.getY() - size, 0); y <= Math.min(centre.getY() + size, pixelMap.height()); y++) {
+            for (int x = Math.max(centre.getX() - size, 0); x <= Math.min(centre.getX() + size, pixelMap.width()); x++) {
                 var ip = ImmutableIXY.of(x, y);
                 sb.append(pixelToString(pixelMap, ip));
             }

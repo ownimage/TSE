@@ -268,7 +268,7 @@ public interface PixelChain extends Serializable {
     default String toReadableString() {
         StringBuilder sb = new StringBuilder();
         sb.append("PixelChain[ ");
-        sb.append(getPixels().stream().map(Pixel::toString).collect(Collectors.joining(", ")));
+        sb.append(getPixels().stream().map(Pixel::toIXYString).collect(Collectors.joining(", ")));
         sb.append(" ]\n");
         return sb.toString();
     }

@@ -5,6 +5,7 @@
  */
 package com.ownimage.perception.pixelMap.immutable;
 
+import com.google.common.base.MoreObjects;
 import com.ownimage.framework.math.Point;
 import org.immutables.value.Value;
 import org.jetbrains.annotations.NotNull;
@@ -40,4 +41,14 @@ public interface Pixel extends IXY, Serializable {
     default Point getUHVWMidPoint(int height) {
         return getUHVWMidPoint();
     }
+
+    @Override
+    default String toIXYString() {
+        return MoreObjects.toStringHelper("Pixel")
+                .omitNullValues()
+                .add("x", getX())
+                .add("y", getY())
+                .toString();
+    }
+
 }

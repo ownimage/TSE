@@ -34,6 +34,7 @@ public class PixelMapValidationServiceTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
     private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
     private PixelMapValidationService underTest = context.getBean(PixelMapValidationService.class);
+    private PixelService pixelService = context.getBean(PixelService.class); // for interactive testing
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -143,7 +144,7 @@ public class PixelMapValidationServiceTest {
 
     @Test
     public void checkAllDataEdgesHave2Neighbours_03() {
-        // GIVEN pixel map with valid useage of 3 neighbours
+        // GIVEN pixel map with valid usage of 3 neighbours
         String[] input = {
                 "     N        ",
                 "     E        ",
@@ -155,8 +156,7 @@ public class PixelMapValidationServiceTest {
         };
         // WHEN
         var actual = Utility.createMap(input, true);
-        // THEN
-        underTest.validate(pixelMap);
+        underTest.validate(actual);
         Utility.assertMapEquals(input, Utility.toStrings(actual));
     }
 
