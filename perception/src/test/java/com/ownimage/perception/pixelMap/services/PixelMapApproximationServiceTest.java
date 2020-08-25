@@ -1,7 +1,6 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.persist.PersistDB;
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
@@ -28,13 +27,7 @@ public class PixelMapApproximationServiceTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @BeforeClass
-    public static void setViewFactory() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
-    }
-
-    @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

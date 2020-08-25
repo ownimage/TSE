@@ -2,7 +2,6 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.persist.PersistDB;
 import com.ownimage.framework.persist.SortedProperties;
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -29,8 +28,6 @@ public class PixelMapServiceTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
         LogManager.getLogManager().reset();
     }
 

@@ -3,7 +3,6 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.Vertex;
 import com.ownimage.perception.pixelMap.immutable.ImmutableCurveSegment;
@@ -37,9 +36,7 @@ public class PixelMapUpgradeServiceTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
+    public static void setUpBeforeClass() {
         LogManager.getLogManager().reset();
     }
 

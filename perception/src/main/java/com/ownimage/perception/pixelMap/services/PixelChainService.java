@@ -6,7 +6,7 @@ import com.ownimage.framework.math.Line;
 import com.ownimage.framework.math.LineSegment;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.PegCounter;
+import com.ownimage.framework.util.PegCounterService;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class PixelChainService {
 
     private final static Logger logger = Framework.getLogger();
-    private static PegCounter pegCounterService = new PegCounter(); // TODO this needs to be wired in properly
+    private static PegCounterService pegCounterService = new PegCounterService(); // TODO this needs to be wired in properly
     private PixelMapService pixelMapService;
     private PixelMapTransformService pixelMapTransformService;
     private VertexService vertexService;
@@ -671,7 +671,7 @@ public class PixelChainService {
             var currentError = segment.calcError(pixelMap, pixelChain) + secondSegment[0].calcError(pixelMap, pixelChain);
             var best = new Tuple4<>(currentError, firstSegment[0], joinVertex[0], secondSegment[0]);
 
-            pixelChain.getPegCounter().increase(PixelChain.PegCounters.RefineCornersAttempted);
+            pegCounterService.increase(PixelChain.PegCounters.RefineCornersAttempted);
             // the check below is needed as some segments may only be one index pixelLength so generating a midpoint might generate an invalid segment
             if (minPixelIndex < joinPixelIndex && joinPixelIndex < maxPixelIndex) {
                 var refined = false;

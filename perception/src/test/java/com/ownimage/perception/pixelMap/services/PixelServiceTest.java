@@ -30,7 +30,7 @@ public class PixelServiceTest extends TestCase {
     private ImmutableMap2D<Byte> data;
 
     @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

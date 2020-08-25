@@ -30,7 +30,7 @@ public class VertexServiceTest {
     private VertexService vertexService = context.getBean(VertexService.class);
 
     @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.control.control.IProgressObserver;
 import com.ownimage.framework.util.Counter;
 import com.ownimage.framework.util.Framework;
+import com.ownimage.framework.util.PegCounterService;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.IXY;
@@ -46,6 +47,7 @@ public class PixelMapApproximationService {
     private PixelChainService pixelChainService;
     private PixelService pixelService;
     private PixelMapService pixelMapService;
+    private PegCounterService pegCounterService;
 
     @Autowired
     public void setPixelMapChainGenerationService(PixelMapChainGenerationService pixelMapChainGenerationService) {
@@ -65,6 +67,11 @@ public class PixelMapApproximationService {
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
         this.pixelMapService = pixelMapService;
+    }
+
+    @Autowired
+    public void setPegCounterService(PegCounterService pegCounterService) {
+        this.pegCounterService = pegCounterService;
     }
 
     public ImmutablePixelMap actionProcess(
@@ -279,8 +286,7 @@ public class PixelMapApproximationService {
                 PixelChain.PegCounters.RefineCornersAttempted,
                 PixelChain.PegCounters.RefineCornersSuccessful
         };
-        var pegCounter = com.ownimage.perception.app.Services.getServices().getPegCounter();
-        pegCounter.clear(pegs);
+        pegCounterService.clear(pegs);
         logger.info(() -> "process06_straightLinesRefineCorners " + tolerance);
         var result = StrongReference.of(pixelMap);
         var refined = new Vector<ImmutablePixelChain>();
@@ -288,7 +294,7 @@ public class PixelMapApproximationService {
                 refined.add(pixelChainService.approximate(result.get(), pixelChain, tolerance)));
         result.update(r -> pixelMapService.pixelChainsClear(r));
         result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
-        logger.info(pegCounter.getString(pegs));
+        logger.info(pegCounterService.getString(pegs));
         logger.info("approximate - done");
         return result.get();
     }
@@ -318,8 +324,7 @@ public class PixelMapApproximationService {
                 PixelChain.PegCounters.refine01FirstSegmentAttempted,
                 PixelChain.PegCounters.refine01FirstSegmentSuccessful
         };
-        var pegCounter = com.ownimage.perception.app.Services.getServices().getPegCounter();
-        pegCounter.clear(pegs);
+        pegCounterService.clear(pegs);
         var pixelChainCount = result.get().pixelChains().size();
         if (pixelChainCount > 0) {
             var counter = Counter.createMaxCounter(pixelChainCount);
@@ -334,7 +339,7 @@ public class PixelMapApproximationService {
             result.update(r -> pixelMapService.pixelChainsClear(r));
             result.update(r -> pixelMapService.pixelChainsAddAll(r, refined));
         }
-        logger.info(pegCounter.getString(pegs));
+        logger.info(pegCounterService.getString(pegs));
         return result.get();
     }
 
@@ -417,18 +422,10 @@ public class PixelMapApproximationService {
         var result = StrongReference.of(pixelMap);
         pixels.forEach(pixel -> pixelMapService.getPixelChains(result.get(), pixel).forEach(pc -> {
             result.update(r -> pixelMapService.pixelChainRemove(r, pc));
-            pc.streamPixels()
-                    .filter(pPixel1 -> pixelService.isNode(result.get(), pPixel1))
-                    .forEach(chainPixel -> pixelMapService.getNode(result.get(), chainPixel)
-                            .ifPresent(node -> {
-                                var generatedChains = pixelMapChainGenerationService.generateChains(result.get(), node);
-                                var chains = generatedChains
-                                        .parallelStream()
-                                        .map(pc2 -> pixelChainService.approximateCurvesOnly(result.get(), pc2, tolerance, lineCurvePreference))
-                                        .collect(Collectors.toList());
-                                result.update(r -> pixelMapService.addPixelChains(r, chains));
-                            })
-                    );
+            pc.getPixels().stream()
+                    .flatMap(chainPixel -> pixelMapService.getNode(result.get(), chainPixel).stream())
+                    .flatMap(p -> pixelMapService.generateChainsAndApproximate(result.get(), Node.ofIXY(p), tolerance, lineCurvePreference))
+                    .forEach(pc2 -> result.update(r -> pixelMapService.addPixelChain(r, pc2)));
         }));
         return result.get();
     }

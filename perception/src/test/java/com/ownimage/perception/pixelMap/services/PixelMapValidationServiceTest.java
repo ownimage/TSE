@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.services;
 
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableNode;
@@ -31,15 +30,11 @@ public class PixelMapValidationServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-    private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
-    private PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
     private PixelMapValidationService underTest = context.getBean(PixelMapValidationService.class);
     private PixelService pixelService = context.getBean(PixelService.class); // for interactive testing
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
+    public static void setUpBeforeClass() {
         LogManager.getLogManager().reset();
     }
 

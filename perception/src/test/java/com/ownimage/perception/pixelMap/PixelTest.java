@@ -27,7 +27,7 @@ public class PixelTest {
     private final int height = 10;
 
     @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

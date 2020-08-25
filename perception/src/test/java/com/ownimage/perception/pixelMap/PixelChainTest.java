@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
@@ -39,13 +38,7 @@ public class PixelChainTest {
     PixelMap pixelMap;
 
     @BeforeClass
-    public static void setupViewFactory() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory(false);
-    }
-
-    @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

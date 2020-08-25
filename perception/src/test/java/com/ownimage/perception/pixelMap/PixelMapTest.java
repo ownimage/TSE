@@ -1,7 +1,6 @@
 package com.ownimage.perception.pixelMap;
 
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.framework.view.javafx.FXViewFactory;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableNode;
@@ -16,7 +15,6 @@ import com.ownimage.perception.pixelMap.services.PixelService;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -63,18 +61,8 @@ public class PixelMapTest {
     private PixelChainService pixelChainService = context.getBean(PixelChainService.class);
 
     @BeforeClass
-    public static void setupViewFactory() throws Exception {
-        FXViewFactory.clearViewFactory();
-        FXViewFactory.setAsViewFactory();
-    }
-
-    @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
     }
 
     @Test

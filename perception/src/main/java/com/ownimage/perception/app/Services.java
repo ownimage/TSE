@@ -7,7 +7,7 @@ package com.ownimage.perception.app;
 
 import com.ownimage.framework.undo.UndoRedoBuffer;
 import com.ownimage.framework.util.Framework;
-import com.ownimage.framework.util.PegCounter;
+import com.ownimage.framework.util.PegCounterService;
 import com.ownimage.perception.render.RenderService;
 import com.ownimage.perception.transformSequence.TransformSequence;
 
@@ -24,7 +24,7 @@ public class Services {
     private UndoRedoBuffer mUndoRedoBuffer;
     private RenderService mRenderService;
     private TransformSequence mTransformSequence;
-    private PegCounter mPegCounter;
+    private PegCounterService mPegCounterService;
 
     private Services() {
     }
@@ -49,8 +49,8 @@ public class Services {
         return Optional.ofNullable(mTransformSequence);
     }
 
-    public PegCounter getPegCounter() {
-        return mPegCounter;
+    public PegCounterService getPegCounterService() {
+        return mPegCounterService;
     }
 
     public void setTransformSequence(final TransformSequence pTransformSequence) {
@@ -68,7 +68,7 @@ public class Services {
         mServices.mUndoRedoBuffer = new UndoRedoBuffer(100);
         mServices.mRenderService = new RenderService();
         mServices.mPerception = new Perception();
-        mServices.mPegCounter = new PegCounter();
+        mServices.mPegCounterService = new PegCounterService();
     }
 }
 

@@ -26,7 +26,7 @@ public class PixelChainServiceTest {
     private PixelChainService underTest = context.getBean(PixelChainService.class);
 
     @BeforeClass
-    public static void turnLoggingOff() throws Exception {
+    public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
     }
 

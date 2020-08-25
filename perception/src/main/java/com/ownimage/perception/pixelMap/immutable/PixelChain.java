@@ -1,9 +1,7 @@
 package com.ownimage.perception.pixelMap.immutable;
 
 import com.ownimage.framework.math.Point;
-import com.ownimage.framework.util.PegCounter;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
-import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.transform.CannyEdgeTransform;
@@ -18,10 +16,6 @@ import java.util.stream.Stream;
 
 @Value.Immutable
 public interface PixelChain extends Serializable {
-
-    default PegCounter getPegCounter() {
-        return Services.getServices().getPegCounter();
-    }
 
     @Value.Parameter(order = 1)
     ImmutableVectorClone<Pixel> getPixels();

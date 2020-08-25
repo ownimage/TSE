@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 /**
  * Allows for the counting and collection of values to assist in management of the platform.
  */
-public class PegCounter {
+public class PegCounterService {
 
     private HashMap<Object, Long> mMap = new HashMap<>();
 

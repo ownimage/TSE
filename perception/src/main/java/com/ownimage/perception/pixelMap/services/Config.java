@@ -1,10 +1,14 @@
 package com.ownimage.perception.pixelMap.services;
 
+import com.ownimage.framework.util.PegCounterService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Config {
+
+    @Bean
+    public PegCounterService pegCounterService() { return new PegCounterService(); }
 
     @Bean
     public PixelChainService pixelChainService() {

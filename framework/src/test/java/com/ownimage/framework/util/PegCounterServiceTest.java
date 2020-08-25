@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class PegCounterTest {
+public class PegCounterServiceTest {
 
     @Test
     public void test_get_01() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg = new Object();
         // WHEN
         var expected = underTest.get(peg);
@@ -25,7 +25,7 @@ public class PegCounterTest {
     @Test
     public void test_increase_01() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg0 = new Object();
         var peg1 = new Object();
         var peg2 = new Object();
@@ -42,7 +42,7 @@ public class PegCounterTest {
     @Test
     public void test_remove_01() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg1 = new Object();
         var peg2 = new Object();
         underTest.increase(peg1);
@@ -60,7 +60,7 @@ public class PegCounterTest {
     @Test
     public void test_clear_01() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg1 = new Object();
         var peg2 = new Object();
         underTest.increase(peg1);
@@ -78,7 +78,7 @@ public class PegCounterTest {
     @Test
     public void test_getString_01() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg1 = "Peg1";
         var peg2 = "Peg2";
         underTest.increase(peg1);
@@ -96,7 +96,7 @@ public class PegCounterTest {
     @Test
     public void test_getString_02() {
         // GIVEN
-        var underTest = new PegCounter();
+        var underTest = new PegCounterService();
         var peg1 = "Peg1";
         var peg2 = "Peg2";
         underTest.increase(peg1);
