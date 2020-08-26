@@ -91,7 +91,7 @@ public class PixelMapActionService {
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
         double radius = (double) cursorSize / result.get().height();
-        new Range2D(pixel.getX() - cursorSize, pixel.getX() + cursorSize, pixel.getY() - cursorSize, pixel.getY() + cursorSize)
+        new Range2D(pixel.getX() - cursorSize + 1, pixel.getX() + cursorSize, pixel.getY() - cursorSize + 1, pixel.getY() + cursorSize)
                 .forEach((x, y) ->
                         pixelMapService.getOptionalPixelAt(result.get(), x, y)
                                 .filter(p -> pixelService.isEdge(result.get(), p))

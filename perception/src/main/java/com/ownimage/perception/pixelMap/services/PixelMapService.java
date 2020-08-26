@@ -148,7 +148,7 @@ public class PixelMapService {
                         .collect(Collectors.toList());
                 pixelMap = pixelChainsClear(pixelMap);
                 pixelMap = pixelChainsAddAll(pixelMap, pixelChains);
-                //TODO this will need to change
+                pixelMap = pixelMapUpgradeService.ensureAllPixelChainsMappedToNodes(pixelMap);
                 bais = null;
                 ois = null;
                 objectString = null;

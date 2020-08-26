@@ -3,6 +3,7 @@ package com.ownimage.framework.util.immutable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -40,6 +41,13 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         synchronized (getSynchronisationObject()) {
             var master = getMaster();
             return master.get(pKey);
+        }
+    }
+
+    public Optional<V> getOptional(K pKey) {
+        synchronized (getSynchronisationObject()) {
+            var master = getMaster();
+            return Optional.ofNullable(master.get(pKey));
         }
     }
 

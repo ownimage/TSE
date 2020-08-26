@@ -27,15 +27,15 @@ public interface Node extends IXY {
         return new ImmutableVectorClone<PixelChain>();
     }
 
-    Node withPixelChains(@NotNull ImmutableVectorClone<PixelChain> pixelChains);
+    ImmutableNode withPixelChains(@NotNull ImmutableVectorClone<PixelChain> pixelChains);
 
     static ImmutableNode ofIXY(@NotNull IXY pixel) {
         return ImmutableNode.of(pixel.getX(), pixel.getY());
     }
 
-    default Node addPixelChain(@NotNull ImmutablePixelChain pixelChain) {
+    default ImmutableNode addPixelChain(@NotNull ImmutablePixelChain pixelChain) {
         if (pixelChains().contains(pixelChain)) {
-            return this;
+            return ImmutableNode.copyOf(this);
         }
         return withPixelChains(pixelChains().add(pixelChain));
     }

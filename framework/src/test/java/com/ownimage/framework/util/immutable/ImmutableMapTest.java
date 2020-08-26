@@ -3,6 +3,7 @@ package com.ownimage.framework.util.immutable;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,6 +23,31 @@ public class ImmutableMapTest {
         assertEquals(actual.get(key), null);
         assertEquals(underTest.get(key), value);
         assertEquals(actual.get(key), null);
+    }
+
+    @Test
+    public void getOptional_00() {
+        // GIVEN
+        var key = 1;
+        var value1 = "one";
+        var underTest = new ImmutableMap<Integer, String>().put(key, value1);
+        // WHEN
+        var actual = underTest.getOptional(key);
+        // THEN
+        assertEquals(value1, actual.get());
+    }
+
+    @Test
+    public void getOptional_01() {
+        // GIVEN
+        var dummyKey = 1;
+        var value1 = "one";
+        var testKey = 2;
+        var underTest = new ImmutableMap<Integer, String>().put(dummyKey, value1);
+        // WHEN
+        var actual = underTest.getOptional(testKey);
+        // THEN
+        assertEquals(Optional.empty(), actual);
     }
 
     @Test

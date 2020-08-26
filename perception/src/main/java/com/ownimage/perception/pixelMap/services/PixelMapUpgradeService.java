@@ -3,14 +3,19 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.immutable.IXY;
+import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
+import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
+import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.function.Consumer;
 
 public class PixelMapUpgradeService {
 
@@ -19,6 +24,18 @@ public class PixelMapUpgradeService {
     @Autowired
     public void setVertexService(VertexService vertexService) {
         this.vertexService = vertexService;
+    }
+
+    public @NotNull ImmutablePixelMap ensureAllPixelChainsMappedToNodes(@NotNull ImmutablePixelMap pixelMap) {
+        var nodes = StrongReference.of(pixelMap.nodes());
+        pixelMap.pixelChains().stream()
+                .forEach(pc -> {
+                    Consumer<ImmutableIXY> updateNodes = key ->
+                            nodes.update(n -> n.update(key, (k, v) -> (v != null ? v : Node.ofIXY(k)).addPixelChain(pc)));
+                    pc.getPixels().firstElement().map(ImmutableIXY::copyOf).ifPresent(updateNodes);
+                    pc.getPixels().lastElement().map(ImmutableIXY::copyOf).ifPresent(updateNodes);
+                });
+        return pixelMap.withNodes(nodes.get());
     }
 
     /**
@@ -45,7 +62,7 @@ public class PixelMapUpgradeService {
         for (int i = 0; i < pixelChain.getPixels().size(); i++) {
             var oldPixel = (Object) pixelChain.getPixels().get(i);
             // the line belows allows for the conversion of old and new formats of the pixel
-            var ip = oldPixel instanceof IXY ? (IXY) oldPixel : IXY.of((IntegerPoint) oldPixel);
+            var ip = oldPixel instanceof IXY ? ImmutableIXY.copyOf((IXY) oldPixel) : IXY.of((IntegerPoint) oldPixel);
             var newPixel = Pixel.of(ip.getX(), ip.getY(), height);
             newPixels.update(np -> np.add(newPixel));
         }

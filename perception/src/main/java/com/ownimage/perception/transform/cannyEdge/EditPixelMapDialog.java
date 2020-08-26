@@ -68,6 +68,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -1011,6 +1012,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         setViewEnabled(false);
         try {
             pAction.performAction();
+        } catch (Exception ex) {
+            Framework.logThrowable(mLogger, Level.SEVERE, ex);
         } finally {
             setViewEnabled(true);
         }
