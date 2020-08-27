@@ -11,7 +11,6 @@ import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.CurveSegment;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
@@ -22,6 +21,7 @@ import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.StraightSegment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
@@ -529,7 +529,7 @@ public class PixelChainService {
 //
 //
 //
-    public boolean contains(@NotNull PixelChain pixelChain, @NotNull IXY pPixel) {
+    public boolean contains(@NotNull PixelChain pixelChain, @NotNull XY pPixel) {
         return pixelChain.getPixels()
                 .stream()
                 .anyMatch(p -> p.samePosition(pPixel));
@@ -1167,14 +1167,14 @@ public class PixelChainService {
         return pixelChain.changeVertexes(v -> vertexes.get()).changeSegments(s -> segments.get());
     }
 
-    public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull IXY ixy) {
-        double y = (ixy.getX() + 0.5d) / pixelMap.height();
-        double x = (ixy.getY() + 0.5d) / pixelMap.height();
+    public ImmutablePixelChain createStartingPixelChain(@NotNull PixelMap pixelMap, @NotNull XY XY) {
+        double y = (XY.getX() + 0.5d) / pixelMap.height();
+        double x = (XY.getY() + 0.5d) / pixelMap.height();
         var position = new Point(x, y);
         var vertex = ImmutableVertex.of(0, 0, position);
 
         return ImmutablePixelChain.of(
-                new ImmutableVectorClone<Pixel>().add(Pixel.of(ixy, pixelMap.height())),
+                new ImmutableVectorClone<Pixel>().add(Pixel.of(XY, pixelMap.height())),
                 new ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex>().add(vertex),
                 new ImmutableVectorClone<>(),
                 0.0d,

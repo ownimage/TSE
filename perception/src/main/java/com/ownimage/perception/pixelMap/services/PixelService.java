@@ -6,6 +6,7 @@ import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class PixelService {
     }
 
 
-    public boolean isNode(PixelMap pixelMap, IXY integerPoint) {
+    public boolean isNode(PixelMap pixelMap, XY integerPoint) {
         return isNode(pixelMap, integerPoint.getX(), integerPoint.getY());
     }
 
@@ -66,19 +67,19 @@ public class PixelService {
         return true;
     }
 
-    public boolean isEdge(@NotNull PixelMap pixelMap, @NotNull IXY ip) {
+    public boolean isEdge(@NotNull PixelMap pixelMap, @NotNull XY ip) {
         return isEdge(pixelMap, ip.getX(), ip.getY());
     }
 
-    public IXY getNeighbour(@NotNull IXY pixel, int pN) {
+    public XY getNeighbour(@NotNull XY pixel, int pN) {
         return pixel.add(mNeighbours[pN]);
     }
 
-    public Vector<ImmutableIXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
+    public Vector<ImmutableIXY> getNodeNeighbours(@NotNull PixelMap pixelMap, @NotNull XY pixel) {
         var allNeighbours = new Vector<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(n -> isNode(pixelMap, n))
-                .map(ImmutableIXY::copyOf)
+                .map(IXY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
@@ -87,16 +88,16 @@ public class PixelService {
         return getNodeNeighbours(pixelMap, pixel).size();
     }
 
-    public Set<ImmutableIXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
+    public Set<ImmutableIXY> allEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull XY pixel) {
         var allNeighbours = new HashSet<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
-                .map(ImmutableIXY::copyOf)
+                .map(IXY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
 
-    public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull IXY pixel) {
+    public int countEdgeNeighbours(@NotNull PixelMap pixelMap, @NotNull XY pixel) {
         return  (int) getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
                 .count();
@@ -118,13 +119,13 @@ public class PixelService {
         return count;
     }
 
-    public boolean isNeighbour(@NotNull IXY me, @NotNull IXY other) {
+    public boolean isNeighbour(@NotNull XY me, @NotNull XY other) {
         // big question is are you a neighbour of yourself - YES
         return Math.max(Math.abs(me.getX() - other.getX()), Math.abs(me.getY() - other.getY())) < 2;
     }
 
 
-    public Stream<IXY> getNeighbours(@NotNull IXY point) {
+    public Stream<XY> getNeighbours(@NotNull XY point) {
         return Arrays.stream(mNeighbourOrder)
                 .map(i -> mNeighbours[i])
                 .map(point::add);

@@ -1,11 +1,11 @@
 package com.ownimage.perception.pixelMap;
 
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelChainService;
 import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
@@ -251,7 +251,7 @@ public class Utility {
         throw new ComparisonFailure("PixelChains do not contain same pixels", pc1Readable, pc2Readable);
     }
 
-    public static ImmutablePixelChain createPixelChain(@NotNull PixelMap pixelMap, @NotNull IXY start, @NotNull Pixel... pixels) {
+    public static ImmutablePixelChain createPixelChain(@NotNull PixelMap pixelMap, @NotNull XY start, @NotNull Pixel... pixels) {
         var startNode = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(start.getX(), start.getY());
         var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, startNode);
         for (var pixel : pixels) {

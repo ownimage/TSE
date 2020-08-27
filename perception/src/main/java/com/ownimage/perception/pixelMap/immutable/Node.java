@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 @Value.Immutable(prehash = true)
-public interface Node extends IXY {
+public interface Node extends XY {
 
     @Override
     @Value.Parameter(order = 1)
@@ -29,7 +29,7 @@ public interface Node extends IXY {
 
     ImmutableNode withPixelChains(@NotNull ImmutableVectorClone<PixelChain> pixelChains);
 
-    static ImmutableNode ofIXY(@NotNull IXY pixel) {
+    static ImmutableNode ofIXY(@NotNull XY pixel) {
         return ImmutableNode.of(pixel.getX(), pixel.getY());
     }
 
@@ -73,8 +73,8 @@ public interface Node extends IXY {
         return Pixel.of(getX(), getY(), height);
     }
 
-    static ImmutableNode of(@NotNull IXY ixy) {
-        return ImmutableNode.of(ixy.getX(), ixy.getY());
+    static ImmutableNode of(@NotNull XY XY) {
+        return ImmutableNode.of(XY.getX(), XY.getY());
     }
 
 }

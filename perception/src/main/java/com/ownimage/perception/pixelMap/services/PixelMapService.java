@@ -8,7 +8,6 @@ import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.framework.util.immutable.ImmutableMap2D;
 import com.ownimage.framework.util.immutable.ImmutableSet;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -16,6 +15,7 @@ import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import io.vavr.Tuple2;
 import lombok.NonNull;
 import lombok.val;
@@ -170,14 +170,14 @@ public class PixelMapService {
     }
 
     // TODO this will dissappear when the concept of a Pixel dissappears and is replaced with an ImmutableIXY
-    private ImmutableIXY getKey(IXY pIntegerXY) {
+    private ImmutableIXY getKey(XY pIntegerXY) {
         // this is because pIntegerXY might be a Node or Pixel
         return pIntegerXY.getClass() == ImmutableIXY.class ? (ImmutableIXY) pIntegerXY : ImmutableIXY.of(pIntegerXY.getX(), pIntegerXY.getY());
     }
 
     public @NotNull ImmutablePixelMap setNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel,
+            @NonNull XY pixel,
             boolean pValue) {
         if (pixelService.isNode(pixelMap, pixel) && !pValue) {
             return nodeRemove(pixelMap, pixel);
@@ -190,7 +190,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setData(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IXY pixel,
+            @NotNull XY pixel,
             boolean pState,
             byte pValue) {
         if (0 <= pixel.getY() && pixel.getY() < pixelMap.height()) {
@@ -214,7 +214,7 @@ public class PixelMapService {
      */
     public @NotNull ImmutablePixelMap nodeAdd(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel) {
+            @NonNull XY pixel) {
         var result = pixelMap;
         var x = pixel.getX();
         var y = pixel.getY();
@@ -239,7 +239,7 @@ public class PixelMapService {
      */
     public @NotNull ImmutablePixelMap nodeRemove(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel) {
+            @NonNull XY pixel) {
         var x = pixel.getX();
         var y = pixel.getY();
         var oldValue = pixelMap.data().get(x, y);
@@ -251,7 +251,7 @@ public class PixelMapService {
 
     public int countEdgeNeighboursTransitions(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel) {
+            @NonNull XY pixel) {
         int[] loop = new int[]{NW, N, NE, E, SE, S, SW, W, NW};
 
         int count = 0;
@@ -306,7 +306,7 @@ public class PixelMapService {
         }
     }
 
-    public List<ImmutablePixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull IXY pPixel) {
+    public List<ImmutablePixelChain> getPixelChains(@NotNull ImmutablePixelMap pixelMapData, @NonNull XY pPixel) {
         Framework.logEntry(logger);
         var pixelChains = pixelMapData.pixelChains().stream()
                 .filter(pc -> pixelChainService.contains(pc, pPixel))
@@ -465,7 +465,7 @@ public class PixelMapService {
         return result.get();
     }
 
-    public Optional<Node> getNode(ImmutablePixelMap pixelMap, IXY pIntegerXY) {
+    public Optional<Node> getNode(ImmutablePixelMap pixelMap, XY pIntegerXY) {
         // this is because pIntegerXY might be a Node or Pixel
         ImmutableIXY key = getKey(pIntegerXY);
         Node node = pixelMap.nodes().get(key);
@@ -515,7 +515,7 @@ public class PixelMapService {
     }
 
     /**
-     * This method calculates whether the IXY should be a node and sets the PixelMap (data and nodes) accordingly
+     * This method calculates whether the XY should be a node and sets the PixelMap (data and nodes) accordingly
      *
      * @param pixelMap
      * @param point
@@ -523,7 +523,7 @@ public class PixelMapService {
      */
     public ImmutablePixelMap calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IXY point) {
+            @NotNull XY point) {
         boolean shouldBeNode = false;
         if (pixelService.isEdge(pixelMap, point)) {
             // here we use transitions to eliminate double counting connected neighbours
@@ -711,7 +711,7 @@ public class PixelMapService {
 
     public @NotNull ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IXY pixel,
+            @NotNull XY pixel,
             boolean isEdge,
             double tolerance,
             double lineCurvePreference) {
@@ -740,7 +740,7 @@ public class PixelMapService {
         return result.get();
     }
 
-    public Stream<ImmutableIXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull IXY center) {
+    public Stream<ImmutableIXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull XY center) {
         return new Range2D(-1, 2, -1, 2).stream()
                 .map(ip -> center.add(ip.getX(), ip.getY()))
                 .filter(ip -> !ip.equals(center))

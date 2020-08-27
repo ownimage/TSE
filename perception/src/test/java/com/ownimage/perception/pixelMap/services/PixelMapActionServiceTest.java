@@ -2,8 +2,8 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.StrongReference;
 import com.ownimage.perception.pixelMap.Utility;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import io.vavr.Tuple2;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class PixelMapActionServiceTest {
     public void actionPixelOn_00() {
         // GIVEN empty pixel map and set of pixels
         var pixelMap = Utility.createMap(10, 10);
-        Collection<IXY> hoizontal = IntStream.range(2, 9).mapToObj(Integer::valueOf)
+        Collection<XY> hoizontal = IntStream.range(2, 9).mapToObj(Integer::valueOf)
                 .map(i -> ImmutableIXY.of(i, 5))
                 .collect(Collectors.toList());
         // WHEN
@@ -48,7 +48,7 @@ public class PixelMapActionServiceTest {
     public void actionPixelOn_01() {
         // GIVEN empty pixel map and set of pixels
         var pixelMap = Utility.createMap(10, 10);
-        Collection<IXY> cross = new ArrayList<>();
+        Collection<XY> cross = new ArrayList<>();
         IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(i, 5)).forEach(cross::add);
         IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(5, i)).forEach(cross::add);
         // WHEN
@@ -62,9 +62,9 @@ public class PixelMapActionServiceTest {
     public void actionPixelOff_01() {
         // GIVEN a pixel map with a horizontal line
         var pixelMap = Utility.createMap(10, 10);
-        Collection<IXY> horiz = IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(i, 5))
+        Collection<XY> horiz = IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(i, 5))
                 .collect(Collectors.toList());
-        Collection<IXY> vert = IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(5, i))
+        Collection<XY> vert = IntStream.range(2, 9).mapToObj(Integer::valueOf).map(i -> ImmutableIXY.of(5, i))
                 .collect(Collectors.toList());
         var tolerance = 1.2d / pixelMap.height();
         var lineCurvePreference = 1.2d;

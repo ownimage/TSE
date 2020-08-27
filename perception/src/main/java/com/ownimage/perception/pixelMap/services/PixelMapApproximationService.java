@@ -13,6 +13,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,7 +201,7 @@ public class PixelMapApproximationService {
         var toBeRemoved = new Vector<ImmutableIXY>();
         var result = StrongReference.of(pixelMap);
         result.get().nodes().values().stream()
-                .map(ImmutableIXY::copyOf)
+                .map(IXY::of)
                 .forEach(node -> pixelService.getNodeNeighbours(result.get(), node)
                         .forEach(other -> {
                             var nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
@@ -251,12 +252,12 @@ public class PixelMapApproximationService {
         var pixelsInChains = Collections.synchronizedSet(new HashSet<ImmutableIXY>());
         result.get().pixelChains().stream().parallel()
                 .flatMap(pc -> pc.getPixels().stream())
-                .map(ImmutableIXY::copyOf)
+                .map(IXY::of)
                 .forEach(pixelsInChains::add);
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
                 .map(Map.Entry::getKey)
-                .map(IXY::of)
+                .map(XY::of)
                 .collect(Collectors.toList());
         var counter = Counter.createMaxCounter(edges.size() + 1);
         edges.forEach(pixel -> {
@@ -269,7 +270,7 @@ public class PixelMapApproximationService {
                     result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
                     chains.stream()
                             .flatMap(pc -> pc.getPixels().stream())
-                            .map(ImmutableIXY::copyOf)
+                            .map(IXY::of)
                             .forEach(pixelsInChains::add);
                 });
             }
@@ -345,7 +346,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap thin(
             @NotNull ImmutablePixelMap pixelMap,
-            @NotNull IXY pixel,
+            @NotNull XY pixel,
             double tolerance,
             double lineCurvePreference) {
         if (!pixelService.isEdge(pixelMap, pixel)) {
@@ -367,7 +368,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel,
+            @NonNull XY pixel,
             boolean isEdge,
             double tolerance,
             double lineCurvePreference) {
@@ -398,25 +399,25 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap trackPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pPixel,
+            @NonNull XY pPixel,
             double tolerance,
             double lineCurvePreference) {
-        List<IXY> pixels = Collections.singletonList(pPixel);
+        List<XY> pixels = Collections.singletonList(pPixel);
         return trackPixelOn(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMap trackPixelOff(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pPixel,
+            @NonNull XY pPixel,
             double tolerance,
             double lineCurvePreference) {
-        List<IXY> pixels = Collections.singletonList(pPixel);
+        List<XY> pixels = Collections.singletonList(pPixel);
         return trackPixelOff(pixelMap, pixels, tolerance, lineCurvePreference);
     }
 
     public @NotNull ImmutablePixelMap trackPixelOff(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull List<IXY> pixels,
+            @NonNull List<XY> pixels,
             double tolerance,
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMap);
@@ -432,7 +433,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap trackPixelOn(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull Collection<IXY> pixels,
+            @NonNull Collection<XY> pixels,
             double tolerance,
             double lineCurvePreference) {
         if (pixels.isEmpty()) {
@@ -477,7 +478,7 @@ public class PixelMapApproximationService {
 
     public @NotNull ImmutablePixelMap calcIsNode(
             @NotNull ImmutablePixelMap pixelMap,
-            @NonNull IXY pixel) {
+            @NonNull XY pixel) {
         boolean shouldBeNode = false;
         if (pixelService.isEdge(pixelMap, pixel)) {
             // here we use transitions to eliminate double counting connected neighbours

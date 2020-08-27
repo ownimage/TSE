@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 @Value.Immutable
-public interface Pixel extends IXY, Serializable {
+public interface Pixel extends XY, Serializable {
 
     @Override
     @Value.Parameter(order = 1)
@@ -26,8 +26,8 @@ public interface Pixel extends IXY, Serializable {
     @Value.Parameter(order = 3)
     Point getUHVWMidPoint();
 
-    static ImmutablePixel of(@NotNull IXY ixy, int height) {
-        return of(ixy.getX(), ixy.getY(), height);
+    static ImmutablePixel of(@NotNull XY XY, int height) {
+        return of(XY.getX(), XY.getY(), height);
     }
 
     static ImmutablePixel of(int x, int y, int height) {
@@ -43,7 +43,7 @@ public interface Pixel extends IXY, Serializable {
     }
 
     @Override
-    default String toIXYString() {
+    default String toXYString() {
         return MoreObjects.toStringHelper("Pixel")
                 .omitNullValues()
                 .add("x", getX())

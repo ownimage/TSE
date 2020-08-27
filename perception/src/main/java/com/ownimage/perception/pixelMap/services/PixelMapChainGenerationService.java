@@ -1,12 +1,12 @@
 package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelChain;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class PixelMapChainGenerationService {
 
         var result = pixelChainService.add(pixelChain, pixel);
         // try to end quickly at a node
-        for (IXY nodalNeighbour : pixelService.getNodeNeighbours(pixelMap, pixel)) {
+        for (XY nodalNeighbour : pixelService.getNodeNeighbours(pixelMap, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
             if (!(result.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(result)))) {
                 return generateChain(pixelMap, result, Pixel.of(nodalNeighbour, pixelMap.height()));

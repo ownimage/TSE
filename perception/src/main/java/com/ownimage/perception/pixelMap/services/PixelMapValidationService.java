@@ -6,6 +6,7 @@ import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.immutable.Node;
+import com.ownimage.perception.pixelMap.immutable.XY;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,14 +100,14 @@ public class PixelMapValidationService {
         var dataNodesKeySet = dataNodes.keySet();
         var result = pixelMap.pixelChains().stream()
                 .map(pc -> pc.getPixels().firstElement().orElseThrow())
-                .map(ImmutableIXY::copyOf)
+                .map(IXY::of)
                 .filter(not(dataNodesKeySet::contains))
                 .findFirst()
                 .isEmpty()
                 &&
                 pixelMap.pixelChains().stream()
                         .map(pc -> pc.getPixels().lastElement().orElseThrow())
-                        .map(ImmutableIXY::copyOf)
+                        .map(IXY::of)
                         .filter(not(dataNodesKeySet::contains))
                         .findFirst()
                         .isEmpty();
@@ -240,13 +241,13 @@ public class PixelMapValidationService {
 
     public Stream<IXY> stream8Neighbours(@NotNull ImmutablePixelMap pixelMapData, @NotNull ImmutableIXY center) {
         return new Range2D(-1, 2, -1, 2).stream()
-                .map(IXY::of)
+                .map(XY::of)
                 .map(ip -> center.add(ip))
                 .filter(ip -> !ip.equals(center))
                 .filter(ip -> isInBounds(pixelMapData, ip));
     }
 
-    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull IXY point) {
+    public boolean isInBounds(@NotNull ImmutablePixelMap pixelMapData, @NotNull XY point) {
         return point.getX() >= 0 && point.getY() >= 0
                 && point.getX() < pixelMapData.width() && point.getY() < pixelMapData.height();
     }
@@ -316,7 +317,7 @@ public class PixelMapValidationService {
         var dataNodes = new HashSet<ImmutableIXY>();
         new Range2D(pixelMap.width(), pixelMap.height()).stream()
                 .filter(ip -> (pixelMap.data().get(ip.getX(), ip.getY()) & type) == type)
-                .map(IXY::of)
+                .map(XY::of)
                 .forEach(dataNodes::add);
         return dataNodes;
     }
