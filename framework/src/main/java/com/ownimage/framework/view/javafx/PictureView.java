@@ -19,7 +19,10 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
@@ -210,6 +213,7 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     }
 
     // from https://jar-download.com/artifacts/org.openjfx/javafx-swing/11/source-code/javafx/embed/swing/SwingFXUtils.java
+    @SuppressWarnings("unchecked")
     private WritableImage toFXImage(BufferedImage bimg, WritableImage wimg) {
         int bw = bimg.getWidth();
         int bh = bimg.getHeight();

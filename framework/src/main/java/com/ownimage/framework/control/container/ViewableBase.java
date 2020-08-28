@@ -33,17 +33,20 @@ public abstract class ViewableBase<Viewable, View extends IView> implements IVie
         mViews.invokeAllExcept(pView, pFunction);
     }
 
+    @SuppressWarnings("unchecked")
     public Viewable redraw() {
         mViews.invokeAll(ui -> ui.redraw());
         return (Viewable) this;
     }
 
+    @SuppressWarnings("unchecked")
     public Viewable setEnabled(final boolean pEnabled) {
         mEnabled = pEnabled;
         mViews.invokeAll(ui -> ui.setEnabled(pEnabled));
         return (Viewable) this;
     }
 
+    @SuppressWarnings("unchecked")
     public Viewable setVisible(final boolean pVisible) {
         mVisible = pVisible;
         mViews.invokeAll(ui -> ui.setVisible(pVisible));

@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
-public class FileView extends ViewBase {
+public class FileView extends ViewBase<FileControl> {
 
     private final FileControl mFileControl;
     private final HBox mUI;

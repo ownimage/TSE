@@ -39,7 +39,7 @@ public class ChangeLog<M> implements Node<M> {
     }
 
     @Override
-    public M getMaster(final Node pToMe, final Object pSecret) {
+    public M getMaster(final Node<M> pToMe, final Object pSecret) {
         if (pToMe == mToMaster) {
             throw new IllegalArgumentException("pToMe must not equal mToMaster");
         }

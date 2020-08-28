@@ -28,6 +28,7 @@ public class MutableMap2D<T> {
         new Range2D(pX, pY).forEach((x, y) -> mData[x][y] = pDefaultValue);
     }
 
+    @SuppressWarnings("unchecked")
     public T get(final int pX, final int pY) {
         checkXY(pX, pY);
         return (T) mData[pX][pY];

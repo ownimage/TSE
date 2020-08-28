@@ -84,7 +84,7 @@ public class ImmutableMap2D<E> extends ImmutableNode<ImmutableMap2D.Map2D<E>> {
     public ImmutableMap2D<E> clear() {
         synchronized (getSynchronisationObject()) {
             Map2D<E> master = getMaster();
-            Map2D empty = new Map2D<>(master);
+            Map2D<E> empty = new Map2D<>(master);
             return new ImmutableMap2D<E>(empty);
         }
     }

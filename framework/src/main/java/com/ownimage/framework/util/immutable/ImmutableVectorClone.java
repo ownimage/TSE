@@ -11,8 +11,9 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
 
     private final static long serialVersionUID = -1945581369389290425L;
     
-    private Vector<E> mVector = new Vector(); 
+    private Vector<E> mVector = new Vector<>();
 
+    @SuppressWarnings("unchecked")
     public ImmutableVectorClone<E> clone() {
             var clone = new ImmutableVectorClone<E>();
             clone.mVector = (Vector<E>) mVector.clone();

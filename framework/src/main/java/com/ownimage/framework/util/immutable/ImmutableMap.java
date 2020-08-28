@@ -22,7 +22,7 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
     }
 
     public ImmutableMap<K, V> clear() {
-        return new ImmutableMap();
+        return new ImmutableMap<>();
     }
 
     public ImmutableMap<K, V> put(K pKey, V pValue) {
@@ -33,7 +33,7 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
             Consumer<HashMap<K, V>> undo = master.containsKey(pKey)
                     ? m -> m.put(pKey, currentValue)
                     : m -> m.remove(pKey);
-            return new ImmutableMap<K, V>(this, redo, undo);
+            return new ImmutableMap<>(this, redo, undo);
         }
     }
 
@@ -63,7 +63,7 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
                     ? m -> m.put(pKey, currentValue)
                     : m -> {
             };
-            return new ImmutableMap<K, V>(this, redo, undo);
+            return new ImmutableMap<>(this, redo, undo);
         }
     }
 
@@ -75,7 +75,7 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
 
     public HashMap<K, V> toHashMap() {
         synchronized (getSynchronisationObject()) {
-            return new HashMap<K, V>(getMaster());
+            return new HashMap<>(getMaster());
         }
     }
 

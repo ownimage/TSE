@@ -70,9 +70,10 @@ public class ObjectMetaType<R> implements IMetaType<R> {
     /**
      * Gets the string representation of a value. Note that in the UI the raw type R gets lost and so we need to check it here.
      *
-     * @param pValue the value
+     * @param pObject the value
      * @return the string
      */
+    @SuppressWarnings("unchecked")
     public String getString(final Object pObject) {
         Framework.logEntry(mLogger);
         final R rObject = (R) pObject;

@@ -40,11 +40,13 @@ public class ControlEventDispatcher implements IControlEventDispatcher<IControl<
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void fireControlChangeEvent(final IControl<?, ?, ?, ?> pControl, final IView pView, final boolean pIsMutating) {
         mControlChangeListeners.invokeAllExcept(pView, (listener) -> listener.controlChangeEvent(pControl, pIsMutating));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean fireControlValidate(final IControl<?, ?, ?, ?> pControl) {
         synchronized (pControl) {

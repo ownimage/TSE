@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -634,32 +635,15 @@ public class PictureType implements IType<NullMetaType<PictureType>, PictureType
         range.forEach(pFunction);
     }
 
-    public void forEachParallel(final BiConsumer<Integer, Integer> pFunction) {
-        final Range2D range = new Range2D(getWidth(), getHeight());
-        range.forEachParallel(pFunction);
-    }
-
-    public void setColor(final BiFunction<Integer, Integer, Color> pFunction) {
-        final Range2D range = new Range2D(getWidth(), getHeight());
-        range.forEachParallel((x, y) -> setColor(x, y, pFunction.apply(x, y)));
-    }
-
     public void forEachDouble(final BiConsumer<Double, Double> pFunction) {
         final BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
         final Range2D range = new Range2D(getWidth(), getHeight());
         range.forEach(function);
     }
 
-    public void forEachDoubleParallel(final BiConsumer<Double, Double> pFunction) {
-        final BiConsumer<Integer, Integer> function = (x, y) -> pFunction.accept((double) x / getWidth(), (double) y / getHeight());
-        final Range2D range = new Range2D(getWidth(), getHeight());
-        range.forEachParallel(function);
-    }
-
     public void setColorDouble(final BiFunction<Double, Double, Color> pFunction) {
-        final BiConsumer<Integer, Integer> function = (x, y) -> setColor(x, y, pFunction.apply((double) x / getWidth(), (double) y / getHeight()));
-        final Range2D range = new Range2D(getWidth(), getHeight());
-        range.forEachParallel(function);
+        final Consumer<IntegerPoint> function = (ip) -> setColor(ip.getX(), ip.getY(), pFunction.apply((double) ip.getX() / getWidth(), (double) ip.getY() / getHeight()));
+        new Range2D(getWidth(), getHeight()).stream().parallel().forEach(function);
     }
 
     public RectangleSize getSize() {

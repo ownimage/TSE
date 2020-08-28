@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("unchecked")
 public class ViewBase<C extends IViewable> implements FXView {
 
     private final static Logger mLogger = Framework.getLogger();

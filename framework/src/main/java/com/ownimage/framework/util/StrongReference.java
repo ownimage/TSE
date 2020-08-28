@@ -28,7 +28,7 @@ public class StrongReference<T> {
     }
 
     public static <T> StrongReference<T> of(T value) {
-        return new StrongReference(value);
+        return new StrongReference<>(value);
     }
 
     public T get() {

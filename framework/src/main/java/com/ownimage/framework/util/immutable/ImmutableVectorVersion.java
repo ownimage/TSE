@@ -1,7 +1,5 @@
 package com.ownimage.framework.util.immutable;
 
-import lombok.val;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -46,8 +44,8 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     @Override
     public ImmutableVectorVersion<E> addAll(Collection<E> pAll) {
         synchronized (getSynchronisationObject()) {
-            val all = new Vector<>(pAll);
-            val size = getMaster().size();
+            var all = new Vector<>(pAll);
+            var size = getMaster().size();
             Consumer<Vector<E>> redo = m -> m.addAll(all);
             Consumer<Vector<E>> undo = m -> m.setSize(size);
             return new ImmutableVectorVersion<>(this, redo, undo);
@@ -60,8 +58,8 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
-    public ImmutableVectorVersion clear() {
-        return new ImmutableVectorVersion();
+    public ImmutableVectorVersion<E> clear() {
+        return new ImmutableVectorVersion<E>();
     }
 
     @Override
@@ -88,7 +86,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     @Override
     public ImmutableVectorVersion remove(E pElement) {
         synchronized (getSynchronisationObject()) {
-            val index = getMaster().indexOf(pElement);
+            var index = getMaster().indexOf(pElement);
             if (index == -1) {
                 return this;
             }
@@ -104,7 +102,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
             if (0 > pIndex || pIndex >= getMaster().size()) {
                 throw new IllegalArgumentException();
             }
-            val element = getMaster().get(pIndex);
+            var element = getMaster().get(pIndex);
             Consumer<Vector<E>> redo = m -> m.remove(pIndex);
             Consumer<Vector<E>> undo = m -> m.add(pIndex, element);
             return new ImmutableVectorVersion<>(this, redo, undo);
@@ -150,26 +148,28 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
      * @return an immutable representing the result
      */
     @Override
+    @SuppressWarnings("unchecked")
     public ImmutableVectorVersion removeAll(Collection<E> pAll) {
         if (pAll.isEmpty()) {
             return this;
         }
         synchronized (getSynchronisationObject()) {
             Vector<E> master = getMaster();
-            val change = pAll.stream()
+            var change = pAll.stream()
                     .parallel()
                     .anyMatch(master::contains);
             if (!change) {
                 return this;
             }
             // cloning technique done as trying to put removed elements back into a vector seems error prone
-            val vector = (Vector<E>) master.clone();
+            var vector = (Vector<E>) master.clone();
             vector.removeAll(pAll);
             return new ImmutableVectorVersion<>(vector);
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void forEach(Consumer<E> pFn) {
         synchronized (getSynchronisationObject()) {
             Vector<E> master = getMaster();
@@ -181,7 +181,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     @Override
     public ImmutableVectorVersion set(int pIndex, E pValue) {
         synchronized (getSynchronisationObject()) {
-            val originalValue = getMaster().get(pIndex);
+            var originalValue = getMaster().get(pIndex);
             Consumer<Vector<E>> redo = m -> m.set(pIndex, pValue);
             Consumer<Vector<E>> undo = m -> m.set(pIndex, originalValue);
             return new ImmutableVectorVersion<>(this, redo, undo);
@@ -189,6 +189,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Stream<E> stream() {
         synchronized (getSynchronisationObject()) {
             Vector<E> master = getMaster();
@@ -198,6 +199,7 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Vector<E> toVector() {
         synchronized (getSynchronisationObject()) {
             Vector<E> master = getMaster();
@@ -212,8 +214,9 @@ public class ImmutableVectorVersion<E> extends ImmutableNode<Vector<E>> implemen
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void readObject(ObjectInputStream pInputStream) throws ClassNotFoundException, IOException {
-        Vector<E> master = (Vector<E>) pInputStream.readObject();
+        var master = (Vector<E>) pInputStream.readObject();
         setMasterAndToMaster(master, null);
     }
 

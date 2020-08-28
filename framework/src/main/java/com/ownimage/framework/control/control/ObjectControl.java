@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R>, ObjectMetaType<R>, R, IView> {
 
-
     public final static Logger mLogger = Framework.getLogger();
     public final static long serialVersionUID = 1L;
 
@@ -49,8 +48,8 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 
     // this is required as the UI can not support the Generic type
     @Override
+    @SuppressWarnings("unchecked")
     public boolean setValue(@NonNull final Object pObject) {
-
         final R rObject = (R) pObject;
         final boolean b = super.setValue(rObject);
         return b;
@@ -58,6 +57,7 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
 
     // this is required as the UI can not support the Generic type
     @Override
+    @SuppressWarnings("unchecked")
     public boolean setValue(final Object pObject, final IView pView, final boolean pIsMutating) {
         final R rObject = (R) pObject;
         final boolean b = super.setValue(rObject, pView, pIsMutating);

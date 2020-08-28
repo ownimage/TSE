@@ -18,7 +18,7 @@ public class SortedProperties extends Properties implements IPersistDB {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized Enumeration keys() {
+    public synchronized Enumeration<Object> keys() {
         final Enumeration keysEnum = super.keys();
         final Vector keyList = new Vector();
         while (keysEnum.hasMoreElements()) {

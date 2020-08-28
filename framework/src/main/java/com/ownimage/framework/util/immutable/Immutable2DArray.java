@@ -29,11 +29,11 @@ public class Immutable2DArray<E> {
         mAnd = mSize - 1;
         mWidth = pWidth;
         mHeight = pHeight;
-        mNode = new Node();
+        mNode = new Node<>();
         mHashGenShift = hashGenShift(pWidth);
     }
 
-    public Immutable2DArray(Immutable2DArray pOther) {
+    public Immutable2DArray(Immutable2DArray<E> pOther) {
         mShift = pOther.mShift;
         mSize = pOther.mSize;
         mAnd = pOther.mAnd;
@@ -102,6 +102,7 @@ public class Immutable2DArray<E> {
         final private Node<E>[] mNodes;
         final private E[] mValues;
 
+        @SuppressWarnings("unchecked")
         public Node() {
             mNodes = new Node[mSize];
             mValues = (E[]) new Object[mSize];

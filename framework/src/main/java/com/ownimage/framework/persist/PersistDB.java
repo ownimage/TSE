@@ -14,9 +14,7 @@ import java.util.Vector;
 
 // from http://www.rgagnon.com/javadetails/java-0614.html
 
-@SuppressWarnings("serial")
 public class PersistDB extends Properties implements IPersistDB {
-
 
     public PersistDB() {
     }
@@ -27,7 +25,7 @@ public class PersistDB extends Properties implements IPersistDB {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public synchronized Enumeration keys() {
+    public synchronized Enumeration<Object> keys() {
         final Enumeration keysEnum = super.keys();
         final Vector keyList = new Vector();
         while (keysEnum.hasMoreElements()) {

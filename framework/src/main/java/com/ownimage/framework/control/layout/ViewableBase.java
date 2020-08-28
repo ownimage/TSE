@@ -10,6 +10,7 @@ import com.ownimage.framework.view.IView;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public abstract class ViewableBase<Viewable, View extends IView> implements IViewable<View> {
 
     private final EventDispatcher<View> mViews = new EventDispatcher<View>(this);

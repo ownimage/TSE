@@ -78,6 +78,7 @@ public class ImmutableLayerMap2D<T> {
          *
          * @return the version related to this layer.
          */
+        @SuppressWarnings("unchecked")
         public ImmutableMap2D getImmutable() {
             ImmutableMap2D version = (ImmutableMap2D) mOwner.get();
             if (version != null) return version;

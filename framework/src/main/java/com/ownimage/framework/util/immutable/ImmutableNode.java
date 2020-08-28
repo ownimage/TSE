@@ -11,17 +11,17 @@ import java.util.function.Consumer;
 public class ImmutableNode<M> implements Serializable {
 
     private M mMaster;
-    transient private WeakReference<ImmutableNode<M>> mPrevious;
+    transient final private WeakReference<ImmutableNode<M>> mPrevious;
     private final UUID mSynchronisation;
     private ImmutableNode<M> mToMaster;
-    private transient Consumer<M> mRedo;
-    private transient Consumer<M> mUndo;
+    private final transient Consumer<M> mRedo;
+    private final transient Consumer<M> mUndo;
 
 
     protected ImmutableNode(M pMaster) {
         mSynchronisation = UUID.randomUUID();
         setMasterAndToMaster(pMaster, null);
-        mPrevious = new WeakReference(null);
+        mPrevious = new WeakReference<>(null);
         mUndo = m -> {
         };
         mRedo = m -> {
@@ -32,7 +32,7 @@ public class ImmutableNode<M> implements Serializable {
         mSynchronisation = pPrevious.mSynchronisation;
         synchronized (getSynchronisationObject()) {
             setMasterAndToMaster(pPrevious.getMaster(), null);
-            mPrevious = new WeakReference(pPrevious);
+            mPrevious = new WeakReference<>(pPrevious);
             pRedo.accept(mMaster);
             mRedo = pRedo;
             mUndo = pUndo;

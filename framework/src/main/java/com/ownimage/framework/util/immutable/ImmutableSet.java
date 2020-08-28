@@ -70,6 +70,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Stream<E> stream() {
         synchronized (getSynchronisationObject()) {
             HashSet<E> master = getMaster();
@@ -81,8 +82,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
     public Collection<E> toCollection() {
         synchronized (getSynchronisationObject()) {
             HashSet<E> master = getMaster();
-            HashSet<E> copy = (HashSet<E>) master.clone();
-            return copy;
+            return new HashSet<>(master);
         }
     }
 
