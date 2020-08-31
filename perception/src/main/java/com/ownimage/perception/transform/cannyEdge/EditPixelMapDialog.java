@@ -8,18 +8,7 @@ package com.ownimage.perception.transform.cannyEdge;
 import com.google.common.collect.Lists;
 import com.ownimage.framework.control.container.Container;
 import com.ownimage.framework.control.container.IContainer;
-import com.ownimage.framework.control.control.ActionControl;
-import com.ownimage.framework.control.control.BooleanControl;
-import com.ownimage.framework.control.control.ColorControl;
-import com.ownimage.framework.control.control.DoubleControl;
-import com.ownimage.framework.control.control.GrafittiHelper;
-import com.ownimage.framework.control.control.IAction;
-import com.ownimage.framework.control.control.IControl;
-import com.ownimage.framework.control.control.IGrafitti;
-import com.ownimage.framework.control.control.IUIEventListener;
-import com.ownimage.framework.control.control.IntegerControl;
-import com.ownimage.framework.control.control.ObjectControl;
-import com.ownimage.framework.control.control.PictureControl;
+import com.ownimage.framework.control.control.*;
 import com.ownimage.framework.control.event.IControlValidator;
 import com.ownimage.framework.control.layout.HFlowLayout;
 import com.ownimage.framework.control.type.PictureType;
@@ -40,16 +29,8 @@ import com.ownimage.framework.view.factory.ViewFactory;
 import com.ownimage.perception.app.Properties;
 import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
-import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.immutable.Pixel;
-import com.ownimage.perception.pixelMap.immutable.PixelChain;
-import com.ownimage.perception.pixelMap.immutable.Segment;
-import com.ownimage.perception.pixelMap.immutable.XY;
-import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelChainService;
-import com.ownimage.perception.pixelMap.services.PixelMapActionService;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelService;
+import com.ownimage.perception.pixelMap.immutable.*;
+import com.ownimage.perception.pixelMap.services.*;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import com.ownimage.perception.transform.CropTransform;
 import lombok.NonNull;
@@ -59,11 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -759,7 +736,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             @NonNull BiConsumer<IUIEvent, XY> pFn
     ) {
         mLogger.fine(() -> String.format("pFn.accept %s, %s", pPixel, pLastPixel));
-        if (pPixel != null && (isPixelActionOn() || isPixelActionOff() || isPixelActionDeletePixelChain() || isPixelActionChainThickness())) {
+        if (pPixel != null && (
+                isPixelActionOn()
+                        || isPixelActionOff()
+                        || isPixelActionDeletePixelChain()
+                        || isPixelActionChainThickness()
+                        || isPixelActionChangeColor())) {
             if (pLastPixel != null && !pLastPixel.equals(pPixel)) {
                 mLogger.fine("pFn.accept ...");
                 int dX = pPixel.getX() - pLastPixel.getX();
@@ -851,8 +833,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void mouseDragEventPixelAddWorkingPixels(XY pPixel, int pCursorSize) {
-        graffitiPixelWorkingColor(pPixel);
         addPixelsToWorkingPixelsArray(pPixel, pCursorSize);
+        graffitiPixelWorkingColor(pPixel);
     }
 
     private void mouseDragEventPixelViewOn(@NonNull XY pPixel) {
