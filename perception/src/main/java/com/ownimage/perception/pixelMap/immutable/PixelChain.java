@@ -84,7 +84,7 @@ public interface PixelChain extends Serializable {
     /**
      * Gets the UHVW value of the Pixel at the specified position.
      *
-     * @param pPixelMap
+     * @param pPixelMap the pixelMap
      * @param pIndex    the index
      * @return the UHVW Point
      */
@@ -94,10 +94,6 @@ public interface PixelChain extends Serializable {
             throw new IllegalArgumentException(String.format(msg, pIndex, pixelCount()));
         }
         return pixels().get(pIndex).getUHVWMidPoint(pPixelMap.height());
-    }
-
-    default Optional<Segment> optionalLastSegment() {
-        return segments().lastElement();
     }
 
     private double actualCurvedThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
@@ -220,11 +216,9 @@ public interface PixelChain extends Serializable {
     }
 
     default String toReadableString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PixelChain[ ");
-        sb.append(pixels().stream().map(Pixel::toXYString).collect(Collectors.joining(", ")));
-        sb.append(" ]\n");
-        return sb.toString();
+        return "PixelChain[ " +
+                pixels().stream().map(Pixel::toXYString).collect(Collectors.joining(", ")) +
+                " ]\n";
     }
 
 }

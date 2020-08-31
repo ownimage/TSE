@@ -118,7 +118,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
      * @return an immutable representing the result
      */
     @Override
-    public ImmutableVectorClone removeAll(Collection<E> pAll) {
+    public ImmutableVectorClone<E> removeAll(Collection<E> pAll) {
         var clone = clone();
         clone.mVector.removeAll(pAll);
         return clone;
@@ -130,7 +130,7 @@ public class ImmutableVectorClone<E> implements IImmutableVector<E>, Serializabl
     }
 
     @Override
-    public ImmutableVectorClone set(int pIndex, E pValue) {
+    public ImmutableVectorClone<E> set(int pIndex, E pValue) {
         if (mVector.get(pIndex) == null && pValue == null
                 || ( pValue != null && pValue.equals(mVector.get(pIndex)))) {
             return this;
