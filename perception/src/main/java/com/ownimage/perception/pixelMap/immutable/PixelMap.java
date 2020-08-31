@@ -33,7 +33,7 @@ public interface PixelMap {
 
     @Value.Default
     default ImmutableMap<ImmutableIXY, Node> nodes() {
-        return new ImmutableMap();
+        return new ImmutableMap<>();
     }
 
     @Value.Default
@@ -54,10 +54,6 @@ public interface PixelMap {
     @Value.Default
     default boolean autoTrackChanges() {
         return false;
-    }
-
-    default double getAspectRatio() {
-        return (double) width() / height();
     }
 
     ImmutablePixelMap withData(@NotNull ImmutableMap2D<Byte> data);

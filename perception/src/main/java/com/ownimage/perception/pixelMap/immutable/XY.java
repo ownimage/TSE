@@ -1,6 +1,5 @@
 package com.ownimage.perception.pixelMap.immutable;
 
-import com.google.common.base.MoreObjects;
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.math.Point;
 import org.jetbrains.annotations.NotNull;
@@ -51,11 +50,4 @@ public interface XY extends Comparable<XY>, Serializable {
         return diff != 0 ? diff : getY() - o.getY();
     }
 
-    default String toXYString() {
-        return MoreObjects.toStringHelper("XY")
-                .omitNullValues()
-                .add("x", getX())
-                .add("y", getY())
-                .toString();
-    }
 }

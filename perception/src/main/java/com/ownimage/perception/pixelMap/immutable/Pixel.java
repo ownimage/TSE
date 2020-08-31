@@ -42,7 +42,6 @@ public interface Pixel extends XY, Serializable {
         return getUHVWMidPoint();
     }
 
-    @Override
     default String toXYString() {
         return MoreObjects.toStringHelper("Pixel")
                 .omitNullValues()

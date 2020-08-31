@@ -24,7 +24,7 @@ public interface Node extends XY {
 
     @Value.Default
     default ImmutableVectorClone<PixelChain> pixelChains() {
-        return new ImmutableVectorClone<PixelChain>();
+        return new ImmutableVectorClone<>();
     }
 
     ImmutableNode withPixelChains(@NotNull ImmutableVectorClone<PixelChain> pixelChains);
