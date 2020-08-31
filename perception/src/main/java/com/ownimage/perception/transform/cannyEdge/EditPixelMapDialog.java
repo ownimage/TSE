@@ -849,19 +849,16 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         graffitiPixelWorkingColor(pPixel);
     }
 
-    private void graffitiPixel(@NonNull Pixel pPixel, @NonNull ColorControl pColor) {
+    private void graffitiPixel(@NonNull XY xy, @NonNull ColorControl pColor) {
         Framework.logEntry(mLogger);
         mPictureControl.updateGrafitti(
-                g -> g.drawFilledRectangle(pixelToGrafittiRectangle(pPixel), pColor)
+                g -> g.drawFilledRectangle(pixelToGrafittiRectangle(xy), pColor)
         );
     }
 
-    private XY graffitiPixelWorkingColor(@NonNull XY pPixel) {
-        Framework.logEntry(mLogger);
-        mPictureControl.updateGrafitti(
-                g -> g.drawFilledRectangle(pixelToGrafittiRectangle(pPixel), mWorkingColor)
-        );
-        return pPixel;
+    private XY graffitiPixelWorkingColor(@NonNull XY xy) {
+        graffitiPixel(xy, mWorkingColor);Framework.logEntry(mLogger);
+        return xy;
     }
 
     synchronized private boolean actionPixelOff(@NonNull XY pPixel) {
