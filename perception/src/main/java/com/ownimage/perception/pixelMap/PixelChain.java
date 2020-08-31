@@ -9,7 +9,7 @@ import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.Segment;
-import lombok.Getter;
+import com.ownimage.perception.pixelMap.immutable.Vertex;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -21,19 +21,10 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
 
     private final static long serialVersionUID = 2L;
 
-    @Getter
     private ImmutableVectorClone<Pixel> mPixels;
-
-    @Getter
     private ImmutableVectorClone<Segment> mSegments;
-
-    @Getter
     private ImmutableVectorClone<com.ownimage.perception.pixelMap.immutable.Vertex> mVertexes;
-
-    @Getter
     private double mLength;
-
-    @Getter
     private Thickness mThickness;
 
     public Optional<Color> color() {
@@ -72,5 +63,29 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
         return sb.toString();
     }
 
+    @Override
+    public Thickness thickness() {
+        return mThickness;
+    }
+
+    @Override
+    public double length() {
+        return mLength;
+    }
+
+    @Override
+    public ImmutableVectorClone<Segment> segments() {
+        return mSegments;
+    }
+
+    @Override
+    public ImmutableVectorClone<Vertex> vertexes() {
+        return mVertexes;
+    }
+
+    @Override
+    public ImmutableVectorClone<Pixel> pixels() {
+        return mPixels;
+    }
 }
 

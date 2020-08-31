@@ -777,10 +777,10 @@ public class PixelMapTest {
             assertEquals(2, pPixelMap.pixelChains().size());
             var chains1 = pixelMapService.getPixelChains(pPixelMap, start1);
             assertEquals(1, chains1.size());
-            assertEquals(Thickness.Normal, chains1.get(0).getThickness());
+            assertEquals(Thickness.Normal, chains1.get(0).thickness());
             var chains2 = pixelMapService.getPixelChains(pPixelMap, start2);
             assertEquals(1, chains2.size());
-            assertEquals(pThickness, chains2.get(0).getThickness());
+            assertEquals(pThickness, chains2.get(0).thickness());
         };
         test.accept(pixelMap.get(), Thickness.Normal);
         // WHEN

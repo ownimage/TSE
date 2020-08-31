@@ -970,7 +970,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         if (pPixels.isEmpty()) {
             return false;
         }
-        Function<PixelChain, Thickness> mapper = pc -> pc.getThickness();
+        Function<PixelChain, Thickness> mapper = pc -> pc.thickness();
         switch (mThicknessOption.getValue()) {
             case None:
             case Thin:
@@ -990,7 +990,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
                 map.put(Thickness.Normal, mMediumMapsTo.getValue());
                 map.put(Thickness.Thin, mThinMapsTo.getValue());
                 map.put(Thickness.None, mNoneMapsTo.getValue());
-                mapper = pc -> map.get(pc.getThickness());
+                mapper = pc -> map.get(pc.thickness());
                 break;
         }
 

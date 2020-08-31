@@ -52,9 +52,9 @@ public class PixelMapUpgradeServiceTest {
     }
 
     private void validateSegments(PixelChain expected, PixelChain actual) {
-        assertEquals(5, actual.getSegments().size());
-        assertEquals(5, expected.getSegments().size());
-        for (int i = 0; i < actual.getSegments().size(); i++) {
+        assertEquals(5, actual.segments().size());
+        assertEquals(5, expected.segments().size());
+        for (int i = 0; i < actual.segments().size(); i++) {
             assertTrue(actual.getSegment(i) instanceof ImmutableStraightSegment
                     || actual.getSegment(i) instanceof ImmutableCurveSegment);
             var expectedSegment = expected.getSegment(i).toImmutable();
@@ -63,9 +63,9 @@ public class PixelMapUpgradeServiceTest {
     }
 
     private void validateVertexes(PixelChain expected, PixelChain actual) {
-        assertEquals(6, actual.getVertexes().size());
-        assertEquals(6, expected.getVertexes().size());
-        for (int i = 0; i < actual.getVertexes().size(); i++) {
+        assertEquals(6, actual.vertexes().size());
+        assertEquals(6, expected.vertexes().size());
+        for (int i = 0; i < actual.vertexes().size(); i++) {
             assertTrue(actual.getVertex(i).sameValue(expected.getVertex(i)));
             assertSame(ImmutableVertex.class, actual.getVertex(i).getClass());
         }
@@ -125,8 +125,8 @@ public class PixelMapUpgradeServiceTest {
                         }
                 )
                 .forEach(v -> pixelChain.update(pc -> pc.changeVertexes(vs -> vs.add(v))));
-        assertEquals(6, pixelChain.get().getVertexes().size());
-        assertEquals(5, pixelChain.get().getSegments().size());
+        assertEquals(6, pixelChain.get().vertexes().size());
+        assertEquals(5, pixelChain.get().segments().size());
         return pixelChain.get();
     }
 

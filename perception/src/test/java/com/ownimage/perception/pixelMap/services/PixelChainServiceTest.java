@@ -50,8 +50,8 @@ public class PixelChainServiceTest {
         var pixelMap = Utility.createMap(input, true);
         assertEquals(1, pixelMap.pixelChains().size());
         var pixelChain = pixelMap.pixelChains().stream().findFirst().orElseThrow();
-        assertEquals(5, pixelChain.getPixelCount());
-        assertEquals(1, pixelChain.getSegmentCount());
+        assertEquals(5, pixelChain.pixelCount());
+        assertEquals(1, pixelChain.segmentCount());
         return pixelChain;
     }
 
@@ -97,15 +97,15 @@ public class PixelChainServiceTest {
         // WHEN
         var pixelChainOut = underTest.resequence(pixelMap, pixelChainIn);
         // THEN sequence is good
-        assertEquals(3, pixelChainOut.getVertexes().size());
-        for (int i = 0; i < pixelChainIn.getVertexes().size(); i++) {
+        assertEquals(3, pixelChainOut.vertexes().size());
+        for (int i = 0; i < pixelChainIn.vertexes().size(); i++) {
             assertEquals(pixelChainIn.getVertex(i).getPixelIndex(), pixelChainOut.getVertex(i).getPixelIndex());
             assertEquals(pixelChainIn.getVertex(i).getPosition(), pixelChainOut.getVertex(i).getPosition());
             assertEquals(i, pixelChainOut.getVertex(i).getVertexIndex());
         }
-        assertEquals(2, pixelChainOut.getSegments().size());
+        assertEquals(2, pixelChainOut.segments().size());
         double startPosition = 0.0d;
-        for (int i = 0; i < pixelChainIn.getSegments().size(); i++) {
+        for (int i = 0; i < pixelChainIn.segments().size(); i++) {
             assertEquals(i, pixelChainOut.getSegment(i).getSegmentIndex());
             assertEquals(pixelChainIn.getSegment(i).getClass(), pixelChainOut.getSegment(i).getClass());
             assertEquals(startPosition, pixelChainOut.getSegment(i).getStartPosition(), 0.0d);

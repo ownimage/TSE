@@ -48,11 +48,11 @@ public class PixelMapChainGenerationService {
             return pixelChainService.setEndNode(pixelMap, pixelChain, node.get());
         }
 
-        if (pixelChain.getPixels().lastElement().orElseThrow() == pixel) {
+        if (pixelChain.pixels().lastElement().orElseThrow() == pixel) {
             logger.severe("SHOULD NOT BE ADDING THE SAME PIXEL LASTPIXEL");
         }
 
-        if (pixelChain.getPixels().contains(pixel)) {
+        if (pixelChain.pixels().contains(pixel)) {
             logger.severe("SHOULD NOT BE ADDING A PIXEL THAT IT ALREADY CONTAINS");
         }
 
@@ -60,17 +60,17 @@ public class PixelMapChainGenerationService {
         // try to end quickly at a node
         for (XY nodalNeighbour : pixelService.getNodeNeighbours(pixelMap, pixel)) {
             // there is a check here to stop you IMMEDIATELY going back to the staring node.
-            if (!(result.getPixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(result)))) {
+            if (!(result.pixelCount() == 2 && nodalNeighbour.samePosition(pixelChainService.firstPixel(result)))) {
                 return generateChain(pixelMap, result, Pixel.of(nodalNeighbour, pixelMap.height()));
             }
         }
         // otherwise go to the next pixel normally
         var nextNormal =  pixelService.getNeighbours(pixel)
                 .filter(neighbour -> !pixelService.isNode(pixelMap, neighbour)
-                        && pixelService.isEdge(pixelMap, neighbour) && !result.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))
-                        && !(result.getPixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(result)))
+                        && pixelService.isEdge(pixelMap, neighbour) && !result.pixels().contains(Pixel.of(neighbour, pixelMap.height()))
+                        && !(result.pixelCount() == 2 && neighbour.samePosition(pixelChainService.firstPixel(result)))
                         // below stops you making a loop of 4 back to yourself
-                        && !(result.getPixelCount() == 2 && pixelService.isNeighbour(neighbour, result.getPixels().get(0)))
+                        && !(result.pixelCount() == 2 && pixelService.isNeighbour(neighbour, result.pixels().get(0)))
                 )
                 .findFirst();
         if (nextNormal.isPresent()) {
@@ -88,7 +88,7 @@ public class PixelMapChainGenerationService {
                     || pixelService.isEdge(pixelMap, neighbour)
                     && (
                     pixelMapService.getPixelChains(pixelMap, Pixel.of(neighbour, pixelMap.height())).isEmpty()
-                            && chains.stream().filter(pc -> pc.getPixels().contains(Pixel.of(neighbour, pixelMap.height()))).findFirst().isEmpty())
+                            && chains.stream().filter(pc -> pc.pixels().contains(Pixel.of(neighbour, pixelMap.height()))).findFirst().isEmpty())
             ) {
                 var startingChain = pixelChainService.createStartingPixelChain(pixelMap, pStartNode);
                 var generatedChain = generateChain(pixelMap, startingChain, Pixel.of(neighbour, pixelMap.height()));

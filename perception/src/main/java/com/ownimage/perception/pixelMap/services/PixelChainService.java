@@ -94,15 +94,15 @@ public class PixelChainService {
         var result = pixelChain;
 
         // reverse pixels
-        Vector<Pixel> pixels = result.getPixels().toVector();
+        Vector<Pixel> pixels = result.pixels().toVector();
         Collections.reverse(pixels);
         result = result.changePixels(p -> p.clear().addAll(pixels));
 
         // reverse vertexes
-        int maxPixelIndex = result.getPixels().size() - 1;
+        int maxPixelIndex = result.pixels().size() - 1;
         Vector<Vertex> vertexes = new Vector<>();
-        for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
-            Vertex vertex = result.getVertexes().get(i);
+        for (int i = result.vertexes().size() - 1; i >= 0; i--) {
+            Vertex vertex = result.vertexes().get(i);
             Vertex v = vertexService.createVertex(pixelMap, result, vertexes.size(), maxPixelIndex - vertex.getPixelIndex());
             vertexes.add(v);
         }
@@ -110,8 +110,8 @@ public class PixelChainService {
 
         // reverse segments
         Vector<Segment> segments = new Vector<>();
-        for (int i = result.getVertexes().size() - 1; i >= 0; i--) {
-            if (i != pixelChain.getVertexes().size() - 1) {
+        for (int i = result.vertexes().size() - 1; i >= 0; i--) {
+            if (i != pixelChain.vertexes().size() - 1) {
                 var newSegment = SegmentFactory.createTempStraightSegment(result, segments.size());
                 segments.add(newSegment);
             }
@@ -194,15 +194,15 @@ public class PixelChainService {
             @NotNull PixelChain pixelChain,
             double lineCurvePreference) {
 
-        if (pixelChain.getSegmentCount() == 1) {
+        if (pixelChain.segmentCount() == 1) {
             return ImmutablePixelChain.copyOf(pixelChain);
         }
 
         var result = StrongReference.of(ImmutablePixelChain.copyOf(pixelChain));
         result.get().streamSegments().forEach(currentSegment -> {
-            if (currentSegment == result.get().getFirstSegment()) {
+            if (currentSegment == result.get().firstSegment()) {
                 result.update(r -> refine03FirstSegment(pPixelMap, r, lineCurvePreference, currentSegment));
-            } else if (currentSegment == result.get().getLastSegment()) {
+            } else if (currentSegment == result.get().lastSegment()) {
                 result.update(r -> refine03LastSegment(pPixelMap, r, lineCurvePreference, currentSegment));
             } else {
                 result.update(r -> refine03MidSegment(pPixelMap, r, lineCurvePreference, currentSegment));
@@ -275,23 +275,23 @@ public class PixelChainService {
     }
 
     public Pixel firstPixel(PixelChain pixelChain) {
-        return pixelChain.getPixels().firstElement().orElseThrow();
+        return pixelChain.pixels().firstElement().orElseThrow();
     }
 
     public Pixel lastPixel(PixelChain pixelChain) {
-        return pixelChain.getPixels().lastElement().orElseThrow();
+        return pixelChain.pixels().lastElement().orElseThrow();
     }
 
     public Optional<Node> getEndNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
-        return pixelMapService.getNode(pixelMap, pixelChain.getPixels().lastElement().orElseThrow());
+        return pixelMapService.getNode(pixelMap, pixelChain.pixels().lastElement().orElseThrow());
     }
 
     public Optional<Node> getStartNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
-        return pixelMapService.getNode(pixelMap, pixelChain.getPixels().firstElement().orElseThrow());
+        return pixelMapService.getNode(pixelMap, pixelChain.pixels().firstElement().orElseThrow());
     }
 
     public Vertex getStartVertex(PixelChain pixelChain) {
-        return pixelChain.getVertexes().firstElement().orElse(null);
+        return pixelChain.vertexes().firstElement().orElse(null);
     }
 
     /**
@@ -302,11 +302,11 @@ public class PixelChainService {
      * @return the PixeclChain
      */
     public ImmutablePixelChain withThickness(@NotNull ImmutablePixelChain pixelChain, @NotNull Thickness thickness) {
-        if (thickness == pixelChain.getThickness()) {
+        if (thickness == pixelChain.thickness()) {
             return pixelChain;
         }
         // TODO what is the best way to do this
-        return ImmutablePixelChain.of(pixelChain.getPixels(), pixelChain.getVertexes(), pixelChain.getSegments(), pixelChain.getLength(), thickness);
+        return ImmutablePixelChain.of(pixelChain.pixels(), pixelChain.vertexes(), pixelChain.segments(), pixelChain.length(), thickness);
     }
 
 
@@ -315,8 +315,8 @@ public class PixelChainService {
 
         // need to do a check here to see if we are clobbering over another chain
         // if pixel end-2 is a neighbour of pixel end then pixel end-1 needs to be set as notVisited and removed from the chain
-        if (result.getPixelCount() >= 3 && pixelService.isNeighbour(node.toImmutableIXY(), result.getPixel(result.getPixelCount() - 3))) {
-            var index = result.getPixelCount() - 2;
+        if (result.pixelCount() >= 3 && pixelService.isNeighbour(node.toImmutableIXY(), result.optionalPixel(result.pixelCount() - 3).orElseThrow())) {
+            var index = result.pixelCount() - 2;
             result = result.changePixels(p -> p.remove(index));
         }
         return result;
@@ -336,7 +336,7 @@ public class PixelChainService {
     }
 
     public int getPixelLength(@NotNull PixelChain pixelChain) {
-        return pixelChain.getPixels().size();
+        return pixelChain.pixels().size();
     }
 
     public ImmutablePixelChain withThickness(
@@ -360,43 +360,43 @@ public class PixelChainService {
         StrongReference<PixelChain> builder = StrongReference.of(thisChain);
 
         validate(thisChain, false, "add otherChain");
-        logger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().getPixels().size()));
+        logger.fine(() -> String.format("builder.getPixels().size() = %s", builder.get().pixels().size()));
         logger.fine(() -> String.format("pixelLength(otherChain) = %s", pixelLength(otherChain)));
-        logger.fine(() -> String.format("this.mSegments.size() = %s", builder.get().getSegments().size()));
-        logger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.getSegments().size()));
+        logger.fine(() -> String.format("this.mSegments.size() = %s", builder.get().segments().size()));
+        logger.fine(() -> String.format("otherChain.mSegments.size() = %s", otherChain.segments().size()));
         if (logger.isLoggable(Level.FINE)) {
             builder.get().streamSegments().forEach(s -> logger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
             builder.get().streamSegments().forEach(s -> logger.fine(() -> String.format("this.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
-            otherChain.getSegments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
-            otherChain.getSegments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
+            otherChain.segments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartVertex(otherChain).getPixelIndex(), s.getEndVertex(otherChain).getPixelIndex())));
+            otherChain.segments().forEach(s -> logger.fine(() -> String.format("otherChain.mSegment[%s, %s]", s.getStartIndex(otherChain), s.getEndIndex(otherChain))));
         }
 
         validate(builder.get(), false, "merge");
         validate(otherChain, false, "merge");
 
         // TODO this should be a pixelChainService mergable
-        if (!builder.get().getPixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
+        if (!builder.get().pixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + otherChain);
         }
 
-        int offset = builder.get().getPixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
-        builder.update(b -> b.changePixels(p -> p.remove(builder.get().getPixels().size() - 1))); // need to remove the last pixel as it will be duplicated on the other chain;
-        builder.update(b -> b.changePixels(p -> p.addAll(otherChain.getPixels())));
+        int offset = builder.get().pixels().size() - 1; // this needs to be before the removeElementAt and addAll. The -1 is because the end element will be removed
+        builder.update(b -> b.changePixels(p -> p.remove(builder.get().pixels().size() - 1))); // need to remove the last pixel as it will be duplicated on the other chain;
+        builder.update(b -> b.changePixels(p -> p.addAll(otherChain.pixels())));
         logger.fine(() -> String.format("offset = %s", offset));
 
-        otherChain.getSegments().forEach(segment -> {
-            Vertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().getVertexes().size(), segment.getEndIndex(otherChain) + offset);
+        otherChain.segments().forEach(segment -> {
+            Vertex end = vertexService.createVertex(pixelMap, builder.get(), builder.get().vertexes().size(), segment.getEndIndex(otherChain) + offset);
             builder.update(b -> b.changeVertexes(v -> v.add(end)));
-            var newSegment = SegmentFactory.createTempStraightSegment(builder.get(), builder.get().getSegments().size());
+            var newSegment = SegmentFactory.createTempStraightSegment(builder.get(), builder.get().segments().size());
             builder.update(b -> b.changeSegments(s -> s.add(newSegment)));
         });
 
-        logger.fine(() -> String.format("copy.mPixels.size() = %s", builder.get().getPixels().size()));
-        logger.fine(() -> String.format("copy.mSegments.size() = %s", builder.get().getPixels().size()));
-        thisChain.getSegments().forEach(s -> logger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
-        thisChain.getSegments().forEach(s -> logger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
+        logger.fine(() -> String.format("copy.mPixels.size() = %s", builder.get().pixels().size()));
+        logger.fine(() -> String.format("copy.mSegments.size() = %s", builder.get().pixels().size()));
+        thisChain.segments().forEach(s -> logger.fine(() -> String.format("out.mSegment[%s, %s]", s.getStartVertex(thisChain).getPixelIndex(), s.getEndVertex(thisChain).getPixelIndex())));
+        thisChain.segments().forEach(s -> logger.fine(() -> String.format("out.is.mSegment[%s, %s]", s.getStartIndex(thisChain), s.getEndIndex(thisChain))));
         // TODO should recalculate thickness from source values
-        var thickness = thisChain.getPixelCount() > otherChain.getPixelCount() ? thisChain.getThickness() : otherChain.getThickness();
+        var thickness = thisChain.pixelCount() > otherChain.pixelCount() ? thisChain.thickness() : otherChain.thickness();
         return builder.get().setThickness(thickness);
     }
 
@@ -405,9 +405,9 @@ public class PixelChainService {
             if (getStartVertex(pixelChain).getPixelIndex() != 0) {
                 throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
             }
-            var vertexSize = pixelChain.getVertexes().size();
-            var segmentSize = pixelChain.getSegments().size();
-            var pixelSize = pixelChain.getPixels().size();
+            var vertexSize = pixelChain.vertexes().size();
+            var segmentSize = pixelChain.segments().size();
+            var pixelSize = pixelChain.pixels().size();
 
             if (vertexSize == 0 && segmentSize != 0) {
                 throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
@@ -419,15 +419,15 @@ public class PixelChainService {
 
             int nextStartIndex[] = {0};
 
-            pixelChain.getSegments().forEach(segment -> {
+            pixelChain.segments().forEach(segment -> {
                 if (segment.getStartIndex(pixelChain) != nextStartIndex[0]) { //
                     throw new IllegalStateException("segments not linked properly");
                 }
                 nextStartIndex[0] = segment.getEndIndex(pixelChain);
             });
 
-            if (segmentSize != 0 && pixelChain.getSegments().lastElement().orElseThrow().getEndIndex(pixelChain) != pixelSize - 1) { //
-                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", segmentSize, pixelChain.getSegments().lastElement().orElseThrow().getEndIndex(pixelChain), pixelSize - 1));
+            if (segmentSize != 0 && pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain) != pixelSize - 1) { //
+                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", segmentSize, pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain), pixelSize - 1));
             }
 
             checkAllVertexesAttached();
@@ -435,7 +435,7 @@ public class PixelChainService {
             Vertex vertex = getStartVertex(pixelChain);
             int index = 0;
             while (vertex != null) {
-                if (pixelChain.getVertexes().get(vertex.getVertexIndex()) != vertex) {
+                if (pixelChain.vertexes().get(vertex.getVertexIndex()) != vertex) {
                     throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
                 }
 
@@ -450,17 +450,17 @@ public class PixelChainService {
             }
 
             if (vertexSize != 0) {
-                if (vertexService.getStartSegment(pixelChain, pixelChain.getVertexes().firstElement().orElseThrow()) != null) {
+                if (vertexService.getStartSegment(pixelChain, pixelChain.vertexes().firstElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong start vertex");
                 }
-                if (vertexService.getEndSegment(pixelChain, pixelChain.getVertexes().lastElement().orElseThrow()) != null) {
+                if (vertexService.getEndSegment(pixelChain, pixelChain.vertexes().lastElement().orElseThrow()) != null) {
                     throw new RuntimeException("wrong end vertex");
                 }
             }
 
             int currentMax = -1;
             for (int i = 0; i < vertexSize; i++) {
-                Vertex v = pixelChain.getVertexes().get(i);
+                Vertex v = pixelChain.vertexes().get(i);
                 if (i == 0 && v.getPixelIndex() != 0) {
                     throw new IllegalStateException("First vertex wrong)");
                 }
@@ -471,10 +471,10 @@ public class PixelChainService {
                     throw new IllegalStateException("Wrong pixel index order");
                 }
                 currentMax = v.getPixelIndex();
-                if (i != 0 && vertexService.getStartSegment(pixelChain, v) != pixelChain.getSegments().get(i - 1)) {
+                if (i != 0 && vertexService.getStartSegment(pixelChain, v) != pixelChain.segments().get(i - 1)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
-                if (i != vertexSize - 1 && vertexService.getEndSegment(pixelChain, v) != pixelChain.getSegments().get(i)) {
+                if (i != vertexSize - 1 && vertexService.getEndSegment(pixelChain, v) != pixelChain.segments().get(i)) {
                     throw new RuntimeException(String.format("start segment mismatch i = %s", i));
                 }
             }
@@ -539,7 +539,7 @@ public class PixelChainService {
 //
 //
     public boolean contains(@NotNull PixelChain pixelChain, @NotNull XY pPixel) {
-        return pixelChain.getPixels()
+        return pixelChain.pixels()
                 .stream()
                 .anyMatch(p -> p.samePosition(pPixel));
     }
@@ -549,7 +549,7 @@ public class PixelChainService {
             @NotNull ImmutablePixelChain pixelChain) {
         var result = StrongReference.of(pixelChain);
         var startPosition = StrongReference.of(0.0d);
-        pixelChain.getSegments().forEach(segment -> {
+        pixelChain.segments().forEach(segment -> {
             Segment segmentClone = segment.withStartPosition(startPosition.get());
             result.update(b -> b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
             startPosition.update(s -> s += segment.getLength(pixelMap, result.get()));
@@ -563,7 +563,7 @@ public class PixelChainService {
      * @return the number of Pixels in the PixelChain.
      */
     public int pixelLength(@NotNull PixelChain pixelChain) {
-        return pixelChain.getPixels().size();
+        return pixelChain.pixels().size();
     }
 
 
@@ -608,7 +608,7 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain, double tolerance) {
         // note that this is version will find the longest line that is close to all pixels.
         // there are cases where a line of pixelLength n will be close enough, a line of pixelLength n+1 will not be, but there exists an m such that a line of pixelLength m is close enough.
-        if (pixelChain.getPixelCount() <= 1) {
+        if (pixelChain.pixelCount() <= 1) {
             return pixelChain;
         }
 
@@ -625,13 +625,13 @@ public class PixelChainService {
 
         int endIndex = 1;
 
-        while (endIndex < builder.getPixelCount()) {
-            var vertexIndex = builder.getVertexCount();
+        while (endIndex < builder.pixelCount()) {
+            var vertexIndex = builder.vertexCount();
             builder = builder.changeVertexes(v -> v.add(null));
-            var segmentIndex = builder.getSegmentCount();
+            var segmentIndex = builder.segmentCount();
             builder = builder.changeSegments(s -> s.add(null));
 
-            for (int index = endIndex; index < builder.getPixelCount(); index++) {
+            for (int index = endIndex; index < builder.pixelCount(); index++) {
                 var candidateVertex = vertexService.createVertex(pixelMap, builder, vertexIndex, index);
                 builder = builder.changeVertexes(v -> v.set(vertexIndex, candidateVertex));
                 var candidateSegment = SegmentFactory.createTempStraightSegment(builder, segmentIndex);
@@ -654,14 +654,14 @@ public class PixelChainService {
     }
 
     public ImmutablePixelChain approximate02_refineCorners(@NotNull PixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain) {
-        if (pixelChain.getSegmentCount() <= 1) {
+        if (pixelChain.segmentCount() <= 1) {
             return pixelChain;
         }
 
         var result = ImmutablePixelChain.copyOf(pixelChain);
         // the for loop means that I am processing the current state of the builder, not the 'old' stream state
         // this is important as the builder is being mutated.
-        for (int i = 0; i < pixelChain.getSegmentCount() - 1; i++) { // do not process last segment
+        for (int i = 0; i < pixelChain.segmentCount() - 1; i++) { // do not process last segment
             var segment = pixelChain.getSegment(i);
 
             var firstSegmentIndex = segment.getSegmentIndex();
@@ -720,14 +720,14 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
             double lineCurvePreference) {
-        if (pixelChain.getSegmentCount() == 1) {
+        if (pixelChain.segmentCount() == 1) {
             return pixelChain;
         }
         var result = StrongReference.of(pixelChain);
         pixelChain.streamSegments().forEach(segment -> {
-            if (segment == pixelChain.getFirstSegment()) {
+            if (segment == pixelChain.firstSegment()) {
                 result.update(r -> refine01FirstSegment(pixelMap, r, lineCurvePreference, segment));
-            } else if (segment == pixelChain.getLastSegment()) {
+            } else if (segment == pixelChain.lastSegment()) {
                 result.update(r -> refine01EndSegment(pixelMap, r, lineCurvePreference, segment));
             } else {
                 result.update(r -> refine01MidSegment(pixelMap, r, lineCurvePreference, segment));
@@ -887,7 +887,7 @@ public class PixelChainService {
     ) {
         var error = 0d;
         for (var i = startPixelIndex; i <= endPixelIndex; i++) {
-            var p = pixelChain.getPixel(i);
+            var p = pixelChain.optionalPixel(i).orElseThrow();
             if (startSegment.containsPixelIndex(pixelChain, i)) {
                 var d = startSegment.calcError(pixelMap, pixelChain, p);
                 error += d * d;
@@ -913,11 +913,11 @@ public class PixelChainService {
         }
 
         int startIndexPlus = segment.getStartIndex(pixelChain) + 1;
-        Point startPointPlus = pixelChain.getPixel(startIndexPlus).getUHVWMidPoint(pixelMap.height());
+        Point startPointPlus = pixelChain.optionalPixel(startIndexPlus).orElseThrow().getUHVWMidPoint(pixelMap.height());
         double startPlusLambda = segment.closestLambda(pixelMap, pixelChain, startPointPlus);
 
         int endIndexMinus = segment.getEndIndex(pixelChain) - 1;
-        Point endPointMinus = pixelChain.getPixel(endIndexMinus).getUHVWMidPoint(pixelMap.width());
+        Point endPointMinus = pixelChain.optionalPixel(endIndexMinus).orElseThrow().getUHVWMidPoint(pixelMap.width());
         double endMinusLambda = segment.closestLambda(pixelMap, pixelChain, endPointMinus);
 
         return startPlusLambda < 0.5d && endMinusLambda > 0.5d;
@@ -1021,17 +1021,17 @@ public class PixelChainService {
             double tolerance,
             double lineCurvePreference
     ) {
-        var startVertex = pixelChain.getLastVertex();
-        var startPixelIndex = pixelChain.getLastVertex().getPixelIndex() + 1;
-        var vertexIndex = pixelChain.getVertexCount();
-        var segmentIndex = pixelChain.getSegmentCount();
+        var startVertex = pixelChain.lastVertex();
+        var startPixelIndex = pixelChain.lastVertex().getPixelIndex() + 1;
+        var vertexIndex = pixelChain.vertexCount();
+        var segmentIndex = pixelChain.segmentCount();
         var best = new StrongReference<Tuple2<Segment, Vertex>>(null);
         var result = StrongReference.of(pixelChain);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
         Tuple3<Integer, Segment, Vertex> bestFit;
 
-        for (int i = startPixelIndex; i < result.get().getPixelCount(); i++) {
+        for (int i = startPixelIndex; i < result.get().pixelCount(); i++) {
             try {
                 var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
                 var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
@@ -1055,11 +1055,11 @@ public class PixelChainService {
         if (best.get() != null) {
             result.update(r -> r.setSegment(best.get()._1));
             result.update(r -> r.setVertex(best.get()._2));
-            if (best.get()._1 == null || result.get().getPixelCount() - startPixelIndex == 1) {
+            if (best.get()._1 == null || result.get().pixelCount() - startPixelIndex == 1) {
                 result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(result.get(), segmentIndex)));
             }
         } else {
-            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
+            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.maxPixelIndex())));
             result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, segmentIndex)));
         }
         return result.get();
@@ -1072,7 +1072,7 @@ public class PixelChainService {
             @NotNull CurveSegment segment,
             double distance) {
         Point curveMidPoint = segment.getPointFromLambda(pixelMap, pixelChain, 0.5d);
-        return pixelChain.getPixels().stream()
+        return pixelChain.pixels().stream()
                 .anyMatch(p -> p.getUHVWMidPoint(pixelMap.height()).distance(curveMidPoint) < distance);
     }
 
@@ -1083,7 +1083,7 @@ public class PixelChainService {
             double tolerance,
             double lineCurvePreference
     ) {
-        if (pixelChain.getPixelCount() <= 4) {
+        if (pixelChain.pixelCount() <= 4) {
             return pixelChain;
         }
 
@@ -1091,7 +1091,7 @@ public class PixelChainService {
         result = result.changeVertexes(ImmutableVectorClone::clear);
         result = result.changeSegments(ImmutableVectorClone::clear);
         result = approximateCurvesOnly_firstSegment(pixelMap, result, tolerance, lineCurvePreference);
-        while (result.getLastVertex().getPixelIndex() != result.getMaxPixelIndex()) {
+        while (result.lastVertex().getPixelIndex() != result.maxPixelIndex()) {
             result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference);
         }
         return result;
@@ -1105,14 +1105,14 @@ public class PixelChainService {
     ) {
         var result = StrongReference.of(pixelChain);
         result.update(r -> r.changeVertexes(v -> v.add(vertexService.createVertex(pixelMap, r, 0, 0))));
-        var vertexIndex = result.get().getVertexCount();
-        var segmentIndex = result.get().getSegmentCount();
+        var vertexIndex = result.get().vertexCount();
+        var segmentIndex = result.get().segmentCount();
         var best = new StrongReference<Tuple2<Segment, Vertex>>(null);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
         Tuple3<Integer, Segment, Vertex> bestFit;
 
-        for (int i = 4; i < result.get().getPixelCount(); i++) {
+        for (int i = 4; i < result.get().pixelCount(); i++) {
             try {
                 var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
                 var lineAB = new Line(result.get().getUHVWPoint(pixelMap, 0), result.get().getUHVWPoint(pixelMap, i));
@@ -1148,7 +1148,7 @@ public class PixelChainService {
                 result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, 0)));
             }
         } else {
-            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.getMaxPixelIndex())));
+            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.maxPixelIndex())));
             result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, segmentIndex)));
         }
 
@@ -1156,21 +1156,21 @@ public class PixelChainService {
     }
 
     public ImmutablePixelChain resequence(@NotNull PixelMap pixelMap, @NotNull PixelChain pixelChain) {
-        if (pixelChain.getSegments().size() + 1 != pixelChain.getVertexes().size()) {
-            logger.severe(String.format("PixelChainService::resequence segment/vertex mismatch, vertexSize = %s, segmentSize = %s", pixelChain.getVertexes().size(), pixelChain.getSegments().size()));
+        if (pixelChain.segments().size() + 1 != pixelChain.vertexes().size()) {
+            logger.severe(String.format("PixelChainService::resequence segment/vertex mismatch, vertexSize = %s, segmentSize = %s", pixelChain.vertexes().size(), pixelChain.segments().size()));
         }
         // sequence segments
         var segmentIndex = new AtomicInteger();
         var startPosition = new AtomicDouble();
         var segments = StrongReference.of(new ImmutableVectorClone<Segment>());
-        pixelChain.getSegments().stream()
+        pixelChain.segments().stream()
                 .map(s -> s.withSegmentIndex(segmentIndex.getAndIncrement()))
                 .map(s -> s.withStartPosition(startPosition.getAndAdd(s.getLength(pixelMap, pixelChain))))
                 .forEach(seg -> segments.update(segs -> segs.add(seg)));
         // sequence vertexes
         var vertexIndex = new AtomicInteger();
         var vertexes = StrongReference.of(new ImmutableVectorClone<Vertex>());
-        pixelChain.getVertexes().stream()
+        pixelChain.vertexes().stream()
                 .map(v -> v.withVertexIndex(vertexIndex.getAndIncrement()))
                 .forEach(v -> vertexes.update(vs -> vs.add(v)));
         return pixelChain.changeVertexes(v -> vertexes.get()).changeSegments(s -> segments.get());
@@ -1191,7 +1191,7 @@ public class PixelChainService {
     }
 
     public boolean isLoop(@NotNull ImmutablePixelChain pixelChain) {
-        if (pixelChain.getPixels().size() == 0) return false;
-        return 0 == pixelChain.getPixels().firstElement().get().compareTo(pixelChain.getPixels().lastElement().get());
+        if (pixelChain.pixels().size() == 0) return false;
+        return 0 == pixelChain.pixels().firstElement().get().compareTo(pixelChain.pixels().lastElement().get());
     }
 }

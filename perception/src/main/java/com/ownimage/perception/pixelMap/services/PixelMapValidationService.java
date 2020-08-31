@@ -99,14 +99,14 @@ public class PixelMapValidationService {
             @NotNull ImmutablePixelMap pixelMap, @NotNull Map<ImmutableIXY, Node> dataNodes) {
         var dataNodesKeySet = dataNodes.keySet();
         var result = pixelMap.pixelChains().stream()
-                .map(pc -> pc.getPixels().firstElement().orElseThrow())
+                .map(pc -> pc.pixels().firstElement().orElseThrow())
                 .map(XY::of)
                 .filter(not(dataNodesKeySet::contains))
                 .findFirst()
                 .isEmpty()
                 &&
                 pixelMap.pixelChains().stream()
-                        .map(pc -> pc.getPixels().lastElement().orElseThrow())
+                        .map(pc -> pc.pixels().lastElement().orElseThrow())
                         .map(XY::of)
                         .filter(not(dataNodesKeySet::contains))
                         .findFirst()
@@ -148,15 +148,15 @@ public class PixelMapValidationService {
         var loopCount = StrongReference.of(0L);
         if (!result) { // check if it is a loop
             result = pixelMap.pixelChains().stream()
-                    .filter(pc -> pc.getPixels().firstElement().orElseThrow().samePosition(failure.get()))
-                    .filter(pc -> pc.getPixels().lastElement().orElseThrow().samePosition(failure.get()))
+                    .filter(pc -> pc.pixels().firstElement().orElseThrow().samePosition(failure.get()))
+                    .filter(pc -> pc.pixels().lastElement().orElseThrow().samePosition(failure.get()))
                     .findFirst()
                     .isPresent();
             count.update(c ->  dataNodes.stream()
                     .filter(n -> !shouldBeNode(pixelMap, n))
                     .count());
             loopCount.update(lc -> pixelMap.pixelChains().stream()
-                    .filter(pc -> pc.getPixels().firstElement().get().samePosition(pc.getPixels().lastElement().get()))
+                    .filter(pc -> pc.pixels().firstElement().get().samePosition(pc.pixels().lastElement().get()))
                     .count());
         }
         return throwErrorIfFalse(result, () ->"checkAllDataNodesShouldBeNodes failure: count = " + count

@@ -364,7 +364,7 @@ public class PixelMapService {
             @NotNull PixelChain pixelChain,
             boolean add) {
         var result = StrongReference.of(pixelMap);
-        pixelChain.getSegments().forEach(s -> result.update(r -> indexSegments(r, pixelChain, s, add)));
+        pixelChain.segments().forEach(s -> result.update(r -> indexSegments(r, pixelChain, s, add)));
         return result.get();
     }
 
@@ -427,12 +427,12 @@ public class PixelMapService {
         val result = StrongReference.of(pixelMap);
         result.update(r -> indexSegments(r, chain, false)
                 .withPixelChains(r.pixelChains().remove(chain)));
-        chain.getPixels()
+        chain.pixels()
                 .firstElement()
                 .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
                 .map(pixelService::pixelToPixelMapGridPosition)
                 .ifPresent(ip -> result.update(r -> r.withNodes(r.nodes().remove(ip))));
-        chain.getPixels()
+        chain.pixels()
                 .lastElement()
                 .filter(pixel -> getPixelChains(result.get(), pixel).size() == 1)
                 .map(pixelService::pixelToPixelMapGridPosition)
@@ -443,7 +443,7 @@ public class PixelMapService {
 
     public Vector<ImmutablePixelChain> getPixelChainsSortedByLength(ImmutablePixelMap pixelMap) {
         var chains = new Vector<>(pixelMap.pixelChains().toCollection());
-        chains.sort(Comparator.comparingInt(PixelChain::getPixelCount));
+        chains.sort(Comparator.comparingInt(PixelChain::pixelCount));
         return chains;
     }
 
@@ -453,11 +453,11 @@ public class PixelMapService {
             double tolerance,
             double lineCurvePreference) {
         var result = StrongReference.of(pixelMapData);
-        pixelChain.getPixels().stream()
-                .filter(p -> p != pixelChain.getPixels().firstElement().orElseThrow())
-                .filter(p -> p != pixelChain.getPixels().lastElement().orElseThrow())
+        pixelChain.pixels().stream()
+                .filter(p -> p != pixelChain.pixels().firstElement().orElseThrow())
+                .filter(p -> p != pixelChain.pixels().lastElement().orElseThrow())
                 .forEach(p -> result.update(r -> setEdge(r, p, false, tolerance, lineCurvePreference)));
-        pixelChain.getPixels().stream()
+        pixelChain.pixels().stream()
                 .filter(p -> pixelService.isNode(result.get(), p))
                 .filter(p -> pixelService.countEdgeNeighbours(result.get(), p) < 2
                         || pixelService.countNodeNeighbours(result.get(), p) == 2)

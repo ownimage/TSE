@@ -19,76 +19,66 @@ import java.util.stream.Stream;
 public interface PixelChain extends Serializable {
 
     @Value.Parameter(order = 1)
-    ImmutableVectorClone<Pixel> getPixels();
+    ImmutableVectorClone<Pixel> pixels();
 
     @Value.Parameter(order = 2)
-    ImmutableVectorClone<Vertex> getVertexes();
+    ImmutableVectorClone<Vertex> vertexes();
 
     @Value.Parameter(order = 3)
-    ImmutableVectorClone<Segment> getSegments();
+    ImmutableVectorClone<Segment> segments();
 
     @Value.Parameter(order = 4)
-    double getLength();
+    double length();
 
     @Value.Parameter(order = 5)
-    Thickness getThickness();
+    Thickness thickness();
 
     @Value
     Optional<Color> color();
 
     default Stream<Pixel> streamPixels() {
-        return getPixels().stream();
+        return pixels().stream();
     }
 
     default Stream<Segment> streamSegments() {
-        return getSegments().stream();
+        return segments().stream();
     }
 
-    default int getPixelCount() {
-        return getPixels().size();
+    default int pixelCount() {
+        return pixels().size();
     }
 
-    default int getMaxPixelIndex() {
-        return getPixelCount() - 1;
+    default int maxPixelIndex() {
+        return pixelCount() - 1;
     }
 
     default Segment getSegment(int i) {
-        if (getSegments().size() <= i || i < 0) {
+        if (segments().size() <= i || i < 0) {
             return null;
         }
-        return getSegments().get(i);
+        return segments().get(i);
     }
 
     default Vertex getVertex(int i) {
-        if (getVertexes().size() <= i || i < 0) {
+        if (vertexes().size() <= i || i < 0) {
             return null;
         }
-        return getVertexes().get(i);
+        return vertexes().get(i);
     }
 
-    @Deprecated
-    default Pixel getPixel(int pIndex) {
-        if (pIndex < 0 || pIndex > getPixelCount()) {
-            String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
-            throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
-        }
-
-        return getPixels().get(pIndex);
-    }
-
-    default Optional<Pixel> getOptionalPixel(int pIndex) {
-        if (pIndex < 0 || pIndex > getPixelCount()) {
+    default Optional<Pixel> optionalPixel(int pIndex) {
+        if (pIndex < 0 || pIndex > pixelCount()) {
             return Optional.empty();
         }
-        return Optional.of(getPixels().get(pIndex));
+        return Optional.of(pixels().get(pIndex));
     }
 
-    default int getSegmentCount() {
-        return getSegments().size();
+    default int segmentCount() {
+        return segments().size();
     }
 
-    default int getVertexCount() {
-        return getVertexes().size();
+    default int vertexCount() {
+        return vertexes().size();
     }
 
     /**
@@ -99,31 +89,31 @@ public interface PixelChain extends Serializable {
      * @return the UHVW Point
      */
     default Point getUHVWPoint(PixelMap pPixelMap, int pIndex) {
-        if (pIndex < 0 || pIndex > getPixelCount()) {
+        if (pIndex < 0 || pIndex > pixelCount()) {
             String msg = "pIndex, currently: %s, must be between 0 and the pixelLength of mPixels, currently: %s";
-            throw new IllegalArgumentException(String.format(msg, pIndex, getPixelCount()));
+            throw new IllegalArgumentException(String.format(msg, pIndex, pixelCount()));
         }
-        return getPixels().get(pIndex).getUHVWMidPoint(pPixelMap.height());
+        return pixels().get(pIndex).getUHVWMidPoint(pPixelMap.height());
     }
 
-    default Optional<Segment> getOptionalLastSegment() {
-        return getSegments().lastElement();
+    default Optional<Segment> optionalLastSegment() {
+        return segments().lastElement();
     }
 
-    private double getActualCurvedThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
-        var c = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        var a = c - getWidth(pTransformSource);
+    private double actualCurvedThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
+        var c = pTransformSource.getLineEndThickness() * width(pTransformSource);
+        var a = c - width(pTransformSource);
         var b = -2.0 * a;
         return a * pFraction * pFraction + b * pFraction + c;
     }
 
-    private double getActualSquareThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
-        return getWidth(pTransformSource);
+    private double actualSquareThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
+        return width(pTransformSource);
     }
 
-    private double getActualStraightThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
-        var min = pTransformSource.getLineEndThickness() * getWidth(pTransformSource);
-        var max = getWidth(pTransformSource);
+    private double actualStraightThickness(IPixelMapTransformSource pTransformSource, double pFraction) {
+        var min = pTransformSource.getLineEndThickness() * width(pTransformSource);
+        var max = width(pTransformSource);
         return min + pFraction * (max - min);
     }
 
@@ -133,19 +123,19 @@ public interface PixelChain extends Serializable {
      * @param pPosition the position
      * @return the actual thickness
      */
-    default double getActualThickness(IPixelMapTransformSource pTransformSource, double pPosition) {
+    default double actualThickness(IPixelMapTransformSource pTransformSource, double pPosition) {
         // TODO needs refinement should not really pass the pTolerance in as this can be determined from the PixelChain.
         // TODO this could be improved for performance
-        double fraction = getActualThicknessEndFraction(pTransformSource, pPosition);
+        double fraction = actualThicknessEndFraction(pTransformSource, pPosition);
 
         switch (pTransformSource.getLineEndShape()) {
             case Curved:
-                return getActualCurvedThickness(pTransformSource, fraction);
+                return actualCurvedThickness(pTransformSource, fraction);
             case Square:
-                return getActualSquareThickness(pTransformSource, fraction);
+                return actualSquareThickness(pTransformSource, fraction);
         }
         // fall through to straight
-        return getActualStraightThickness(pTransformSource, fraction);
+        return actualStraightThickness(pTransformSource, fraction);
     }
 
     /**
@@ -154,13 +144,13 @@ public interface PixelChain extends Serializable {
      * @param pPosition the position
      * @return the actual thickness end fraction
      */
-    private double getActualThicknessEndFraction(IPixelMapTransformSource pTransformSource, double pPosition) {
+    private double actualThicknessEndFraction(IPixelMapTransformSource pTransformSource, double pPosition) {
 
-        var end2 = getLength() - pPosition;
+        var end2 = length() - pPosition;
         var closestEnd = Math.min(pPosition, end2);
 
         if (pTransformSource.getLineEndLengthType() == CannyEdgeTransform.LineEndLengthType.Percent) {
-            var closestPercent = 100.0d * closestEnd / getLength();
+            var closestPercent = 100.0d * closestEnd / length();
             return Math.min(closestPercent / pTransformSource.getLineEndLengthPercent(), 1.0d);
         }
 
@@ -170,8 +160,8 @@ public interface PixelChain extends Serializable {
 
     }
 
-    default double getWidth(IPixelMapTransformSource pIPMTS) {
-        switch (getThickness()) {
+    default double width(IPixelMapTransformSource pIPMTS) {
+        switch (thickness()) {
             case Thin:
                 return pIPMTS.getShortLineThickness() / pIPMTS.getHeight();
             case Normal:
@@ -182,28 +172,28 @@ public interface PixelChain extends Serializable {
         return 0.0d;
     }
 
-    default Segment getFirstSegment() {
-        return getSegments().firstElement().orElse(null);
+    default Segment firstSegment() {
+        return segments().firstElement().orElse(null);
     }
 
-    default Segment getLastSegment() {
-        return getSegments().lastElement().orElse(null);
+    default Segment lastSegment() {
+        return segments().lastElement().orElse(null);
     }
 
-    default Vertex getLastVertex() {
-        return getVertexes().lastElement().orElse(null);
+    default Vertex lastVertex() {
+        return vertexes().lastElement().orElse(null);
     }
 
     default ImmutablePixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
-        return ImmutablePixelChain.copyOf(this).withPixels(fn.apply(getPixels()));
+        return ImmutablePixelChain.copyOf(this).withPixels(fn.apply(pixels()));
     }
 
     default ImmutablePixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
-        return ImmutablePixelChain.copyOf(this).withSegments(fn.apply(getSegments()));
+        return ImmutablePixelChain.copyOf(this).withSegments(fn.apply(segments()));
     }
 
     default ImmutablePixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
-        return ImmutablePixelChain.copyOf(this).withVertexes(fn.apply(getVertexes()));
+        return ImmutablePixelChain.copyOf(this).withVertexes(fn.apply(vertexes()));
     }
 
     default ImmutablePixelChain setThickness(@NonNull Thickness thickness) {
@@ -211,7 +201,7 @@ public interface PixelChain extends Serializable {
     }
 
     default ImmutablePixelChain setVertex(Vertex pVertex) {
-        return changeVertexes(v -> v.set(pVertex.getVertexIndex(), pVertex));
+        return ImmutablePixelChain.copyOf(this).withVertexes(vertexes().set(pVertex.getVertexIndex(), pVertex));
     }
 
     default ImmutablePixelChain setSegment(Segment pSegment) {
@@ -232,7 +222,7 @@ public interface PixelChain extends Serializable {
     default String toReadableString() {
         StringBuilder sb = new StringBuilder();
         sb.append("PixelChain[ ");
-        sb.append(getPixels().stream().map(Pixel::toXYString).collect(Collectors.joining(", ")));
+        sb.append(pixels().stream().map(Pixel::toXYString).collect(Collectors.joining(", ")));
         sb.append(" ]\n");
         return sb.toString();
     }

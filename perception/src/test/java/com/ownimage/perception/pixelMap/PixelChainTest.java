@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.logging.LogManager;
 
@@ -64,7 +65,7 @@ public class PixelChainTest {
         // WHEN
         var actual = pixelChainService.approximate(pixelMap, chain, tolerance);
         // THEN
-        assertEquals(3, actual.getSegmentCount());
+        assertEquals(3, actual.segmentCount());
     }
 
     @Test
@@ -96,14 +97,14 @@ public class PixelChainTest {
         var longThickness = 77d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelCount();
+        var length = underTest.pixelCount();
         underTest = pixelChainService.withThickness(underTest, 1, length - 2, length - 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
         when(ipmts.getLongLineThickness()).thenReturn(longThickness);
         var expected = longThickness / height;
         // WHEN
-        var actual = underTest.getWidth(ipmts);
+        var actual = underTest.width(ipmts);
         // THEN
         assertEquals(expected, actual, 0.0d);
     }
@@ -115,7 +116,7 @@ public class PixelChainTest {
         var mediumThickness = 55d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelCount();
+        var length = underTest.pixelCount();
         underTest = pixelChainService.withThickness(underTest, 1, length - 2, length + 1);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -123,7 +124,7 @@ public class PixelChainTest {
         when(ipmts.getMediumLineThickness()).thenReturn(mediumThickness);
         var expected = mediumThickness / height;
         // WHEN
-        var actual = underTest.getWidth(ipmts);
+        var actual = underTest.width(ipmts);
         // THEN
         assertEquals(expected, actual, 0.0d);
     }
@@ -136,7 +137,7 @@ public class PixelChainTest {
         var shortThickness = 33d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelCount();
+        var length = underTest.pixelCount();
         underTest = pixelChainService.withThickness(underTest, 1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -145,7 +146,7 @@ public class PixelChainTest {
         when(ipmts.getShortLineThickness()).thenReturn(shortThickness);
         var expected = shortThickness / height;
         // WHEN
-        var actual = underTest.getWidth(ipmts);
+        var actual = underTest.width(ipmts);
         // THEN
         assertEquals(expected, actual, 0.0d);
     }
@@ -158,7 +159,7 @@ public class PixelChainTest {
         var shortThickness = 33d;
         var height = 1000;
         var underTest = createPixelChain();
-        var length = underTest.getPixelCount();
+        var length = underTest.pixelCount();
         underTest = pixelChainService.withThickness(underTest, length + 1, length + 2, length + 4);
         var ipmts = mock(IPixelMapTransformSource.class);
         when(ipmts.getHeight()).thenReturn(height);
@@ -167,7 +168,7 @@ public class PixelChainTest {
         when(ipmts.getShortLineThickness()).thenReturn(shortThickness);
         var expected = 0d;
         // WHEN
-        var actual = underTest.getWidth(ipmts);
+        var actual = underTest.width(ipmts);
         // THEN
         assertEquals(expected, actual, 0.0d);
     }
@@ -177,7 +178,7 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getOptionalPixel(-1);
+        val actual = underTest.optionalPixel(-1);
         // THEN
         Assert.assertEquals(Optional.empty(), actual);
     }
@@ -187,7 +188,7 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getOptionalPixel(25);
+        val actual = underTest.optionalPixel(25);
         // THEN
         Assert.assertEquals(Optional.empty(), actual);
     }
@@ -197,33 +198,33 @@ public class PixelChainTest {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getOptionalPixel(2).orElseThrow();
+        val actual = underTest.optionalPixel(2).orElseThrow();
         // THEN
         Assert.assertEquals(Pixel.of(3, 5, pixelMap.height()), actual);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void getPixel_01() {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        underTest.getPixel(-1);
+        underTest.optionalPixel(-1).orElseThrow();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void getPixel_02() {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        underTest.getPixel(25);
+        underTest.optionalPixel(25).orElseThrow();
     }
 
     @Test
-    public void getlPixel_03() {
+    public void getPixel_03() {
         // GIVEN
         val underTest = createPixelChain();
         // WHEN
-        val actual = underTest.getPixel(2);
+        val actual = underTest.optionalPixel(2).orElseThrow();
         // THEN
         Assert.assertEquals(Pixel.of(3, 5, pixelMap.height()), actual);
     }
@@ -234,7 +235,7 @@ public class PixelChainTest {
         val underTest = createPixelChain();
         val expected = 17;
         // WHEN
-        val actual = underTest.getMaxPixelIndex();
+        val actual = underTest.maxPixelIndex();
         // THEN
         Assert.assertEquals(expected, actual);
     }

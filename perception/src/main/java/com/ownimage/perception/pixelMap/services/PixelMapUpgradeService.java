@@ -32,8 +32,8 @@ public class PixelMapUpgradeService {
                 .forEach(pc -> {
                     Consumer<ImmutableIXY> updateNodes = key ->
                             nodes.update(n -> n.update(key, (k, v) -> (v != null ? v : Node.ofIXY(k)).addPixelChain(pc)));
-                    pc.getPixels().firstElement().map(XY::of).ifPresent(updateNodes);
-                    pc.getPixels().lastElement().map(XY::of).ifPresent(updateNodes);
+                    pc.pixels().firstElement().map(XY::of).ifPresent(updateNodes);
+                    pc.pixels().lastElement().map(XY::of).ifPresent(updateNodes);
                 });
         return pixelMap.withNodes(nodes.get());
     }
@@ -58,9 +58,9 @@ public class PixelMapUpgradeService {
      * @return a new PixelChain with all the vertexes upgraded
      */
     public ImmutablePixelChain upgradePixels(@NotNull PixelChain pixelChain, int height) {
-        var newPixels = StrongReference.of(pixelChain.getPixels().clear());
-        for (int i = 0; i < pixelChain.getPixels().size(); i++) {
-            var oldPixel = (Object) pixelChain.getPixels().get(i);
+        var newPixels = StrongReference.of(pixelChain.pixels().clear());
+        for (int i = 0; i < pixelChain.pixels().size(); i++) {
+            var oldPixel = (Object) pixelChain.pixels().get(i);
             // the line belows allows for the conversion of old and new formats of the pixel
             var ip = oldPixel instanceof XY ? XY.of((XY) oldPixel) : XY.of((IntegerPoint) oldPixel);
             var newPixel = Pixel.of(ip.getX(), ip.getY(), height);
@@ -76,8 +76,8 @@ public class PixelMapUpgradeService {
      * @return a new PixelChain with all the vertexes upgraded
      */
     public ImmutablePixelChain upgradeVertexes(@NotNull PixelChain pixelChain, int height) {
-        var newVertexs = StrongReference.of(pixelChain.getVertexes().clear());
-        pixelChain.getVertexes().stream()
+        var newVertexs = StrongReference.of(pixelChain.vertexes().clear());
+        pixelChain.vertexes().stream()
                 .map(v -> fixNullPositionVertex(pixelChain, v, height))
                 .map(ImmutableVertex::copyOf)
                 .forEach(v -> newVertexs.update(vs -> vs.add(v)));
@@ -91,8 +91,8 @@ public class PixelMapUpgradeService {
      * @return a new PixelChain with all the segmetns upgraded
      */
     public ImmutablePixelChain upgradeSegments(@NotNull PixelChain pixelChain) {
-        var newSegments = StrongReference.of(pixelChain.getSegments().clear());
-        pixelChain.getSegments().stream()
+        var newSegments = StrongReference.of(pixelChain.segments().clear());
+        pixelChain.segments().stream()
                 .map(Segment::toImmutable)
                 .forEach(s -> newSegments.update(segs -> segs.add(s)));
         return pixelChain.changeSegments(segs -> newSegments.get());

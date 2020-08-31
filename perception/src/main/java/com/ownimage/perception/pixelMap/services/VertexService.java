@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service;
 public class VertexService {
 
     public Vertex createVertex(PixelMap pPixelMap, PixelChain pPixelChain, int pVertexIndex, int pPixelIndex) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.pixelCount()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.pixelCount() + ")");
         }
         val position = pPixelChain.getUHVWPoint(pPixelMap, pPixelIndex);
         return ImmutableVertex.of(pVertexIndex, pPixelIndex, position);
     }
 
     public ImmutableVertex createVertex(PixelChain pPixelChain, int pVertexIndex, int pPixelIndex, Point pPosition) {
-        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.getPixelCount()) {
-            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.getPixelCount() + ")");
+        if (pPixelIndex < 0 || pPixelIndex >= pPixelChain.pixelCount()) {
+            throw new IllegalArgumentException("pIndex =(" + pPixelIndex + ") must lie between 0 and the size of the mPixels collection =(" + pPixelChain.pixelCount() + ")");
         }
 
         return ImmutableVertex.of(pVertexIndex, pPixelIndex, pPosition);
@@ -83,7 +83,7 @@ public class VertexService {
      */
     public Line calcLocalTangent(PixelMap pixelMap, PixelChain pixelChain, Vertex vertex, int pLength) {
         val ltStartIndex = KMath.max(vertex.getPixelIndex() - pLength, 0);
-        val ltEndIndex = KMath.min(vertex.getPixelIndex() + pLength, pixelChain.getMaxPixelIndex());
+        val ltEndIndex = KMath.min(vertex.getPixelIndex() + pLength, pixelChain.maxPixelIndex());
         val ltStartPoint = pixelChain.getUHVWPoint(pixelMap, ltStartIndex);
         val ltEndPoint = pixelChain.getUHVWPoint(pixelMap, ltEndIndex);
         val tangentDirection = ltEndPoint.minus(ltStartPoint).normalize();
@@ -92,7 +92,7 @@ public class VertexService {
     }
 
     public Pixel getPixel(PixelChain pixelChain, Vertex vertex) {
-        return pixelChain.getPixel(vertex.getPixelIndex());
+        return pixelChain.optionalPixel(vertex.getPixelIndex()).orElseThrow();
     }
 
     public Segment getStartSegment(PixelChain pixelChain, Vertex vertex) {

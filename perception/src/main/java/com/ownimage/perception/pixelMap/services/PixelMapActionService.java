@@ -136,7 +136,7 @@ public class PixelMapActionService {
         }
         // TODO do not like this mutable parameter
         var totalLength = new StrongReference<>(0);
-        pixelMap.pixelChains().forEach(chain -> totalLength.update(len -> len + chain.getPixelCount()));
+        pixelMap.pixelChains().forEach(chain -> totalLength.update(len -> len + chain.pixelCount()));
         var sortedChains = pixelMapService.getPixelChainsSortedByLength(pixelMap);
         int shortThreshold = (int) (totalLength.get() * values.getIgnoreFraction());
         int mediumThreshold = (int) (totalLength.get() * (values.getIgnoreFraction() + values.getShortFraction()));
@@ -147,15 +147,15 @@ public class PixelMapActionService {
         Integer longLength = null;
         int currentLength = 0;
         for (PixelChain chain : sortedChains) {
-            currentLength += chain.getPixelCount();
+            currentLength += chain.pixelCount();
             if (shortLength == null && currentLength > shortThreshold) {
-                shortLength = chain.getPixelCount();
+                shortLength = chain.pixelCount();
             }
             if (mediumLength == null && currentLength > mediumThreshold) {
-                mediumLength = chain.getPixelCount();
+                mediumLength = chain.pixelCount();
             }
             if (longLength == null && currentLength > longThreshold) {
-                longLength = chain.getPixelCount();
+                longLength = chain.pixelCount();
                 break;
             }
         }
@@ -191,7 +191,7 @@ public class PixelMapActionService {
                 .flatMap(p -> pixelMapService.getPixelChains(pixelMap, p).stream())
                 .distinct()
                 .forEach(pc -> {
-                    var currentThickness = pc.getThickness();
+                    var currentThickness = pc.thickness();
                     var newThickness = mapper.apply(pc);
                     if (newThickness != currentThickness) {
                         result.update(r -> pixelMapService.pixelChainRemove(r, pc));
@@ -301,8 +301,8 @@ public class PixelMapActionService {
             return pixelMap;
         }
         var pixelChain = pixelChains.get(0);
-        var pixelIndex = pixelChain.getPixels().indexOf(pixel);
-        var optionalNextVertex = pixelChain.getVertexes().stream()
+        var pixelIndex = pixelChain.pixels().indexOf(pixel);
+        var optionalNextVertex = pixelChain.vertexes().stream()
                 .filter(v -> v.getPixelIndex() >= pixelIndex)
                 .findFirst();
         if (optionalNextVertex.isEmpty() || optionalNextVertex.get().getPixelIndex() == pixelIndex) {
@@ -333,8 +333,8 @@ public class PixelMapActionService {
             return pixelMap;
         }
         var pixelChain = pixelChains.get(0);
-        var optionalVertex = pixelChain.getVertexes().stream()
-                .filter(v -> pixelChain.getPixels().get(v.getPixelIndex()).equals(pixel))
+        var optionalVertex = pixelChain.vertexes().stream()
+                .filter(v -> pixelChain.pixels().get(v.getPixelIndex()).equals(pixel))
                 .findFirst();
         if (optionalVertex.isEmpty()) {
             return pixelMap;
@@ -342,7 +342,7 @@ public class PixelMapActionService {
 
         var vertex = optionalVertex.get();
         int vertexIndex = vertex.getVertexIndex();
-        if (vertexIndex == 0 || vertexIndex == pixelChain.getVertexCount()) {
+        if (vertexIndex == 0 || vertexIndex == pixelChain.vertexCount()) {
             return pixelMap;
         }
 

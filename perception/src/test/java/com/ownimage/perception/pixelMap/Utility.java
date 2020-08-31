@@ -256,22 +256,22 @@ public class Utility {
 
     // asserts that the chains contain the same pixels (i.e. same object)
     public static void assertIdenticalPixels(@NotNull PixelChain pc1, @NotNull PixelChain pc2) {
-        if (pc1.getPixels() == pc2.getPixels()) {
+        if (pc1.pixels() == pc2.pixels()) {
             return;
         }
-        assertEquals(pc1.getPixelCount(), pc2.getPixelCount());
-        for (var i = 0; i < pc1.getPixelCount(); i++) {
-            assertTrue(pc1.getPixels().get(i) == pc2.getPixels().get(i));
+        assertEquals(pc1.pixelCount(), pc2.pixelCount());
+        for (var i = 0; i < pc1.pixelCount(); i++) {
+            assertTrue(pc1.pixels().get(i) == pc2.pixels().get(i));
         }
     }
 
     public static void assertIdenticalSegments(@NotNull PixelChain pc1, @NotNull PixelChain pc2) {
-        if (pc1.getSegments() == pc2.getSegments()) {
+        if (pc1.segments() == pc2.segments()) {
             return;
         }
-        assertEquals(pc1.getSegmentCount(), pc2.getSegmentCount());
-        for (var i = 0; i < pc1.getSegmentCount(); i++) {
-            assertTrue(pc1.getSegments().get(i) == pc2.getSegments().get(i));
+        assertEquals(pc1.segmentCount(), pc2.segmentCount());
+        for (var i = 0; i < pc1.segmentCount(); i++) {
+            assertTrue(pc1.segments().get(i) == pc2.segments().get(i));
         }
     }
 

@@ -121,8 +121,8 @@ public class PixelMapTransformService {
                  y <= Math.min(pixelMap.height(), Math.ceil((uhvw.getY() + maxThickness) * height) + 1); y++) {
                 if (0 <= x && x < width && 0 <= y && y < height) {
                     getSegments(pixelMap, x, y).ifPresent(set -> set.stream()
-                            .filter(tuple -> tuple._1().getThickness() != Thickness.None)
-                            .filter(tuple -> !pThickOnly || tuple._1().getThickness() == Thickness.Thick)
+                            .filter(tuple -> tuple._1().thickness() != Thickness.None)
+                            .filter(tuple -> !pThickOnly || tuple._1().thickness() == Thickness.Thick)
                             .forEach(candidateSegments::add));
                 }
             }

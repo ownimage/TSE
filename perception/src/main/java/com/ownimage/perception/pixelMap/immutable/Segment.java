@@ -59,7 +59,7 @@ public interface Segment extends Serializable {
     double distance(PixelMap pPixelMap, PixelChain pPixelChain, Point pUVHWPoint);
 
     default double getActualThickness(IPixelMapTransformSource pSource, PixelChain pPixelChain, double pPosition) {
-        return pPixelChain.getActualThickness(pSource, pPosition);
+        return pPixelChain.actualThickness(pSource, pPosition);
     }
 
     default int getEndIndex(PixelChain pPixelChain) {
