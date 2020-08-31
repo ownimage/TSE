@@ -6,7 +6,6 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.PegCounterService;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -201,7 +200,7 @@ public class PixelMapApproximationService {
         var toBeRemoved = new Vector<ImmutableIXY>();
         var result = StrongReference.of(pixelMap);
         result.get().nodes().values().stream()
-                .map(IXY::of)
+                .map(XY::of)
                 .forEach(node -> pixelService.getNodeNeighbours(result.get(), node)
                         .forEach(other -> {
                             var nodeSet = pixelService.allEdgeNeighbours(result.get(), node);
@@ -252,7 +251,7 @@ public class PixelMapApproximationService {
         var pixelsInChains = Collections.synchronizedSet(new HashSet<ImmutableIXY>());
         result.get().pixelChains().stream().parallel()
                 .flatMap(pc -> pc.getPixels().stream())
-                .map(IXY::of)
+                .map(XY::of)
                 .forEach(pixelsInChains::add);
         var edges = pixelMap.data().entrySet().stream().parallel()
                 .filter(e -> (e.getValue() | EDGE) != 0)
@@ -270,7 +269,7 @@ public class PixelMapApproximationService {
                     result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
                     chains.stream()
                             .flatMap(pc -> pc.getPixels().stream())
-                            .map(IXY::of)
+                            .map(XY::of)
                             .forEach(pixelsInChains::add);
                 });
             }

@@ -9,6 +9,14 @@ import java.io.Serializable;
 
 public interface XY extends Comparable<XY>, Serializable {
 
+    static ImmutableIXY of(@NotNull XY xy) {
+        return ImmutableIXY.of(xy.getX(), xy.getY());
+    }
+
+    static ImmutableIXY of(int x, int y) {
+        return ImmutableIXY.of(x, y);
+    }
+
     int getX();
 
     int getY();

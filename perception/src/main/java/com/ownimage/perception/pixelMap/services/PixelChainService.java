@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Vector;
@@ -71,6 +72,10 @@ public class PixelChainService {
 
     public ImmutablePixelChain add(PixelChain pixelChain, Pixel pPixel) {
         return pixelChain.changePixels(p -> p.add(pPixel));
+    }
+
+    public ImmutablePixelChain changeColor(@NotNull ImmutablePixelChain pixelChain, @NotNull Color color) {
+        return pixelChain.withColor(color);
     }
 
     /**
@@ -271,6 +276,10 @@ public class PixelChainService {
 
     public Pixel firstPixel(PixelChain pixelChain) {
         return pixelChain.getPixels().firstElement().orElseThrow();
+    }
+
+    public Pixel lastPixel(PixelChain pixelChain) {
+        return pixelChain.getPixels().lastElement().orElseThrow();
     }
 
     public Optional<Node> getEndNode(ImmutablePixelMap pixelMap, PixelChain pixelChain) {
@@ -545,7 +554,7 @@ public class PixelChainService {
             result.update(b -> b.changeSegments(s -> s.set(segmentClone.getSegmentIndex(), segmentClone)));
             startPosition.update(s -> s += segment.getLength(pixelMap, result.get()));
         });
-        return result.get().setLength(startPosition.get());
+        return result.get().withLength(startPosition.get());
     }
 
     /**

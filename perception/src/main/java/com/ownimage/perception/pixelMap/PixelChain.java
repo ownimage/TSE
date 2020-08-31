@@ -11,8 +11,10 @@ import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import lombok.Getter;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PixelChain implements Serializable, Cloneable, com.ownimage.perception.pixelMap.immutable.PixelChain {
@@ -33,6 +35,10 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
 
     @Getter
     private Thickness mThickness;
+
+    public Optional<Color> color() {
+        return Optional.empty();
+    }
 
     @Override
     public boolean equals(Object pO) {

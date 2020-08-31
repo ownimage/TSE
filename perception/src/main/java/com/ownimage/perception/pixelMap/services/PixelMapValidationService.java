@@ -100,14 +100,14 @@ public class PixelMapValidationService {
         var dataNodesKeySet = dataNodes.keySet();
         var result = pixelMap.pixelChains().stream()
                 .map(pc -> pc.getPixels().firstElement().orElseThrow())
-                .map(IXY::of)
+                .map(XY::of)
                 .filter(not(dataNodesKeySet::contains))
                 .findFirst()
                 .isEmpty()
                 &&
                 pixelMap.pixelChains().stream()
                         .map(pc -> pc.getPixels().lastElement().orElseThrow())
-                        .map(IXY::of)
+                        .map(XY::of)
                         .filter(not(dataNodesKeySet::contains))
                         .findFirst()
                         .isEmpty();

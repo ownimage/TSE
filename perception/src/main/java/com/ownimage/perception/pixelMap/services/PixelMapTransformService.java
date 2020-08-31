@@ -13,9 +13,7 @@ import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.render.ITransformResult;
 import io.vavr.Tuple2;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +41,7 @@ public class PixelMapTransformService {
 
     public void transform(
             @NotNull ImmutablePixelMap pixelMap,
-            @Nullable IPixelMapTransformSource transformSource,
+            @NotNull IPixelMapTransformSource transformSource,
             @NotNull ITransformResult renderResult) {
         var point = renderResult.getPoint();
         var color = transformGetPixelColor(pixelMap, transformSource, point, renderResult.getColor());
@@ -91,13 +89,16 @@ public class PixelMapTransformService {
         double shortThickness = transformSource.getMediumLineThickness() * thicknessMultiplier / 1000d;
         double normalThickness = transformSource.getShortLineThickness() * thicknessMultiplier / 1000d;
         double longThickness = transformSource.getLongLineThickness() * thicknessMultiplier / 1000d;
-        if (isAnyLineCloserThan(pixelMap, transformSource, point, shortThickness, normalThickness, longThickness, thicknessMultiplier, pThickOnly)) {
-            return KColor.fade(color, lineColor, opacity);
+        var hitColor = isAnyLineCloserThan(pixelMap, transformSource, point, shortThickness, normalThickness, longThickness, thicknessMultiplier, pThickOnly);
+        if (hitColor._1) {
+            return hitColor._2
+                    .map(c -> KColor.fade(color, c, opacity))
+                    .orElse(KColor.fade(color, lineColor, opacity));
         }
         return color;
     }
 
-    private boolean isAnyLineCloserThan(
+    private Tuple2<Boolean, Optional<Color>> isAnyLineCloserThan(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull IPixelMapTransformSource transformSource,
             @NotNull Point point,
@@ -114,8 +115,10 @@ public class PixelMapTransformService {
         // to prevent the expensive closerThanActual being run against the same segment more than once they
         // are condensed into a set.
         var candidateSegments = new HashSet<Tuple2<PixelChain, Segment>>();
-        for (int x = (int) Math.floor((uhvw.getX() - maxThickness) * width / aspectRatio) - 1; x <= Math.ceil((uhvw.getX() + maxThickness) * width / aspectRatio) + 1; x++) {
-            for (int y = (int) (Math.floor((uhvw.getY() - maxThickness) * height)) - 1; y <= Math.ceil((uhvw.getY() + maxThickness) * height) + 1; y++) {
+        for (int x = Math.max(0, (int) Math.floor((uhvw.getX() - maxThickness) * width / aspectRatio) - 1);
+             x <= Math.min(pixelMap.width(), (int)Math.ceil((uhvw.getX() + maxThickness) * width / aspectRatio) + 1); x++) {
+            for (int y = Math.max(0, (int) (Math.floor((uhvw.getY() - maxThickness) * height)) - 1);
+                 y <= Math.min(pixelMap.height(), Math.ceil((uhvw.getY() + maxThickness) * height) + 1); y++) {
                 if (0 <= x && x < width && 0 <= y && y < height) {
                     getSegments(pixelMap, x, y).ifPresent(set -> set.stream()
                             .filter(tuple -> tuple._1().getThickness() != Thickness.None)
@@ -124,11 +127,11 @@ public class PixelMapTransformService {
                 }
             }
         }
-        StrongReference<Boolean> result = new StrongReference<>(false);
+        var result = new StrongReference<Tuple2<Boolean, Optional<Color>>>(new Tuple2<>(false, Optional.empty()));
         candidateSegments.stream()
                 .filter(tuple -> tuple._2().closerThanActual(pixelMap, tuple._1(), transformSource, uhvw, pMultiplier))
                 .findAny()
-                .ifPresent(tuple -> result.set(true));
+                .ifPresent(tuple -> result.set(new Tuple2<>(true, tuple._1.color())));
         return result.get();
     }
 
@@ -138,8 +141,7 @@ public class PixelMapTransformService {
         Framework.checkParameterLessThan(mLogger, x, pixelMap.width(), "x");
         Framework.checkParameterGreaterThanEqual(mLogger, y, 0, "y");
         Framework.checkParameterLessThan(mLogger, y, pixelMap.height(), "y");
-        val segmentIndex = pixelMap.segmentIndex().get(x, y);
-        return Optional.ofNullable(segmentIndex);
+        return pixelMap.segmentIndex().getOptional(x, y);
     }
 
     public Color getMaxiLineShadowColor(

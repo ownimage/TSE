@@ -15,10 +15,12 @@ import com.ownimage.perception.pixelMap.immutable.PixelChain;
 import com.ownimage.perception.pixelMap.immutable.XY;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
@@ -159,6 +161,24 @@ public class PixelMapActionService {
         }
         values.setReturnValues(shortLength, mediumLength, longLength);
         return pixelMap;
+    }
+
+    public ImmutablePixelMap actionSetPixelChainChangeColor(
+            @NotNull ImmutablePixelMap pixelMap,
+            @NotNull Collection<? extends XY> pixels,
+            @NotNull Color color) {
+        var result = StrongReference.of(pixelMap);
+        pixels.stream()
+                .filter(p -> pixelService.isEdge(result.get(), p))
+                .flatMap(p -> pixelMapService.getPixelChains(result.get(), p).stream())
+                .distinct()
+                .map(old -> new Tuple2<>(old, pixelChainService.changeColor(old, color)))
+                .filter(t -> t._1 != t._2)
+                .forEach(t -> {
+                    result.update(pm -> pixelMapService.removePixelChain(pm, t._1));
+                    result.update(pm -> pixelMapService.addPixelChain(pm, t._2));
+                });
+        return result.get();
     }
 
     public ImmutablePixelMap actionSetPixelChainThickness(

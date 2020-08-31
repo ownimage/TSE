@@ -2,7 +2,6 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.math.IntegerPoint;
 import com.ownimage.framework.util.StrongReference;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -33,8 +32,8 @@ public class PixelMapUpgradeService {
                 .forEach(pc -> {
                     Consumer<ImmutableIXY> updateNodes = key ->
                             nodes.update(n -> n.update(key, (k, v) -> (v != null ? v : Node.ofIXY(k)).addPixelChain(pc)));
-                    pc.getPixels().firstElement().map(IXY::of).ifPresent(updateNodes);
-                    pc.getPixels().lastElement().map(IXY::of).ifPresent(updateNodes);
+                    pc.getPixels().firstElement().map(XY::of).ifPresent(updateNodes);
+                    pc.getPixels().lastElement().map(XY::of).ifPresent(updateNodes);
                 });
         return pixelMap.withNodes(nodes.get());
     }
@@ -42,7 +41,7 @@ public class PixelMapUpgradeService {
     /**
      * Upgrades a PixelChain to use the immutables Pixels, Vertex and Segments.
      *
-     * @param pixelChain
+     * @param pixelChain the pixelChain
      * @return an upgraded PixelChain
      */
     public ImmutablePixelChain upgradePixelChain(@NotNull PixelChain pixelChain, int height) {
@@ -55,7 +54,7 @@ public class PixelMapUpgradeService {
     /**
      * Upgrades a PixelChain from using the old IntergerPoint based Pixels and nodes to the immutables Pixel
      *
-     * @param pixelChain
+     * @param pixelChain the pixelChain
      * @return a new PixelChain with all the vertexes upgraded
      */
     public ImmutablePixelChain upgradePixels(@NotNull PixelChain pixelChain, int height) {
@@ -63,7 +62,7 @@ public class PixelMapUpgradeService {
         for (int i = 0; i < pixelChain.getPixels().size(); i++) {
             var oldPixel = (Object) pixelChain.getPixels().get(i);
             // the line belows allows for the conversion of old and new formats of the pixel
-            var ip = oldPixel instanceof XY ? IXY.of((XY) oldPixel) : XY.of((IntegerPoint) oldPixel);
+            var ip = oldPixel instanceof XY ? XY.of((XY) oldPixel) : XY.of((IntegerPoint) oldPixel);
             var newPixel = Pixel.of(ip.getX(), ip.getY(), height);
             newPixels.update(np -> np.add(newPixel));
         }
@@ -73,7 +72,7 @@ public class PixelMapUpgradeService {
     /**
      * Upgrades a PixelChain from using the old Vertex to the immutables Vertex
      *
-     * @param pixelChain
+     * @param pixelChain the pixelChain
      * @return a new PixelChain with all the vertexes upgraded
      */
     public ImmutablePixelChain upgradeVertexes(@NotNull PixelChain pixelChain, int height) {
@@ -88,7 +87,7 @@ public class PixelMapUpgradeService {
     /**
      * Upgrades a PixelChain from using the old StraightSegment and CurveSegment to the immutables versions
      *
-     * @param pixelChain
+     * @param pixelChain the pixelChain
      * @return a new PixelChain with all the segmetns upgraded
      */
     public ImmutablePixelChain upgradeSegments(@NotNull PixelChain pixelChain) {

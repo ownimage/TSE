@@ -2,7 +2,6 @@ package com.ownimage.perception.pixelMap.services;
 
 import com.ownimage.framework.util.Framework;
 import com.ownimage.perception.pixelMap.PixelConstants;
-import com.ownimage.perception.pixelMap.immutable.IXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
 import com.ownimage.perception.pixelMap.immutable.PixelMap;
@@ -79,7 +78,7 @@ public class PixelService {
         var allNeighbours = new Vector<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(n -> isNode(pixelMap, n))
-                .map(IXY::of)
+                .map(XY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }
@@ -92,7 +91,7 @@ public class PixelService {
         var allNeighbours = new HashSet<ImmutableIXY>();
         getNeighbours(pixel)
                 .filter(p -> isEdge(pixelMap, p))
-                .map(IXY::of)
+                .map(XY::of)
                 .forEach(allNeighbours::add);
         return allNeighbours;
     }

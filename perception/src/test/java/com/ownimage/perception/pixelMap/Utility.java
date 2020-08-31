@@ -18,8 +18,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.awt.*;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class Utility {
@@ -59,17 +61,17 @@ public class Utility {
 
             @Override
             public CannyEdgeTransform.LineEndLengthType getLineEndLengthType() {
-                return null;
+                return CannyEdgeTransform.LineEndLengthType.Percent;
             }
 
             @Override
             public CannyEdgeTransform.LineEndShape getLineEndShape() {
-                return null;
+                return CannyEdgeTransform.LineEndShape.Curved;
             }
 
             @Override
             public double getLineEndThickness() {
-                return 0;
+                return 0.2d;
             }
 
             @Override
@@ -84,12 +86,12 @@ public class Utility {
 
             @Override
             public double getLongLineThickness() {
-                return 0;
+                return 1;
             }
 
             @Override
             public double getMediumLineThickness() {
-                return 0;
+                return 1;
             }
 
             @Override
@@ -124,7 +126,7 @@ public class Utility {
 
             @Override
             public double getShortLineThickness() {
-                return 0;
+                return 1;
             }
 
             @Override
@@ -238,6 +240,7 @@ public class Utility {
         assertEquals(expectedBuffer.toString().replace(" ", "."), actualBuffer.toString().replace(" ", "."));
     }
 
+    // checks that there are the same pixels in either order
     public static void assertSamePixels(@NotNull PixelMap pixelMap, @NotNull PixelChain pc1, @NotNull PixelChain pc2) {
         var pc1Readable = pc1.toReadableString();
         var pc2Readable = pc2.toReadableString();
@@ -251,6 +254,27 @@ public class Utility {
         throw new ComparisonFailure("PixelChains do not contain same pixels", pc1Readable, pc2Readable);
     }
 
+    // asserts that the chains contain the same pixels (i.e. same object)
+    public static void assertIdenticalPixels(@NotNull PixelChain pc1, @NotNull PixelChain pc2) {
+        if (pc1.getPixels() == pc2.getPixels()) {
+            return;
+        }
+        assertEquals(pc1.getPixelCount(), pc2.getPixelCount());
+        for (var i = 0; i < pc1.getPixelCount(); i++) {
+            assertTrue(pc1.getPixels().get(i) == pc2.getPixels().get(i));
+        }
+    }
+
+    public static void assertIdenticalSegments(@NotNull PixelChain pc1, @NotNull PixelChain pc2) {
+        if (pc1.getSegments() == pc2.getSegments()) {
+            return;
+        }
+        assertEquals(pc1.getSegmentCount(), pc2.getSegmentCount());
+        for (var i = 0; i < pc1.getSegmentCount(); i++) {
+            assertTrue(pc1.getSegments().get(i) == pc2.getSegments().get(i));
+        }
+    }
+
     public static ImmutablePixelChain createPixelChain(@NotNull PixelMap pixelMap, @NotNull XY start, @NotNull Pixel... pixels) {
         var startNode = com.ownimage.perception.pixelMap.immutable.ImmutableNode.of(start.getX(), start.getY());
         var pixelChain = pixelChainService.createStartingPixelChain(pixelMap, startNode);
@@ -258,6 +282,10 @@ public class Utility {
             pixelChain = pixelChainService.add(pixelChain, pixel);
         }
         return pixelChain;
+    }
+
+    public static Stream<Color> testColors() {
+        return Stream.of(Color.BLACK, Color.WHITE, Color.RED, Color.BLUE, Color.GREEN);
     }
 
 }

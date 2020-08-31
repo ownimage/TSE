@@ -3,6 +3,7 @@ package com.ownimage.perception.pixelMap.services;
 import com.ownimage.framework.math.Point;
 import com.ownimage.framework.util.immutable.ImmutableVectorClone;
 import com.ownimage.perception.pixelMap.IPixelChain.Thickness;
+import com.ownimage.perception.pixelMap.Utility;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutableVertex;
 import com.ownimage.perception.pixelMap.immutable.Pixel;
@@ -10,14 +11,20 @@ import com.ownimage.perception.pixelMap.immutable.PixelMap;
 import com.ownimage.perception.pixelMap.immutable.Segment;
 import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.awt.*;
+import java.util.Optional;
 import java.util.logging.LogManager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class PixelChainServiceTest {
@@ -25,9 +32,53 @@ public class PixelChainServiceTest {
     private ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
     private PixelChainService underTest = context.getBean(PixelChainService.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void turnLoggingOff() {
         LogManager.getLogManager().reset();
+    }
+
+    public ImmutablePixelChain createPixelChain() {
+        String[] input = {
+                "           ",
+                "    N      ",
+                "    E      ",
+                "    E      ",
+                "    E      ",
+                "    N      ",
+                "           ",
+        };
+        var pixelMap = Utility.createMap(input, true);
+        assertEquals(1, pixelMap.pixelChains().size());
+        var pixelChain = pixelMap.pixelChains().stream().findFirst().orElseThrow();
+        assertEquals(5, pixelChain.getPixelCount());
+        assertEquals(1, pixelChain.getSegmentCount());
+        return pixelChain;
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.ownimage.perception.pixelMap.Utility#testColors")
+    public void changeColor_00(@NotNull Color color) {
+        // GIVEN
+        var pixelChain = createPixelChain();
+        assertEquals(Optional.empty(), pixelChain.color());
+        // WHEN
+        var actual = underTest.changeColor(pixelChain, color);
+        // THEN
+        assertEquals(color, actual.color().get());
+        Utility.assertIdenticalPixels(pixelChain, actual);
+        Utility.assertIdenticalSegments(pixelChain, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource("com.ownimage.perception.pixelMap.Utility#testColors")
+    public void changeColor_01(@NotNull Color color) {
+        // GIVEN
+        var pixelChain = createPixelChain().withColor(color);
+        assertEquals(color, pixelChain.color().get());
+        // WHEN
+        var actual = underTest.changeColor(pixelChain, color);
+        // THEN
+        assertTrue(pixelChain == actual);
     }
 
     @Test

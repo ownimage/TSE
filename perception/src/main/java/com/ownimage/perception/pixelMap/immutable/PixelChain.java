@@ -8,6 +8,7 @@ import com.ownimage.perception.transform.CannyEdgeTransform;
 import lombok.NonNull;
 import org.immutables.value.Value;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,6 +32,9 @@ public interface PixelChain extends Serializable {
 
     @Value.Parameter(order = 5)
     Thickness getThickness();
+
+    @Value
+    Optional<Color> color();
 
     default Stream<Pixel> streamPixels() {
         return getPixels().stream();
@@ -191,53 +195,19 @@ public interface PixelChain extends Serializable {
     }
 
     default ImmutablePixelChain changePixels(Function<ImmutableVectorClone<Pixel>, ImmutableVectorClone<Pixel>> fn) {
-        return ImmutablePixelChain.of(
-                fn.apply(getPixels()),
-                getVertexes(),
-                getSegments(),
-                getLength(),
-                getThickness()
-        );
+        return ImmutablePixelChain.copyOf(this).withPixels(fn.apply(getPixels()));
     }
 
     default ImmutablePixelChain changeSegments(Function<ImmutableVectorClone<Segment>, ImmutableVectorClone<Segment>> fn) {
-        return ImmutablePixelChain.of(
-                getPixels(),
-                getVertexes(),
-                fn.apply(getSegments()),
-                getLength(),
-                getThickness()
-        );
+        return ImmutablePixelChain.copyOf(this).withSegments(fn.apply(getSegments()));
     }
 
     default ImmutablePixelChain changeVertexes(Function<ImmutableVectorClone<Vertex>, ImmutableVectorClone<Vertex>> fn) {
-        return ImmutablePixelChain.of(
-                getPixels(),
-                fn.apply(getVertexes()),
-                getSegments(),
-                getLength(),
-                getThickness()
-        );
-    }
-
-    default ImmutablePixelChain setLength(double length) {
-        return ImmutablePixelChain.of(
-                getPixels(),
-                getVertexes(),
-                getSegments(),
-                length,
-                getThickness()
-        );
+        return ImmutablePixelChain.copyOf(this).withVertexes(fn.apply(getVertexes()));
     }
 
     default ImmutablePixelChain setThickness(@NonNull Thickness thickness) {
-        return ImmutablePixelChain.of(
-                getPixels(),
-                getVertexes(),
-                getSegments(),
-                getLength(),
-                thickness
-        );
+        return ImmutablePixelChain.copyOf(this).withThickness(thickness);
     }
 
     default ImmutablePixelChain setVertex(Vertex pVertex) {
