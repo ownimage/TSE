@@ -956,7 +956,6 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private boolean actionPixelChainChangeColor(@NonNull Collection<XY> pPixels) {
-        System.out.println("~~~~~~~~~~~~~~~~~~~ actionPixelChainChangeColor " + pPixels.size());
         ImmutablePixelMap undo = getPixelMap();
         setPixelMap(pixelMapActionService.actionSetPixelChainChangeColor(getPixelMap(), pPixels, mChainColor.getValue()));
         if (undo != getPixelMap()) {
