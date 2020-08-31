@@ -607,7 +607,10 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private boolean isPixelActionChangeColor() {
-        return mPixelAction.getValue() == PixelAction.ChangeColor;
+        return mPixelAction.getValue() == PixelAction.ChangeColor
+                || mPixelAction.getValue() == PixelAction.ChangeColorWide
+                || mPixelAction.getValue() == PixelAction.ChangeColorVeryWide
+                || mPixelAction.getValue() == PixelAction.ChangeColorVeryVeryWide;
     }
 
     private boolean isPixelActionChainApproximateCurvesOnly() {
@@ -857,7 +860,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private XY graffitiPixelWorkingColor(@NonNull XY xy) {
-        graffitiPixel(xy, mWorkingColor);Framework.logEntry(mLogger);
+        graffitiPixel(xy, mWorkingColor);
+        Framework.logEntry(mLogger);
         return xy;
     }
 
@@ -1139,6 +1143,9 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         PixelChainThicknessVeryWide("Thickness Very Wide", 45),
         Vertex("Change Vertex", 1),
         ChangeColor("Change Color", 1),
+        ChangeColorWide("Change Color Wide", 5),
+        ChangeColorVeryWide("Change Color Very Wide", 15),
+        ChangeColorVeryVeryWide("Change Color Very Very Wide", 45),
         CopyToClipboard("Copy To Clipboard", 1),
         ApproximateCurvesOnly("Approximate Curves Only", 1),
         DeleteAllButThisPixelChain("Delete all but this PixelChain", 1);

@@ -599,8 +599,8 @@ public class PixelMapService {
 
     public ImmutablePixelMap addPixelChain(@NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain) {
         var result = pixelChainAdd(pixelMap, pixelChain);
-        result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).get().addPixelChain(pixelChain));
-        result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).get().addPixelChain(pixelChain));
+        result = replaceNode(result, pixelChainService.getStartNode(result, pixelChain).orElseGet(() -> Node.of(pixelChain.pixels().firstElement().get())).addPixelChain(pixelChain));
+        result = replaceNode(result, pixelChainService.getEndNode(result, pixelChain).orElseGet(() -> Node.of(pixelChain.pixels().lastElement().get())).addPixelChain(pixelChain));
         return result;
     }
 

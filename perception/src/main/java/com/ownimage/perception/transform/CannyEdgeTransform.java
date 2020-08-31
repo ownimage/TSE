@@ -28,11 +28,7 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.services.Config;
-import com.ownimage.perception.pixelMap.services.PixelMapActionService;
-import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
-import com.ownimage.perception.pixelMap.services.PixelMapService;
-import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
+import com.ownimage.perception.pixelMap.services.*;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
 import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
@@ -58,6 +54,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     private static PixelMapApproximationService pixelMapApproximationService = context.getBean(PixelMapApproximationService.class);
     private static PixelMapActionService pixelMapActionService = context.getBean(PixelMapActionService.class);
     private static PixelMapTransformService pixelMapTransformService = context.getBean(PixelMapTransformService.class);
+    private static PixelMapValidationService pixelMapValidationService = context.getBean(PixelMapValidationService.class);
 
     public enum LineEndLengthType {
         Percent, Pixels
@@ -237,15 +234,15 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
     }
 
     private void generateEdges() {
-        val undo = mPixelMap;
+        var undo = mPixelMap;
         mPixelMap = null;
         setGenEditPixelMapButtonState(false);
-        val okControl = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
+        var okControl = ActionControl.create("OK", NullContainer, this::generateEdgesOK);
         IAction cancelActon = () -> {
             mPixelMap = undo;
             setGenEditPixelMapButtonState(mPixelMap != null);
         };
-        val cancelControl = ActionControl.create("Cancel", NullContainer, cancelActon);
+        var cancelControl = ActionControl.create("Cancel", NullContainer, cancelActon);
         getGenerateEdgesDialog().showDialog(cancelControl, okControl, cancelActon);
     }
 
@@ -544,6 +541,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             if (pixelMap != null) {
                 double tolerance = getLineTolerance() / getHeight();
                 pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, getLineCurvePreference(), getProgressControl().reset());
+                pixelMapValidationService.validate(pixelMap);
                 setPixelMap(pixelMap);
             }
         } finally {
