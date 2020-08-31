@@ -474,42 +474,45 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         }
     }
 
-    private void mouseClickEventPixelView(@NonNull IUIEvent pEvent, @NonNull Pixel pPixel) {
+    private void mouseClickEventPixelView(@NonNull IUIEvent event, @NonNull Pixel pixel) {
         disableDialogWhile(() -> {
             boolean change = false;
-            if (pPixel != null) {
+            if (pixel != null) {
                 if (isPixelActionOn()) {
-                    change |= mouseClickPixelOn(pEvent, pPixel);
+                    change |= mouseClickPixelOn(event, pixel);
                 }
                 if (isPixelActionOff()) {
-                    change |= actionPixelOff(pPixel);
+                    change |= actionPixelOff(pixel);
                 }
                 if (isPixelActionToggle()) {
-                    change |= actionPixelToggle(pPixel);
+                    change |= actionPixelToggle(pixel);
                 }
                 if (isPixelActionDeletePixelChain()) {
-                    change |= mouseClickEventPixelViewPixelChainDelete(pPixel);
+                    change |= mouseClickEventPixelViewPixelChainDelete(pixel);
                 }
                 if (isPixelActionChainThickness()) {
-                    change |= mouseClickEventPixelViewPixelChainThickness(pPixel);
+                    change |= mouseClickEventPixelViewPixelChainThickness(pixel);
                 }
                 if (isPixelActionVertex()) {
-                    change |= mouseClickEventPixelViewVertex(pPixel, !pEvent.isShift());
+                    change |= mouseClickEventPixelViewVertex(pixel, !event.isShift());
+                }
+                if (isPixelActionChangeColor()) {
+                    change |= mouseClickEventPixelViewPixelChainColor(pixel);
                 }
                 if (isPixelActionCopyToClipboard()) {
-                    actionCopyToClipboard(pPixel);
+                    actionCopyToClipboard(pixel);
                 }
                 if (isPixelActionChainApproximateCurvesOnly()) {
-                    change |= actionPixelChainApproximateCurvesOnly(pPixel);
+                    change |= actionPixelChainApproximateCurvesOnly(pixel);
                 }
                 if (isPixelActionChainDeleteAllButThis()) {
-                    change |= actionPixelChainDeleteAllButThis(pPixel);
+                    change |= actionPixelChainDeleteAllButThis(pixel);
                 }
                 if (change) {
                     autoUpdateCurves();
                 }
             }
-            graffitiCursor(pEvent, pPixel);
+            graffitiCursor(event, pixel);
         });
     }
 
@@ -536,6 +539,12 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mWorkingPixelsArray.clear();
         addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
         return actionPixelChainThickness(mWorkingPixelsArray);
+    }
+
+    private boolean mouseClickEventPixelViewPixelChainColor(@NonNull Pixel pPixel) {
+        mWorkingPixelsArray.clear();
+        addPixelsToWorkingPixelsArray(pPixel, getCursorSize());
+        return actionPixelChainChangeColor(mWorkingPixelsArray);
     }
 
     private boolean mouseClickEventPixelViewVertex(@NonNull Pixel pixel, boolean add) {
