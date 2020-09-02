@@ -480,7 +480,11 @@ public class ControlBase<C extends IControl<C, T, M, R>, T extends IType<M, R>, 
         }
 
         if (isPersistent()) {
-            pDB.write(getPrefix(pId) + mPropertyName, mValue.getString());
+            if (getMetaType() != null) {
+                pDB.write(getPrefix(pId) + getPropertyName(), getMetaType().getString(getValue()));
+            } else {
+                pDB.write(getPrefix(pId) + mPropertyName, mValue.getString());
+            }
         }
     }
 

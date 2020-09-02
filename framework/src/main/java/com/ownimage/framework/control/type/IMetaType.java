@@ -9,7 +9,9 @@ import java.io.Serializable;
 
 public interface IMetaType<D> extends Serializable, Cloneable {
 
+    boolean isValid(D value);
 
-    public boolean isValid(D pValue);
-
+    default String getString(D value) {
+        return value.toString();
+    }
 }

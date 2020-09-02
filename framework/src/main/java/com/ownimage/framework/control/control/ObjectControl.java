@@ -8,12 +8,10 @@ package com.ownimage.framework.control.control;
 import com.ownimage.framework.control.container.IContainer;
 import com.ownimage.framework.control.type.ObjectMetaType;
 import com.ownimage.framework.control.type.ObjectType;
-import com.ownimage.framework.persist.IPersistDB;
 import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.view.IView;
 import com.ownimage.framework.view.factory.ViewFactory;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,13 +72,6 @@ public class ObjectControl<R> extends ControlBase<ObjectControl<R>, ObjectType<R
         R rObject = (R) pObject;
         boolean b = super.setValue(rObject, pView, pIsMutating);
         return b;
-    }
-
-    @Override
-    public void write(@NotNull IPersistDB pDB, @NotNull String pId) {
-        if (isPersistent()) {
-            pDB.write(getPrefix(pId) + getPropertyName(), getMetaType().getString(getValue()));
-        }
     }
 
 }

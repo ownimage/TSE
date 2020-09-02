@@ -73,6 +73,7 @@ public class ObjectMetaType<R> implements IMetaType<R> {
      * @param pObject the value
      * @return the string
      */
+    @Override
     @SuppressWarnings("unchecked")
     public String getString(final Object pObject) {
         Framework.logEntry(mLogger);
