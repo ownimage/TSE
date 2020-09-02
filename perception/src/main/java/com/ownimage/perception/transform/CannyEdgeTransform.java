@@ -28,12 +28,17 @@ import com.ownimage.perception.app.Services;
 import com.ownimage.perception.pixelMap.EqualizeValues;
 import com.ownimage.perception.pixelMap.IPixelMapTransformSource;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
-import com.ownimage.perception.pixelMap.services.*;
+import com.ownimage.perception.pixelMap.services.Config;
+import com.ownimage.perception.pixelMap.services.PixelMapActionService;
+import com.ownimage.perception.pixelMap.services.PixelMapApproximationService;
+import com.ownimage.perception.pixelMap.services.PixelMapService;
+import com.ownimage.perception.pixelMap.services.PixelMapTransformService;
+import com.ownimage.perception.pixelMap.services.PixelMapValidationService;
 import com.ownimage.perception.render.ITransformResult;
 import com.ownimage.perception.transform.cannyEdge.CannyEdgeDetectorFactory;
-import com.ownimage.perception.transform.cannyEdge.EditPixelMapDialog;
 import com.ownimage.perception.transform.cannyEdge.GenerateEdgesDialog;
 import com.ownimage.perception.transform.cannyEdge.ICannyEdgeDetector;
+import com.ownimage.perception.transform.cannyEdge.epmd.EditPixelMapDialog;
 import lombok.NonNull;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
@@ -541,7 +546,7 @@ public class CannyEdgeTransform extends BaseTransform implements IPixelMapTransf
             if (pixelMap != null) {
                 double tolerance = getLineTolerance() / getHeight();
                 pixelMap = pixelMapApproximationService.actionProcess(pixelMap, tolerance, getLineCurvePreference(), getProgressControl().reset());
-                pixelMapValidationService.validate(pixelMap);
+//                pixelMapValidationService.validate(pixelMap);
                 setPixelMap(pixelMap);
             }
         } finally {
