@@ -539,10 +539,15 @@ public class PixelChainService {
 //
 //
 //
-    public boolean contains(@NotNull PixelChain pixelChain, @NotNull XY pPixel) {
+    public boolean contains(@NotNull PixelChain pixelChain, @NotNull XY xy) {
+        int length = pixelChain.pixels().size();
+        if (Math.abs(pixelChain.pixels().firstElement().orElseThrow().getX() - xy.getX()) > length
+         || Math.abs(pixelChain.pixels().firstElement().orElseThrow().getY() - xy.getY()) > length) {
+            return false;
+        }
         return pixelChain.pixels()
                 .stream()
-                .anyMatch(p -> p.samePosition(pPixel));
+                .anyMatch(p -> p.samePosition(xy));
     }
 
     public ImmutablePixelChain setStartPositions(
