@@ -105,6 +105,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ColorControl mNodeColor;
     private final ColorControl mWorkingColor;
     private final ObjectControl<ImmutablePixelAction> mPixelAction;
+    private final IntegerControl mPixelActionSize;
     private final ObjectControl<ThicknessOptions> mThicknessOption;
     private final ObjectControl<Thickness> mThickMapsTo;
     private final ObjectControl<Thickness> mMediumMapsTo;
@@ -120,33 +121,33 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private UndoRedoBuffer mPixelMapUndoRedoBuffer;
 
     private final ImmutablePixelAction pixelActionOn =
-            PixelAction.of("On", 1, this::mouseClickPixelOn)
+            PixelAction.of("On", false, this::mouseClickPixelOn)
                     .withDragEvent(this::mouseDragEventPixelViewOn).withDragEndEvent(this::actionPixelOn);
 
     private final ImmutablePixelAction pixelActionOff =
-            PixelAction.of("Off", 1, this::actionPixelOff)
+            PixelAction.of("Off", true, this::actionPixelOff)
                     .withDragEvent(this::actionPixelOff);
 
     private final ImmutablePixelAction pixelActionToggle =
-            PixelAction.of("Toggle", 1, this::actionPixelToggle)
+            PixelAction.of("Toggle", false, this::actionPixelToggle)
                     .withDragEvent(this::actionPixelToggle);
 
     private final ImmutablePixelAction pixelActionDeletePixelChain =
-            PixelAction.of("Delete Pixel Chain", 1, this::actionPixelChainDelete)
+            PixelAction.of("Delete Pixel Chain", true, this::actionPixelChainDelete)
                     .withDragEvent(this::mouseDragEventPixelAddWorkingPixels)
                     .withDragEndEvent(this::actionPixelChainDelete);
 
     private final ImmutablePixelAction pixelActionThickness =
-            PixelAction.of("Thickness", 2, this::actionPixelChainThickness)
+            PixelAction.of("Thickness", true, this::actionPixelChainThickness)
                     .withDragEvent(this::mouseDragEventPixelAddWorkingPixels)
                     .withDragEndEvent(this::actionPixelChainThickness)
                     .withControlVisibility(this::applyThicknessControlVisibility);
 
     private final ImmutablePixelAction pixelActionVertex =
-            PixelAction.of("Change Vertex", 2, this::actionChangeVertex);
+            PixelAction.of("Change Vertex", false, this::actionChangeVertex);
 
     private final ImmutablePixelAction pixelActionColor =
-            PixelAction.of("Change Color", 1, this::actionChangeColor)
+            PixelAction.of("Change Color", true, this::actionChangeColor)
                     .withDragEvent(this::mouseDragEventPixelAddWorkingPixels)
                     .withDragEndEvent(this::actionChangeColor)
                     .withControlVisibility(this::applyChangeColorControlVisibility);
@@ -154,26 +155,14 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ImmutablePixelAction[] pixelActions = new ImmutablePixelAction[]{
             pixelActionOn,
             pixelActionOff,
-            pixelActionOff.withName("Off Wide").withCursorSize(5),
-            pixelActionOff.withName("Off Very Wide").withCursorSize(15),
-            pixelActionOff.withName("Off Very Very Wide").withCursorSize(45),
             pixelActionToggle,
             pixelActionDeletePixelChain,
-            pixelActionDeletePixelChain.withName("Delete Pixel Chain Wide").withCursorSize(5),
-            pixelActionDeletePixelChain.withName("Delete Pixel Chain Very Wide").withCursorSize(15),
-            pixelActionDeletePixelChain.withName("Delete Pixel Chain Very Very Wide").withCursorSize(45),
             pixelActionThickness,
-            pixelActionThickness.withName("Thickness Wide").withCursorSize(5),
-            pixelActionThickness.withName("Thickness Very Wide").withCursorSize(15),
-            pixelActionThickness.withName("Thickness Very Very Wide").withCursorSize(45),
             pixelActionVertex,
             pixelActionColor,
-            pixelActionColor.withName("Change Color Wide").withCursorSize(5),
-            pixelActionColor.withName("Change Color Very Wide").withCursorSize(15),
-            pixelActionColor.withName("Change Color Very Very Wide").withCursorSize(45),
-            PixelAction.of("Copy To Clipboard", 1, this::actionCopyToClipboard),
-            PixelAction.of("Approximate Curves Only", 1, this::actionPixelChainApproximateCurvesOnly),
-            PixelAction.of("Delete all but this PixelChain", 1, this::actionPixelChainDeleteAllButThis),
+            PixelAction.of("Copy To Clipboard", false, this::actionCopyToClipboard),
+            PixelAction.of("Approximate Curves Only", false, this::actionPixelChainApproximateCurvesOnly),
+            PixelAction.of("Delete all but this PixelChain", false, this::actionPixelChainDeleteAllButThis),
     };
 
     private boolean mMutating = false;
@@ -214,6 +203,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mNodeColor = new ColorControl("Node Color", "nodeColor", mGeneralContainer, getProperties().getCETEPMDNodeColor());
         mWorkingColor = new ColorControl("Working Color", "workingColor", mGeneralContainer, getProperties().getCETEPMDWorkingColor());
         mPixelAction = new ObjectControl<>("Pixel Action", "pixelAction", mGeneralContainer, pixelActionOn, pixelActions, PixelAction::name);
+        mPixelActionSize = new IntegerControl("Size", "pixelActionSize", mGeneralContainer, 1, 1, 50, 5);
         mThicknessOption = new ObjectControl("Thickness", "thickness", mGeneralContainer, ThicknessOptions.None, ThicknessOptions.values());
         mThickMapsTo = new ObjectControl("Thick maps to", "thickMapsTo", mGeneralContainer, Thickness.Thick, Thickness.values());
         mMediumMapsTo = new ObjectControl("Medium maps to", "mediumMapsTo", mGeneralContainer, Thickness.Normal, Thickness.values());
@@ -371,6 +361,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mEdgeColor.setVisible(mShowEdges.getValue());
         mNodeColor.setVisible(mShowEdges.getValue());
         mEdgesOpacity.setVisible(mShowEdges.getValue());
+        mPixelActionSize.setVisible(mPixelAction.getValue().sizable());
         mChainColor.setVisible(false);
 
         mNoneMapsTo.setVisible(false);
@@ -887,7 +878,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private int getCursorSize() {
-        return mPixelAction.getValue().cursorSize();
+        return mPixelAction.getValue().sizable() ? mPixelActionSize.getValue() : 1;
     }
 
     private void drawGraffiti() {
