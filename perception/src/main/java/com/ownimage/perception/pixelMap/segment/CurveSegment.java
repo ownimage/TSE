@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This class needs to remain here for the deserialization of existing transforms.
  */
+@SuppressWarnings("deprecation")
 public class CurveSegment extends SegmentBase implements com.ownimage.perception.pixelMap.immutable.CurveSegment {
 
     private final static long serialVersionUID = 1L;

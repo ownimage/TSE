@@ -51,7 +51,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
     private boolean mIsMutating = false;
 
-    public BaseTransform(final String pDisplayName, final String pPropertyName) {
+    public BaseTransform(String pDisplayName, String pPropertyName) {
         Framework.logEntry(mLogger);
 
         mDisplayName = pDisplayName;
@@ -66,10 +66,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         mUseTransform = new BooleanControl("Use Transform", "use", mContainer, true);
 
-        final int previewSize = getProperties().getPreviewSize();
-        final ColorProperty oob = getProperties().getColorOOBProperty();
-        final PictureType preview = new PictureType(previewSize, previewSize);
-        final Color c = new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+        int previewSize = getProperties().getPreviewSize();
+        PictureType preview = new PictureType(previewSize, previewSize);
+        Color c = new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
         for (int x = 0; x < previewSize; x++) {
             for (int y = 0; y < previewSize; y++) {
                 preview.setColor(x, y, c);
@@ -86,29 +85,29 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void resizeInputPreview(final int pPreviewSize) {
-        final PictureType preview = new PictureType(pPreviewSize);
+    public void resizeInputPreview(int pPreviewSize) {
+        PictureType preview = new PictureType(pPreviewSize);
         mInputPreviewImage.setValue(preview);
     }
 
-    public void addXControl(final IMouseControl pControl) {
+    public void addXControl(IMouseControl pControl) {
         mControlSelector.addXControl(pControl);
     }
 
-    public void addXYControl(final IMouseControl pControl) {
+    public void addXYControl(IMouseControl pControl) {
         mControlSelector.addXYControl(pControl);
     }
 
-    public void addXYControlPair(final IMouseControl pControlX, final IMouseControl pControlY) {
+    public void addXYControlPair(IMouseControl pControlX, IMouseControl pControlY) {
         mControlSelector.addXYControlPair(pControlX, pControlY);
     }
 
-    public void addYControl(final IMouseControl pControl) {
+    public void addYControl(IMouseControl pControl) {
         mControlSelector.addYControl(pControl);
     }
 
     @Override
-    public void controlChangeEvent(final IControl pControl, final boolean pIsMutating) {
+    public void controlChangeEvent(IControl pControl, boolean pIsMutating) {
         Framework.logEntry(mLogger);
         if (!isInitialized()) {
             return;
@@ -123,7 +122,9 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
             redrawGrafitti();
         }
 
-        if (!pIsMutating) refreshOutputPreview();
+        if (!pIsMutating) {
+            refreshOutputPreview();
+        }
 
         Framework.logExit(mLogger);
     }
@@ -134,11 +135,11 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
 
         ITransform t = null;
         try {
-            final Class cl = getClass();
-            final Constructor<?> cons = cl.getConstructor(Perception.class);
+            var cl = getClass();
+            var cons = cl.getConstructor(Perception.class);
             t = (ITransform) cons.newInstance(getPerception());
-        } catch (final Throwable pT) {
-            throw new RuntimeException("Cannot create new instance." + pT);
+        } catch (Exception exception) {
+            throw new RuntimeException("Cannot create new instance." + exception);
         }
 
         Framework.logExit(mLogger, t);
@@ -251,8 +252,8 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return new RectangleSize(getWidth(), getHeight());
     }
 
-    public boolean isControlSelected(final IControl pControl) {
-        final ControlSelector cs = getControlSelector();
+    public boolean isControlSelected(IControl pControl) {
+        ControlSelector cs = getControlSelector();
         return cs != null && cs.isControlSelected(pControl);
     }
 
@@ -270,33 +271,33 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return true;
     }
 
-    public double mod1(final double pX) {
+    public double mod1(double pX) {
         return KMath.mod1(pX);
     }
 
     @Override
-    public void mouseClickEvent(final ImmutableUIEvent pEvent) {
+    public void mouseClickEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragEndEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDoubleClickEvent(final ImmutableUIEvent pEvent) {
+    public void mouseDoubleClickEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDoubleClickEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDragEndEvent(final ImmutableUIEvent pEvent) {
+    public void mouseDragEndEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragEndEvent(pEvent);
         }
     }
 
     @Override
-    public void mouseDragEvent(final ImmutableUIEvent pEvent) {
+    public void mouseDragEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             setValues();
             getPreviewImage().drawGrafitti();
@@ -305,14 +306,14 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void mouseDragStartEvent(final ImmutableUIEvent pEvent) {
+    public void mouseDragStartEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.mouseDragStartEvent(pEvent);
         }
     }
 
     @Override
-    public void read(final IPersistDB pDB, final String pId) {
+    public void read(IPersistDB pDB, String pId) {
         mContainer.read(pDB, pId);
     }
 
@@ -327,23 +328,23 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void scrollEvent(final ImmutableUIEvent pEvent) {
+    public void scrollEvent(ImmutableUIEvent pEvent) {
         if (mControlSelector != null) {
             mControlSelector.scrollEvent(pEvent);
         }
     }
 
-    public void setControlSelector(final ControlSelector pControlSelector) {
+    public void setControlSelector(ControlSelector pControlSelector) {
         mControlSelector = pControlSelector;
     }
 
     @Override
-    public void setPreviousTransform(final ITransform pPreviousTransform) {
+    public void setPreviousTransform(ITransform pPreviousTransform) {
         mPreviousTransform = pPreviousTransform;
         setValues();
     }
 
-    public void setUseTransform(final boolean pUse) {
+    public void setUseTransform(boolean pUse) {
         mUseTransform.setValue(pUse);
     }
 
@@ -357,17 +358,17 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void transform(final ITransformResult pRenderResult) {
+    public void transform(ITransformResult pRenderResult) {
         pRenderResult.setColor(Color.BLUE);
     }
 
     @Override
-    public void transform(@NonNull final ITransformResultBatch pBatch) {
+    public void transform(@NonNull ITransformResultBatch pBatch) {
         Framework.logEntry(mLogger);
 
         IntStream.range(0, pBatch.getBatchSize()).parallel()
                 .forEach(i -> {
-                    final ITransformResult rr = pBatch.getTransformResult(i);
+                    ITransformResult rr = pBatch.getTransformResult(i);
                     transform(rr);
                 });
 //        for (int i = 0; i < pBatch.getBatchSize(); i++) {
@@ -388,13 +389,13 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
     }
 
     @Override
-    public void write(final IPersistDB pDB, final String pId) throws IOException {
+    public void write(IPersistDB pDB, String pId) throws IOException {
         pDB.write(pId + ".name", getPropertyName());
         mContainer.write(pDB, pId);
     }
 
     @Override
-    public void graffiti(final GrafittiHelper pGrafittiHelper) {
+    public void graffiti(GrafittiHelper pGrafittiHelper) {
     }
 
     protected boolean isMutating() {
@@ -405,7 +406,7 @@ public abstract class BaseTransform implements IGrafitti, ITransform, IControlCh
         return !mIsMutating;
     }
 
-    protected void setMutating(final boolean pIsMutating) {
+    protected void setMutating(boolean pIsMutating) {
         this.mIsMutating = pIsMutating;
     }
 

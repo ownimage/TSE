@@ -75,7 +75,7 @@ public class PixelChainService {
     }
 
     public ImmutablePixelChain changeColor(@NotNull ImmutablePixelChain pixelChain, @NotNull Color color) {
-        return pixelChain.withColor(color);
+        return pixelChain.withColor(Optional.of(color));
     }
 
     /**

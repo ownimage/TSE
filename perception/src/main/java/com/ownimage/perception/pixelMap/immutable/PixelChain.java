@@ -33,7 +33,6 @@ public interface PixelChain extends Serializable {
     @Value.Parameter(order = 5)
     Thickness thickness();
 
-    @Value
     Optional<Color> color();
 
     default Stream<Pixel> streamPixels() {

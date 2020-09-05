@@ -657,10 +657,6 @@ public class PixelMapService {
         return result.get();
     }
 
-    /**
-     * @deprecated TODO: explain
-     */ // move to a stream
-    @Deprecated
     public void forEachPixel(@NotNull ImmutablePixelMap pixelMap, @NotNull Consumer<Pixel> pFunction) {
         new Range2D(pixelMap.width(), pixelMap.height()).forEach((x, y) -> pFunction.accept(getPixelAt(pixelMap, x, y)));
     }
@@ -685,29 +681,22 @@ public class PixelMapService {
     }
 
     public void validate(@NotNull ImmutablePixelMap pixelMap) {
-//        mPixelChains.stream().parallel().forEach(pc -> pc.validate(pPixelMap, true, "PixelMap::validate"));
         Set segments = new HashSet<Segment>();
         for (int x = 0; x < pixelMap.width(); x++) {
             for (int y = 0; y < pixelMap.height(); y++) {
-                var list = pixelMap.segmentIndex().get(x, y);
-                if (list != null) {
-                    list.stream().forEach(t -> segments.add(t._2));
-                }
+                pixelMap.segmentIndex().getOptional(x, y)
+                        .stream()
+                        .flatMap(ImmutableSet::stream)
+                        .forEach(t -> segments.add(t._2));
             }
         }
-//        if (mSegmentCount != segments.size()) {
-//            String message = String.format("mSegmentCount mismatch: mSegmentCount=%s, segments.size()=%s", mSegmentCount, segments.size());
-//            throw new IllegalStateException(message);
-//        }
     }
-
 
     public ImmutablePixelMap clearSegmentIndex(@NotNull ImmutablePixelMap pixelMap) {
         return pixelMap
                 .withSegmentIndex(pixelMap.segmentIndex().clear())
                 .withSegmentCount(0);
     }
-
 
     public @NotNull ImmutablePixelMap setEdge(
             @NotNull ImmutablePixelMap pixelMap,

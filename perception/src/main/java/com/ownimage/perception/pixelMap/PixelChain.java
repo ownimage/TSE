@@ -27,6 +27,7 @@ public class PixelChain implements Serializable, Cloneable, com.ownimage.percept
     private double mLength;
     private Thickness mThickness;
 
+    @Override
     public Optional<Color> color() {
         return Optional.empty();
     }

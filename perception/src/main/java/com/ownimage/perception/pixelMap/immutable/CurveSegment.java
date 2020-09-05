@@ -16,24 +16,26 @@ import java.io.Serializable;
 @Value.Immutable(prehash = true)
 public interface CurveSegment extends Segment, Serializable, Cloneable {
 
-    static ImmutableCurveSegment create(
-            PixelChain pixelChain,
-            int segmentIndex,
-            Point p1,
-            double startPosition
-    ) {
-        var p0 = pixelChain.getVertex(segmentIndex).getPosition();
-        var p2 = pixelChain.getVertex(segmentIndex + 1).getPosition();
-        var a = p0.add(p2).minus(p1.multiply(2.0d));
-        var b = p1.minus(p0).multiply(2.0d);
-        return ImmutableCurveSegment.builder()
-                .segmentIndex(segmentIndex)
-                .startPosition(startPosition)
-                .a(a)
-                .b(b)
-                .p1(p1)
-                .build();
-    }
+// --Commented out by Inspection START (03/09/2020 04:24):
+//    static ImmutableCurveSegment create(
+//            PixelChain pixelChain,
+//            int segmentIndex,
+//            Point p1,
+//            double startPosition
+//    ) {
+//        var p0 = pixelChain.getVertex(segmentIndex).getPosition();
+//        var p2 = pixelChain.getVertex(segmentIndex + 1).getPosition();
+//        var a = p0.add(p2).minus(p1.multiply(2.0d));
+//        var b = p1.minus(p0).multiply(2.0d);
+//        return ImmutableCurveSegment.builder()
+//                .segmentIndex(segmentIndex)
+//                .startPosition(startPosition)
+//                .a(a)
+//                .b(b)
+//                .p1(p1)
+//                .build();
+//    }
+// --Commented out by Inspection STOP (03/09/2020 04:24)
 
     @Override
     @Value.Parameter(order = 1)
