@@ -17,6 +17,7 @@ import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import com.ownimage.perception.transform.CannyEdgeTransform;
 import io.vavr.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -166,7 +167,7 @@ public class PixelMapActionService {
     public ImmutablePixelMap actionSetPixelChainChangeColor(
             @NotNull ImmutablePixelMap pixelMap,
             @NotNull Collection<? extends XY> pixels,
-            @NotNull Color color) {
+            @Nullable Color color) {
         var result = StrongReference.of(pixelMap);
         pixels.stream()
                 .filter(p -> pixelService.isEdge(result.get(), p))

@@ -28,6 +28,7 @@ import io.vavr.Tuple3;
 import io.vavr.Tuple4;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,8 +75,8 @@ public class PixelChainService {
         return pixelChain.changePixels(p -> p.add(pPixel));
     }
 
-    public ImmutablePixelChain changeColor(@NotNull ImmutablePixelChain pixelChain, @NotNull Color color) {
-        return pixelChain.withColor(Optional.of(color));
+    public ImmutablePixelChain changeColor(@NotNull ImmutablePixelChain pixelChain, @Nullable Color color) {
+        return pixelChain.withColor(Optional.ofNullable(color));
     }
 
     /**

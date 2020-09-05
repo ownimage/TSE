@@ -111,6 +111,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     private final ObjectControl<Thickness> mMediumMapsTo;
     private final ObjectControl<Thickness> mThinMapsTo;
     private final ObjectControl<Thickness> mNoneMapsTo;
+    private final BooleanControl mResetChainColor;
     private final ColorControl mChainColor;
     private final Collection<XY> mWorkingPixelsArray = new HashSet();
     private ImmutablePixelMap mPixelMap;
@@ -209,6 +210,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mMediumMapsTo = new ObjectControl("Medium maps to", "mediumMapsTo", mGeneralContainer, Thickness.Normal, Thickness.values());
         mThinMapsTo = new ObjectControl("Thin maps to", "thinMapsTo", mGeneralContainer, Thickness.Thin, Thickness.values());
         mNoneMapsTo = new ObjectControl("None maps to", "noneMapsTo", mGeneralContainer, Thickness.None, Thickness.values());
+        mResetChainColor = new BooleanControl("Reset Color", "resetChainColor", mGeneralContainer, false);
         mChainColor = new ColorControl("Chain Color", "chainColor", mGeneralContainer, mCannyEdgeTransform.getLineColor());
 
         mCropTransform = new CropTransform(Services.getServices().getPerception(), true);
@@ -339,7 +341,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
             if (pControl.isOneOf(mViewOriginX, mViewOriginY, mZoom, mPreviewSize, mShowCurves)) {
                 updateCurves();
             }
-            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction, mShowEdges, mThicknessOption)) {
+            if (pControl.isOneOf(mShowCurves, mAutoUpdateCurves, mPixelAction, mShowEdges, mThicknessOption, mResetChainColor)) {
                 applyDefaultControlVisibility();
                 mPixelAction.getValue().controlVisibility().run();
             }
@@ -362,6 +364,7 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
         mNodeColor.setVisible(mShowEdges.getValue());
         mEdgesOpacity.setVisible(mShowEdges.getValue());
         mPixelActionSize.setVisible(mPixelAction.getValue().sizable());
+        mResetChainColor.setVisible(false);
         mChainColor.setVisible(false);
 
         mNoneMapsTo.setVisible(false);
@@ -380,7 +383,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
     }
 
     private void applyChangeColorControlVisibility() {
-        mChainColor.setVisible(true);
+        mResetChainColor.setVisible(true);
+        mChainColor.setVisible(!mResetChainColor.getValue());
     }
 
     @Override
@@ -924,7 +928,8 @@ public class EditPixelMapDialog extends Container implements IUIEventListener, I
 
     private boolean actionPixelChainChangeColor(@NotNull Collection<XY> pPixels) {
         ImmutablePixelMap undo = getPixelMap();
-        setPixelMap(pixelMapActionService.actionSetPixelChainChangeColor(getPixelMap(), pPixels, mChainColor.getValue()));
+        Color color = mResetChainColor.getValidateValue() ? null : mChainColor.getValue();
+        setPixelMap(pixelMapActionService.actionSetPixelChainChangeColor(getPixelMap(), pPixels, color));
         if (undo != getPixelMap()) {
             addUndoRedoEntry("Action PixelChain Thickness", undo, getPixelMap());
             return true;
