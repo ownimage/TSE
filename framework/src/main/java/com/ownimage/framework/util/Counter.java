@@ -12,43 +12,43 @@ import java.util.logging.Logger;
  */
 public class Counter implements IMaxCounter {
 
-    private static final Logger mLogger = Framework.getLogger();
+    private static final Logger logger = Framework.getLogger();
 
-    private int mCount;
-    private int mMax;
+    private int count;
+    private int max;
 
     private Counter() {
     }
 
-    private Counter(final int pMax) {
-        Framework.checkParameterGreaterThan(mLogger, pMax, 0, "pMax");
-        mMax = pMax;
+    private Counter(final int max) {
+        Framework.checkParameterGreaterThan(logger, max, 0, "max");
+        this.max = max;
     }
 
     public static ICounter createCounter() {
         return new Counter();
     }
 
-    public static IMaxCounter createMaxCounter(final int pMax) {
-        return new Counter(pMax);
+    public static IMaxCounter createMaxCounter(int max) {
+        return new Counter(max != 0 ? max : 1);
     }
 
     @Override
     public synchronized Counter increase() {
-        mCount++;
+        count++;
         return this;
     }
 
     @Override
     public int getCount() {
-        return mCount;
+        return count;
     }
 
     @Override
     public float getPercent() {
-        if (mMax == 0) throw new RuntimeException("Cannot get percentage for Counter when max value has not been set");
-        final float percent = 100.0f * mCount / mMax;
-        return percent > 100.0f ? 100.0f : percent;
+        if (max == 0) throw new RuntimeException("Cannot get percentage for Counter when max value has not been set");
+        final float percent = 100.0f * count / max;
+        return Math.min(percent, 100.0f);
     }
 
     @Override

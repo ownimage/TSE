@@ -402,7 +402,6 @@ public class PixelMapService {
                     segments.update(s -> s.remove(new Tuple2<>(pixelChain, segment)));
                 }
                 segmentIndex.update(si -> si.set(i.getX(), i.getY(), segments.get()));
-                int x = 0;
             }
         });
 

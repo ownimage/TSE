@@ -100,8 +100,12 @@ public class PixelMapApproximationService {
     public ImmutablePixelMap process09_connectNodes(
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver progress) {
         var nodes = StrongReference.of(pixelMap.nodes());
+        var counter = Counter.createMaxCounter(pixelMap.pixelChains().size());
+        reportProgress(progress, "Connecting Nodes ...", counter.getPercentInt());
         pixelMap.pixelChains().stream()
                 .forEach(pc -> {
+                    counter.increase();
+                    reportProgress(progress, "Connecting Nodes ...", counter.getPercentInt());
                     var startNodeKey = pixelChainService.getStartNode(pixelMap, pc).orElseThrow().toImmutableIXY();
                     var endNodeKey = pixelChainService.getEndNode(pixelMap, pc).orElseThrow().toImmutableIXY();
                     nodes.update(n -> n.update(startNodeKey, (k, v) -> v.addPixelChain(pc)));
@@ -230,7 +234,7 @@ public class PixelMapApproximationService {
             IProgressObserver pProgressObserver) {
         reportProgress(pProgressObserver, "Generating chains ...", 0);
         var result = StrongReference.of(pixelMap);
-        var counter = Counter.createMaxCounter(pixelMap.nodes().size() + 1);
+        var counter = Counter.createMaxCounter(pixelMap.nodes().size());
         var chains = Collections.synchronizedCollection(new ArrayList<ImmutablePixelChain>());
         pixelMap.nodes().values().parallelStream().forEach(node -> {
             counter.increase();
@@ -258,7 +262,7 @@ public class PixelMapApproximationService {
                 .map(Map.Entry::getKey)
                 .map(XY::of)
                 .collect(Collectors.toList());
-        var counter = Counter.createMaxCounter(edges.size() + 1);
+        var counter = Counter.createMaxCounter(edges.size());
         edges.forEach(pixel -> {
             counter.increase();
             if (pixelService.isEdge(result.get(), pixel) && !pixelsInChains.contains(pixel)) {
