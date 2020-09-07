@@ -24,7 +24,6 @@ import com.ownimage.perception.pixelMap.immutable.Vertex;
 import com.ownimage.perception.pixelMap.immutable.XY;
 import com.ownimage.perception.pixelMap.segment.SegmentFactory;
 import io.vavr.Tuple2;
-import io.vavr.Tuple3;
 import io.vavr.Tuple4;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
@@ -45,20 +44,14 @@ import java.util.stream.Collectors;
 public class PixelChainService {
 
     private final static Logger logger = Framework.getLogger();
-    private static PegCounterService pegCounterService = new PegCounterService(); // TODO this needs to be wired in properly
+    private final static PegCounterService pegCounterService = new PegCounterService(); // TODO this needs to be wired in properly
     private PixelMapService pixelMapService;
-    private PixelMapTransformService pixelMapTransformService;
     private VertexService vertexService;
     private PixelService pixelService;
 
     @Autowired
     public void setPixelMapService(PixelMapService pixelMapService) {
         this.pixelMapService = pixelMapService;
-    }
-
-    @Autowired
-    public void setPixelMapTransformService(PixelMapTransformService pixelMapTransformService) {
-        this.pixelMapTransformService = pixelMapTransformService;
     }
 
     @Autowired
@@ -300,7 +293,7 @@ public class PixelChainService {
      * then this method returns this object, otherwise it will return a new PixelChain with the new thickness.
      *
      * @param thickness the p thickness
-     * @return the PixeclChain
+     * @return the PixelChain
      */
     public ImmutablePixelChain withThickness(@NotNull ImmutablePixelChain pixelChain, @NotNull Thickness thickness) {
         if (thickness == pixelChain.thickness()) {
@@ -347,7 +340,7 @@ public class PixelChainService {
     }
 
     /**
-     * Adds the two pixel chains together. It allocates all of the pixels from the otherChain to this, unattaches both chains from the middle node, and adds all of the segments from the second chain
+     * Adds the two pixel chains together. It allocates all of the pixels from the otherChain to this, unattached both chains from the middle node, and adds all of the segments from the second chain
      * to the first (joining at the appropriate vertex in the middle, and using the correct offset for the new vertexes). Note that the new segments that are copied from the otherChain are all
      * LineApproximations.
      *
@@ -375,7 +368,7 @@ public class PixelChainService {
         validate(builder.get(), false, "merge");
         validate(otherChain, false, "merge");
 
-        // TODO this should be a pixelChainService mergable
+        // TODO this should be a pixelChainService mergeable
         if (!builder.get().pixels().lastElement().orElseThrow().equals(firstPixel(otherChain))) {
             throw new IllegalArgumentException("PixelChains not compatible, last pixel of this:" + this + " must be first pixel of other: " + otherChain);
         }
@@ -402,148 +395,87 @@ public class PixelChainService {
     }
 
     public void validate(@NotNull PixelChain pixelChain, boolean pFull, @NotNull String pMethodName) {
-        try {
-            if (getStartVertex(pixelChain).getPixelIndex() != 0) {
-                throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
+        if (getStartVertex(pixelChain).getPixelIndex() != 0) {
+            throw new IllegalStateException("getStartVertex().getPixelIndex() != 0");
+        }
+        var vertexSize = pixelChain.vertexes().size();
+        var segmentSize = pixelChain.segments().size();
+        var pixelSize = pixelChain.pixels().size();
+
+        if (vertexSize == 0 && segmentSize != 0) {
+            throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
+        }
+
+        if (vertexSize != 0 && segmentSize + 1 != vertexSize) {
+            throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
+        }
+
+        var nextStartIndex = StrongReference.of(0);
+
+        pixelChain.segments().forEach(segment -> {
+            if (segment.getStartIndex(pixelChain) != nextStartIndex.get()) { //
+                throw new IllegalStateException("segments not linked properly");
             }
-            var vertexSize = pixelChain.vertexes().size();
-            var segmentSize = pixelChain.segments().size();
-            var pixelSize = pixelChain.pixels().size();
+            nextStartIndex.set(segment.getEndIndex(pixelChain));
+        });
 
-            if (vertexSize == 0 && segmentSize != 0) {
-                throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
-            }
+        if (segmentSize != 0 && pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain) != pixelSize - 1) { //
+            throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", segmentSize, pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain), pixelSize - 1));
+        }
 
-            if (vertexSize != 0 && segmentSize + 1 != vertexSize) {
-                throw new IllegalStateException(String.format("vertexSize = %s && segmentSize = %s", vertexSize, segmentSize));
-            }
-
-            int nextStartIndex[] = {0};
-
-            pixelChain.segments().forEach(segment -> {
-                if (segment.getStartIndex(pixelChain) != nextStartIndex[0]) { //
-                    throw new IllegalStateException("segments not linked properly");
-                }
-                nextStartIndex[0] = segment.getEndIndex(pixelChain);
-            });
-
-            if (segmentSize != 0 && pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain) != pixelSize - 1) { //
-                throw new IllegalStateException(String.format("last segment not linked properly, %s, %s, %s", segmentSize, pixelChain.segments().lastElement().orElseThrow().getEndIndex(pixelChain), pixelSize - 1));
-            }
-
-            checkAllVertexesAttached();
-
-            Vertex vertex = getStartVertex(pixelChain);
-            int index = 0;
-            while (vertex != null) {
-                if (pixelChain.vertexes().get(vertex.getVertexIndex()) != vertex) {
-                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
-                }
-
-                if (vertex.getVertexIndex() != index) {
-                    throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
-                }
-
-                index++;
-                vertex = vertexService.getEndSegment(pixelChain, vertex) != null
-                        ? vertexService.getEndSegment(pixelChain, vertex).getEndVertex(pixelChain)
-                        : null;
+        Vertex vertex = getStartVertex(pixelChain);
+        int index = 0;
+        while (vertex != null) {
+            if (pixelChain.vertexes().get(vertex.getVertexIndex()) != vertex) {
+                throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
             }
 
-            if (vertexSize != 0) {
-                if (vertexService.getStartSegment(pixelChain, pixelChain.vertexes().firstElement().orElseThrow()) != null) {
-                    throw new RuntimeException("wrong start vertex");
-                }
-                if (vertexService.getEndSegment(pixelChain, pixelChain.vertexes().lastElement().orElseThrow()) != null) {
-                    throw new RuntimeException("wrong end vertex");
-                }
+            if (vertex.getVertexIndex() != index) {
+                throw new RuntimeException("############ VERTEX mismatch in " + pMethodName);
             }
 
-            int currentMax = -1;
-            for (int i = 0; i < vertexSize; i++) {
-                Vertex v = pixelChain.vertexes().get(i);
-                if (i == 0 && v.getPixelIndex() != 0) {
-                    throw new IllegalStateException("First vertex wrong)");
-                }
-                if (i == vertexSize - 1 && v.getPixelIndex() != pixelSize - 1 && pFull) {
-                    throw new IllegalStateException("Last vertex wrong)");
-                }
-                if (v.getPixelIndex() <= currentMax) {
-                    throw new IllegalStateException("Wrong pixel index order");
-                }
-                currentMax = v.getPixelIndex();
-                if (i != 0 && vertexService.getStartSegment(pixelChain, v) != pixelChain.segments().get(i - 1)) {
-                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
-                }
-                if (i != vertexSize - 1 && vertexService.getEndSegment(pixelChain, v) != pixelChain.segments().get(i)) {
-                    throw new RuntimeException(String.format("start segment mismatch i = %s", i));
-                }
+            index++;
+            vertex = vertexService.getEndSegment(pixelChain, vertex) != null
+                    ? vertexService.getEndSegment(pixelChain, vertex).getEndVertex(pixelChain)
+                    : null;
+        }
+
+        if (vertexSize != 0) {
+            if (vertexService.getStartSegment(pixelChain, pixelChain.vertexes().firstElement().orElseThrow()) != null) {
+                throw new RuntimeException("wrong start vertex");
             }
-        } catch (Exception pT) {
-            printVertexs();
-            throw pT;
+            if (vertexService.getEndSegment(pixelChain, pixelChain.vertexes().lastElement().orElseThrow()) != null) {
+                throw new RuntimeException("wrong end vertex");
+            }
+        }
+
+        int currentMax = -1;
+        for (int i = 0; i < vertexSize; i++) {
+            Vertex v = pixelChain.vertexes().get(i);
+            if (i == 0 && v.getPixelIndex() != 0) {
+                throw new IllegalStateException("First vertex wrong)");
+            }
+            if (i == vertexSize - 1 && v.getPixelIndex() != pixelSize - 1 && pFull) {
+                throw new IllegalStateException("Last vertex wrong)");
+            }
+            if (v.getPixelIndex() <= currentMax) {
+                throw new IllegalStateException("Wrong pixel index order");
+            }
+            currentMax = v.getPixelIndex();
+            if (i != 0 && vertexService.getStartSegment(pixelChain, v) != pixelChain.segments().get(i - 1)) {
+                throw new RuntimeException(String.format("start segment mismatch i = %s", i));
+            }
+            if (i != vertexSize - 1 && vertexService.getEndSegment(pixelChain, v) != pixelChain.segments().get(i)) {
+                throw new RuntimeException(String.format("start segment mismatch i = %s", i));
+            }
         }
     }
 
-
-    private void printVertexs() {
-//        StringBuilder sb = new StringBuilder()
-//                .append(String.format("mVertexes.size() = %s, mSegments.size() = %s", mVertexes.size(), mSegments.size()))
-//                .append("\nArrray\n");
-//
-//        for (int i = 0; i < mVertexes.size(); i++) {
-//            sb.append(String.format("i = %s, mVertexes.get(i).getVertexIndex() = %s\n", i, mVertexes.get(i).getVertexIndex()));
-//        }
-//
-//        sb.append("\n\nWalking\n");
-//        VertexData vertex = getStartVertex();
-//        int index = 0;
-//        while (vertex != null) {
-//            sb.append(String.format("index = %s, vertex.getVertexIndex() = %s\n", index, vertex.getVertexIndex()));
-//            index++;
-//            vertex = vertex.getEndSegment(this) != null
-//                    ? vertex.getEndSegment(this).getEndVertex(this)
-//                    : null;
-//        }
-//
-//        mLogger.severe(sb::toString);
-    }
-
-    private void checkAllVertexesAttached() {
-//        mSegments.forEach(segment -> {
-//            try {
-//                if (mLogger.isLoggable(Level.SEVERE)) {
-//                    if (segment.getStartVertex(this).getEndSegment(this) != segment) {
-//                        mLogger.severe("start Vertex not attached");
-//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
-//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
-//                    }
-//                    if (segment.getEndVertex(this).getStartSegment(this) != segment) {
-//                        mLogger.severe("end Vertex not attached");
-//                        mLogger.severe("is start segment: " + (segment == getFirstSegment()));
-//                        mLogger.severe("is end segment: " + (segment == getLastSegment()));
-//                    }
-//                }
-//            } catch (Exception pT) {
-//                mLogger.log(Level.SEVERE, "Unxepected error", pT);
-//            }
-//        });
-    }
-
-    //    private PixelChainBuilder builder() {
-//        return new PixelChainBuilder(mPixels.toVector(), mVertexes.toVector(), mSegments.toVector(), mLength, mThickness);
-//    }
-//
-//
-//
-//
-//
-//
     public boolean contains(@NotNull PixelChain pixelChain, @NotNull XY xy) {
         int length = pixelChain.pixels().size();
         var firstPixel = pixelChain.pixels().firstElement().orElseThrow();
         if (Math.abs(firstPixel.getX() - xy.getX()) > length
-         || Math.abs(firstPixel.getY() - xy.getY()) > length) {
+                || Math.abs(firstPixel.getY() - xy.getY()) > length) {
             return false;
         }
         return pixelChain.pixels()
@@ -749,7 +681,6 @@ public class PixelChainService {
             double lineCurvePreference,
             Segment currentSegment
     ) {
-        var result = pixelChain;
         // get tangent at start and end
         // calculate intersection
         // what if they are parallel ? -- ignore as the initial estimate is not good enough
@@ -757,23 +688,21 @@ public class PixelChainService {
         // // method 1 - looking at blending the gradients
         var bestSegment = currentSegment;
         try {
-            double lowestError = currentSegment.calcError(pixelMap, result);
-            lowestError *= lineCurvePreference;
-            Line startTangent = vertexService.calcTangent(pixelMap, result, currentSegment.getStartVertex(result));
-            Line endTangent = vertexService.calcTangent(pixelMap, result, currentSegment.getEndVertex(result));
+            double lowestError = currentSegment.calcError(pixelMap, pixelChain) * lineCurvePreference;
+            Line startTangent = vertexService.calcTangent(pixelMap, pixelChain, currentSegment.getStartVertex(pixelChain));
+            Line endTangent = vertexService.calcTangent(pixelMap, pixelChain, currentSegment.getEndVertex(pixelChain));
 
             if (startTangent != null && endTangent != null) {
                 Point p1 = startTangent.intersect(endTangent);
                 if (p1 != null && startTangent.closestLambda(p1) > 0.0d && endTangent.closestLambda(p1) < 0.0d) {
-                    Line newStartTangent = new Line(p1, currentSegment.getStartVertex(result).getPosition());
-                    Line newEndTangent = new Line(p1, currentSegment.getEndVertex(result).getPosition());
+                    Line newStartTangent = new Line(p1, currentSegment.getStartVertex(pixelChain).getPosition());
+                    Line newEndTangent = new Line(p1, currentSegment.getEndVertex(pixelChain).getPosition());
                     p1 = newStartTangent.intersect(newEndTangent);
                     // if (p1 != null && newStartTangent.getAB().dot(startTangent.getAB()) > 0.0d && newEndTangent.getAB().dot(endTangent.getAB()) > 0.0d) {
-                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, pixelChain, currentSegment.getSegmentIndex(), p1);
                     if (candidateSegment != null) {
-                        double candidateError = candidateSegment.calcError(pixelMap, result);
-                        if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
-                            lowestError = candidateError;
+                        double candidateError = candidateSegment.calcError(pixelMap, pixelChain);
+                        if (isValid(pixelMap, pixelChain, candidateSegment) && candidateError < lowestError) {
                             bestSegment = candidateSegment;
                         }
                     }
@@ -782,7 +711,7 @@ public class PixelChainService {
         } catch (Exception pT) {
             logger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
-        return result.setSegment(bestSegment);
+        return pixelChain.setSegment(bestSegment);
     }
 
     public ImmutablePixelChain refine03MidSegment(
@@ -797,7 +726,7 @@ public class PixelChainService {
         // and we will match the final gradient of the last segment
         //
         // If the next segment is a straight line then we can eat half of it
-        return refine03MidSegmentEatForward(pixelMap, pixelChain, lineCurvePreference, currentSegment);
+        return refine03MidSegmentEatForward(pixelMap, pixelChain, currentSegment);
         //
         // If the next segment is a curve then
         //  1) try matching with a curve
@@ -810,7 +739,6 @@ public class PixelChainService {
     public ImmutablePixelChain refine03MidSegmentEatForward(
             @NotNull PixelMap pixelMap,
             @NotNull PixelChain pixelChain,
-            double lineCurvePreference,
             Segment currentSegment
     ) {
         var originalNextSegment = currentSegment.getNextSegment(pixelChain);
@@ -912,9 +840,6 @@ public class PixelChainService {
     public boolean isValid(@NotNull PixelMap pixelMap,
                            @NotNull PixelChain pixelChain,
                            @NotNull Segment segment) {
-        if (segment == null) {
-            return false;
-        }
         if (segment.getPixelLength(pixelChain) < 4) {
             return true;
         }
@@ -936,27 +861,26 @@ public class PixelChainService {
             double lineCurvePreference,
             @NotNull Segment currentSegment
     ) {
-        var result = pixelChain;
         var bestSegment = currentSegment;
 
         try {
-            double lowestError = currentSegment.calcError(pixelMap, result);
+            double lowestError = currentSegment.calcError(pixelMap, pixelChain);
             lowestError *= lineCurvePreference;
             // calculate start tangent
-            Line tangent = vertexService.calcTangent(pixelMap, result, currentSegment.getStartVertex(result));
-            Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(result));
+            Line tangent = vertexService.calcTangent(pixelMap, pixelChain, currentSegment.getStartVertex(pixelChain));
+            Point closest = tangent.closestPoint(currentSegment.getEndUHVWPoint(pixelChain));
             // divide this line (tangentRuler) into the number of pixels in the segment
             // for each of the points on the division find the lowest error
-            Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(result), closest);
-            for (int i = 1; i < currentSegment.getPixelLength(result); i++) { // first and last pixel will throw an error and are equivalent to the straight line
+            Line tangentRuler = new Line(currentSegment.getStartUHVWPoint(pixelChain), closest);
+            for (int i = 1; i < currentSegment.getPixelLength(pixelChain); i++) { // first and last pixel will throw an error and are equivalent to the straight line
                 try {
-                    double lambda = (double) i / currentSegment.getPixelLength(result);
+                    double lambda = (double) i / currentSegment.getPixelLength(pixelChain);
                     Point p1 = tangentRuler.getPoint(lambda);
-                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, result, currentSegment.getSegmentIndex(), p1);
+                    Segment candidateSegment = SegmentFactory.createTempCurveSegmentTowards(pixelMap, pixelChain, currentSegment.getSegmentIndex(), p1);
                     if (candidateSegment != null) {
-                        double candidateError = candidateSegment.calcError(pixelMap, result);
+                        double candidateError = candidateSegment.calcError(pixelMap, pixelChain);
 
-                        if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
+                        if (isValid(pixelMap, pixelChain, candidateSegment) && candidateError < lowestError) {
                             lowestError = candidateError;
                             bestSegment = candidateSegment;
                         }
@@ -968,7 +892,7 @@ public class PixelChainService {
         } catch (Exception pT) {
             logger.severe(() -> FrameworkLogger.throwableToString(pT));
         }
-        return result.setSegment(bestSegment);
+        return pixelChain.setSegment(bestSegment);
     }
 
     public PixelChain refine01FirstSegment(
@@ -1002,7 +926,7 @@ public class PixelChainService {
                         continue;
                     }
                     result = result.setSegment(candidateSegment);
-                    double candidateError = candidateSegment != null ? candidateSegment.calcError(pixelMap, result) : 0.0d;
+                    double candidateError = candidateSegment.calcError(pixelMap, result);
 
                     if (isValid(pixelMap, result, candidateSegment) && candidateError < lowestError) {
                         lowestError = candidateError;
@@ -1026,7 +950,8 @@ public class PixelChainService {
             @NotNull PixelMap pixelMap,
             @NotNull ImmutablePixelChain pixelChain,
             double tolerance,
-            double lineCurvePreference
+            double lineCurvePreference,
+            int fallbackPixelIndex
     ) {
         var startVertex = pixelChain.lastVertex();
         var startPixelIndex = pixelChain.lastVertex().getPixelIndex() + 1;
@@ -1036,7 +961,6 @@ public class PixelChainService {
         var result = StrongReference.of(pixelChain);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, Segment, Vertex> bestFit;
 
         for (int i = startPixelIndex; i < result.get().pixelCount(); i++) {
             try {
@@ -1066,7 +990,7 @@ public class PixelChainService {
                 result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(result.get(), segmentIndex)));
             }
         } else {
-            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, r.maxPixelIndex())));
+            result.update(r -> r.setVertex(vertexService.createVertex(pixelMap, r, vertexIndex, fallbackPixelIndex)));
             result.update(r -> r.setSegment(SegmentFactory.createTempStraightSegment(r, segmentIndex)));
         }
         return result.get();
@@ -1099,7 +1023,13 @@ public class PixelChainService {
         result = result.changeSegments(ImmutableVectorClone::clear);
         result = approximateCurvesOnly_firstSegment(pixelMap, result, tolerance, lineCurvePreference);
         while (result.lastVertex().getPixelIndex() != result.maxPixelIndex()) {
-            result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference);
+            var resultMaxPixelIndex = result.vertexes().lastElement().orElseThrow().getPixelIndex();
+            var fallbackNextPixelIndex = pixelChain.vertexes().stream()
+                    .filter(v -> v.getPixelIndex() > resultMaxPixelIndex)
+                    .findFirst()
+                    .map(Vertex::getPixelIndex)
+                    .orElse(resultMaxPixelIndex);
+            result = approximateCurvesOnly_subsequentSegments(pixelMap, result, tolerance, lineCurvePreference, fallbackNextPixelIndex);
         }
         return result;
     }
@@ -1117,33 +1047,30 @@ public class PixelChainService {
         var best = new StrongReference<Tuple2<Segment, Vertex>>(null);
         result.update(r -> r.changeVertexes(v -> v.add(null)));
         result.update(r -> r.changeSegments(s -> s.add(null)));
-        Tuple3<Integer, Segment, Vertex> bestFit;
 
         for (int i = 4; i < result.get().pixelCount(); i++) {
-            try {
-                var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
-                var lineAB = new Line(result.get().getUHVWPoint(pixelMap, 0), result.get().getUHVWPoint(pixelMap, i));
-                var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
-                var pointL = lineAB.getPoint(0.25d);
-                var pointN = lineAB.getPoint(0.75d);
-                var normal = lineAB.getANormal();
-                var lineL = new Line(pointL, pointL.add(normal));
-                var lineN = new Line(pointN, pointN.add(normal));
-                var pointC = lt3.intersect(lineL);
-                var pointE = lt3.intersect(lineN);
-                if (pointC != null && pointE != null) {
-                    var lineCE = new Line(pointC, pointE);
-                    result.update(r -> r.setVertex(candidateVertex));
-                    lineCE.streamFromCenter(20)
-                            .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, result.get(), segmentIndex, p))
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .filter(s -> s.noPixelFurtherThan(pixelMap, result.get(), tolerance * lineCurvePreference))
-                            .findFirst()
-                            .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
-                }
-            } catch (Exception pT) {
+            var candidateVertex = vertexService.createVertex(pixelMap, result.get(), vertexIndex, i);
+            var lineAB = new Line(result.get().getUHVWPoint(pixelMap, 0), result.get().getUHVWPoint(pixelMap, i));
+            var lt3 = vertexService.calcLocalTangent(pixelMap, result.get(), candidateVertex, 3);
+            var pointL = lineAB.getPoint(0.25d);
+            var pointN = lineAB.getPoint(0.75d);
+            var normal = lineAB.getANormal();
+            var lineL = new Line(pointL, pointL.add(normal));
+            var lineN = new Line(pointN, pointN.add(normal));
+            var pointC = lt3.intersect(lineL);
+            var pointE = lt3.intersect(lineN);
+            if (pointC != null && pointE != null) {
+                var lineCE = new Line(pointC, pointE);
+                result.update(r -> r.setVertex(candidateVertex));
+                lineCE.streamFromCenter(20)
+                        .map(p -> SegmentFactory.createOptionalTempCurveSegmentTowards(pixelMap, result.get(), segmentIndex, p))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .filter(s -> s.noPixelFurtherThan(pixelMap, result.get(), tolerance * lineCurvePreference))
+                        .findFirst()
+                        .ifPresent(s -> best.set(new Tuple2<>(s, candidateVertex)));
             }
+
             if (best.get() != null && best.get()._2.getPixelIndex() - 15 > i) {
                 break;
             }
@@ -1199,6 +1126,19 @@ public class PixelChainService {
 
     public boolean isLoop(@NotNull ImmutablePixelChain pixelChain) {
         if (pixelChain.pixels().size() == 0) return false;
-        return 0 == pixelChain.pixels().firstElement().get().compareTo(pixelChain.pixels().lastElement().get());
+        return 0 == pixelChain.pixels().firstElement().orElseThrow().compareTo(pixelChain.pixels().lastElement().orElseThrow());
+    }
+
+    public String actionCopyPixelsToClipboard(
+            @NotNull ImmutablePixelMap pixelMap, @NotNull ImmutablePixelChain pixelChain, double tolerance, double lineCurvePreference) {
+        var sb = new StringBuilder();
+        sb.append("var pixelMap = Utility.createMap(").append(pixelMap.width()).append(", ").append(pixelMap.height()).append(");\n");
+        sb.append("var height = pixelMap.height();\n");
+        sb.append("var tolerance = " + tolerance + ";\n");
+        sb.append("var lineCurvePreference = " + lineCurvePreference + ";\n");
+        sb.append("var pixelChain = Utility.createPixelChain(pixelMap\n");
+        pixelChain.pixels().stream().forEach(p -> sb.append(String.format(", Pixel.of(%s, %s, height)", p.getX(), p.getY())));
+        sb.append(");");
+        return sb.toString();
     }
 }

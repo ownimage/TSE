@@ -5,6 +5,7 @@
  */
 package com.ownimage.framework.util;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -33,6 +34,10 @@ public class StrongReference<T> {
 
     public T get() {
         return value;
+    }
+
+    public Optional<T> getOptional() {
+        return Optional.of(value);
     }
 
     public void set(T value) {

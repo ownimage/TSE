@@ -24,7 +24,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             }
             Consumer<HashSet<E>> redo = m -> m.add(pElement);
             Consumer<HashSet<E>> undo = m -> m.remove(pElement);
-            return new ImmutableSet<E>(this, redo, undo);
+            return new ImmutableSet<>(this, redo, undo);
         }
     }
 
@@ -35,7 +35,7 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             }
             Consumer<HashSet<E>> redo = m -> m.remove(pElement);
             Consumer<HashSet<E>> undo = m -> m.add(pElement);
-            return new ImmutableSet<E>(this, redo, undo);
+            return new ImmutableSet<>(this, redo, undo);
         }
     }
 
@@ -46,20 +46,20 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
             all.removeAll(master);
             Consumer<HashSet<E>> redo = m -> m.addAll(all);
             Consumer<HashSet<E>> undo = m -> m.removeAll(all);
-            return new ImmutableSet<E>(this, redo, undo);
+            return new ImmutableSet<>(this, redo, undo);
         }
     }
 
     public ImmutableSet<E> removeAll(Collection<E> pAll) {
         synchronized (getSynchronisationObject()) {
             HashSet<E> master = getMaster();
-            ArrayList<E> remove = pAll.stream().filter(e -> master.contains(e)).collect(Collectors.toCollection(ArrayList::new));
+            ArrayList<E> remove = pAll.stream().filter(master::contains).collect(Collectors.toCollection(ArrayList::new));
             if (remove.size() == 0) {
                 return this;
             }
             Consumer<HashSet<E>> redo = m -> m.removeAll(remove);
             Consumer<HashSet<E>> undo = m -> m.addAll(remove);
-            return new ImmutableSet<E>(this, redo, undo);
+            return new ImmutableSet<>(this, redo, undo);
         }
     }
 
@@ -86,8 +86,8 @@ public class ImmutableSet<E> extends ImmutableNode<HashSet<E>> {
         }
     }
 
-    public ImmutableSet clear() {
-        return new ImmutableSet();
+    public ImmutableSet<E> clear() {
+        return new ImmutableSet<>();
     }
 
     public int size() {

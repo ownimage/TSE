@@ -88,7 +88,7 @@ public class PixelMapApproximationService {
         result = process04a_removeLoneNodes(result, tolerance, lineCurvePreference, progress);
         result = process05_generateChains(result, progress);
         result = process05a_findLoops(result, progress);
-        result = process06_straightLinesRefineCorners(result, lineCurvePreference, progress);
+        result = process06_straightLinesRefineCorners(result, tolerance, progress);
         result = process07_mergeChains(result, progress);
         result = process08_refine(result, tolerance, lineCurvePreference, progress);
         result = process09_connectNodes(result, progress);
@@ -118,12 +118,11 @@ public class PixelMapApproximationService {
             @NotNull ImmutablePixelMap pixelMap,
             IProgressObserver progress) {
         reportProgress(progress, "Resetting ...", 0);
-        var result = pixelMap
+        return pixelMap
                 .withData(pixelMap.data().forEach(d -> (byte) (d & EDGE)))
                 .withNodes(pixelMap.nodes().clear())
                 .withPixelChains(pixelMap.pixelChains().clear())
                 .withSegmentIndex(pixelMap.segmentIndex().clear());
-        return result;
     }
 
     private void reportProgress(IProgressObserver progress, String pProgressString, int pPercent) {
@@ -147,9 +146,7 @@ public class PixelMapApproximationService {
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver pProgressObserver) {
         var result = StrongReference.of(pixelMap);
         reportProgress(pProgressObserver, "Generating Nodes ...", 0);
-        pixelMapService.forEachPixel(result.get(), pixel -> {
-            result.update(r -> pixelMapService.calcIsNode(result.get(), pixel));
-        });
+        pixelMapService.forEachPixel(result.get(), pixel -> result.update(r -> pixelMapService.calcIsNode(result.get(), pixel)));
         return result.get();
     }
 
@@ -164,7 +161,7 @@ public class PixelMapApproximationService {
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (!pixelService.isNode(result.get(), pixel)
                     && pixelService.isEdge(result.get(), pixel)
-                    && pixelService.getNodeNeighbours(result.get(), pixel).stream().count() >= 2) {
+                    && (long) pixelService.getNodeNeighbours(result.get(), pixel).size() >= 2) {
                 result.update(r -> r.withData(r.data().set(pixel.getX(), pixel.getY(), (byte) 0)));
                 removedPixels.add(pixel);
             }
@@ -185,7 +182,7 @@ public class PixelMapApproximationService {
         reportProgress(pProgressObserver, "Removing Lone Nodes ...", 0);
         pixelMapService.forEachPixel(result.get(), pixel -> {
             if (pixelService.isNode(result.get(), pixel)) {
-                Node node = pixelMapService.getNode(result.get(), pixel).get();
+                Node node = pixelMapService.getNode(result.get(), pixel).orElseThrow();
                 if (pixelService.countEdgeNeighbours(result.get(), node) == 0) {
                     result.update(r -> pixelMapService.setEdge(r, pixel, false, tolerance, lineCurvePreference));
                     result.update(r -> pixelMapService.setNode(r, pixel, false));
@@ -240,7 +237,7 @@ public class PixelMapApproximationService {
             counter.increase();
             reportProgress(pProgressObserver, "Generating chains ...", counter.getPercentInt());
             pixelMapChainGenerationService.generateChains(result.get(), node).stream()
-                    .filter(pc -> 0 >= pc.pixels().firstElement().get().compareTo(pc.pixels().lastElement().get()))
+                    .filter(pc -> 0 >= pc.pixels().firstElement().orElseThrow().compareTo(pc.pixels().lastElement().orElseThrow()))
                     .forEach(chains::add);
         });
         result.update(r -> pixelMapService.pixelChainsAddAll(r, chains));
@@ -258,7 +255,7 @@ public class PixelMapApproximationService {
                 .map(XY::of)
                 .forEach(pixelsInChains::add);
         var edges = pixelMap.data().entrySet().stream().parallel()
-                .filter(e -> (e.getValue() | EDGE) != 0)
+                .filter(e -> (e.getValue() & EDGE) != 0)
                 .map(Map.Entry::getKey)
                 .map(XY::of)
                 .collect(Collectors.toList());
