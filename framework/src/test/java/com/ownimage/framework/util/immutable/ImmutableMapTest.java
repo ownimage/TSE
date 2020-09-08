@@ -254,4 +254,79 @@ public class ImmutableMapTest {
         assertEquals("three", actual.get(3));
         assertEquals(3, actual.size());
     }
+
+    @Test
+    public void testPutAll_01() {
+        // GIVEN an empty ImmutableMap
+        var newMap = new HashMap<Integer, String>();
+        newMap.put(1, "one");
+        newMap.put(2, "two");
+        newMap.put(3, "three");
+        // WHEN
+        var underTest = new ImmutableMap<Integer, String>().putAll(newMap);
+        // THEN the mappings should exist
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals(3, underTest.size());
+    }
+
+    @Test
+    public void testPutAll_02() {
+        // GIVEN an ImmutableMap with values
+        var underTest = new ImmutableMap<Integer, String>()
+                .put(4, "four")
+                .put(5, "five");
+        var newMap = new HashMap<Integer, String>();
+        newMap.put(1, "one");
+        newMap.put(2, "two");
+        newMap.put(3, "three");
+        // WHEN converted to HashMap
+        underTest = underTest.putAll(newMap);
+        // THEN the mappings should exist
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals("four", underTest.get(4));
+        assertEquals("five", underTest.get(5));
+        assertEquals(5, underTest.size());
+    }
+
+    @Test
+    public void testPutAll_03() {
+        // GIVEN
+        var underTest = new ImmutableMap<Integer, String>()
+                .put(3, "wrong")
+                .put(4, "four")
+                .put(5, "five");
+        var newMap = new HashMap<Integer, String>();
+        newMap.put(1, "one");
+        newMap.put(2, "two");
+        newMap.put(3, "three");
+        // WHEN
+        underTest = underTest.putAll(newMap);
+        // THEN the mappings should exist
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals("four", underTest.get(4));
+        assertEquals("five", underTest.get(5));
+        assertEquals(5, underTest.size());
+    }
+
+    @Test
+    public void ctor_01() {
+        // GIVEN
+        var newMap = new HashMap<Integer, String>();
+        newMap.put(1, "one");
+        newMap.put(2, "two");
+        newMap.put(3, "three");
+        // WHEN
+        var underTest = new ImmutableMap<Integer, String>(newMap);
+        // THEN the mappings should exist
+        assertEquals("one", underTest.get(1));
+        assertEquals("two", underTest.get(2));
+        assertEquals("three", underTest.get(3));
+        assertEquals(3, underTest.size());
+    }
 }

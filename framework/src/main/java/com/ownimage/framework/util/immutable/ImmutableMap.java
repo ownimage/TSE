@@ -37,6 +37,15 @@ public class ImmutableMap<K, V> extends ImmutableNode<HashMap<K, V>> {
         }
     }
 
+    public ImmutableMap<K, V> putAll(Map<K, V> map) {
+        synchronized (getSynchronisationObject()) {
+            var master = getMaster();
+            var result = new ImmutableMap<K, V>(master);
+            result.getMaster().putAll(map);
+            return result;
+        }
+    }
+
     public V get(K pKey) {
         synchronized (getSynchronisationObject()) {
             var master = getMaster();

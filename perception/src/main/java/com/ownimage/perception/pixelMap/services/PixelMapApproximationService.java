@@ -6,6 +6,7 @@ import com.ownimage.framework.util.Framework;
 import com.ownimage.framework.util.PegCounterService;
 import com.ownimage.framework.util.Range2D;
 import com.ownimage.framework.util.StrongReference;
+import com.ownimage.framework.util.immutable.ImmutableMap;
 import com.ownimage.perception.pixelMap.immutable.ImmutableIXY;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelChain;
 import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
@@ -99,7 +100,7 @@ public class PixelMapApproximationService {
 
     public ImmutablePixelMap process09_connectNodes(
             @NotNull ImmutablePixelMap pixelMap, IProgressObserver progress) {
-        var nodes = StrongReference.of(pixelMap.nodes());
+        var nodes = pixelMap.nodes().toHashMap();
         var counter = Counter.createMaxCounter(pixelMap.pixelChains().size());
         reportProgress(progress, "Connecting Nodes ...", counter.getPercentInt());
         pixelMap.pixelChains().stream()
@@ -108,10 +109,14 @@ public class PixelMapApproximationService {
                     reportProgress(progress, "Connecting Nodes ...", counter.getPercentInt());
                     var startNodeKey = pixelChainService.getStartNode(pixelMap, pc).orElseThrow().toImmutableIXY();
                     var endNodeKey = pixelChainService.getEndNode(pixelMap, pc).orElseThrow().toImmutableIXY();
-                    nodes.update(n -> n.update(startNodeKey, (k, v) -> v.addPixelChain(pc)));
-                    nodes.update(n -> n.update(endNodeKey, (k, v) -> v.addPixelChain(pc)));
+                    var startNode = nodes.get(startNodeKey);
+                    startNode = startNode != null ? startNode : Node.of(startNodeKey);
+                    nodes.put(startNodeKey, startNode.addPixelChain(pc));
+                    var endNode = nodes.get(endNodeKey);
+                    endNode = endNode != null ? endNode : Node.of(endNodeKey);
+                    nodes.put(endNodeKey, endNode.addPixelChain(pc));
                 });
-        return pixelMap.withNodes(nodes.get());
+        return pixelMap.withNodes(new ImmutableMap<ImmutableIXY, Node>().putAll(nodes));
     }
 
     public @NotNull ImmutablePixelMap process01_reset(
@@ -214,8 +219,8 @@ public class PixelMapApproximationService {
                                 // TODO should be a better check here to see whether it is better to remove the other node
                                 toBeRemoved.add(node);
                             }
-                })
-        );
+                        })
+                );
         result.update(r -> pixelMapService.nodesRemoveAll(r, toBeRemoved));
         toBeRemoved
                 .forEach(pixel -> {
