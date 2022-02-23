@@ -19,10 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
@@ -43,10 +40,8 @@ public class PictureView extends ViewBase<PictureControl> implements IPictureVie
     public final static long serialVersionUID = 1L;
 
     private Image mImage;
-
     private GrafittiImp mGraffitiImp;
     private GraphicsContext mGraffitiContext;
-
     private GrafittiImp mCursorImp;
     private GraphicsContext mCursorContext;
 

@@ -201,6 +201,10 @@
             <groupId>com.aparapi</groupId>
             <artifactId>aparapi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.aparapi</groupId>
+            <artifactId>aparapi-jni</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

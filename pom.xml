@@ -31,7 +31,8 @@
         <value.version>2.8.2</value.version>
         <lombok.version>1.18.12</lombok.version>
         <guava.version>28.0-jre</guava.version>
-        <aparapi.version>1.10.0</aparapi.version>
+        <aparapi.version>3.0.0</aparapi.version>
+        <aparapi-jni.version>1.4.3</aparapi-jni.version>
         <mockito-core.version>3.3.3</mockito-core.version>
         <spring-beans.version>5.2.6.RELEASE</spring-beans.version>
         <spring-context.version>5.2.6.RELEASE</spring-context.version>
@@ -103,6 +104,11 @@
                 <groupId>com.aparapi</groupId>
                 <artifactId>aparapi</artifactId>
                 <version>${aparapi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aparapi</groupId>
+                <artifactId>aparapi-jni</artifactId>
+                <version>${aparapi-jni.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
