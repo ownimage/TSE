@@ -15,6 +15,7 @@ import com.ownimage.perception.pixelMap.immutable.ImmutablePixelMap;
 import com.ownimage.perception.pixelMap.services.Config;
 import com.ownimage.perception.pixelMap.services.PixelMapService;
 import com.ownimage.perception.transform.CannyEdgeTransform;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -126,6 +127,7 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
         mTransform = pTransform;
     }
 
+    @SneakyThrows
     private void computeGradients(final float kernelRadius, final int kernelWidth) {
 
         // generate the gaussian convolution masks
@@ -202,9 +204,11 @@ public class CannyEdgeDetectorOpenCL implements ICannyEdgeDetector {
         maxY = height - 2 * kwidth;
         mXYStart = new int[]{initX, initY, width};
 
-        val range = Range.create2D(maxX, maxY);
+
         val openCLKernel = new CannyEdgeDetectorOpenCLKernel(magnitude, xGradient, yGradient, mXYStart);
         openCLKernel.put(mXYStart);
+        val maxWorkGroupSize = openCLKernel.getKernelMaxWorkGroupSize(openCLKernel.getTargetDevice());
+        val range = Range.create2D(maxX, maxY, 16, maxWorkGroupSize/16);
         openCLKernel.execute(range);
         magnitude = openCLKernel.getMagnitude();
         xGradient = openCLKernel.getxGradient();
