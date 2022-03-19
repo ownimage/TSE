@@ -119,7 +119,7 @@ public class RenderService {
                         batch.render(pictureType, mOverSample);
                     }
 
-                    if (!mTerminated) mPictureControl.setValue(pictureType);
+                    if (mPictureType == null && !mTerminated) mPictureControl.setValue(pictureType);
                     if (mCompleteAction != null && !mTerminated) mCompleteAction.performAction();
                     getObserver().ifPresent(IProgressObserver::finished);
                     val end = Instant.now();
